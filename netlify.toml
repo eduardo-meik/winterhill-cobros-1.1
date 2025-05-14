@@ -7,3 +7,9 @@
   for = "/*.{html,json,xml}"
     [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# Add this section for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
