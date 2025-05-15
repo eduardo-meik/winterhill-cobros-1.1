@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
-import { TableContainer } from '../ui/TableContainer';
-import { TableHeader } from '../ui/TableHeader';
+import { TableContainer } from '../../ui/TableContainer';
+import { TableHeader } from '../../ui/TableHeader';
 
-export function PaymentsTable({
-  payments,
-  onViewDetails,
-  loading
-}) {
-  const [sortField, setSortField] = useState('numero_cuota');
+export function PaymentsTable({ data, loading, onViewDetails }) {
+  const [sortField, setSortField] = useState('due_date');
   const [sortDirection, setSortDirection] = useState('asc');
   
   const handleSort = (field) => {
@@ -41,14 +37,14 @@ export function PaymentsTable({
     }
     
     if (field === 'numero_cuota') {
-      return parseInt(payment[field] || '0');
+      return parseInt(payment[field] || '0', 10);
     }
     
     return payment[field];
   };
   
   // Sort payments
-  const sortedPayments = [...payments].sort((a, b) => {
+  const sortedPayments = [...data].sort((a, b) => {
     const aValue = getSortValue(a, sortField);
     const bValue = getSortValue(b, sortField);
     
@@ -65,22 +61,28 @@ export function PaymentsTable({
     }
     return 0;
   });
-  
-  if (loading) {
+    if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+          <p className="text-gray-500 dark:text-gray-400 mt-3">Cargando datos...</p>
+        </div>
       </div>
     );
   }
 
-  if (!payments || payments.length === 0) {
-    return <p className="text-center text-gray-500 dark:text-gray-400 py-4">No hay pagos para mostrar.</p>;
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p className="text-gray-500 dark:text-gray-400 font-medium">No hay pagos para mostrar</p>
+        <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Intenta con diferentes filtros</p>
+      </div>
+    );
   }
-
-  // Log cuotas for debugging
-  const cuotaNumbers = [...new Set(sortedPayments.map(p => p.numero_cuota))].sort((a, b) => parseInt(a) - parseInt(b));
-  console.log('Cuota numbers in display:', cuotaNumbers);
 
   return (
     <div className="overflow-x-auto">
@@ -97,13 +99,23 @@ export function PaymentsTable({
               className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer"
               onClick={() => handleSort('numero_cuota')}
             >
-              Cuota número {sortField === 'numero_cuota' && (sortDirection === 'asc' ? '↑' : '↓')}
+              Cuota N° {sortField === 'numero_cuota' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
             <th 
               className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer"
               onClick={() => handleSort('amount')}
             >
               Monto {sortField === 'amount' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
+            <th 
+              className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400"
+            >
+              Porcentaje Beca
+            </th>
+            <th 
+              className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400"
+            >
+              Inst. Financiera
             </th>
             <th 
               className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer"
@@ -123,7 +135,9 @@ export function PaymentsTable({
             >
               Método de Pago {sortField === 'payment_method' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
-            <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Acciones</th>
+            {onViewDetails && (
+              <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Acciones</th>
+            )}
           </tr>
         </TableHeader>
         <tbody>
@@ -142,6 +156,9 @@ export function PaymentsTable({
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         {payment.student?.cursos?.nom_curso || 'Curso no asignado'}
                       </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {payment.student?.run || 'Sin RUN'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -154,6 +171,16 @@ export function PaymentsTable({
               <td className="py-3 px-4">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   ${payment.amount ? Math.round(payment.amount).toLocaleString() : '0'}
+                </p>
+              </td>
+              <td className="py-3 px-4">
+                <p className="text-sm text-gray-900 dark:text-white">
+                  {payment.porcentaje_beca ? `${payment.porcentaje_beca}%` : 'N/A'}
+                </p>
+              </td>
+              <td className="py-3 px-4">
+                <p className="text-sm text-gray-900 dark:text-white">
+                  {payment.inst_financiera || 'N/A'}
                 </p>
               </td>
               <td className="py-3 px-4">
@@ -183,14 +210,16 @@ export function PaymentsTable({
                   {payment.payment_method || 'No especificado'}
                 </p>
               </td>
-              <td className="py-3 px-4 text-right">
-                <button 
-                  onClick={() => onViewDetails(payment)}
-                  className="text-primary hover:text-primary-light text-sm font-medium"
-                >
-                  Ver Detalles
-                </button>
-              </td>
+              {onViewDetails && (
+                <td className="py-3 px-4 text-right">
+                  <button 
+                    onClick={() => onViewDetails(payment)}
+                    className="text-primary hover:text-primary-light text-sm font-medium"
+                  >
+                    Ver Detalles
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

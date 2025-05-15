@@ -7,12 +7,13 @@ import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
 import { utils, writeFile } from 'xlsx';
 import { useEffect, useState, useMemo } from 'react';
-import { supabase } from '@/services/supabase'; // Ruta corregida usando el alias @
+import { supabase } from '@/services/supabase';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 
+// Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,68 +27,105 @@ export function PaymentsPage() {
     month: 'all',
     year: 'all',
     paymentMethod: 'all',
+    cuota: 'all', // Added filter for cuota
     startDate: '',
     endDate: ''
   });
 
+  // Extract available filter options from data
+  const filterOptions = useMemo(() => {
+    if (payments.length === 0) return { cursos: [], years: [], cuotas: [] };
+    
+    // Extract unique curso names
+    const cursos = [...new Set(
+      payments.map(payment => payment.student?.cursos?.nom_curso).filter(Boolean)
+    )].sort();
+    
+    // Extract unique years from due_date
+    const years = [...new Set(
+      payments.map(payment => {
+        if (!payment.due_date) return null;
+        return new Date(payment.due_date).getFullYear().toString();
+      }).filter(Boolean)
+    )].sort();
+    
+    // Extract unique cuota numbers
+    const cuotas = [...new Set(
+      payments.map(payment => payment.numero_cuota).filter(Boolean)
+    )].sort((a, b) => parseInt(a) - parseInt(b));
+    
+    return { cursos, years, cuotas };
+  }, [payments]);
+
   const filteredPayments = useMemo(() => {
     return payments.filter(payment => {
-      // Status filter (case-insensitive)
-      if (filters.status !== 'all' && payment.status?.toLowerCase() !== filters.status.toLowerCase()) return false;
-      
-      // Curso filter (case-insensitive)
-      if (filters.curso !== 'all' && 
-          payment.student?.curso?.nom_curso?.toLowerCase() !== filters.curso.toLowerCase()) return false;
-      
-      // Date filters
-      const paymentDate = new Date(payment.due_date);
-      
-      // Add month filter
-      if (filters.month !== 'all') {
-        const paymentMonth = (paymentDate.getMonth() + 1).toString();
-        if (paymentMonth !== filters.month) return false;
-      }
-      
-      // Add year filter
-      if (filters.year !== 'all') {
-        const paymentYear = paymentDate.getFullYear().toString();
-        if (paymentYear !== filters.year) return false;
-      }
-      
-      // Start date filter
-      if (filters.startDate) {
-        const startDate = new Date(filters.startDate);
-        startDate.setHours(0, 0, 0, 0);
-        if (paymentDate < startDate) return false;
-      }
-      
-      // End date filter
-      if (filters.endDate) {
-        const endDate = new Date(filters.endDate);
-        endDate.setHours(23, 59, 59, 999);
-        if (paymentDate > endDate) return false;
-      }
-      
-      // Payment method filter (case-insensitive)
-      if (filters.paymentMethod && filters.paymentMethod !== 'all' && 
-          payment.payment_method?.toLowerCase() !== filters.paymentMethod.toLowerCase()) {
+      try {
+        // Status filter
+        if (filters.status !== 'all' && payment.status !== filters.status) return false;
+        
+        // Curso filter
+        if (filters.curso !== 'all' && 
+            payment.student?.cursos?.nom_curso !== filters.curso) return false;
+        
+        // Cuota filter (NEW)
+        if (filters.cuota !== 'all' && payment.numero_cuota !== filters.cuota) return false;
+        
+        // Date filters
+        const paymentDate = payment.due_date ? new Date(payment.due_date) : null;
+        if (paymentDate) {
+          // Month filter
+          if (filters.month !== 'all') {
+            const paymentMonth = (paymentDate.getMonth() + 1).toString();
+            if (paymentMonth !== filters.month) return false;
+          }
+          
+          // Year filter
+          if (filters.year !== 'all') {
+            const paymentYear = paymentDate.getFullYear().toString();
+            if (paymentYear !== filters.year) return false;
+          }
+          
+          // Start date filter
+          if (filters.startDate) {
+            const startDate = new Date(filters.startDate);
+            startDate.setHours(0, 0, 0, 0);
+            if (paymentDate < startDate) return false;
+          }
+          
+          // End date filter
+          if (filters.endDate) {
+            const endDate = new Date(filters.endDate);
+            endDate.setHours(23, 59, 59, 999);
+            if (paymentDate > endDate) return false;
+          }
+        }
+        
+        // Payment method filter
+        if (filters.paymentMethod !== 'all' && 
+            payment.payment_method !== filters.paymentMethod) return false;
+
+        // Search filter
+        if (filters.search) {
+          const searchTerm = filters.search.toLowerCase();
+          const studentName = payment.student?.whole_name || 
+            `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`;
+          
+          return (
+            studentName.toLowerCase().includes(searchTerm) ||
+            payment.student?.run?.toLowerCase().includes(searchTerm) ||
+            (payment.numero_cuota && payment.numero_cuota.toString().includes(searchTerm))
+          );
+        }
+        
+        return true;
+      } catch (error) {
+        console.error("Error filtering payment:", error, payment);
         return false;
       }
-
-      // Search filter
-      if (filters.search) {
-        const searchTerm = filters.search.toLowerCase();
-        return (
-          payment.student?.first_name?.toLowerCase().includes(searchTerm) ||
-          payment.student?.apellido_paterno?.toLowerCase().includes(searchTerm) ||
-          (payment.student?.whole_name && payment.student.whole_name.toLowerCase().includes(searchTerm))
-        );
-      }
-      
-      return true;
     });
   }, [payments, filters]);
 
+  // Pagination
   const {
     currentPage,
     pageSize,
@@ -97,29 +135,6 @@ export function PaymentsPage() {
     handlePageChange
   } = usePagination(filteredPayments);
 
-  const handleFiltersChange = (newFilters) => {
-    setFilters(newFilters);
-  };
-
-  const handleClearFilters = () => {
-    setFilters({
-      search: '',
-      status: 'all',
-      curso: 'all',
-      month: 'all',
-      year: 'all',
-      paymentMethod: 'all',
-      startDate: '',
-      endDate: ''
-    });
-  };
-
-  // Extract unique cursos from payments
-  const availableCursos = useMemo(() => {
-    const cursos = [...new Set(payments.map(payment => payment.student?.cursos?.nom_curso))].filter(Boolean);
-    return cursos.sort();
-  }, [payments]);
-
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -128,13 +143,12 @@ export function PaymentsPage() {
     try {
       setLoading(true);
       
-      // Check if user is authenticated
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('No autenticado');
       }
 
-      // Add explicit curso field selection and ensure we get all cuotas
+      // Fetch all fees with student and curso information
       const { data: fees, error: feesError } = await supabase
         .from('fee')
         .select(`
@@ -152,24 +166,24 @@ export function PaymentsPage() {
             )
           )
         `)
-        .order('numero_cuota', { ascending: true })
-        .order('due_date', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(2000);
 
       if (feesError) throw feesError;
       
-      // Debug information
-      console.log('Fetched fees:', fees?.length);
+      // Log fee data for debugging
+      console.log('Total fees fetched:', fees?.length);
       
-      // Check for missing cursos
-      const missingCursos = fees?.filter(fee => !fee.student?.cursos?.nom_curso);
-      console.log('Payments with missing cursos (should be low if data is correct):', missingCursos?.length);
+      // Count distribution of cuotas
+      const cuotaDistribution = {};
+      fees?.forEach(fee => {
+        const cuotaNum = fee.numero_cuota || 'unknown';
+        cuotaDistribution[cuotaNum] = (cuotaDistribution[cuotaNum] || 0) + 1;
+      });
       
-      // Set payments data
+      console.log('Cuota distribution:', cuotaDistribution);
+      
       setPayments(fees || []);
-      
-      // Reset filters to ensure all data is displayed initially
-      handleClearFilters();
-      
     } catch (error) {
       console.error('Error fetching payments:', error);
       toast.error('Error al cargar los pagos');
@@ -178,20 +192,39 @@ export function PaymentsPage() {
     }
   };
 
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      search: '',
+      status: 'all',
+      curso: 'all',
+      month: 'all',
+      year: 'all',
+      paymentMethod: 'all',
+      cuota: 'all',
+      startDate: '',
+      endDate: ''
+    });
+  };
+
   const handleExportExcel = async (exportAll = false) => {
     try {
       setExporting(true);
       
-      // Determine which data to export
       const dataToExport = exportAll ? payments : filteredPayments;
       
-      // Transform data for Excel
       const excelData = dataToExport.map(payment => ({
-        'Estudiante': `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`,
-        'Curso': payment.student?.curso?.nom_curso || '-',
+        'Estudiante': payment.student?.whole_name || 
+          `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`,
+        'RUN': payment.student?.run || '-',
+        'Curso': payment.student?.cursos?.nom_curso || '-',
         'Cuota N°': payment.numero_cuota || '-',
-        'Monto': payment.amount,
-        'Estado': payment.status === 'paid' ? 'Pagado' : payment.status === 'pending' ? 'Pendiente' : 'Vencido',
+        'Monto': payment.amount ? `$${Math.round(payment.amount).toLocaleString()}` : '-',
+        'Estado': payment.status === 'paid' ? 'Pagado' : 
+                 payment.status === 'pending' ? 'Pendiente' : 'Vencido',
         'Fecha Vencimiento': payment.due_date ? format(new Date(payment.due_date), 'dd/MM/yyyy') : '-',
         'Fecha Pago': payment.payment_date ? format(new Date(payment.payment_date), 'dd/MM/yyyy') : '-',
         'Método de Pago': payment.payment_method || '-',
@@ -200,24 +233,19 @@ export function PaymentsPage() {
         'Notas': payment.notes || '-'
       }));
       
-      // Create workbook and worksheet
       const wb = utils.book_new();
       const ws = utils.json_to_sheet(excelData);
       
-      // Add worksheet to workbook
       utils.book_append_sheet(wb, ws, 'Pagos');
       
-      // Auto-size columns
       const colWidths = Object.keys(excelData[0] || {}).map(key => ({
         wch: Math.max(key.length, ...excelData.map(row => String(row[key] || '').length))
       }));
       ws['!cols'] = colWidths;
       
-      // Generate filename with timestamp
       const timestamp = format(new Date(), 'yyyyMMdd-HHmmss');
       const filename = `pagos_${timestamp}.xlsx`;
       
-      // Save file
       writeFile(wb, filename);
       
       toast.success('Archivo Excel exportado exitosamente');
@@ -274,8 +302,8 @@ export function PaymentsPage() {
               <PaymentsFilters
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
-                availableCursos={availableCursos}
                 onClearFilters={handleClearFilters}
+                filterOptions={filterOptions}
               />
             </CardHeader>
             <CardContent>

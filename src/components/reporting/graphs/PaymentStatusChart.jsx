@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { supabase } from '../../../services/supabase';
-import toast from 'react-hot-toast';
 
 const COLORS = ['#4CAF50', '#FFC107', '#FF5252'];
 
@@ -21,78 +19,47 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-export function PaymentStatusChart({ dateRange, filters = {} }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const PaymentStatusChart = forwardRef(({ data, loading }, ref) => {
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    fetchData();
-  }, [dateRange, filters]); // Now depends on filters
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Start with base query
-      let query = supabase
-        .from('fee')
-        .select('amount, status');
-
-      // Apply filters from props
-      if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
-      }
-      
-      if (filters.startDate) {
-        query = query.gte('due_date', filters.startDate);
-      }
-      
-      if (filters.endDate) {
-        query = query.lte('due_date', filters.endDate);
-      }
-
-      // Execute the query
-      const { data: payments, error } = await query;
-
-      if (error) throw error;
-
-      const statusTotals = payments.reduce((acc, payment) => {
-        const status = payment.status;
-        const amount = parseFloat(payment.amount);
-        acc[status] = (acc[status] || 0) + amount;
-        return acc;
-      }, {});
-
-      const total = Object.values(statusTotals).reduce((a, b) => a + b, 0);
-
-      const chartData = [
-        {
-          name: 'Pagado',
-          value: statusTotals.paid || 0,
-          percentage: ((statusTotals.paid || 0) / total * 100).toFixed(1)
-        },
-        {
-          name: 'Pendiente',
-          value: statusTotals.pending || 0,
-          percentage: ((statusTotals.pending || 0) / total * 100).toFixed(1)
-        },
-        {
-          name: 'Vencido',
-          value: statusTotals.overdue || 0,
-          percentage: ((statusTotals.overdue || 0) / total * 100).toFixed(1)
-        }
-      ];
-
-      setData(chartData);
-    } catch (err) {
-      console.error('Error fetching payment status data:', err);
-      setError('Error al cargar los datos');
-      toast.error('Error al cargar los datos');
-    } finally {
-      setLoading(false);
+    if (!loading && data && data.length > 0) {
+      const processedData = processPaymentStatus(data);
+      setChartData(processedData);
+    } else {
+      setChartData([]);
     }
+  }, [data, loading]);
+
+  const processPaymentStatus = (payments) => {
+    const statusTotals = payments.reduce((acc, payment) => {
+      const status = payment.status || 'unknown';
+      const amount = parseFloat(payment.amount || 0);
+      acc[status] = (acc[status] || 0) + amount;
+      return acc;
+    }, {});
+
+    const total = Object.values(statusTotals).reduce((a, b) => a + b, 0);
+    
+    if (total === 0) return [];
+
+    return [
+      {
+        name: 'Pagado',
+        value: statusTotals.paid || 0,
+        percentage: ((statusTotals.paid || 0) / total * 100).toFixed(1)
+      },
+      {
+        name: 'Pendiente',
+        value: statusTotals.pending || 0,
+        percentage: ((statusTotals.pending || 0) / total * 100).toFixed(1)
+      },
+      {
+        name: 'Vencido',
+        value: statusTotals.overdue || 0,
+        percentage: ((statusTotals.overdue || 0) / total * 100).toFixed(1)
+      }
+    ].filter(item => item.value > 0);
   };
 
   if (loading) {
@@ -103,12 +70,20 @@ export function PaymentStatusChart({ dateRange, filters = {} }) {
     );
   }
 
+  if (chartData.length === 0) {
+    return (
+      <div className="h-[300px] flex items-center justify-center text-gray-500 dark:text-gray-400">
+        No hay datos disponibles para mostrar.
+      </div>
+    );
+  }
+
   return (
-    <div className="h-[300px]">
+    <div className="h-[300px]" ref={ref}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={data}
+            data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -116,8 +91,8 @@ export function PaymentStatusChart({ dateRange, filters = {} }) {
             paddingAngle={5}
             dataKey="value"
           >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index]} />
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
@@ -134,4 +109,6 @@ export function PaymentStatusChart({ dateRange, filters = {} }) {
       </ResponsiveContainer>
     </div>
   );
-}
+});
+
+PaymentStatusChart.displayName = 'PaymentStatusChart';

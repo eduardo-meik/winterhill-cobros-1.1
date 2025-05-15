@@ -16,34 +16,20 @@ const months = [
 const paymentMethods = [
   { value: 'EFECTIVO', label: 'Efectivo' },
   { value: 'TRANSFERENCIA', label: 'Transferencia' },
-  { value: 'TARJETA_CREDITO', label: 'Tarjeta de Crédito' },
-  { value: 'TARJETA_DEBITO', label: 'Tarjeta de Débito' },
+  { value: 'TARJETA', label: 'Tarjeta de Crédito/Débito' },
   { value: 'CHEQUE', label: 'Cheque' },
+  { value: 'DESCUENTO PLANILLA', label: 'Descuento de Planilla' },
   { value: 'OTRO', label: 'Otro' },
 ];
 
 export function PaymentsFilters({
   filters,
   onFiltersChange,
-  availableCursos, // --- Recibir cursos disponibles ---
-  onClearFilters
+  onClearFilters,
+  filterOptions = { cursos: [], years: [], cuotas: [] }
 }) {
   const handleFilterChange = (filterName, value) => {
     onFiltersChange(prev => ({ ...prev, [filterName]: value }));
-  };
-
-  // Reset filters to ensure all data is displayed initially
-  const handleClearFilters = () => {
-    onFiltersChange({
-      search: '',
-      status: 'all',
-      curso: 'all',
-      month: 'all',
-      year: 'all',
-      paymentMethod: 'all',
-      startDate: '',
-      endDate: ''
-    });
   };
 
   return (
@@ -80,9 +66,16 @@ export function PaymentsFilters({
         className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
       >
         <option value="all">Todos los Años</option>
-        {years.map(year => (
-          <option key={year} value={year}>{year}</option>
-        ))}
+        {/* Use dynamic years from data if available */}
+        {filterOptions.years.length > 0 ? 
+          filterOptions.years.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))
+          :
+          years.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))
+        }
       </select>
 
       {/* Payment Method Filter */}
@@ -97,20 +90,31 @@ export function PaymentsFilters({
         ))}
       </select>
 
-      {/* --- Curso Filter --- */}
+      {/* Curso Filter */}
       <select
         value={filters.curso}
         onChange={(e) => handleFilterChange('curso', e.target.value)}
         className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
       >
         <option value="all">Todos los Cursos</option>
-        {availableCursos.map(curso => (
+        {filterOptions.cursos.map(curso => (
           <option key={curso} value={curso}>{curso}</option>
         ))}
       </select>
-      {/* --- Fin --- */}
 
-      {/* Search Input - Nuevo Filtro */}
+      {/* Cuota Filter - NEW */}
+      <select
+        value={filters.cuota}
+        onChange={(e) => handleFilterChange('cuota', e.target.value)}
+        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+      >
+        <option value="all">Todas las Cuotas</option>
+        {filterOptions.cuotas.map(cuota => (
+          <option key={cuota} value={cuota}>Cuota {cuota}</option>
+        ))}
+      </select>
+
+      {/* Search Input */}
       <input
         type="text"
         value={filters.search}
@@ -120,7 +124,7 @@ export function PaymentsFilters({
       />
 
       <Button
-        onClick={handleClearFilters}
+        onClick={onClearFilters}
         variant="outline"
         className="w-full sm:w-auto"
       >

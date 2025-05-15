@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '../../../services/supabase';
-import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
-import toast from 'react-hot-toast';
+import { format, parseISO, startOfMonth } from 'date-fns';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -29,82 +27,64 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export function PaymentsOverview({ filters = {} }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const PaymentsOverview = forwardRef(({ data, loading }, ref) => {
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    fetchData();
-  }, [filters]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      let query = supabase
-        .from('fee')
-        .select('amount, status, due_date');
-
-      if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
-      }
-      
-      if (filters.startDate) {
-        query = query.gte('due_date', filters.startDate);
-      }
-      
-      if (filters.endDate) {
-        query = query.lte('due_date', filters.endDate);
-      }
-
-      const { data: payments, error } = await query;
-
-      if (error) throw error;
-
-      const aggregatedData = aggregatePaymentsByMonth(payments);
-      setData(aggregatedData);
-    } catch (err) {
-      console.error('Error fetching payment data:', err);
-      setError('Error al cargar los datos');
-      toast.error('Error al cargar los datos');
-    } finally {
-      setLoading(false);
+    if (!loading && data && data.length > 0) {
+      const aggregatedData = aggregatePaymentsByMonth(data);
+      setChartData(aggregatedData);
+    } else {
+      setChartData([]);
     }
-  };
+  }, [data, loading]);
 
   const aggregatePaymentsByMonth = (payments) => {
     const monthlyData = {};
 
     payments.forEach(payment => {
-      const monthKey = startOfMonth(parseISO(payment.due_date)).toISOString();
+      if (!payment.due_date) return;
       
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = {
-          month: format(parseISO(payment.due_date), 'MMM yyyy'),
-          paid: 0,
-          pending: 0,
-          overdue: 0
-        };
-      }
+      try {
+        const dueDate = new Date(payment.due_date);
+        const monthKey = startOfMonth(dueDate).toISOString();
+        
+        if (!monthlyData[monthKey]) {
+          monthlyData[monthKey] = {
+            month: format(dueDate, 'MMM yyyy'),
+            paid: 0,
+            pending: 0,
+            overdue: 0
+          };
+        }
 
-      const amount = parseFloat(payment.amount);
-      
-      switch (payment.status) {
-        case 'paid':
-          monthlyData[monthKey].paid += amount;
-          break;
-        case 'pending':
-          monthlyData[monthKey].pending += amount;
-          break;
-        case 'overdue':
-          monthlyData[monthKey].overdue += amount;
-          break;
+        const amount = parseFloat(payment.amount || 0);
+        
+        switch (payment.status) {
+          case 'paid':
+            monthlyData[monthKey].paid += amount;
+            break;
+          case 'pending':
+            monthlyData[monthKey].pending += amount;
+            break;
+          case 'overdue':
+            monthlyData[monthKey].overdue += amount;
+            break;
+          default:
+            break;
+        }
+      } catch (err) {
+        console.error("Error processing date", err, payment.due_date);
       }
     });
 
-    return Object.values(monthlyData);
+    // Convert to array and sort by date
+    return Object.values(monthlyData)
+      .sort((a, b) => {
+        const monthA = new Date(a.month).getTime();
+        const monthB = new Date(b.month).getTime();
+        return monthA - monthB;
+      });
   };
 
   if (loading) {
@@ -115,18 +95,18 @@ export function PaymentsOverview({ filters = {} }) {
     );
   }
 
-  if (error) {
+  if (chartData.length === 0) {
     return (
-      <div className="h-[400px] flex items-center justify-center text-red-600 dark:text-red-400">
-        {error}
+      <div className="h-[400px] flex items-center justify-center text-gray-500 dark:text-gray-400">
+        No hay datos disponibles para mostrar.
       </div>
     );
   }
 
   return (
-    <div className="h-[400px]">
+    <div className="h-[400px]" ref={ref}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="paidGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#4CAF50" stopOpacity={0.2}/>
@@ -186,4 +166,6 @@ export function PaymentsOverview({ filters = {} }) {
       </ResponsiveContainer>
     </div>
   );
-}
+});
+
+PaymentsOverview.displayName = 'PaymentsOverview';
