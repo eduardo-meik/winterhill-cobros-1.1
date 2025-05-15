@@ -162,14 +162,17 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
                       Método de Pago *
                     </label>
                     <select
-                      {...register('payment_method', { required: 'Este campo es requerido' })}
+                      {...register('payment_method', { 
+                        required: 'Este campo es requerido' 
+                      })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     >
-                      <option value="">Seleccionar método</option>
-                      <option value="efectivo">Efectivo</option>
-                      <option value="transferencia">Transferencia</option>
-                      <option value="tarjeta">Tarjeta</option>
-                      <option value="cheque">Cheque</option>
+                      <option value="">Seleccionar...</option>
+                      <option value="CHEQUE">Cheque</option>
+                      <option value="TRANSFERENCIA">Transferencia</option>
+                      <option value="TARJETA">Tarjeta</option>
+                      <option value="DESCUENTO PLANILLA">Descuento Planilla</option>
+                      <option value="EFECTIVO">Efectivo</option>
                     </select>
                     {errors.payment_method && (
                       <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.payment_method.message}</p>

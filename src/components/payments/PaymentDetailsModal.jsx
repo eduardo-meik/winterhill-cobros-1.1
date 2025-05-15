@@ -77,6 +77,14 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
 
   const handleSave = async () => {
     try {
+      // Validate payment_method before sending to database
+      const validPaymentMethods = ["CHEQUE", "TRANSFERENCIA", "TARJETA", "DESCUENTO PLANILLA", "EFECTIVO"];
+      
+      if (formData.payment_method && !validPaymentMethods.includes(formData.payment_method)) {
+        toast.error('Método de pago inválido');
+        return;
+      }
+      
       setLoading(true);
       
       const { error } = await supabase
@@ -85,7 +93,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           student_id: formData.student_id,
           amount: parseFloat(formData.amount),
           payment_date: formData.payment_date,
-          payment_method: formData.payment_method,
+          payment_method: formData.payment_method || null, // Ensure null if empty
           status: formData.status,
           num_boleta: formData.num_boleta,
           mov_bancario: formData.mov_bancario,
@@ -233,11 +241,12 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                         onChange={handleChange}
                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       >
-                        <option value="">Seleccionar método</option>
-                        <option value="efectivo">Efectivo</option>
-                        <option value="transferencia">Transferencia</option>
-                        <option value="tarjeta">Tarjeta</option>
-                        <option value="cheque">Cheque</option>
+                        <option value="">Seleccionar...</option>
+                        <option value="CHEQUE">Cheque</option>
+                        <option value="TRANSFERENCIA">Transferencia</option>
+                        <option value="TARJETA">Tarjeta</option>
+                        <option value="DESCUENTO PLANILLA">Descuento Planilla</option>
+                        <option value="EFECTIVO">Efectivo</option>
                       </select>
                     </div>
 
@@ -295,7 +304,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                        />
                        <DetailItem 
                          label="Curso" 
-                         value={payment.student.curso?.nom_curso || 'No asignado'}
+                         value={payment.student?.cursos?.nom_curso || 'No asignado'}
                        />
                      </div>
                    </div>
@@ -370,7 +379,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                    />
                    <DetailItem 
                      label="Curso del Estudiante" 
-                     value={payment.student.curso?.nom_curso || 'No asignado'}
+                     value={payment.student?.cursos?.nom_curso || 'No asignado'}
                    />
                    {payment.payment_date && (
                      <DetailItem 

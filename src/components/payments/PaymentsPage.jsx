@@ -116,7 +116,7 @@ export function PaymentsPage() {
 
   // Extract unique cursos from payments
   const availableCursos = useMemo(() => {
-    const cursos = [...new Set(payments.map(payment => payment.student?.curso?.nom_curso))].filter(Boolean);
+    const cursos = [...new Set(payments.map(payment => payment.student?.cursos?.nom_curso))].filter(Boolean);
     return cursos.sort();
   }, [payments]);
 
@@ -134,78 +134,45 @@ export function PaymentsPage() {
         throw new Error('No autenticado');
       }
 
-      // Step 1: Fetch fees without nested relations
+      // Add explicit curso field selection and ensure we get all cuotas
       const { data: fees, error: feesError } = await supabase
         .from('fee')
-        .select('*')
+        .select(`
+          *,
+          student:students (
+            id,
+            first_name,
+            apellido_paterno,
+            whole_name,
+            run,
+            curso,
+            cursos:curso (
+              id,
+              nom_curso
+            )
+          )
+        `)
+        .order('numero_cuota', { ascending: true })
         .order('due_date', { ascending: false });
-  
-      if (feesError) throw feesError;
-  
-      if (!fees || fees.length === 0) {
-        setPayments([]);
-        setLoading(false); // Ensure loading is set to false here
-        return;
-      }
-      
-      // Step 3: Fallback - fetch minimal student data without relations that might trigger the policy
-      const studentIdsToFetch = [...new Set(fees.map(fee => fee.student_id).filter(id => id != null))]; // Filter out null/undefined IDs
-      
-      let students = [];
-      if (studentIdsToFetch.length > 0) {
-        const { data: fetchedStudents, error: studentsError } = await supabase
-          .from('students')
-          .select('id, first_name, apellido_paterno, curso')
-          .in('id', studentIdsToFetch);
-    
-        if (studentsError) throw studentsError;
-        students = fetchedStudents || [];
-      }
-    
-      // Step 4: Fetch curso data separately to avoid nested queries
-      const cursoIds = [...new Set(students.filter(s => s && s.curso).map(s => s.curso))]; // Add check for s
-    
-      let cursosData = [];
-      if (cursoIds.length > 0) {
-        const { data: cursos, error: cursosError } = await supabase
-          .from('cursos')
-          .select('id, nom_curso')
-          .in('id', cursoIds);
-          
-        if (cursosError) {
-            console.error("Error fetching cursos:", cursosError);
-            // Decide if you want to throw or continue without curso data
-        } else {
-            cursosData = cursos || [];
-        }
-      }
-    
-      // Step 5: Join all data together client-side
-      const joinedData = fees.map(fee => {
-        const studentData = students.find(s => s && s.id === fee.student_id) || {}; // Add check for s
-        const cursoObject = studentData.curso ? cursosData.find(c => c && c.id === studentData.curso) : null; // Add check for c
-        return {
-          ...fee,
-          student: {
-            ...studentData, 
-            curso: cursoObject 
-          }
-        };
-      });
-  
-      console.log("Fetched payments:", joinedData);
-      setPayments(joinedData);
 
+      if (feesError) throw feesError;
+      
+      // Debug information
+      console.log('Fetched fees:', fees?.length);
+      
+      // Check for missing cursos
+      const missingCursos = fees?.filter(fee => !fee.student?.cursos?.nom_curso);
+      console.log('Payments with missing cursos (should be low if data is correct):', missingCursos?.length);
+      
+      // Set payments data
+      setPayments(fees || []);
+      
+      // Reset filters to ensure all data is displayed initially
+      handleClearFilters();
+      
     } catch (error) {
-      if (error.message === 'No autenticado') {
-        toast.error('Por favor inicia sesión para ver los pagos');
-        // Potentially redirect to login or handle appropriately
-      } else if (supabase.handleError) { // Check if supabase.handleError exists
-        supabase.handleError(error); // This might not be a standard Supabase client method
-      } else {
-        console.error('Error fetching payments:', error); // Log the actual error object
-        toast.error('Error al cargar los pagos. Intente más tarde.');
-      }
+      console.error('Error fetching payments:', error);
+      toast.error('Error al cargar los pagos');
     } finally {
       setLoading(false);
     }
@@ -220,11 +187,12 @@ export function PaymentsPage() {
       
       // Transform data for Excel
       const excelData = dataToExport.map(payment => ({
-        'Estudiante': `${payment.student.first_name} ${payment.student.apellido_paterno}`,
-        'Curso': payment.student.curso?.nom_curso || '-',
+        'Estudiante': `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`,
+        'Curso': payment.student?.curso?.nom_curso || '-',
+        'Cuota N°': payment.numero_cuota || '-',
         'Monto': payment.amount,
         'Estado': payment.status === 'paid' ? 'Pagado' : payment.status === 'pending' ? 'Pendiente' : 'Vencido',
-        'Fecha Vencimiento': format(new Date(payment.due_date), 'dd/MM/yyyy'),
+        'Fecha Vencimiento': payment.due_date ? format(new Date(payment.due_date), 'dd/MM/yyyy') : '-',
         'Fecha Pago': payment.payment_date ? format(new Date(payment.payment_date), 'dd/MM/yyyy') : '-',
         'Método de Pago': payment.payment_method || '-',
         'Folio Boleta': payment.num_boleta || '-',
@@ -241,7 +209,7 @@ export function PaymentsPage() {
       
       // Auto-size columns
       const colWidths = Object.keys(excelData[0] || {}).map(key => ({
-        wch: Math.max(key.length, ...excelData.map(row => String(row[key]).length))
+        wch: Math.max(key.length, ...excelData.map(row => String(row[key] || '').length))
       }));
       ws['!cols'] = colWidths;
       

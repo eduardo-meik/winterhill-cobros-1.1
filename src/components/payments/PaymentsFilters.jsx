@@ -32,6 +32,20 @@ export function PaymentsFilters({
     onFiltersChange(prev => ({ ...prev, [filterName]: value }));
   };
 
+  // Reset filters to ensure all data is displayed initially
+  const handleClearFilters = () => {
+    onFiltersChange({
+      search: '',
+      status: 'all',
+      curso: 'all',
+      month: 'all',
+      year: 'all',
+      paymentMethod: 'all',
+      startDate: '',
+      endDate: ''
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
       {/* Status Filter */}
@@ -106,7 +120,7 @@ export function PaymentsFilters({
       />
 
       <Button
-        onClick={onClearFilters}
+        onClick={handleClearFilters}
         variant="outline"
         className="w-full sm:w-auto"
       >

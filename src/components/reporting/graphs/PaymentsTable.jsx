@@ -56,7 +56,7 @@ export function PaymentsTable({
                           {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          {payment.student?.curso?.nom_curso || 'Curso no asignado'}
+                          {payment.student?.cursos?.nom_curso || 'Curso no asignado'}
                         </p>
                       </div>
                     </div>
