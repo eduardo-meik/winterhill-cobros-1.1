@@ -45,6 +45,68 @@ export function ReportingPage() {
     fetchData(filters);
   }, []);
 
+  // Helper function to filter data consistently across all components
+  const getFilteredData = (dataToFilter) => {
+    // First ensure all payments have the required student field
+    const validData = dataToFilter.filter(payment => 
+      payment && payment.student
+    );
+
+    console.log('Filtering data:', { 
+      totalRecords: dataToFilter.length,
+      validRecords: validData.length,
+      filters,
+      studentFilterActive: filters.students.length > 0,
+      firstStudentId: filters.students[0]
+    });
+
+    // Special logging for student filtering
+    if (filters.students.length > 0) {
+      console.log("Student filter active - examining records for matching student IDs");
+      const matchingRecords = validData.filter(payment => 
+        payment.student && 
+        filters.students.some(selectedId => {
+          const matchResult = String(payment.student.id) === String(selectedId);
+          if (matchResult) {
+            console.log("Found matching record:", {
+              paymentId: payment.id,
+              studentId: payment.student.id,
+              selectedId: selectedId,
+              bothAsString: `${String(payment.student.id)} === ${String(selectedId)}`
+            });
+          }
+          return matchResult;
+        })
+      );
+      
+      console.log(`Found ${matchingRecords.length} records matching the selected student IDs`);
+      
+      if (matchingRecords.length === 0 && validData.length > 0) {
+        // Debug the first few records to see why they're not matching
+        console.log("Sample records that didn't match:", validData.slice(0, 3).map(payment => ({
+          paymentId: payment.id,
+          studentId: payment.student?.id,
+          studentIdType: typeof payment.student?.id,
+          feeStudentId: payment.student_id,
+          selectedStudentIds: filters.students
+        })));
+      }
+    }
+
+    // Then apply filters
+    return validData.filter(payment => 
+      // Apply status filter
+      (filters.status === 'all' || payment.status === filters.status) &&
+      // Apply student filter - Apply this filter regardless of whether it was applied in the database query
+      // This ensures consistency in filtering behavior
+      (!filters.students.length || 
+        (payment.student && filters.students.some(id => String(payment.student.id) === String(id)))) &&
+      // Apply course filter
+      (!filters.courses.length ||
+        filters.courses.includes(payment.student?.curso))
+    );
+  };
+
   const fetchData = async (filters) => {
     try {
       setLoading(true);
@@ -86,7 +148,23 @@ export function ReportingPage() {
       
       // Direct student filter
       if (filters.students && filters.students.length > 0) {
-        query = query.in('student_id', filters.students);
+        // Log the raw student IDs from the filters
+        console.log("Raw student IDs from filters:", filters.students);
+        
+        try {
+          // Approach 1: Use in() with string IDs
+          const studentIdsAsString = filters.students.map(id => String(id));
+          console.log("Applying student filter to query:", {
+            originalIds: filters.students,
+            normalizedIds: studentIdsAsString
+          });
+          
+          // Apply the filter to the database query - ensure consistent string format
+          query = query.in('student_id', studentIdsAsString);
+          
+        } catch (filterError) {
+          console.error("Error normalizing student IDs:", filterError);
+        }
       }
       
       // Execute the base query with all possible database filters
@@ -95,6 +173,25 @@ export function ReportingPage() {
       if (feesError) throw feesError;
       
       console.log(`Initial query returned ${feesData?.length} records`);
+      
+      // Always log if the query returned no records when filtering by students
+      if (filters.students && filters.students.length > 0 && (!feesData || feesData.length === 0)) {
+        console.error('No records found for selected students! Student IDs:', filters.students);
+      }
+      
+      // Log a sample record to examine its structure
+      if (feesData && feesData.length > 0) {
+        console.log('Sample fee record structure:', {
+          fee: feesData[0],
+          student: feesData[0].student,
+          studentId: feesData[0].student?.id,
+          studentIdType: typeof feesData[0].student?.id,
+          feeStudentId: feesData[0].student_id,
+          feeStudentIdType: typeof feesData[0].student_id
+        });
+      } else {
+        console.warn('No fee records returned to inspect structure');
+      }
       
       // Apply post-query filters
       let filteredData = [...feesData];
@@ -124,129 +221,30 @@ export function ReportingPage() {
         try {
           console.log("Filtering by guardians:", filters.guardians);
           
-          // First approach: Get all students belonging to selected guardians from the junction table
-          // Use multiple approaches for reliability and fallback options
-          
-          // Method 1: Direct query to student_guardian table
+          // Query the student_guardian table to get students for the selected guardians
           let { data: guardianStudents, error: guardianStudentsError } = await supabase
             .from('student_guardian')
             .select('student_id')
             .in('guardian_id', filters.guardians);
           
-          // Method 2: If method 1 fails, try using a direct manual JOIN query
-          if (guardianStudentsError || !guardianStudents || guardianStudents.length === 0) {
-            console.warn("Primary student_guardian query failed or returned no results, trying alternative method");
+          if (guardianStudentsError) {
+            console.error("Error querying student_guardian table:", guardianStudentsError);
+            toast.error('Error al obtener la relación estudiante-apoderado');
+            // Continue with existing data
+          } else if (guardianStudents && guardianStudents.length > 0) {
+            // Extract the student IDs from the result and ensure they are strings
+            const studentIdsFromGuardians = guardianStudents.map(gs => String(gs.student_id));
+            console.log(`Found ${studentIdsFromGuardians.length} students related to selected guardians. IDs:`, studentIdsFromGuardians);
             
-            // This query manually joins the tables to get student IDs for the selected guardians
-            const { data: joinQueryResult, error: joinQueryError } = await supabase
-              .from('student_guardian')
-              .select(`
-                student_id,
-                students!inner(id)
-              `)
-              .in('guardian_id', filters.guardians);
-              
-            if (!joinQueryError && joinQueryResult && joinQueryResult.length > 0) {
-              guardianStudents = joinQueryResult;
-              guardianStudentsError = null;
-              console.log("Alternative join query successful:", joinQueryResult.length);
-            } else {
-              console.error("Alternative join query also failed:", joinQueryError);
-            }
-          }
-          
-          // Method 3: If we have an RPC function available, try that as well
-          if (guardianStudentsError || !guardianStudents || guardianStudents.length === 0) {
-            console.warn("Trying RPC method for guardian-student relationship");
+            // Filter the data to only include fees for these students
+            filteredData = filteredData.filter(fee => {
+              // Ensure fee.student and fee.student.id exist before trying to convert to string
+              if (!fee.student || typeof fee.student.id === 'undefined') return false;
+              const feeStudentIdAsString = String(fee.student.id);
+              return studentIdsFromGuardians.includes(feeStudentIdAsString);
+            });
             
-            try {
-              const { data: rpcResult, error: rpcError } = await supabase.rpc(
-                'get_students_by_guardian_ids', 
-                { guardian_ids: filters.guardians }
-              );
-              
-              if (!rpcError && rpcResult && rpcResult.length > 0) {
-                guardianStudents = rpcResult;
-                guardianStudentsError = null;
-                console.log("RPC method successful:", rpcResult.length);
-              } else {
-                console.error("RPC method failed:", rpcError);
-              }
-            } catch (rpcTryError) {
-              console.error("RPC may not exist:", rpcTryError);
-            }
-          }
-          
-          if (guardianStudents && guardianStudents.length > 0) {
-            // Extract the student IDs from the result
-            const studentIds = guardianStudents.map(gs => gs.student_id);
-            console.log(`Found ${studentIds.length} students related to selected guardians:`, studentIds);
-            
-            if (studentIds.length === 0) {
-              console.warn("No student IDs found despite having guardian_students records");
-              filteredData = [];
-              return;
-            }
-            
-            // IMPORTANT: We'll get the fee records directly from the database with these student IDs
-            // This ensures we're getting fresh data directly matched on the student_id field
-            const { data: studentFees, error: feesError } = await supabase
-              .from('fee')
-              .select(`
-                *,
-                student:students (
-                  id,
-                  first_name,
-                  apellido_paterno,
-                  apellido_materno,
-                  whole_name,
-                  run,
-                  curso,
-                  cursos:curso (
-                    id,
-                    nom_curso,
-                    nivel
-                  )
-                )
-              `)
-              .in('student_id', studentIds);
-              
-            if (feesError) {
-              console.error("Error fetching fees for guardian's students:", feesError);
-              throw feesError;
-            }
-            
-            if (!studentFees || studentFees.length === 0) {
-              console.log("No fee records found for the selected guardians' students");
-              filteredData = [];
-            } else {
-              console.log(`Found ${studentFees.length} fee records for students of selected guardians`);
-              filteredData = studentFees;
-              
-              // Re-apply status filter if needed
-              if (filters.status && filters.status !== 'all') {
-                filteredData = filteredData.filter(fee => fee.status === filters.status);
-              }
-              
-              // Re-apply date filters if needed
-              if (filters.month && filters.month !== 'all') {
-                filteredData = filteredData.filter(fee => {
-                  if (!fee.due_date) return false;
-                  const dueDate = new Date(fee.due_date);
-                  const month = (dueDate.getMonth() + 1).toString();
-                  return month === filters.month;
-                });
-              }
-              
-              if (filters.year && filters.year !== 'all') {
-                filteredData = filteredData.filter(fee => {
-                  if (!fee.due_date) return false;
-                  const dueDate = new Date(fee.due_date);
-                  const year = dueDate.getFullYear().toString();
-                  return year === filters.year;
-                });
-              }
-            }
+            console.log(`After guardian filtering: ${filteredData.length} records remain`);
           } else {
             // No students found for these guardians - empty result
             console.log('No students found for selected guardians');
@@ -392,13 +390,49 @@ export function ReportingPage() {
     try {
       setExporting(true);
       
-      // Filter out data with missing required fields
-      const validData = data.filter(item => 
+      // Ensure we have data - if no data returned from filters but filters are active, 
+      // let's show a specific message
+      if (filters.students?.length > 0 && data.length === 0) {
+        toast.error('No se encontraron aranceles para el estudiante seleccionado');
+        setExporting(false);
+        return;
+      }
+      
+      // Apply all active filters to data
+      const filteredData = getFilteredData(data);
+      
+      console.log('Export preparation:', {
+        totalRecords: data.length,
+        filteredRecords: filteredData.length,
+        activeFilters: {
+          students: filters.students,
+          courses: filters.courses,
+          guardians: filters.guardians,
+          status: filters.status
+        }
+      });
+      
+      // Show sample filtered data if available
+      if (filteredData.length > 0) {
+        console.log('Sample filtered record:', {
+          firstRecord: filteredData[0],
+          hasStudent: !!filteredData[0].student,
+          studentId: filteredData[0].student?.id
+        });
+      }
+      
+      // Then filter out data with missing required fields
+      const validData = filteredData.filter(item => 
         item && item.student && 
         (item.student.first_name || item.student.whole_name)
       );
       
       if (validData.length === 0) {
+        console.error('No valid data for export after filtering', {
+          filteredCount: filteredData.length,
+          validCount: 0,
+          studentFilterActive: filters.students.length > 0
+        });
         toast.error('No hay datos válidos para exportar');
         setExporting(false);
         return;
@@ -614,8 +648,19 @@ export function ReportingPage() {
       ...newFilters,
       guardians: Array.isArray(newFilters.guardians) ? [...newFilters.guardians] : [],
       courses: Array.isArray(newFilters.courses) ? [...newFilters.courses] : [],
-      students: Array.isArray(newFilters.students) ? [...newFilters.students] : []
+      students: Array.isArray(newFilters.students) ? 
+        newFilters.students.map(id => String(id)) : [] // Ensure student IDs are strings
     };
+    
+    // Debug student IDs
+    if (safeNewFilters.students.length > 0) {
+      console.log("Student IDs after normalization:", {
+        ids: safeNewFilters.students,
+        types: safeNewFilters.students.map(id => typeof id),
+        firstId: safeNewFilters.students[0],
+        firstIdType: typeof safeNewFilters.students[0]
+      });
+    }
     
     // Update the filters state
     setFilters(safeNewFilters);
@@ -775,7 +820,12 @@ export function ReportingPage() {
               isActive={activeTab === 'payments'}
               onClick={() => setActiveTab('payments')}
             >
-              Aranceles
+              Aranceles 
+              {getFilteredData(data).length !== data.length && (
+                <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 py-0.5 px-1.5 rounded-full">
+                  {getFilteredData(data).length}
+                </span>
+              )}
             </TabButton>
             <TabButton
               isActive={activeTab === 'students'}
@@ -800,7 +850,19 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Resumen de Pagos</h2>
               </CardHeader>
               <CardContent>
-                <PaymentsOverview ref={paymentsOverviewRef} data={data} loading={loading} />
+                {filters.students.length > 0 && data.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No se encontraron datos para el estudiante seleccionado.
+                    </p>
+                  </div>
+                ) : (
+                  <PaymentsOverview 
+                    ref={paymentsOverviewRef} 
+                    data={getFilteredData(data)}
+                    loading={loading} 
+                  />
+                )}
               </CardContent>
             </Card>
 
@@ -810,7 +872,19 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Estado de Pagos</h2>
               </CardHeader>
               <CardContent>
-                <PaymentStatusChart ref={paymentStatusRef} data={data} loading={loading} />
+                {filters.students.length > 0 && data.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No se encontraron datos para el estudiante seleccionado.
+                    </p>
+                  </div>
+                ) : (
+                  <PaymentStatusChart 
+                    ref={paymentStatusRef} 
+                    data={getFilteredData(data)}
+                    loading={loading} 
+                  />
+                )}
               </CardContent>
             </Card>
 
@@ -820,19 +894,19 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Métodos de Pago</h2>
               </CardHeader>
               <CardContent>
-                <PaymentMethodsChart 
-                  ref={paymentMethodsRef} 
-                  data={data.filter(payment => 
-                    // Only show data that matches our filters
-                    (!filters.guardians.length || 
-                      payment.student_guardian?.some(sg => filters.guardians.includes(sg.guardian_id))) &&
-                    (!filters.students.length || 
-                      filters.students.includes(payment.student?.id)) &&
-                    (!filters.courses.length ||
-                      filters.courses.includes(payment.student?.curso))
-                  )} 
-                  loading={loading} 
-                />
+                {filters.students.length > 0 && data.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No se encontraron datos para el estudiante seleccionado.
+                    </p>
+                  </div>
+                ) : (
+                  <PaymentMethodsChart 
+                    ref={paymentMethodsRef} 
+                    data={getFilteredData(data)} 
+                    loading={loading} 
+                  />
+                )}
               </CardContent>
             </Card>
 
@@ -841,23 +915,28 @@ export function ReportingPage() {
               <CardHeader className="flex flex-wrap justify-between items-center">
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Detalle de Pagos</h2>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {data.length} {data.length === 1 ? 'registro' : 'registros'} encontrados
+                  {getFilteredData(data).length} {getFilteredData(data).length === 1 ? 'registro' : 'registros'} encontrados
                 </div>
               </CardHeader>
               <CardContent>
-                <PaymentsTable 
-                  data={data.filter(payment => 
-                    // Filter payments based on all active filters
-                    (filters.status === 'all' || payment.status === filters.status) &&
-                    (!filters.guardians.length || 
-                      payment.student_guardian?.some(sg => filters.guardians.includes(sg.guardian_id))) &&
-                    (!filters.students.length || 
-                      filters.students.includes(payment.student?.id)) &&
-                    (!filters.courses.length ||
-                      filters.courses.includes(payment.student?.curso))
-                  )} 
-                  loading={loading} 
-                />
+                {filters.students.length > 0 && data.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No se encontraron aranceles para el estudiante seleccionado.
+                    </p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                      Prueba seleccionando otro estudiante o elimina los filtros.
+                    </p>
+                  </div>
+                ) : (
+                  <PaymentsTable 
+                    data={getFilteredData(data)} 
+                    loading={loading}
+                    filteredCount={getFilteredData(data).length}
+                    totalCount={data.length}
+                    isFiltered={getFilteredData(data).length !== data.length}
+                  />
+                )}
               </CardContent>
             </Card>
           </div>
@@ -870,17 +949,29 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Estudiantes</h2>
               </CardHeader>
               <CardContent>
-                <StudentReportTable 
-                  data={
-                    // If specific students are selected, prioritize them
-                    filters.students.length > 0
-                      ? students
-                          .filter(s => filters.students.includes(s.id))
-                          .map(student => {
-                            // Enrich with the full student data from fees
-                            const feeWithStudent = data.find(fee => fee.student?.id === student.id);
-                            return feeWithStudent?.student || student;
-                          })
+                {filters.students.length > 0 && data.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No se encontraron aranceles para el estudiante seleccionado.
+                    </p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                      El estudiante no tiene aranceles registrados o revisa los filtros aplicados.
+                    </p>
+                  </div>
+                ) : (
+                  <StudentReportTable 
+                    data={
+                      // If specific students are selected, prioritize them
+                      filters.students.length > 0
+                        ? students
+                            .filter(s => filters.students.includes(String(s.id)))
+                            .map(student => {
+                              // Enrich with the full student data from fees
+                              const feeWithStudent = data.find(fee => 
+                                fee.student && String(fee.student.id) === String(student.id)
+                              );
+                              return feeWithStudent?.student || student;
+                            })
                       : // Otherwise, get students from filtered data
                         Array.from(new Set(data.map(item => item.student?.id)))
                           .map(id => {
@@ -888,14 +979,15 @@ export function ReportingPage() {
                             return item?.student;
                           })
                           .filter(Boolean)
-                  } 
-                  loading={loading}
-                  filteredByGuardians={filters.guardians.length > 0}
-                  guardiansSelected={filters.guardians.length > 0 ? 
-                    guardians.filter(g => filters.guardians.includes(g.id)).map(g => g.name).join(", ") : 
-                    null
-                  }
-                />
+                    } 
+                    loading={loading}
+                    filteredByGuardians={filters.guardians.length > 0}
+                    guardiansSelected={filters.guardians.length > 0 ? 
+                      guardians.filter(g => filters.guardians.includes(g.id)).map(g => g.name).join(", ") : 
+                      null
+                    }
+                  />
+                )}
               </CardContent>
             </Card>
           </div>
@@ -908,47 +1000,32 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Apoderados</h2>
               </CardHeader>
               <CardContent>
-                <GuardianReportTable 
-                  data={
-                    // If specific guardians are selected, show only those
-                    filters.guardians.length > 0 
-                      ? guardians.filter(g => filters.guardians.includes(g.id)) 
-                      : // Otherwise, if students are filtered, show their guardians
-                        filters.students.length > 0
-                          ? guardians.filter(g => {
-                              // First get the student IDs from the filtered data
-                              const studentIds = Array.from(
-                                new Set(
-                                  data
-                                    .filter(fee => fee.student)
-                                    .map(fee => fee.student.id)
-                                )
-                              );
-                              
-                              // Then check if this guardian is linked to any of those students
-                              // using the student_guardian relationship
-                              return studentIds.some(studentId => {
-                                const studentGuardian = data.find(fee => 
-                                  fee.student?.id === studentId && 
-                                  fee.student_guardian?.some(sg => sg.guardian_id === g.id)
-                                );
-                                return !!studentGuardian;
-                              });
-                            })
-                          // If no filters, show all guardians with students in the data
-                          : guardians.filter(g => {
-                              return data.some(fee => 
-                                fee.student_guardian?.some(sg => sg.guardian_id === g.id)
-                              );
-                            })
-                  } 
-                  loading={loading} 
-                  filteredByStudents={filters.students.length > 0}
-                  studentsSelected={filters.students.length > 0 ? 
-                    students.filter(s => filters.students.includes(s.id)).map(s => s.name).join(", ") : 
-                    null
-                  }
-                />
+                {filters.students.length > 0 && data.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No se encontraron aranceles para el estudiante seleccionado.
+                    </p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                      El estudiante no tiene aranceles registrados o revisa los filtros aplicados.
+                    </p>
+                  </div>
+                ) : (
+                  <GuardianReportTable 
+                    data={
+                      // If specific guardians are selected, show only those
+                      filters.guardians.length > 0 
+                        ? guardians.filter(g => filters.guardians.includes(g.id))
+                        : // Show all guardians when no specific filters
+                          guardians
+                    } 
+                    loading={loading} 
+                    filteredByStudents={filters.students.length > 0}
+                    studentsSelected={filters.students.length > 0 ? 
+                      students.filter(s => filters.students.includes(String(s.id))).map(s => s.name).join(", ") : 
+                      null
+                    }
+                  />
+                )}
               </CardContent>
             </Card>
           </div>

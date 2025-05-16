@@ -80,9 +80,21 @@ export function ReportFilters({
   );
 
   const handleFilterChange = (key, value) => {
+    console.log(`Filter change: ${key} =`, value);
+    
+    // Special handling for student IDs to ensure they're strings
+    if (key === 'students' && Array.isArray(value)) {
+      value = value.map(id => String(id));
+    }
+    
     const newFilters = { ...localFilters, [key]: value };
     setLocalFilters(newFilters);
     debouncedFiltersChange(newFilters);
+    
+    // If it's students filter, log what was actually set
+    if (key === 'students') {
+      console.log("Updated students filter:", newFilters.students);
+    }
   };
 
   return (
@@ -317,6 +329,10 @@ export function ReportFilters({
               value={localFilters.students || []}
               onChange={(value) => {
                 console.log("Student selection changed to:", value);
+                console.log("Selection data type:", typeof value, Array.isArray(value));
+                if (Array.isArray(value)) {
+                  console.log("First selected ID type:", typeof value[0]);
+                }
                 handleFilterChange('students', value);
               }}
               multiple

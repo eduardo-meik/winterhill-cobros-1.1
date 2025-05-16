@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { TableContainer } from '../../ui/TableContainer';
 import { TableHeader } from '../../ui/TableHeader';
 
-export function PaymentsTable({ data, loading, onViewDetails }) {
+export function PaymentsTable({ data, loading, onViewDetails, filteredCount, totalCount, isFiltered }) {
   const [sortField, setSortField] = useState('due_date');
   const [sortDirection, setSortDirection] = useState('asc');
   
@@ -62,8 +62,7 @@ export function PaymentsTable({ data, loading, onViewDetails }) {
     return 0;
   });
     if (loading) {
-    return (
-      <div className="flex items-center justify-center py-8">
+    return (      <div className="flex items-center justify-center py-8">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
           <p className="text-gray-500 dark:text-gray-400 mt-3">Cargando datos...</p>
@@ -78,8 +77,23 @@ export function PaymentsTable({ data, loading, onViewDetails }) {
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <p className="text-gray-500 dark:text-gray-400 font-medium">No hay pagos para mostrar</p>
-        <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Intenta con diferentes filtros</p>
+        <p className="text-gray-500 dark:text-gray-400 font-medium">
+          {isFiltered 
+            ? "No hay resultados con los filtros aplicados" 
+            : "No hay pagos para mostrar"}
+        </p>
+        <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
+          {isFiltered 
+            ? "Prueba con otros criterios de filtrado" 
+            : "Intenta con diferentes filtros"}
+        </p>
+        {isFiltered && totalCount > 0 && (
+          <div className="mt-3 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-md">
+            <p className="text-blue-700 dark:text-blue-300 text-sm">
+              Se han filtrado {totalCount - filteredCount} de {totalCount} registros
+            </p>
+          </div>
+        )}
       </div>
     );
   }

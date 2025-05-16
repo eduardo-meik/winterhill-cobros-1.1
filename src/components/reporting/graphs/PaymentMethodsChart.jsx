@@ -22,8 +22,10 @@ export const PaymentMethodsChart = forwardRef(({ data, loading }, ref) => {
     if (!loading && data && data.length > 0) {
       const processedData = processPaymentMethods(data);
       setChartData(processedData);
+      console.log("Processed payment methods data:", processedData);
     } else {
       setChartData([]);
+      console.log("No data to process for payment methods chart");
     }
   }, [data, loading]);
 
