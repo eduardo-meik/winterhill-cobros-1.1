@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { StudentDetailsModal } from '../students/StudentDetailsModal'; // Add this import at the top
+import { StudentDetailsModal } from '../students/StudentDetailsModal';
 
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
@@ -22,7 +22,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [isSaving, setIsSaving] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewingStudent, setViewingStudent] = useState(null); // Add state for viewing student
+  const [viewingStudent, setViewingStudent] = useState(null);
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -30,10 +30,10 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   });
 
   useEffect(() => {
-    if (guardian?.id) { // Ensure guardian.id exists before fetching
+    if (guardian?.id) {
       fetchAssociatedStudents();
     }
-  }, [guardian?.id]); // Add guardian.id as a dependency
+  }, [guardian?.id]);
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -48,7 +48,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
         .update({
           first_name: data.first_name,
           last_name: data.last_name,
-          run: data.run, // Add this line to update the RUT
+          run: data.run,
           email: data.email,
           phone: data.phone,
           address: data.address,
@@ -60,7 +60,6 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
       if (error) throw error;
 
-      // Update student associations - first check current associations
       const { data: existingAssociations, error: fetchError } = await supabase
         .from('student_guardian')
         .select('student_id')
@@ -72,7 +71,6 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       const studentIdsToRemove = existingStudentIds.filter(id => !selectedStudentIds.includes(id));
       const studentIdsToAdd = selectedStudentIds.filter(id => !existingStudentIds.includes(id));
       
-      // Remove associations that are no longer needed
       if (studentIdsToRemove.length > 0) {
         const { error: deleteError } = await supabase
           .from('student_guardian')
@@ -86,7 +84,6 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
         }
       }
       
-      // Add new associations
       if (studentIdsToAdd.length > 0) {
         const { error: insertError } = await supabase
           .from('student_guardian')
@@ -100,14 +97,13 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
         if (insertError) {
           console.error('Error adding student associations:', insertError);
           toast.error('Error al añadir algunas asociaciones de estudiantes');
-          // Continue with the update process even if this fails
         }
       }
 
       toast.success('Apoderado actualizado exitosamente');
       setIsEditing(false);
-      fetchAssociatedStudents(); // Refresh the student list
-      onSuccess?.(); // Notify parent component of the update
+      fetchAssociatedStudents();
+      onSuccess?.();
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al actualizar el apoderado');
@@ -146,7 +142,6 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
     try {
       setLoading(true);
       
-      // First, get the student IDs
       const { data: associations, error: associationsError } = await supabase
         .from('student_guardian')
         .select('student_id')
@@ -163,7 +158,6 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
       const studentIds = associations.map(a => a.student_id);
       
-      // Then get the students data
       const { data: students, error: studentsError } = await supabase
         .from('students')
         .select('id, whole_name, first_name, apellido_paterno, apellido_materno, curso')
@@ -171,7 +165,6 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
         
       if (studentsError) throw studentsError;
       
-      // Get curso data in a separate query
       const cursoIds = Array.from(new Set(students.filter(s => s.curso).map(s => s.curso)));
       
       let cursosMap = {};
@@ -183,14 +176,12 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
           
         if (cursosError) throw cursosError;
         
-        // Create a map for easier lookup
         cursosMap = (cursos || []).reduce((map, curso) => {
           map[curso.id] = curso;
           return map;
         }, {});
       }
       
-      // Join the data manually
       const processedStudents = students.map(student => {
         const curso = student.curso ? cursosMap[student.curso] : null;
         return {
@@ -452,7 +443,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                               </p>
                             </div>
                             <button
-                              onClick={() => setViewingStudent(student)} // Open student details modal
+                              onClick={() => setViewingStudent(student)}
                               className="p-2 text-primary hover:text-primary-dark dark:hover:text-primary-light transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                               aria-label="Ver detalles del estudiante"
                             >
@@ -537,7 +528,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
           onClose={() => setViewingStudent(null)}
           onSuccess={() => {
             setViewingStudent(null);
-            fetchAssociatedStudents(); // Refresh students list after editing
+            fetchAssociatedStudents();
           }}
         />
       )}

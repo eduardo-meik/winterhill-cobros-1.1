@@ -3,6 +3,7 @@ import { Dialog } from '@headlessui/react';
 import { format } from 'date-fns';
 import { Card } from '../ui/Card';
 import { StudentFormModal } from './StudentFormModal';
+import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 
@@ -28,6 +29,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
   const [isEditing, setIsEditing] = useState(false);
   const [guardians, setGuardians] = useState([]);
   const [loadingGuardians, setLoadingGuardians] = useState(true);
+  const [viewingGuardian, setViewingGuardian] = useState(null); // NEW
 
   // Fetch guardian data when component mounts
   useEffect(() => {
@@ -218,6 +220,26 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                             Email: {guardian.email || 'No especificado'}
                           </p>
                         </div>
+                        <button
+                          onClick={() => setViewingGuardian(guardian)}
+                          className="p-2 text-primary hover:text-primary-dark dark:hover:text-primary-light transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                          aria-label="Ver detalles del apoderado"
+                        >
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="20" 
+                            height="20" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                          >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -247,6 +269,16 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
           </Card>
         </Dialog.Panel>
       </div>
+      {viewingGuardian && (
+        <GuardianDetailsModal
+          guardian={viewingGuardian}
+          onClose={() => setViewingGuardian(null)}
+          onSuccess={() => {
+            setViewingGuardian(null);
+            fetchGuardians();
+          }}
+        />
+      )}
     </Dialog>
   );
 }

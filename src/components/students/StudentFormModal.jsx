@@ -5,6 +5,7 @@ import { Card } from '../ui/Card';
 import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { GuardianMultiSelect } from './GuardianMultiSelect';
 
 const defaultValues = {
   whole_name: '',
@@ -45,6 +46,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
   });
 
   const [cursos, setCursos] = useState([]);
+  const [selectedGuardianIds, setSelectedGuardianIds] = useState([]);
 
   useEffect(() => {
     const fetchCursos = async () => {
@@ -400,6 +402,16 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     type="text"
                     {...register('comuna')}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Apoderados Asociados (Opcional)
+                  </label>
+                  <GuardianMultiSelect
+                    selectedIds={selectedGuardianIds}
+                    onChange={setSelectedGuardianIds}
                   />
                 </div>
               </div>
