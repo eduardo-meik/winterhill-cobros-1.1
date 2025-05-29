@@ -18,82 +18,107 @@ const initialDefaultValues = {
   relationship_type: '',
 };
 
-export function GuardianFormModal({ isOpen, onClose, onSuccess }) {
+export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null }) { // Add guardian prop
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    defaultValues: initialDefaultValues
+    defaultValues: guardian ? guardian : initialDefaultValues // Use guardian data if editing
   });
+
+  useEffect(() => { // Reset form when guardian data changes (e.g., when opening modal for different guardians)
+    if (guardian) {
+      reset(guardian);
+    } else {
+      reset(initialDefaultValues);
+    }
+  }, [guardian, reset]);
 
   const onSubmit = async (data) => {
     try {
       setIsSaving(true);
       
-      // Check if RUN already exists using maybeSingle() instead of single()
-      const { data: existingGuardian, error: checkError } = await supabase
-        .from('guardians')
-        .select('*')
-        .eq('run', data.run)
-        .maybeSingle();
+      // Check if RUN already exists only if it's a new guardian or if the RUN has changed
+      if (!guardian || (guardian && guardian.run !== data.run)) {
+        const { data: existingGuardian, error: checkError } = await supabase
+          .from('guardians')
+          .select('id') // Only select id, no need for full data
+          .eq('run', data.run)
+          .maybeSingle();
 
-      if (checkError) {
-        console.error('Error checking for existing guardian:', checkError);
-        toast.error('Error al verificar el RUN');
-        return;
-      }
+        if (checkError) {
+          console.error('Error checking for existing guardian:', checkError);
+          toast.error('Error al verificar el RUN');
+          setIsSaving(false); // Ensure saving state is reset
+          return;
+        }
 
-      if (existingGuardian) {
-        toast.error('Ya existe un apoderado con este RUN');
-        return;
-      }
-
-      // Create new guardian
-      const { data: newGuardian, error: insertError } = await supabase
-        .from('guardians')
-        .insert([{
-          ...data,
-          owner_id: (await supabase.auth.getUser()).data.user.id,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }])
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error('Error creating guardian:', insertError);
-        throw insertError;
-      }
-
-      // If there are selected students, create the associations
-      if (selectedStudentIds.length > 0) {
-        const { error: associationError } = await supabase
-          .from('student_guardian')
-          .insert(
-            selectedStudentIds.map(studentId => ({
-              student_id: studentId,
-              guardian_id: newGuardian.id
-            }))
-          );
-
-        if (associationError) {
-          console.error('Error creating student associations:', associationError);
-          toast.error('Apoderado creado pero hubo un error al asociar estudiantes');
-          onSuccess?.();
-          reset();
-          onClose();
+        if (existingGuardian) {
+          toast.error('Ya existe un apoderado con este RUN');
+          setIsSaving(false); // Ensure saving state is reset
           return;
         }
       }
 
-      toast.success('Apoderado registrado exitosamente');
+      if (guardian) { // If guardian exists, update it
+        const { error: updateError } = await supabase
+          .from('guardians')
+          .update({
+            ...data,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', guardian.id);
+        
+        if (updateError) {
+          console.error('Error updating guardian:', updateError);
+          throw updateError;
+        }
+        toast.success('Apoderado actualizado exitosamente');
+
+      } else { // Otherwise, create a new guardian
+        const { data: newGuardian, error: insertError } = await supabase
+          .from('guardians')
+          .insert([{
+            ...data,
+            owner_id: (await supabase.auth.getUser()).data.user.id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }])
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Error creating guardian:', insertError);
+          throw insertError;
+        }
+
+        // If there are selected students, create the associations
+        if (selectedStudentIds.length > 0 && newGuardian) {
+          const { error: associationError } = await supabase
+            .from('student_guardian')
+            .insert(
+              selectedStudentIds.map(studentId => ({
+                student_id: studentId,
+                guardian_id: newGuardian.id
+              }))
+            );
+
+          if (associationError) {
+            console.error('Error creating student associations:', associationError);
+            toast.error('Apoderado creado pero hubo un error al asociar estudiantes');
+            // Do not return early, allow success callback and modal close
+          }
+        }
+        toast.success('Apoderado registrado exitosamente');
+      }
+
       onSuccess?.();
-      reset();
+      reset(); // Reset form after successful submission
       onClose();
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Error al registrar el apoderado');
+      toast.error(guardian ? 'Error al actualizar el apoderado' : 'Error al registrar el apoderado');
     } finally {
       setIsSaving(false);
     }
@@ -112,7 +137,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess }) {
           <Card className="flex flex-col flex-1 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800 shrink-0">
               <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
-                Registrar Apoderado
+                {guardian ? 'Editar Apoderado' : 'Registrar Apoderado'} {/* Change title based on mode*/}
               </Dialog.Title>
               <button
                 onClick={onClose}
@@ -174,13 +199,14 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess }) {
                       <input
                         type="text"
                         {...register('run', { 
-                          required: 'Este campo es requerido',
-                          pattern: {
+                          required: !guardian ? 'Este campo es requerido' : false, // RUT is required only for new guardians
+                          pattern: !guardian ? { // Apply pattern only for new guardians
                             value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
                             message: 'Formato de RUT inválido'
-                          }
+                          } : undefined
                         })}
                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        disabled={!!guardian} // Disable RUN field if editing an existing guardian
                       />
                       {errors.run && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
@@ -294,7 +320,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess }) {
                 disabled={isSaving}
                 className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors disabled:opacity-50"
               >
-                {isSaving ? 'Guardando...' : 'Registrar Apoderado'}
+                {isSaving ? 'Guardando...' : guardian ? 'Guardar Cambios' : 'Registrar Apoderado'} {/* Change button text based on mode*/}
               </button>
             </div>
           </Card>

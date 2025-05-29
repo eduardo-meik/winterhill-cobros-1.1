@@ -42,11 +42,32 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     formState: { errors, isSubmitting },
     reset
   } = useForm({
-    defaultValues: defaultValuesWithCourse
+    // defaultValues: defaultValuesWithCourse // We'll handle this with useEffect
   });
 
   const [cursos, setCursos] = useState([]);
   const [selectedGuardianIds, setSelectedGuardianIds] = useState([]);
+
+  // Effect to reset form when student data changes or modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      if (student) {
+        const studentDataForForm = {
+          ...student,
+          date_of_birth: student.date_of_birth ? format(new Date(student.date_of_birth), 'yyyy-MM-dd') : defaultValues.date_of_birth,
+          fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : defaultValues.fecha_matricula,
+          fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : defaultValues.fecha_incorporacion,
+          // Ensure 'curso' is an ID for the form's select input
+          // If student.curso is an object like {id: val, ...}, use student.curso.id
+          // Otherwise, use student.curso directly (it might already be an ID or null/undefined)
+          curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
+        };
+        reset(studentDataForForm);
+      } else {
+        reset(defaultValues);
+      }
+    }
+  }, [isOpen, student, reset]); // defaultValues is stable, no need to add to deps if defined outside component
 
   useEffect(() => {
     const fetchCursos = async () => {
@@ -234,14 +255,14 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                   <input
                     type="text"
                     {...register('run', { 
-                      required: 'Este campo es requerido',
-                      pattern: {
+                      required: !student ? 'Este campo es requerido' : false,
+                      pattern: !student ? {
                         value: /^\d{7,8}-[\dkK]$/,
                         message: 'RUN inválido (ej: 12345678-9)'
-                      }
+                      } : undefined
                     })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    disabled={student && true}
+                    disabled={!!student} // Ensures field is disabled if student exists
                   />
                   {errors.run && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>

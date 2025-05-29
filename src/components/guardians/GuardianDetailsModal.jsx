@@ -8,13 +8,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { StudentDetailsModal } from '../students/StudentDetailsModal';
 
-const DetailItem = ({ label, value }) => (
-  <div className="space-y-1">
-    <dt className="text-sm text-gray-500 dark:text-gray-400">{label}</dt>
-    <dd className="text-sm font-medium text-gray-900 dark:text-white">{value}</dd>
-  </div>
-);
-
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [associatedStudents, setAssociatedStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +16,9 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewingStudent, setViewingStudent] = useState(null);
+  const [editingFieldKey, setEditingFieldKey] = useState(null); // null | 'run' | 'email' | etc.
+  const [fieldEditValue, setFieldEditValue] = useState('');
+  const [isSavingField, setIsSavingField] = useState(false);
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -199,6 +195,151 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFieldEditClick = (fieldKey, currentValue) => {
+    setEditingFieldKey(fieldKey);
+    setFieldEditValue(currentValue || '');
+    // If the main form is in edit mode, cancel it to avoid conflicts
+    if (isEditing) {
+      setIsEditing(false);
+    }
+  };
+
+  const handleFieldCancel = () => {
+    setEditingFieldKey(null);
+    setFieldEditValue('');
+  };
+
+  const handleFieldSave = async (fieldKey) => {
+    // Basic validation for empty required fields during inline edit
+    const requiredFields = ['run', 'email', 'phone', 'relationship_type'];
+    if (requiredFields.includes(fieldKey) && !fieldEditValue.trim()) {
+      toast.error(`El campo ${label.toLowerCase()} es requerido.`);
+      return;
+    }
+    if (fieldKey === 'run' && !/^(\\d{1,3}(?:\\.\\d{3})*)-?([\\dkK])$/.test(fieldEditValue)) {
+      toast.error('Formato de RUT inválido');
+      return;
+    }
+    if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i.test(fieldEditValue)) {
+      toast.error('Email inválido');
+      return;
+    }
+    if (fieldKey === 'phone' && !/^[0-9+\\-\\s()]+$/.test(fieldEditValue)) {
+        toast.error('Formato de teléfono inválido');
+        return;
+    }
+
+
+    // Prevent saving if value hasn't changed
+    if (fieldEditValue === (guardian[fieldKey] || '')) {
+      handleFieldCancel();
+      return;
+    }
+
+    setIsSavingField(true);
+    try {
+      const updateData = { [fieldKey]: fieldEditValue };
+      
+      const { error } = await supabase
+        .from('guardians')
+        .update(updateData)
+        .eq('id', guardian.id);
+
+      if (error) throw error;
+
+      toast.success(`${fieldKey.replace(/_/g, ' ')} actualizado exitosamente.`);
+      onSuccess?.(); 
+      handleFieldCancel();
+    } catch (error) {
+      console.error(`Error updating ${fieldKey}:`, error);
+      toast.error(`Error al actualizar ${fieldKey.replace(/_/g, ' ')}.`);
+    } finally {
+      setIsSavingField(false);
+    }
+  };
+  
+  const renderDetailItem = (label, fieldKey, value, inputType = 'text', options = []) => {
+    const isCurrentlyEditingThisField = editingFieldKey === fieldKey;
+
+    if (isCurrentlyEditingThisField) {
+      return (
+        <div className="space-y-1 col-span-2 sm:col-span-1">
+          <label htmlFor={fieldKey} className="text-sm text-gray-500 dark:text-gray-400 block mb-1">{label}</label>
+          <div className="flex items-center gap-2">
+            {inputType === 'select' ? (
+              <select
+                id={fieldKey}
+                value={fieldEditValue}
+                onChange={(e) => setFieldEditValue(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-md border border-primary dark:border-primary bg-white dark:bg-dark-input text-gray-900 dark:text-white focus:ring-1 focus:ring-primary"
+              >
+                {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+              </select>
+            ) : (
+              <input
+                id={fieldKey}
+                type={inputType}
+                value={fieldEditValue}
+                onChange={(e) => setFieldEditValue(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-md border border-primary dark:border-primary bg-white dark:bg-dark-input text-gray-900 dark:text-white focus:ring-1 focus:ring-primary"
+                autoFocus
+              />
+            )}
+            <button onClick={() => handleFieldSave(fieldKey)} disabled={isSavingField} className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50">
+              {isSavingField ? 
+                <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                :
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              }
+            </button>
+            <button onClick={handleFieldCancel} disabled={isSavingField} className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-1 col-span-2 sm:col-span-1 group">
+        <dt className="text-sm text-gray-500 dark:text-gray-400">{label}</dt>
+        <dd className="text-sm font-medium text-gray-900 dark:text-white flex items-center justify-between">
+          <span>{value || 'No especificado'}</span>
+          {!isEditing && ( // Show pencil only if not in full edit mode AND no other field is being inline-edited
+            <button
+              onClick={() => handleFieldEditClick(fieldKey, value)}
+              disabled={editingFieldKey !== null && editingFieldKey !== fieldKey} // Disable if another field is being edited
+              className="p-1 text-gray-400 hover:text-primary opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label={`Editar ${label}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+            </button>
+          )}
+        </dd>
+      </div>
+    );
+  };
+
+  const enhancedOnClose = () => {
+    handleFieldCancel(); 
+    onClose();
+  };
+
+  const handleMainEditClick = () => {
+    handleFieldCancel(); 
+    reset(guardian); // Reset form with current guardian data
+    setIsEditing(true);
+  };
+  
+  const handleMainCancelClick = () => {
+    handleFieldCancel();
+    setIsEditing(false);
+    reset(guardian); // Reset form state if any changes were made and not saved
   };
 
   if (!guardian) return null;
@@ -392,31 +533,18 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 </form>
               ) : (
                 <>
-                  <div className="grid grid-cols-2 gap-6">
-                    <DetailItem 
-                      label="RUT" 
-                      value={guardian.run || 'No especificado'}
-                    />
-                    <DetailItem 
-                      label="Email" 
-                      value={guardian.email || 'No especificado'}
-                    />
-                    <DetailItem 
-                      label="Teléfono" 
-                      value={guardian.phone || 'No especificado'}
-                    />
-                    <DetailItem 
-                      label="Dirección" 
-                      value={guardian.address || 'No especificada'}
-                    />
-                    <DetailItem 
-                      label="Comuna" 
-                      value={guardian.comuna || 'No especificada'}
-                    />
-                    <DetailItem 
-                      label="Tipo de Relación" 
-                      value={guardian.relationship_type || 'No especificado'}
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {renderDetailItem('RUT', 'run', guardian.run, 'text')}
+                    {renderDetailItem('Email', 'email', guardian.email, 'email')}
+                    {renderDetailItem('Teléfono', 'phone', guardian.phone, 'tel')}
+                    {renderDetailItem('Dirección', 'address', guardian.address, 'text')}
+                    {renderDetailItem('Comuna', 'comuna', guardian.comuna, 'text')}
+                    {renderDetailItem('Tipo de Relación', 'relationship_type', guardian.relationship_type, 'select', [
+                      { value: '', label: 'Seleccionar tipo' },
+                      { value: 'PADRE', label: 'PADRE' },
+                      { value: 'MADRE', label: 'MADRE' },
+                      { value: 'TUTOR', label: 'TUTOR' },
+                    ])}
                   </div>
                   {/* Associated Students Section */}
                   <div className="mt-8">
@@ -479,7 +607,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 <>
                   <button
                     type="button"
-                    onClick={handleCancel}
+                    onClick={handleMainCancelClick} // Use new handler
                     className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors"
                   >
                     Cancelar
@@ -497,20 +625,22 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 <>
                   <button
                     onClick={handleDelete} 
-                    disabled={isDeleting}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                    disabled={isDeleting || editingFieldKey !== null} // Disable if inline editing
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isDeleting ? 'Eliminando...' : 'Eliminar'}
                   </button>
                   <button
-                    onClick={onClose}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                    onClick={enhancedOnClose} // Use new handler
+                    disabled={editingFieldKey !== null} // Disable if inline editing
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cerrar
                   </button>
                   <button
-                    onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
+                    onClick={handleMainEditClick} // Use new handler
+                    disabled={editingFieldKey !== null} // Disable if inline editing
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Editar Apoderado
                   </button>
@@ -525,10 +655,14 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       {viewingStudent && (
         <StudentDetailsModal 
           student={viewingStudent}
-          onClose={() => setViewingStudent(null)}
+          onClose={() => {
+            handleFieldCancel(); // Cancel inline edit if user opens another modal
+            setViewingStudent(null);
+          }}
           onSuccess={() => {
             setViewingStudent(null);
-            fetchAssociatedStudents();
+            fetchAssociatedStudents(); // Refresh student list
+            onSuccess(); // Propagate success to refresh guardian if student change affects it
           }}
         />
       )}
