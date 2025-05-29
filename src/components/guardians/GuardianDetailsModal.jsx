@@ -520,6 +520,25 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                       )}
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Tipo de Apoderado *
+                      </label>
+                      <select
+                        {...register('tipo_apoderado', { required: 'Este campo es requerido' })}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      >
+                        <option value="">Seleccionar tipo</option>
+                        <option value="ECONOMICO">ECONOMICO</option>
+                        <option value="PEDAGOGICO">PEDAGOGICO</option>
+                        <option value="AMBOS">AMBOS</option>
+                        <option value="RESPONSABLE">RESPONSABLE</option>
+                      </select>
+                      {errors.tipo_apoderado && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.tipo_apoderado.message}</p>
+                      )}
+                    </div>
+
                     <div className="col-span-2">
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Estudiantes Asociados
@@ -532,72 +551,26 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                   </div>
                 </form>
               ) : (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {renderDetailItem('RUT', 'run', guardian.run, 'text')}
-                    {renderDetailItem('Email', 'email', guardian.email, 'email')}
-                    {renderDetailItem('Teléfono', 'phone', guardian.phone, 'tel')}
-                    {renderDetailItem('Dirección', 'address', guardian.address, 'text')}
-                    {renderDetailItem('Comuna', 'comuna', guardian.comuna, 'text')}
-                    {renderDetailItem('Tipo de Relación', 'relationship_type', guardian.relationship_type, 'select', [
-                      { value: '', label: 'Seleccionar tipo' },
-                      { value: 'PADRE', label: 'PADRE' },
-                      { value: 'MADRE', label: 'MADRE' },
-                      { value: 'TUTOR', label: 'TUTOR' },
-                    ])}
-                  </div>
-                  {/* Associated Students Section */}
-                  <div className="mt-8">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                      Estudiantes Asociados
-                    </h3>
-                    {loading ? (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
-                      </div>
-                    ) : associatedStudents.length > 0 ? (
-                      <div className="space-y-3">
-                        {associatedStudents.map((student) => (
-                          <div
-                            key={student.id}
-                            className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-dark-hover"
-                          >
-                            <div>
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {student.whole_name}
-                              </p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {student.nom_curso}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => setViewingStudent(student)}
-                              className="p-2 text-primary hover:text-primary-dark dark:hover:text-primary-light transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                              aria-label="Ver detalles del estudiante"
-                            >
-                              <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                width="20" 
-                                height="20" 
-                                viewBox="0 0 24 24" 
-                                fill="none" 
-                                stroke="currentColor" 
-                                strokeWidth="2" 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round"
-                              >
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">No hay estudiantes asociados.</p>
-                    )}
-                  </div>
-                </>
+                <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  {renderDetailItem('RUT', 'run', guardian.run)}
+                  {renderDetailItem('Email', 'email', guardian.email, 'email')}
+                  {renderDetailItem('Teléfono', 'phone', guardian.phone, 'tel')}
+                  {renderDetailItem('Dirección', 'address', guardian.address)}
+                  {renderDetailItem('Comuna', 'comuna', guardian.comuna)}
+                  {renderDetailItem('Tipo de Relación', 'relationship_type', guardian.relationship_type, 'select', [
+                    { value: '', label: 'Seleccionar tipo' },
+                    { value: 'PADRE', label: 'PADRE' },
+                    { value: 'MADRE', label: 'MADRE' },
+                    { value: 'TUTOR', label: 'TUTOR' },
+                  ])}
+                  {renderDetailItem('Tipo de Apoderado', 'tipo_apoderado', guardian.tipo_apoderado, 'select', [
+                    { value: '', label: 'Seleccionar tipo' },
+                    { value: 'ECONOMICO', label: 'ECONOMICO' },
+                    { value: 'PEDAGOGICO', label: 'PEDAGOGICO' },
+                    { value: 'AMBOS', label: 'AMBOS' }, // Assuming AMBOS is a possible value
+                    { value: 'RESPONSABLE', label: 'RESPONSABLE' },
+                  ])}
+                </dl>
               )}
             </div>
 

@@ -337,6 +337,12 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                           <p className="text-sm text-gray-500 dark:text-gray-400">
                             Email: {guardian.email || 'No especificado'}
                           </p>
+                          {/* Display tipo_apoderado if it exists */}
+                          {guardian.tipo_apoderado && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              Tipo Apoderado: {guardian.tipo_apoderado}
+                            </p>
+                          )}
                         </div>
                         <button
                           onClick={() => setViewingGuardian(guardian)}
