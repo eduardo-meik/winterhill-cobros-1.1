@@ -136,9 +136,9 @@ export function GuardiansPage() {
                   aria-label="Filtrar por tipo de relación"
                 >
                   <option value="all">Todos los Tipos</option>
-                  <option value="Padre">Padre</option>
-                  <option value="Madre">Madre</option>
-                  <option value="Tutor">Tutor</option>
+                  <option value="PADRE">Padre</option>
+                  <option value="MADRE">Madre</option>
+                  <option value="TUTOR">Tutor</option>
                 </select>
               </div>
             </CardHeader>

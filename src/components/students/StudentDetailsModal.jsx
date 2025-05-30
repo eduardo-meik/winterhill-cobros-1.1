@@ -38,30 +38,40 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
     try {
       setLoadingGuardians(true);
       
-      // First, get the guardian IDs
+      // First, get the guardian IDs and their roles for this student
       const { data: associations, error: associationsError } = await supabase
         .from('student_guardian')
-        .select('guardian_id')
+        .select('guardian_id, guardian_role') // Fetch guardian_role
         .eq('student_id', student.id);
 
       if (associationsError) throw associationsError;
       
       if (!associations || associations.length === 0) {
         setGuardians([]);
+        setLoadingGuardians(false); // Ensure loading is stopped
         return;
       }
 
       const guardianIds = associations.map(a => a.guardian_id);
       
-      // Then get the guardians data
+      // Then get the full guardians data
       const { data: guardiansData, error: guardiansError } = await supabase
         .from('guardians')
-        .select('*')
+        .select('*') // Fetches all columns from guardians table (including tipo_apoderado)
         .in('id', guardianIds);
         
       if (guardiansError) throw guardiansError;
       
-      setGuardians(guardiansData || []);
+      // Combine guardian data with their specific roles for this student
+      const combinedGuardians = guardiansData.map(g => {
+        const association = associations.find(assoc => assoc.guardian_id === g.id);
+        return {
+          ...g,
+          guardian_role: association ? (association.guardian_role || 'No asignado') : 'No asignado'
+        };
+      }).filter(Boolean); // Ensure no null/undefined entries if guardiansData is sparse
+      
+      setGuardians(combinedGuardians || []);
     } catch (error) {
       console.error('Error fetching guardians:', error);
       toast.error('Error al cargar los apoderados asociados');
@@ -337,10 +347,10 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                           <p className="text-sm text-gray-500 dark:text-gray-400">
                             Email: {guardian.email || 'No especificado'}
                           </p>
-                          {/* Display tipo_apoderado if it exists */}
-                          {guardian.tipo_apoderado && (
+                          {/* Display guardian_role specific to this student-guardian relationship */}
+                          {guardian.guardian_role && guardian.guardian_role !== 'No asignado' && (
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Tipo Apoderado: {guardian.tipo_apoderado}
+                              Rol para este estudiante: <span className="font-semibold">{guardian.guardian_role}</span>
                             </p>
                           )}
                         </div>

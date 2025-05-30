@@ -46,7 +46,8 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
   });
 
   const [cursos, setCursos] = useState([]);
-  const [selectedGuardianIds, setSelectedGuardianIds] = useState([]);
+  // const [selectedGuardianIds, setSelectedGuardianIds] = useState([]); // Old state
+  const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]); // New state for { guardian_id, guardian_role }
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -63,11 +64,28 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
           curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
         };
         reset(studentDataForForm);
+        // Fetch existing guardian associations for this student
+        fetchStudentGuardianAssociations(student.id);
       } else {
         reset(defaultValues);
+        setSelectedGuardiansInfo([]); // Clear for new student
       }
     }
-  }, [isOpen, student, reset]); // defaultValues is stable, no need to add to deps if defined outside component
+  }, [isOpen, student, reset]);
+
+  const fetchStudentGuardianAssociations = async (studentId) => {
+    try {
+      const { data, error } = await supabase
+        .from('student_guardian')
+        .select('guardian_id, guardian_role')
+        .eq('student_id', studentId);
+      if (error) throw error;
+      setSelectedGuardiansInfo(data || []);
+    } catch (error) {
+      console.error('Error fetching student-guardian associations:', error);
+      toast.error('Error al cargar apoderados asociados.');
+    }
+  };
 
   useEffect(() => {
     const fetchCursos = async () => {
@@ -87,18 +105,18 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     fetchCursos();
   }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => { // Renamed data to formData for clarity
     try {
       // Verificar si ya existe un estudiante con este RUN (solo para nuevos estudiantes)
       if (!student) { // Solo verificar para nuevos estudiantes, no para actualizaciones
         const { data: existingStudents, error: checkError } = await supabase
           .from('students')
           .select('id, whole_name')
-          .eq('run', data.run);
+          .eq('run', formData.run);
       
         // Si hay resultados (length > 0), significa que el RUN ya existe
         if (existingStudents && existingStudents.length > 0) {
-          toast.error(`Ya existe un estudiante con el RUN ${data.run}`);
+          toast.error(`Ya existe un estudiante con el RUN ${formData.run}`);
           return; // Detener la ejecución para evitar el intento de inserción
         }
       }
@@ -107,8 +125,8 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       let first_name = '';
       let apellido_paterno = '';
       let apellido_materno = '';
-      if (data.whole_name) {
-        const nameParts = data.whole_name.trim().split(' ');
+      if (formData.whole_name) {
+        const nameParts = formData.whole_name.trim().split(' ');
         if (nameParts.length > 0) first_name = nameParts[0];
         if (nameParts.length > 1) apellido_paterno = nameParts[1];
         if (nameParts.length > 2) apellido_materno = nameParts.slice(2).join(' ');
@@ -123,7 +141,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
 
       // --- Inicio de la corrección ---
       // Crear una copia de los datos para modificarla
-      const dataToSend = { ...data };
+      const dataToSend = { ...formData };
       // Eliminar explícitamente la clave 'cursos' si existe.
       // Esta clave viene de la consulta con relación y no debe enviarse al guardar/actualizar.
       delete dataToSend.cursos;
@@ -140,7 +158,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       const genero = dataToSend.genero || null;
 
       // Crea un nuevo objeto con solo los campos necesarios para la BD usando dataToSend
-      const formattedData = {
+      const formattedStudentData = {
         whole_name: dataToSend.whole_name,
         first_name,
         apellido_paterno,
@@ -160,37 +178,99 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
         direccion: dataToSend.direccion || null,
         comuna: dataToSend.comuna || null,
         con_quien_vive: dataToSend.con_quien_vive || null,
-        // La columna en la BD es 'curso' (no 'cursos')
-        curso: dataToSend.curso // Usar el valor de dataToSend
+        curso: dataToSend.curso
       };
+
+      let studentIdToUpdate = student?.id;
 
       if (student) {
         // Actualizar estudiante
         const { error } = await supabase
           .from('students')
           .update({
-            ...formattedData,
+            ...formattedStudentData,
             updated_at: new Date().toISOString()
           })
           .eq('id', student.id);
-
         if (error) throw error;
         toast.success('Estudiante actualizado exitosamente');
       } else {
         // Insertar nuevo estudiante
-        const { error } = await supabase
+        const { data: newStudentData, error } = await supabase
           .from('students')
           .insert([{
-            ...formattedData,
+            ...formattedStudentData,
             owner_id: (await supabase.auth.getUser()).data.user.id
-          }]);
+          }])
+          .select('id') // Select the ID of the newly created student
+          .single();
 
         if (error) throw error;
+        if (!newStudentData || !newStudentData.id) {
+          throw new Error('Failed to create student or retrieve ID.');
+        }
+        studentIdToUpdate = newStudentData.id; // Get the ID of the new student
         toast.success('Estudiante registrado exitosamente');
       }
 
+      // --- Update student_guardian associations ---
+      if (studentIdToUpdate) {
+        // Get current associations from DB for this student
+        const { data: currentAssociations, error: fetchAssocError } = await supabase
+          .from('student_guardian')
+          .select('guardian_id, guardian_role')
+          .eq('student_id', studentIdToUpdate);
+
+        if (fetchAssocError) {
+          console.error('Error fetching current associations:', fetchAssocError);
+          toast.error('Error al actualizar asociaciones de apoderados (lectura).');
+          // Decide if you want to proceed or stop
+        }
+
+        const associationsInDb = currentAssociations || [];
+        const associationsFromForm = selectedGuardiansInfo;
+
+        // Associations to add: in form but not in DB, or in both but role changed
+        const toAdd = associationsFromForm.filter(formAssoc => {
+          const dbAssoc = associationsInDb.find(dbA => dbA.guardian_id === formAssoc.guardian_id);
+          return !dbAssoc || dbAssoc.guardian_role !== formAssoc.guardian_role;
+        }).map(assoc => ({ ...assoc, student_id: studentIdToUpdate }));
+
+        // Associations to remove: in DB but not in form
+        const toRemoveIds = associationsInDb
+          .filter(dbAssoc => !associationsFromForm.some(formAssoc => formAssoc.guardian_id === dbAssoc.guardian_id))
+          .map(dbAssoc => dbAssoc.guardian_id);
+
+        if (toRemoveIds.length > 0) {
+          const { error: deleteError } = await supabase
+            .from('student_guardian')
+            .delete()
+            .eq('student_id', studentIdToUpdate)
+            .in('guardian_id', toRemoveIds);
+          if (deleteError) {
+            console.error('Error deleting associations:', deleteError);
+            toast.error('Error al eliminar antiguas asociaciones de apoderados.');
+          }
+        }
+
+        if (toAdd.length > 0) {
+          // For associations that might exist but role changed, we upsert.
+          // For new ones, it will insert.
+          const { error: upsertError } = await supabase
+            .from('student_guardian')
+            .upsert(toAdd, { onConflict: 'student_id,guardian_id' }); // Ensure you have a unique constraint on (student_id, guardian_id)
+          
+          if (upsertError) {
+            console.error('Error upserting associations:', upsertError);
+            toast.error('Error al guardar nuevas/actualizadas asociaciones de apoderados.');
+          }
+        }
+      }
+      // --- End of association update ---
+
       onSuccess?.();
       reset();
+      setSelectedGuardiansInfo([]); // Clear selection after submit
       onClose();
     } catch (error) {
       console.error('Error:', error);
@@ -431,8 +511,8 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     Apoderados Asociados (Opcional)
                   </label>
                   <GuardianMultiSelect
-                    selectedIds={selectedGuardianIds}
-                    onChange={setSelectedGuardianIds}
+                    selectedGuardiansInfo={selectedGuardiansInfo} // Pass the new state
+                    onChange={setSelectedGuardiansInfo} // Update the new state
                   />
                 </div>
               </div>
