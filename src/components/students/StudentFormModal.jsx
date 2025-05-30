@@ -7,11 +7,11 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
 
-const defaultValues = {
+const getFreshDefaultValues = () => ({
   whole_name: '',
   run: '',
   date_of_birth: format(new Date(), 'yyyy-MM-dd'),
-  curso: '', // Cambiado de curso_id a curso para que coincida con la columna de la BD
+  curso: '',
   email: '',
   nivel: '',
   n_inscripcion: '',
@@ -25,29 +25,19 @@ const defaultValues = {
   direccion: '',
   comuna: '',
   con_quien_vive: ''
-};
+});
 
 export function StudentFormModal({ isOpen, onClose, student = null, onSuccess }) {
-  // Preparar los valores por defecto, asegurando que estamos usando 'curso'
-  const defaultValuesWithCourse = student
-    ? {
-        ...student,
-        // No necesitamos mapear curso_id porque ahora usamos curso directamente
-      }
-    : defaultValues;
-
   const { 
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting },
     reset
   } = useForm({
-    // defaultValues: defaultValuesWithCourse // We'll handle this with useEffect
   });
 
   const [cursos, setCursos] = useState([]);
-  // const [selectedGuardianIds, setSelectedGuardianIds] = useState([]); // Old state
-  const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]); // New state for { guardian_id, guardian_role }
+  const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -55,23 +45,19 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       if (student) {
         const studentDataForForm = {
           ...student,
-          date_of_birth: student.date_of_birth ? format(new Date(student.date_of_birth), 'yyyy-MM-dd') : defaultValues.date_of_birth,
-          fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : defaultValues.fecha_matricula,
-          fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : defaultValues.fecha_incorporacion,
-          // Ensure 'curso' is an ID for the form's select input
-          // If student.curso is an object like {id: val, ...}, use student.curso.id
-          // Otherwise, use student.curso directly (it might already be an ID or null/undefined)
+          date_of_birth: student.date_of_birth ? format(new Date(student.date_of_birth), 'yyyy-MM-dd') : '', // Use '' if null
+          fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : '', // Use '' if null
+          fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : '', // Use '' if null
           curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
         };
         reset(studentDataForForm);
-        // Fetch existing guardian associations for this student
         fetchStudentGuardianAssociations(student.id);
       } else {
-        reset(defaultValues);
+        reset(getFreshDefaultValues()); // USE fresh default values for new student
         setSelectedGuardiansInfo([]); // Clear for new student
       }
     }
-  }, [isOpen, student, reset]);
+  }, [isOpen, student, reset]); // Dependencies list
 
   const fetchStudentGuardianAssociations = async (studentId) => {
     try {
