@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
   }
 
   console.log("Password reset email initiated successfully for:", email);
-  return new Response(JSON.stringify({ message: "If an account with this email exists, a password reset link has been sent." }), {
+  return new Response(JSON.stringify({ message: "Desde Gestión Winterhill, te informamos: si una cuenta con este correo electrónico existe, se ha enviado un enlace para restablecer la contraseña." }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     status: 200,
   });

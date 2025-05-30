@@ -19,16 +19,28 @@ export function ResetPasswordPage() {
   const password = watch('password');
 
   useEffect(() => {
-    // Verificar token en la URL
+    // Check for token in URL hash (standard Supabase format)
     const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1));
-    const accessToken = params.get('access_token');
+    let accessToken = null;
+    
+    if (hash) {
+      const params = new URLSearchParams(hash.substring(1));
+      accessToken = params.get('access_token');
+    }
+    
+    // Also check for token in query parameters (backup format)
+    if (!accessToken) {
+      const searchParams = new URLSearchParams(window.location.search);
+      accessToken = searchParams.get('token');
+    }
     
     if (!accessToken) {
-      toast.error('Token inválido o expirado');
+      toast.error('Token inválido o expirado. Por favor, solicita un nuevo enlace de recuperación.');
       navigate('/forgot-password');
     } else {
       setIsValidToken(true);
+      // Clear the URL to remove sensitive token information
+      window.history.replaceState({}, document.title, '/reset-password');
     }
   }, [navigate]);
 
