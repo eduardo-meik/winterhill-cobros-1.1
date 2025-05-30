@@ -29,11 +29,18 @@ export function PaymentsFilters({
   filterOptions = { cursos: [], years: [], cuotas: [] }
 }) {
   const handleFilterChange = (filterName, value) => {
-    onFiltersChange(prev => ({ ...prev, [filterName]: value }));
+    // For date changes, ensure endDate is not before startDate
+    if (filterName === 'startDate' && value && filters.endDate && new Date(value) > new Date(filters.endDate)) {
+      onFiltersChange(prev => ({ ...prev, startDate: value, endDate: value }));
+    } else if (filterName === 'endDate' && value && filters.startDate && new Date(value) < new Date(filters.startDate)) {
+      onFiltersChange(prev => ({ ...prev, startDate: value, endDate: value }));
+    } else {
+      onFiltersChange(prev => ({ ...prev, [filterName]: value }));
+    }
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 p-4 border-b border-gray-200 dark:border-gray-700"> {/* Adjusted xl:grid-cols-6 */}
       {/* Status Filter */}
       <select
         value={filters.status}
@@ -114,6 +121,32 @@ export function PaymentsFilters({
         ))}
       </select>
 
+      {/* Start Date Filter - NEW */}
+      <div>
+        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Inicial</label>
+        <input
+          type="date"
+          id="startDate"
+          value={filters.startDate || ''}
+          onChange={(e) => handleFilterChange('startDate', e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        />
+      </div>
+
+      {/* End Date Filter - NEW */}
+      <div>
+        <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Final</label>
+        <input
+          type="date"
+          id="endDate"
+          value={filters.endDate || ''}
+          onChange={(e) => handleFilterChange('endDate', e.target.value)}
+          min={filters.startDate || ''}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          disabled={!filters.startDate} // Optionally disable if start date is not set
+        />
+      </div>
+      
       {/* Search Input */}
       <input
         type="text"

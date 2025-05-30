@@ -267,7 +267,7 @@ export function PaymentsPage() {
               <Button
                 onClick={() => handleExportExcel(false)}
                 disabled={exporting || filteredPayments.length === 0}
-                variant="secondary"
+                variant="outline" /* Changed from secondary to outline */
                 className="flex items-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
@@ -278,7 +278,7 @@ export function PaymentsPage() {
               <Button
                 onClick={() => handleExportExcel(true)}
                 disabled={exporting || payments.length === 0}
-                variant="secondary"
+                variant="outline" /* Changed from secondary to outline */
                 className="flex items-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
