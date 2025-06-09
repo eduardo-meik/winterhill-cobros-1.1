@@ -75,16 +75,26 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
                 <p className="text-sm text-gray-900 dark:text-white">
                   {student.cursos?.nom_curso || 'Sin asignar'}
                 </p>
-              </td>
-              <td className="py-3 px-4">
+              </td>              <td className="py-3 px-4">
                 <span className={clsx(
-                  'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                  'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase transition-all duration-200 shadow-sm',
                   {
-                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': !student.fecha_retiro,
-                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': student.fecha_retiro
+                    'bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 border border-emerald-200 dark:from-emerald-900/20 dark:to-green-900/20 dark:text-emerald-400 dark:border-emerald-800/30': student.estado_std === 'Activo',
+                    'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200 dark:from-red-900/20 dark:to-rose-900/20 dark:text-red-400 dark:border-red-800/30': student.estado_std === 'Retirado',
+                    'bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border border-amber-200 dark:from-amber-900/20 dark:to-yellow-900/20 dark:text-amber-400 dark:border-amber-800/30': student.estado_std === 'Suspendido',
+                    'bg-gradient-to-r from-gray-50 to-slate-50 text-gray-600 border border-gray-200 dark:from-gray-900/20 dark:to-slate-900/20 dark:text-gray-400 dark:border-gray-700/30': !student.estado_std
                   }
                 )}>
-                  {student.fecha_retiro ? 'Retirado' : 'Activo'}
+                  {student.estado_std === 'Activo' && (
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>
+                  )}
+                  {student.estado_std === 'Retirado' && (
+                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span>
+                  )}
+                  {student.estado_std === 'Suspendido' && (
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5"></span>
+                  )}
+                  {student.estado_std || 'Sin estado'}
                 </span>
               </td>
               <td className="py-3 px-4">

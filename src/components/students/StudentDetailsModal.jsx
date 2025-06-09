@@ -198,7 +198,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
               }
             </button>
             <button onClick={handleFieldCancel} disabled={isSavingField} className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg> // X mark
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg> 
             </button>
           </div>
         </div>
@@ -295,10 +295,12 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {renderDetailItem('Curso', 'curso', student.cursos?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
                 {renderDetailItem('Nombre Social', 'nombre_social', student.nombre_social, 'text')}
-                {renderDetailItem('Estado', 'fecha_retiro', student.fecha_retiro ? 'Retirado' : 'Activo', 'select', [
-                  { value: '', label: 'Activo' }, // Empty value for active
-                  { value: new Date().toISOString().split('T')[0], label: 'Retirado' } // Current date for retired, or handle differently
-                ])} {/* This needs careful handling for 'active' vs 'retired' state based on fecha_retiro */}
+                {renderDetailItem('Estado', 'estado_std', student.estado_std, 'select', [
+                  { value: '', label: 'Seleccionar estado' },
+                  { value: 'Activo', label: 'Activo' },
+                  { value: 'Retirado', label: 'Retirado' },
+                  { value: 'Suspendido', label: 'Suspendido' }
+                ])}
                 {renderDetailItem('Fecha de Matrícula', 'fecha_matricula', student.fecha_matricula, 'date')}
                 {renderDetailItem('Fecha de Incorporación', 'fecha_incorporacion', student.fecha_incorporacion, 'date')}
                 {student.fecha_retiro && renderDetailItem('Fecha de Retiro', 'fecha_retiro', student.fecha_retiro, 'date')}

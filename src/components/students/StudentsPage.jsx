@@ -84,10 +84,9 @@ export function StudentsPage() {
 
     return students.filter(student => {
       const cursoMatch = filters.curso === 'all' ||
-        student.cursos?.nom_curso === filters.curso;
-      const statusMatch = filters.status === 'all' ||
-        (filters.status === 'active' && !student.fecha_retiro) ||
-        (filters.status === 'inactive' && student.fecha_retiro);
+        student.cursos?.nom_curso === filters.curso;      const statusMatch = filters.status === 'all' ||
+        (filters.status === 'Activo' && student.estado_std === 'ACTIVO') ||
+        (filters.status === 'Retirado' && (student.estado_std === 'RETIRADO' || student.estado_std === 'Suspendido' || !student.estado_std));
       const searchMatch = !debouncedSearchTerm ||
         normalizeText(student.whole_name)?.includes(searchNormalized) ||
         normalizeText(student.run)?.includes(searchNormalized);
@@ -181,15 +180,14 @@ export function StudentsPage() {
                   {uniqueCursos.map(curso => (
                     <option key={curso} value={curso}>{curso}</option>
                   ))}
-                </select>
-                <select
+                </select>                <select
                   value={filters.status}
                   onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                   className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="all">Todos los Estados</option>
-                  <option value="active">Activos</option>
-                  <option value="inactive">Retirados</option>
+                  <option value="Activo">Activos</option>
+                  <option value="Retirado">Retirados</option>
                 </select>
                 <select
                   value={filters.convenio}

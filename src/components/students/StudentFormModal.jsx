@@ -20,6 +20,7 @@ const getFreshDefaultValues = () => ({
   genero: '',
   nacionalidad: '',
   fecha_incorporacion: format(new Date(), 'yyyy-MM-dd'),
+  fecha_retiro: '',
   repite_curso_actual: '',
   institucion_procedencia: '',
   direccion: '',
@@ -34,12 +35,11 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     formState: { errors, isSubmitting },
     reset
   } = useForm({
+    defaultValues: getFreshDefaultValues()
   });
 
   const [cursos, setCursos] = useState([]);
-  const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
-
-  // Effect to reset form when student data changes or modal opens/closes
+  const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);  // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
     if (isOpen) {
       if (student) {
@@ -48,8 +48,13 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
           date_of_birth: student.date_of_birth ? format(new Date(student.date_of_birth), 'yyyy-MM-dd') : '', // Use '' if null
           fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : '', // Use '' if null
           fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : '', // Use '' if null
-          curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
+          fecha_retiro: student.fecha_retiro ? format(new Date(student.fecha_retiro), 'yyyy-MM-dd') : '', // Use '' if null
+          // Handle curso field properly - check for multiple possible structures
+          curso: student.cursos?.id || student.curso?.id || student.curso || '',
+          // Ensure nivel field is properly set
+          nivel: student.nivel || '',
         };
+        
         reset(studentDataForForm);
         fetchStudentGuardianAssociations(student.id);
       } else {
@@ -138,10 +143,14 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       if (!dataToSend.curso) {
         toast.error('Debe seleccionar un curso');
         return;
-      }
-
-      // Manejar el campo genero para cumplir con la restricción en la base de datos
+      }      // Manejar el campo genero para cumplir con la restricción en la base de datos
       const genero = dataToSend.genero || null;
+
+      // Determinar el estado del estudiante basado en la fecha de retiro
+      let estado_std = 'Activo'; // Por defecto es Activo
+      if (dataToSend.fecha_retiro) {
+        estado_std = 'Retirado'; // Si hay fecha de retiro, el estado es Retirado
+      }
 
       // Crea un nuevo objeto con solo los campos necesarios para la BD usando dataToSend
       const formattedStudentData = {
@@ -159,6 +168,8 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
         genero,
         nacionalidad: dataToSend.nacionalidad || null,
         fecha_incorporacion: dataToSend.fecha_incorporacion || null,
+        fecha_retiro: dataToSend.fecha_retiro || null,
+        estado_std, // Automatically set based on fecha_retiro
         repite_curso_actual: dataToSend.repite_curso_actual || null,
         institucion_procedencia: dataToSend.institucion_procedencia || null,
         direccion: dataToSend.direccion || null,
@@ -444,9 +455,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     {...register('nacionalidad')}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
-                </div>
-
-                <div>
+                </div>                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Fecha de Incorporación
                   </label>
@@ -457,6 +466,22 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Fecha de Retiro
+                  </label>
+                  <input 
+                    type="date"
+                    {...register('fecha_retiro', {
+                      validate: value => !value || !!value || 'Fecha inválida'
+                    })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Si se ingresa una fecha de retiro, el estado del estudiante cambiará automáticamente a "Retirado"
+                  </p>
                 </div>
 
                 <div>
@@ -479,15 +504,24 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     {...register('direccion')}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
-                </div>
-
-                <div>
+                </div>                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Comuna
                   </label>
                   <input
                     type="text"
                     {...register('comuna')}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Con quién vive
+                  </label>
+                  <input
+                    type="text"
+                    {...register('con_quien_vive')}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
