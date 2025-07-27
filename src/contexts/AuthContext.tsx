@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Session as SupabaseSession, User as SupabaseUser } from '@supabase/supabase-js';
-import { supabase } from '../services/supabase';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase, signInWithGoogle, handleSupabaseError } from '../services/supabase';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Logger from '../services/logger'; 
@@ -182,6 +182,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
   
+  const signInWithGoogleProvider = async () => {
+    setState(prev => ({ ...prev, loading: true }));
+    try {
+      Logger.getInstance().log(LogCode.AUTH_LOGIN_SUCCESS, 'Google OAuth login initiated', undefined, 'signInWithGoogle', { level: 'INFO', area: 'AUTH', provider: 'google' });
+      await signInWithGoogle();
+      // The actual sign-in will be handled by the auth state change listener
+      Logger.getInstance().log(LogCode.AUTH_LOGIN_SUCCESS, 'Google OAuth redirect initiated successfully', undefined, 'signInWithGoogle', { level: 'INFO', area: 'AUTH', provider: 'google' });
+    } catch (error: any) {
+      setState(prev => ({ ...prev, loading: false }));
+      Logger.getInstance().log(LogCode.AUTH_LOGIN_FAILED, `Google OAuth login failed: ${error.message}`, undefined, 'signInWithGoogleCatch', { level: 'ERROR', area: 'AUTH', provider: 'google', error });
+      handleSupabaseError(error);
+      throw error;
+    }
+  };
+
   const updatePassword = async (newPassword: string) => {
     setState(prev => ({ ...prev, loading: true }));
     const userIdForLog = state.user?.id;
@@ -207,7 +222,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, resetPassword, updatePassword }}>
+    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogle: signInWithGoogleProvider }}>
       {children}
     </AuthContext.Provider>
   );

@@ -7,6 +7,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
+import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { MainLayout } from './components/layouts/MainLayout';
 import Dashboard from './components/Dashboard';
 import { StudentsPage } from './components/students/StudentsPage';
@@ -19,14 +20,15 @@ import { SettingsPage } from './components/settings/SettingsPage';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           {/* Rutas públicas */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
           {/* Rutas protegidas */}
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
@@ -41,8 +43,8 @@ export default function App() {
             <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
-      <Toaster position="top-right" />
-      </BrowserRouter>
-    </AuthProvider>
+        <Toaster position="top-right" />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { GoogleAuthButton } from '../../components/auth/GoogleAuthButton';
 
 interface LoginForm {
   email: string;
@@ -135,6 +136,21 @@ export function LoginPage() {
             >
               {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-50 dark:bg-dark-bg text-gray-500 dark:text-gray-400">
+                O continúa con
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <GoogleAuthButton disabled={isSubmitting} />
           </div>
         </form>
 

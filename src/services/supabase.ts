@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import toast from 'react-hot-toast';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   toast.error('Error de configuración: Variables de entorno de Supabase no encontradas');
@@ -16,13 +16,36 @@ export const supabase = createClient(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      flowType: 'pkce'
     }
   }
 );
 
-// Add error handler
-supabase.handleError = (error) => {
+// Add Google Auth helper functions
+export const signInWithGoogle = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    }
+  });
+  
+  if (error) {
+    console.error('Google Auth error:', error);
+    toast.error('Error al iniciar sesión con Google');
+    throw error;
+  }
+  
+  return data;
+};
+
+// Add error handler function
+export const handleSupabaseError = (error: any) => {
   if (error.message === 'Failed to fetch') {
     toast.error('Error de conexión: Verifica tu conexión a internet');
     return;

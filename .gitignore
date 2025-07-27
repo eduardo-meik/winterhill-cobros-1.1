@@ -15,6 +15,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+client_secret_14877592509-uh2v1l445qqe7mm767apc5c3go64nhp0.apps.googleusercontent.com.json
 .idea
 .DS_Store
 *.suo
