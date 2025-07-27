@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { format, parseISO } from 'date-fns';
-import { utils, writeFile } from 'xlsx';
+import { utils, writeFile } from 'sheetjs-style';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabase';
 import { PDFReport } from './PDFReport';

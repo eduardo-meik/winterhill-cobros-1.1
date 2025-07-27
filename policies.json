@@ -1,80 +1,8 @@
 [
   {
-    "policy_name": "Only Admins can read audit logs",
-    "schema_name": "public",
-    "table_name": "audit_logs",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
-    "check_expression": null
-  },
-  {
-    "policy_name": "System can insert audit logs",
-    "schema_name": "public",
-    "table_name": "audit_logs",
-    "permissive": true,
-    "command_type": "a",
-    "roles": [
-      0
-    ],
-    "using_expression": null,
-    "check_expression": "true"
-  },
-  {
-    "policy_name": "Auth logs insert access",
-    "schema_name": "public",
-    "table_name": "auth_logs",
-    "permissive": true,
-    "command_type": "a",
-    "roles": [
-      16479
-    ],
-    "using_expression": null,
-    "check_expression": "true"
-  },
-  {
-    "policy_name": "Auth logs read access",
-    "schema_name": "public",
-    "table_name": "auth_logs",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'ADMIN'::text)))) OR (user_id = (auth.uid())::text) OR (user_id IS NULL))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Enable insert access for all users",
-    "schema_name": "public",
-    "table_name": "auth_logs",
-    "permissive": true,
-    "command_type": "a",
-    "roles": [
-      0
-    ],
-    "using_expression": null,
-    "check_expression": "true"
-  },
-  {
-    "policy_name": "Enable read access for authenticated users",
-    "schema_name": "public",
-    "table_name": "auth_logs",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((user_id = (auth.uid())::text) OR (user_id IS NULL) OR (auth.role() = 'service_role'::text))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Enable service role full access to auth_logs",
-    "schema_name": "public",
-    "table_name": "auth_logs",
+    "policy_name": "Enable ALL for service-role only",
+    "schema_name": "storage",
+    "table_name": "buckets",
     "permissive": true,
     "command_type": "*",
     "roles": [
@@ -84,7 +12,211 @@
     "check_expression": "true"
   },
   {
-    "policy_name": "Users can view all courses",
+    "policy_name": "Enable ALL for service-role only",
+    "schema_name": "storage",
+    "table_name": "migrations",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16480
+    ],
+    "using_expression": "true",
+    "check_expression": "true"
+  },
+  {
+    "policy_name": "Enable ALL for service-role only",
+    "schema_name": "storage",
+    "table_name": "objects",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16480
+    ],
+    "using_expression": "true",
+    "check_expression": "true"
+  },
+  {
+    "policy_name": "Give users access to own folder",
+    "schema_name": "storage",
+    "table_name": "objects",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(bucket_id = 'avatars'::text) AND auth.uid() IN (string_to_array(path, '/'::text)))",
+    "check_expression": "(bucket_id = 'avatars'::text) AND auth.uid() IN (string_to_array(path, '/'::text)))"
+  },
+  {
+    "policy_name": "Users can view their own profile",
+    "schema_name": "public",
+    "table_name": "profiles",
+    "permissive": true,
+    "command_type": "r",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(auth.uid() = id)",
+    "check_expression": null
+  },
+  {
+    "policy_name": "Users can update their own profile",
+    "schema_name": "public",
+    "table_name": "profiles",
+    "permissive": true,
+    "command_type": "w",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(auth.uid() = id)",
+    "check_expression": "(auth.uid() = id)"
+  },
+  {
+    "policy_name": "Admins can manage all profiles",
+    "schema_name": "public",
+    "table_name": "profiles",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "policy_name": "Admins can manage all students",
+    "schema_name": "public",
+    "table_name": "students",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "policy_name": "Guardians can view their own students",
+    "schema_name": "public",
+    "table_name": "students",
+    "permissive": true,
+    "command_type": "r",
+    "roles": [
+      16479
+    ],
+    "using_expression": "is_current_user_guardian_of_student(id)",
+    "check_expression": null
+  },
+  {
+    "policy_name": "Guardians can manage their own students",
+    "schema_name": "public",
+    "table_name": "students",
+    "permissive": true,
+    "command_type": "w",
+    "roles": [
+      16479
+    ],
+    "using_expression": "is_current_user_guardian_of_student(id)",
+    "check_expression": "is_current_user_guardian_of_student(id)"
+  },
+  {
+    "policy_name": "Admins can manage all guardians",
+    "schema_name": "public",
+    "table_name": "guardians",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "policy_name": "Guardians can manage their own data",
+    "schema_name": "public",
+    "table_name": "guardians",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(auth.uid() = owner_id)",
+    "check_expression": "(auth.uid() = owner_id)"
+  },
+  {
+    "policy_name": "Admins can manage all payments",
+    "schema_name": "public",
+    "table_name": "payments",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "policy_name": "Guardians can view their own payments",
+    "schema_name": "public",
+    "table_name": "payments",
+    "permissive": true,
+    "command_type": "r",
+    "roles": [
+      16479
+    ],
+    "using_expression": "is_current_user_guardian_of_student(student_id)",
+    "check_expression": null
+  },
+  {
+    "policy_name": "Finance managers can manage payments",
+    "schema_name": "public",
+    "table_name": "payments",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'FINANCE_MANAGER'::text)",
+    "check_expression": "(get_current_user_role() = 'FINANCE_MANAGER'::text)"
+  },
+  {
+    "policy_name": "Admins can manage student_guardian relationships",
+    "schema_name": "public",
+    "table_name": "student_guardian",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "policy_name": "Guardians can manage their own student_guardian relationships",
+    "schema_name": "public",
+    "table_name": "student_guardian",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(guardian_id IN ( SELECT guardians.id FROM guardians WHERE (guardians.owner_id = auth.uid())))",
+    "check_expression": "(guardian_id IN ( SELECT guardians.id FROM guardians WHERE (guardians.owner_id = auth.uid())))"
+  },
+  {
+    "policy_name": "Admins can manage courses",
+    "schema_name": "public",
+    "table_name": "cursos",
+    "permissive": true,
+    "command_type": "*",
+    "roles": [
+      16479
+    ],
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "policy_name": "All authenticated users can read courses",
     "schema_name": "public",
     "table_name": "cursos",
     "permissive": true,
@@ -94,401 +226,5 @@
     ],
     "using_expression": "true",
     "check_expression": null
-  },
-  {
-    "policy_name": "Fee - ADMIN Full Access",
-    "schema_name": "public",
-    "table_name": "fee",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
-    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
-  },
-  {
-    "policy_name": "Fee - FINANCE_MANAGER CRUD Access",
-    "schema_name": "public",
-    "table_name": "fee",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(get_current_user_role() = 'FINANCE_MANAGER'::text)",
-    "check_expression": "(get_current_user_role() = 'FINANCE_MANAGER'::text)"
-  },
-  {
-    "policy_name": "Fee - GUARDIAN Read Access to Own Students Fees",
-    "schema_name": "public",
-    "table_name": "fee",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "((get_current_user_role() = 'GUARDIAN'::text) AND (student_id = ANY (get_my_students_ids())))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Users can only view their own fees",
-    "schema_name": "public",
-    "table_name": "fee",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "(auth.uid() = owner_id)",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Admins and Finance Managers can manage fees",
-    "schema_name": "public",
-    "table_name": "fees",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(get_current_user_role() = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text]))",
-    "check_expression": "(get_current_user_role() = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text]))"
-  },
-  {
-    "policy_name": "All authenticated users can read fees",
-    "schema_name": "public",
-    "table_name": "fees",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "true",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Guardians - ADMIN Full Access",
-    "schema_name": "public",
-    "table_name": "guardians",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
-    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
-  },
-  {
-    "policy_name": "Guardians - FINANCE_MANAGER Read Access",
-    "schema_name": "public",
-    "table_name": "guardians",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(get_current_user_role() = 'FINANCE_MANAGER'::text)",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Users can delete their own guardians",
-    "schema_name": "public",
-    "table_name": "guardians",
-    "permissive": true,
-    "command_type": "d",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(auth.uid() = owner_id)",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Users can insert their own guardians",
-    "schema_name": "public",
-    "table_name": "guardians",
-    "permissive": true,
-    "command_type": "a",
-    "roles": [
-      16479
-    ],
-    "using_expression": null,
-    "check_expression": "(auth.uid() = owner_id)"
-  },
-  {
-    "policy_name": "Users can update their own guardians",
-    "schema_name": "public",
-    "table_name": "guardians",
-    "permissive": true,
-    "command_type": "w",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(auth.uid() = owner_id)",
-    "check_expression": "(auth.uid() = owner_id)"
-  },
-  {
-    "policy_name": "Users can view their own guardians",
-    "schema_name": "public",
-    "table_name": "guardians",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(auth.uid() = owner_id)",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Admins and Finance Managers can manage invoice items",
-    "schema_name": "public",
-    "table_name": "invoice_items",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))",
-    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))"
-  },
-  {
-    "policy_name": "All authenticated users can read invoice items",
-    "schema_name": "public",
-    "table_name": "invoice_items",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "true",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Admins and Finance Managers can manage invoices",
-    "schema_name": "public",
-    "table_name": "invoices",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))",
-    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))"
-  },
-  {
-    "policy_name": "All authenticated users can read invoices",
-    "schema_name": "public",
-    "table_name": "invoices",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "true",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Admins and Finance Managers can manage payments",
-    "schema_name": "public",
-    "table_name": "payments",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))",
-    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))"
-  },
-  {
-    "policy_name": "All authenticated users can read payments",
-    "schema_name": "public",
-    "table_name": "payments",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "true",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Enable update for users on their own profile",
-    "schema_name": "public",
-    "table_name": "profiles",
-    "permissive": true,
-    "command_type": "w",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(id = auth.uid())",
-    "check_expression": "(id = auth.uid())"
-  },
-  {
-    "policy_name": "Profiles read access",
-    "schema_name": "public",
-    "table_name": "profiles",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM profiles profiles_1\n  WHERE ((profiles_1.id = auth.uid()) AND (profiles_1.role = 'ADMIN'::text)))))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Profiles update access",
-    "schema_name": "public",
-    "table_name": "profiles",
-    "permissive": true,
-    "command_type": "w",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(id = auth.uid())",
-    "check_expression": "(id = auth.uid())"
-  },
-  {
-    "policy_name": "Users can read their own profile",
-    "schema_name": "public",
-    "table_name": "profiles",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "(id = auth.uid())",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Admin can manage student_guardian",
-    "schema_name": "public",
-    "table_name": "student_guardian",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
-    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
-  },
-  {
-    "policy_name": "Enable read for all authenticated users",
-    "schema_name": "public",
-    "table_name": "student_guardian",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "true",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Guardian can view own associations",
-    "schema_name": "public",
-    "table_name": "student_guardian",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "(EXISTS ( SELECT 1\n   FROM guardians\n  WHERE ((guardians.id = student_guardian.guardian_id) AND (guardians.owner_id = auth.uid()))))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Student guardian delete access",
-    "schema_name": "public",
-    "table_name": "student_guardian",
-    "permissive": true,
-    "command_type": "d",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'ADMIN'::text)))) OR (EXISTS ( SELECT 1\n   FROM guardians\n  WHERE ((guardians.id = student_guardian.guardian_id) AND (guardians.owner_id = auth.uid())))))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Student guardian insert access",
-    "schema_name": "public",
-    "table_name": "student_guardian",
-    "permissive": true,
-    "command_type": "a",
-    "roles": [
-      16479
-    ],
-    "using_expression": null,
-    "check_expression": "((EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'ADMIN'::text)))) OR (EXISTS ( SELECT 1\n   FROM guardians\n  WHERE ((guardians.id = student_guardian.guardian_id) AND (guardians.owner_id = auth.uid())))))"
-  },
-  {
-    "policy_name": "Student guardian read access",
-    "schema_name": "public",
-    "table_name": "student_guardian",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'ADMIN'::text)))) OR (EXISTS ( SELECT 1\n   FROM guardians\n  WHERE ((guardians.id = student_guardian.guardian_id) AND (guardians.owner_id = auth.uid())))) OR (EXISTS ( SELECT 1\n   FROM students\n  WHERE ((students.id = student_guardian.student_id) AND (students.owner_id = auth.uid())))))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Students - ACADEMICO CRUD Access",
-    "schema_name": "public",
-    "table_name": "students",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(get_current_user_role() = 'ACADEMICO'::text)",
-    "check_expression": "(get_current_user_role() = 'ACADEMICO'::text)"
-  },
-  {
-    "policy_name": "Students - ADMIN Full Access",
-    "schema_name": "public",
-    "table_name": "students",
-    "permissive": true,
-    "command_type": "*",
-    "roles": [
-      0
-    ],
-    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
-    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
-  },
-  {
-    "policy_name": "Students - FINANCE_MANAGER Read Access",
-    "schema_name": "public",
-    "table_name": "students",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      0
-    ],
-    "using_expression": "(get_current_user_role() = 'FINANCE_MANAGER'::text)",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Students - GUARDIAN Read Access",
-    "schema_name": "public",
-    "table_name": "students",
-    "permissive": true,
-    "command_type": "r",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((get_current_user_role() = 'GUARDIAN'::text) AND is_current_user_guardian_of_student(id))",
-    "check_expression": null
-  },
-  {
-    "policy_name": "Students - GUARDIAN Update Access",
-    "schema_name": "public",
-    "table_name": "students",
-    "permissive": true,
-    "command_type": "w",
-    "roles": [
-      16479
-    ],
-    "using_expression": "((get_current_user_role() = 'GUARDIAN'::text) AND is_current_user_guardian_of_student(id))",
-    "check_expression": "((get_current_user_role() = 'GUARDIAN'::text) AND is_current_user_guardian_of_student(id))"
   }
 ]

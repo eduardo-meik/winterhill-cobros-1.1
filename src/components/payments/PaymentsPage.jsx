@@ -5,7 +5,7 @@ import { PaymentsTable } from './PaymentsTable';
 import { PaymentsFilters } from './PaymentsFilters';
 import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
-import { utils, writeFile } from 'xlsx';
+import { utils, writeFile } from 'sheetjs-style';
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/services/supabase';
 import toast from 'react-hot-toast';

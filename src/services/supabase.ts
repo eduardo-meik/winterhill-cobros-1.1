@@ -24,24 +24,30 @@ export const supabase = createClient(
 
 // Add Google Auth helper functions
 export const signInWithGoogle = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      }
+    });
+
+    if (error) {
+      console.error('Google Auth error:', error);
+      toast.error(`Error al iniciar sesión con Google: ${error.message}`);
+      throw error;
     }
-  });
-  
-  if (error) {
-    console.error('Google Auth error:', error);
-    toast.error('Error al iniciar sesión con Google');
+
+    return data;
+  } catch (error) {
+    console.error('An unexpected error occurred during Google sign-in:', error);
+    toast.error('Ocurrió un error inesperado. Por favor, intenta nuevamente.');
     throw error;
   }
-  
-  return data;
 };
 
 // Add error handler function
