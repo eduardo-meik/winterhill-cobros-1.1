@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { format } from 'date-fns';
 import { Card } from '../ui/Card';
-import { StudentSelect } from './StudentSelect';
 import { useEffect } from 'react';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
@@ -68,13 +67,6 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     }));
   };
 
-  const handleStudentChange = (value) => {
-    setFormData(prev => ({
-      ...prev,
-      student_id: value
-    }));
-  };
-
   const handleSave = async () => {
     try {
       // Validate payment_method before sending to database
@@ -90,7 +82,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       const { error } = await supabase
         .from('fee')
         .update({
-          student_id: formData.student_id,
+          // student_id is not updated to prevent data conflicts
           amount: parseFloat(formData.amount),
           payment_date: formData.payment_date,
           payment_method: formData.payment_method || null, // Ensure null if empty
@@ -181,10 +173,22 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Estudiante
                       </label>
-                      <StudentSelect
-                        value={formData.student_id}
-                        onChange={handleStudentChange}
-                      />
+                      {/* Display current student info instead of searchable dropdown to avoid conflicts */}
+                      <div className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="text-sm font-medium">
+                              {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {payment.student?.run} - {payment.student?.cursos?.nom_curso || 'Sin curso asignado'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        El estudiante no puede ser cambiado durante la edición para evitar conflictos de datos
+                      </p>
                     </div>
 
                     <div>
