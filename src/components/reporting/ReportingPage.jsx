@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { format, parseISO } from 'date-fns';
-import { utils, writeFile } from 'sheetjs-style';
+import * as XLSX from 'xlsx';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabase';
 import { PDFReport } from './PDFReport';
@@ -503,7 +503,7 @@ export function ReportingPage() {
           toast.loading('Generando Excel, por favor espere...');
           
           // Excel export with summary information and formatted filters
-          const wb = utils.book_new();
+          const wb = XLSX.utils.book_new();
           
           // Add info sheet with filter information
           const filterInfo = [
@@ -527,7 +527,7 @@ export function ReportingPage() {
           ];
           
           // Create and style the filter info sheet
-          const filterWs = utils.aoa_to_sheet(filterInfo);
+          const filterWs = XLSX.utils.aoa_to_sheet(filterInfo);
           
           // Add styles to the header cells
           filterWs['!merges'] = [{
@@ -537,7 +537,7 @@ export function ReportingPage() {
           
           filterWs['!cols'] = [{ wch: 25 }, { wch: 50 }];
           
-          utils.book_append_sheet(wb, filterWs, 'Información');
+          XLSX.utils.book_append_sheet(wb, filterWs, 'Información');
           
           // Add data sheet with all cuotas - ensure data formatting is consistent
           const formattedForExcel = formattedData.map(item => ({
@@ -553,8 +553,8 @@ export function ReportingPage() {
           }));
           
           // Create and add the data sheet
-          const ws = utils.json_to_sheet(formattedForExcel);
-          utils.book_append_sheet(wb, ws, 'Aranceles');
+          const ws = XLSX.utils.json_to_sheet(formattedForExcel);
+          XLSX.utils.book_append_sheet(wb, ws, 'Aranceles');
           
           // Set column widths
           ws['!cols'] = [
@@ -570,7 +570,7 @@ export function ReportingPage() {
           ];
           
           const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-          writeFile(wb, `informe_aranceles_${timestamp}.xlsx`);
+          XLSX.writeFile(wb, `informe_aranceles_${timestamp}.xlsx`);
           
           // Dismiss loading and show success
           toast.dismiss();

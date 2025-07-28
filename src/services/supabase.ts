@@ -17,7 +17,9 @@ export const supabase = createClient(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: 'pkce'
+      flowType: 'pkce',
+      storage: window.localStorage,
+      storageKey: 'supabase.auth.token'
     }
   }
 );
@@ -50,6 +52,18 @@ export const signInWithGoogle = async () => {
   }
 };
 
+// Clear invalid sessions
+export const clearInvalidSession = async () => {
+  try {
+    await supabase.auth.signOut();
+    // Clear local storage
+    localStorage.removeItem('supabase.auth.token');
+    window.location.reload();
+  } catch (error) {
+    console.error('Error clearing session:', error);
+  }
+};
+
 // Add error handler function
 export const handleSupabaseError = (error: any) => {
   if (error.message === 'Failed to fetch') {
@@ -57,8 +71,9 @@ export const handleSupabaseError = (error: any) => {
     return;
   }
   
-  if (error.message?.includes('JWT')) {
-    toast.error('Sesión expirada. Por favor, inicia sesión nuevamente');
+  if (error.message?.includes('JWT') || error.message?.includes('Invalid Refresh Token')) {
+    toast.error('Sesión expirada. Reiniciando...');
+    clearInvalidSession();
     return;
   }
 
