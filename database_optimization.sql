@@ -240,11 +240,94 @@ ALTER TABLE public.students
 ADD CONSTRAINT IF NOT EXISTS fk_students_curso 
 FOREIGN KEY (curso) REFERENCES public.cursos(id);
 
--- Performance monitoring queries
--- Use these to monitor the impact of optimizations
+-- CRITICAL: Supabase Performance Advisor Recommendations
+-- These specific optimizations address the issues identified by Supabase's performance advisor
 
--- Check index usage
+-- 1. FIX UNINDEXED FOREIGN KEYS (Critical for performance)
+-- These indexes are essential for join performance and referential integrity
+
+-- Fix: fee table foreign key for curso
+-- This directly impacts the fee->students->cursos join performance
+CREATE INDEX IF NOT EXISTS idx_fee_curso_fkey ON public.fee (curso);
+
+-- Fix: students table foreign key for curso (Most important for our queries)
+-- This is critical for the students->cursos join in PaymentsPage
+CREATE INDEX IF NOT EXISTS idx_students_curso_fkey ON public.students (curso);
+
+-- Fix: matriculas_detalle table foreign keys
+CREATE INDEX IF NOT EXISTS idx_matriculas_detalle_apoderado_id ON public.matriculas_detalle (apoderado_id);
+CREATE INDEX IF NOT EXISTS idx_matriculas_detalle_estudiante_id ON public.matriculas_detalle (estudiante_id);
+
+-- Fix: payments table foreign key
+CREATE INDEX IF NOT EXISTS idx_payments_invoice_id ON public.payments (invoice_id);
+
+-- 2. FIX PRIMARY KEY ISSUE
+-- Add primary key to cursos table (Critical for performance and replication)
+-- Check if id column exists, if not create it
+DO $$
+BEGIN
+    -- Add id column if it doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'cursos' AND column_name = 'id' AND table_schema = 'public'
+    ) THEN
+        ALTER TABLE public.cursos ADD COLUMN id SERIAL;
+    END IF;
+    
+    -- Add primary key if it doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_name = 'cursos' AND constraint_type = 'PRIMARY KEY' AND table_schema = 'public'
+    ) THEN
+        ALTER TABLE public.cursos ADD PRIMARY KEY (id);
+    END IF;
+END $$;
+
+-- 3. REMOVE UNUSED INDEXES (Clean up)
+-- Only drop indexes that are confirmed unused and safe to remove
+
+-- Drop unused auth_logs indexes (if auth_logs is not actively used)
+DROP INDEX IF EXISTS idx_auth_logs_created_at;
+DROP INDEX IF EXISTS idx_auth_logs_user_id;
+
+-- Drop unused profile role index (if profiles role filtering is not used)
+DROP INDEX IF EXISTS idx_profiles_role;
+
+-- Drop unused students owner index (if ownership filtering is not used)
+DROP INDEX IF EXISTS idx_students_owner;
+
+-- Drop unused fee guardian_id index (if guardian queries are not used)
+DROP INDEX IF EXISTS idx_fee_guardian_id;
+
+-- NOTE: Keep idx_cursos_nom_curso as it may be used by our optimized queries
+-- The performance advisor may not detect usage from application queries
+
+-- 4. ADDITIONAL PERFORMANCE OPTIMIZATIONS
+-- These complement the advisor recommendations
+
+-- Ensure we have the critical indexes for our optimized PaymentsPage queries
+CREATE INDEX IF NOT EXISTS idx_fee_student_id_created_at ON public.fee (student_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_fee_status_created_at ON public.fee (status, created_at DESC);
+
+-- Composite index for the most common query pattern
+CREATE INDEX IF NOT EXISTS idx_fee_created_at_student_status ON public.fee (created_at DESC, student_id, status);
+
+-- Full text search optimization for student names
+CREATE INDEX IF NOT EXISTS idx_students_name_gin ON public.students 
+  USING gin(to_tsvector('spanish', coalesce(whole_name, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(apellido_paterno, '')));
+
+-- 5. UPDATE STATISTICS after creating new indexes
+ANALYZE public.fee;
+ANALYZE public.students;
+ANALYZE public.cursos;
+ANALYZE public.matriculas_detalle;
+ANALYZE public.payments;
+
+-- 6. VERIFY INDEX USAGE (Run after implementation)
+-- Uncomment these queries to monitor index effectiveness:
+
 /*
+-- Check if new indexes are being used
 SELECT 
     schemaname,
     tablename,
@@ -253,36 +336,49 @@ SELECT
     idx_tup_read,
     idx_tup_fetch
 FROM pg_stat_user_indexes 
-WHERE schemaname = 'public'
+WHERE tablename IN ('fee', 'students', 'cursos', 'matriculas_detalle', 'payments')
+  AND idx_scan > 0
 ORDER BY idx_scan DESC;
-*/
 
--- Check table statistics
-/*
+-- Check for any remaining unused indexes
 SELECT 
     schemaname,
     tablename,
-    n_tup_ins,
-    n_tup_upd,
-    n_tup_del,
-    n_live_tup,
-    n_dead_tup,
-    last_analyze
-FROM pg_stat_user_tables 
-WHERE schemaname = 'public'
-ORDER BY n_live_tup DESC;
+    indexname,
+    idx_scan,
+    pg_size_pretty(pg_relation_size(indexrelid)) as size
+FROM pg_stat_user_indexes 
+WHERE idx_scan = 0 
+  AND schemaname = 'public'
+ORDER BY pg_relation_size(indexrelid) DESC;
+
+-- Verify foreign key constraints have covering indexes
+SELECT 
+    tc.table_name,
+    tc.constraint_name,
+    kcu.column_name,
+    EXISTS (
+        SELECT 1 FROM pg_indexes 
+        WHERE tablename = tc.table_name 
+        AND indexdef LIKE '%' || kcu.column_name || '%'
+    ) as has_index
+FROM information_schema.table_constraints tc
+JOIN information_schema.key_column_usage kcu 
+    ON tc.constraint_name = kcu.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND tc.table_schema = 'public'
+  AND tc.table_name IN ('fee', 'students', 'matriculas_detalle', 'payments')
+ORDER BY tc.table_name, tc.constraint_name;
 */
 
--- Check slow queries (requires pg_stat_statements extension)
-/*
-SELECT 
-    query,
-    calls,
-    total_time,
-    mean_time,
-    rows
-FROM pg_stat_statements 
-WHERE query LIKE '%fee%' 
-ORDER BY total_time DESC 
-LIMIT 10;
-*/
+-- 7. PERFORMANCE VERIFICATION QUERIES
+-- Use these to confirm the optimizations are working
+
+-- Test fee query performance (should be fast now)
+EXPLAIN (ANALYZE, BUFFERS) 
+SELECT f.id, f.amount, f.status, f.due_date, s.whole_name, c.nom_curso
+FROM fee f
+INNER JOIN students s ON f.student_id = s.id
+INNER JOIN cursos c ON s.curso = c.id
+ORDER BY f.created_at DESC
+LIMIT 250;
