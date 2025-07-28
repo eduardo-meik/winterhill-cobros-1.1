@@ -5,13 +5,13 @@
 -- 1. FIX UNINDEXED FOREIGN KEYS (CRITICAL)
 -- ========================================
 
--- Fix: fee table - curso foreign key
--- This improves fee->curso join performance
-CREATE INDEX IF NOT EXISTS idx_fee_curso_fkey ON public.fee (curso);
-
 -- Fix: students table - curso foreign key (MOST IMPORTANT)
 -- This is critical for the PaymentsPage students->cursos join
 CREATE INDEX IF NOT EXISTS idx_students_curso_fkey ON public.students (curso);
+
+-- Fix: fee table - student_id foreign key (already exists but adding for completeness)
+-- This improves fee->students join performance
+CREATE INDEX IF NOT EXISTS idx_fee_student_id_fkey ON public.fee (student_id);
 
 -- Fix: matriculas_detalle table foreign keys
 CREATE INDEX IF NOT EXISTS idx_matriculas_detalle_apoderado_id_fkey ON public.matriculas_detalle (apoderado_id);
@@ -42,8 +42,24 @@ BEGIN
               AND column_name = 'id' 
               AND table_schema = 'public'
         ) THEN
-            -- Add id column
+            -- Add id column as SERIAL (auto-incrementing)
             ALTER TABLE public.cursos ADD COLUMN id SERIAL;
+        ELSE
+            -- Column exists but may have NULL values, populate them
+            -- First, create a sequence if it doesn't exist
+            CREATE SEQUENCE IF NOT EXISTS cursos_id_seq;
+            
+            -- Update NULL values with sequential numbers
+            UPDATE public.cursos 
+            SET id = nextval('cursos_id_seq') 
+            WHERE id IS NULL;
+            
+            -- Set the sequence to continue from the highest existing value
+            SELECT setval('cursos_id_seq', COALESCE(MAX(id), 0) + 1, false) FROM public.cursos;
+            
+            -- Make the column NOT NULL and set default
+            ALTER TABLE public.cursos ALTER COLUMN id SET NOT NULL;
+            ALTER TABLE public.cursos ALTER COLUMN id SET DEFAULT nextval('cursos_id_seq');
         END IF;
         
         -- Add primary key constraint
