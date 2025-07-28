@@ -38,7 +38,7 @@ export default function App() {
             {/* Main application routes */}
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="students" element={<StudentsPage />} />
-            <Route path="guardians"Element={<GuardiansPage />} />
+            <Route path="guardians" element={<GuardiansPage />} />
             <Route path="payments" element={<PaymentsPage />} />
             <Route path="reporting" element={<ReportingPage />} />
             <Route path="assistant" element={<AssistantPage />} />

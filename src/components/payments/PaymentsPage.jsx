@@ -57,9 +57,9 @@ export function PaymentsPage() {
         yearsSet.add(year);
       }
       
-      // Extract cuota numbers
-      if (payment.numero_cuota) {
-        cuotasSet.add(payment.numero_cuota);
+      // Extract cuota numbers - convert to string for consistent comparison
+      if (payment.numero_cuota !== null && payment.numero_cuota !== undefined) {
+        cuotasSet.add(payment.numero_cuota.toString());
       }
     });
     
@@ -89,8 +89,8 @@ export function PaymentsPage() {
           return false;
         }
         
-        // Cuota filter
-        if (filters.cuota !== 'all' && payment.numero_cuota !== filters.cuota) {
+        // Cuota filter - Fix data type comparison (numeric vs string)
+        if (filters.cuota !== 'all' && payment.numero_cuota?.toString() !== filters.cuota) {
           return false;
         }
         
@@ -181,21 +181,17 @@ export function PaymentsPage() {
         throw new Error('No autenticado');
       }
 
-      const offset = reset ? 0 : currentOffset;
       const startTime = performance.now();
 
-      // First, get the total count efficiently (only on reset)
-      if (reset) {
-        const { count, error: countError } = await supabase
-          .from('fee')
-          .select('id', { count: 'exact', head: true });
-        
-        if (countError) throw countError;
-        setTotalCount(count || 0);
-      }
+      // Get total count efficiently
+      const { count, error: countError } = await supabase
+        .from('fee')
+        .select('id', { count: 'exact', head: true });
+      
+      if (countError) throw countError;
+      setTotalCount(count || 0);
 
-      // Ultra-optimized query: Use inner joins instead of left joins for better performance
-      // This completely eliminates the LATERAL JOIN issues
+      // Load all records at once (no more batching to fix filter/search issues)
       const { data: fees, error: feesError } = await supabase
         .from('fee')
         .select(`
@@ -224,8 +220,7 @@ export function PaymentsPage() {
             )
           )
         `)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + BATCH_SIZE - 1);
+        .order('created_at', { ascending: false });
 
       if (feesError) throw feesError;
       
@@ -238,28 +233,27 @@ export function PaymentsPage() {
         }
       }));
       
-      if (reset) {
-        setPayments(transformedFees);
-      } else {
-        setPayments(prev => [...prev, ...transformedFees]);
-      }
-
-      setHasMore(transformedFees.length === BATCH_SIZE);
-      setCurrentOffset(offset + BATCH_SIZE);
+      setPayments(transformedFees);
+      setHasMore(false); // No more records to load since we load all at once
       
       // Performance logging (development only)
       if (import.meta.env.DEV) {
         const endTime = performance.now();
         const queryTime = endTime - startTime;
-        console.log(`✅ Query optimized: ${queryTime.toFixed(2)}ms for ${transformedFees.length} records`);
+        console.log(`✅ All records loaded: ${queryTime.toFixed(2)}ms for ${transformedFees.length} records`);
         
-        if (reset) {
-          console.log('📊 Performance stats:');
-          console.log(`   - Total records available: ${totalCount}`);
-          console.log(`   - Batch size: ${BATCH_SIZE}`);
-          console.log(`   - Query time: ${queryTime.toFixed(2)}ms`);
-          console.log(`   - Records per ms: ${(transformedFees.length / queryTime).toFixed(2)}`);
-        }
+        // Debug numero_cuota values
+        const cuotaValues = transformedFees.map(f => ({ 
+          id: f.id, 
+          numero_cuota: f.numero_cuota, 
+          type: typeof f.numero_cuota 
+        })).slice(0, 5); // First 5 records
+        console.log('🔍 Debug numero_cuota values:', cuotaValues);
+        
+        console.log('📊 Performance stats:');
+        console.log(`   - Total records: ${transformedFees.length}`);
+        console.log(`   - Query time: ${queryTime.toFixed(2)}ms`);
+        console.log(`   - Records per ms: ${(transformedFees.length / queryTime).toFixed(2)}`);
       }
       
     } catch (error) {
@@ -270,10 +264,7 @@ export function PaymentsPage() {
     }
   };
 
-  const loadMorePayments = async () => {
-    if (!hasMore || loading) return;
-    await fetchPayments(false);
-  };
+  // loadMorePayments function removed since we now load all records at once
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
@@ -410,7 +401,8 @@ export function PaymentsPage() {
                 onPageSizeChange={setPageSize}
               />
               
-              {/* Load More Button for better performance */}
+              {/* Load More Button disabled to fix search and filter conflicts */}
+              {/* 
               {hasMore && !loading && (
                 <div className="flex justify-center mt-4">
                   <Button
@@ -425,11 +417,12 @@ export function PaymentsPage() {
                   </Button>
                 </div>
               )}
+              */}
               
               {/* Performance info for debugging */}
               {import.meta.env.DEV && (
                 <div className="text-xs text-gray-500 mt-2 text-center">
-                  Mostrando {payments.length} de {totalCount} registros totales
+                  Mostrando todos los {payments.length} registros (filtros aplicados: {filteredPayments.length})
                 </div>
               )}
             </CardContent>
