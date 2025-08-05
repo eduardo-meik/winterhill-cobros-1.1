@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
+import { ProductionEnvCheck } from './components/debug/ProductionEnvCheck';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
@@ -21,6 +22,7 @@ import { SettingsPage } from './components/settings/SettingsPage';
 export default function App() {
   return (
     <BrowserRouter>
+      <ProductionEnvCheck />
       <AuthProvider>
         <Routes>
           {/* Public routes that do not require authentication */}
