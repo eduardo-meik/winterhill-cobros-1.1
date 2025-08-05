@@ -23,16 +23,19 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Rutas públicas */}
+          {/* Public routes that do not require authentication */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-          {/* Rutas protegidas */}
+          {/* Protected routes that require authentication */}
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+            {/* Redirect from root to dashboard */}
             <Route index element={<Navigate to="/dashboard" replace />} />
+
+            {/* Main application routes */}
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="students" element={<StudentsPage />} />
             <Route path="guardians" element={<GuardiansPage />} />

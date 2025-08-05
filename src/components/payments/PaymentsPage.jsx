@@ -5,7 +5,7 @@ import { PaymentsTable } from './PaymentsTable';
 import { PaymentsFilters } from './PaymentsFilters';
 import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
-import { utils, writeFile } from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/services/supabase';
 import toast from 'react-hot-toast';
@@ -20,6 +20,10 @@ export function PaymentsPage() {
   const [exporting, setExporting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const BATCH_SIZE = 250; // Optimized smaller batch for faster queries
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
@@ -32,47 +36,74 @@ export function PaymentsPage() {
     endDate: ''
   });
 
-  // Extract available filter options from data
+  // Optimize filter options calculation with useMemo and better data structure
   const filterOptions = useMemo(() => {
     if (payments.length === 0) return { cursos: [], years: [], cuotas: [] };
     
-    // Extract unique curso names
-    const cursos = [...new Set(
-      payments.map(payment => payment.student?.cursos?.nom_curso).filter(Boolean)
-    )].sort();
+    // Use Set for O(1) lookups and better performance
+    const cursosSet = new Set();
+    const yearsSet = new Set();
+    const cuotasSet = new Set();
     
-    // Extract unique years from due_date
-    const years = [...new Set(
-      payments.map(payment => {
-        if (!payment.due_date) return null;
-        return new Date(payment.due_date).getFullYear().toString();
-      }).filter(Boolean)
-    )].sort();
+    // Single pass through data for all filter options
+    payments.forEach(payment => {
+      // Extract curso names
+      const cursoName = payment.student?.cursos?.nom_curso;
+      if (cursoName) cursosSet.add(cursoName);
+      
+      // Extract years from due_date
+      if (payment.due_date) {
+        const year = new Date(payment.due_date).getFullYear().toString();
+        yearsSet.add(year);
+      }
+      
+      // Extract cuota numbers - convert to string for consistent comparison
+      if (payment.numero_cuota !== null && payment.numero_cuota !== undefined) {
+        cuotasSet.add(payment.numero_cuota.toString());
+      }
+    });
     
-    // Extract unique cuota numbers
-    const cuotas = [...new Set(
-      payments.map(payment => payment.numero_cuota).filter(Boolean)
-    )].sort((a, b) => parseInt(a) - parseInt(b));
-    
-    return { cursos, years, cuotas };
+    return { 
+      cursos: Array.from(cursosSet).sort(),
+      years: Array.from(yearsSet).sort(),
+      cuotas: Array.from(cuotasSet).sort((a, b) => parseInt(a) - parseInt(b))
+    };
   }, [payments]);
 
+  // Optimize filtered payments with better performance and error handling
   const filteredPayments = useMemo(() => {
+    if (!payments.length) return [];
+
     return payments.filter(payment => {
       try {
+        // Early returns for better performance
+        
         // Status filter
-        if (filters.status !== 'all' && payment.status !== filters.status) return false;
+        if (filters.status !== 'all' && payment.status !== filters.status) {
+          return false;
+        }
         
         // Curso filter
         if (filters.curso !== 'all' && 
-            payment.student?.cursos?.nom_curso !== filters.curso) return false;
+            payment.student?.cursos?.nom_curso !== filters.curso) {
+          return false;
+        }
         
-        // Cuota filter (NEW)
-        if (filters.cuota !== 'all' && payment.numero_cuota !== filters.cuota) return false;
+        // Cuota filter - Fix data type comparison (numeric vs string)
+        if (filters.cuota !== 'all' && payment.numero_cuota?.toString() !== filters.cuota) {
+          return false;
+        }
         
-        // Date filters
-        const paymentDate = payment.due_date ? new Date(payment.due_date) : null;
-        if (paymentDate) {
+        // Payment method filter
+        if (filters.paymentMethod !== 'all' && 
+            payment.payment_method !== filters.paymentMethod) {
+          return false;
+        }
+
+        // Date filters - process only if payment has due_date
+        if (payment.due_date) {
+          const paymentDate = new Date(payment.due_date);
+          
           // Month filter
           if (filters.month !== 'all') {
             const paymentMonth = (paymentDate.getMonth() + 1).toString();
@@ -85,41 +116,40 @@ export function PaymentsPage() {
             if (paymentYear !== filters.year) return false;
           }
           
-          // Start date filter
+          // Date range filters
           if (filters.startDate) {
             const startDate = new Date(filters.startDate);
             startDate.setHours(0, 0, 0, 0);
             if (paymentDate < startDate) return false;
           }
           
-          // End date filter
           if (filters.endDate) {
             const endDate = new Date(filters.endDate);
             endDate.setHours(23, 59, 59, 999);
             if (paymentDate > endDate) return false;
           }
         }
-        
-        // Payment method filter
-        if (filters.paymentMethod !== 'all' && 
-            payment.payment_method !== filters.paymentMethod) return false;
 
-        // Search filter
+        // Search filter - optimize string operations
         if (filters.search) {
           const searchTerm = filters.search.toLowerCase();
           const studentName = payment.student?.whole_name || 
             `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`;
           
+          // Use includes for faster string matching
           return (
             studentName.toLowerCase().includes(searchTerm) ||
-            payment.student?.run?.toLowerCase().includes(searchTerm) ||
+            (payment.student?.run && payment.student.run.toLowerCase().includes(searchTerm)) ||
             (payment.numero_cuota && payment.numero_cuota.toString().includes(searchTerm))
           );
         }
         
         return true;
       } catch (error) {
-        console.error("Error filtering payment:", error, payment);
+        // Log error in development only
+        if (import.meta.env.DEV) {
+          console.error("Error filtering payment:", error, payment);
+        }
         return false;
       }
     });
@@ -136,54 +166,96 @@ export function PaymentsPage() {
   } = usePagination(filteredPayments);
 
   useEffect(() => {
-    fetchPayments();
+    fetchPayments(true); // Reset and fetch initial batch
   }, []);
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (reset = true) => {
     try {
-      setLoading(true);
+      if (reset) {
+        setLoading(true);
+        setCurrentOffset(0);
+      }
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('No autenticado');
       }
 
-      // Fetch all fees with student and curso information
+      const startTime = performance.now();
+
+      // Get total count efficiently
+      const { count, error: countError } = await supabase
+        .from('fee')
+        .select('id', { count: 'exact', head: true });
+      
+      if (countError) throw countError;
+      setTotalCount(count || 0);
+
+      // Load all records at once (no more batching to fix filter/search issues)
       const { data: fees, error: feesError } = await supabase
         .from('fee')
         .select(`
-          *,
-          student:students (
+          id,
+          student_id,
+          amount,
+          status,
+          due_date,
+          payment_date,
+          payment_method,
+          numero_cuota,
+          num_boleta,
+          mov_bancario,
+          notes,
+          created_at,
+          students!inner (
             id,
             first_name,
             apellido_paterno,
             whole_name,
             run,
             curso,
-            cursos:curso (
+            cursos!inner (
               id,
               nom_curso
             )
           )
         `)
-        .order('created_at', { ascending: false })
-        .limit(2000);
+        .order('created_at', { ascending: false });
 
       if (feesError) throw feesError;
       
-      // Log fee data for debugging
-      console.log('Total fees fetched:', fees?.length);
+      // Transform data to match expected structure
+      const transformedFees = (fees || []).map(fee => ({
+        ...fee,
+        student: {
+          ...fee.students,
+          cursos: fee.students?.cursos
+        }
+      }));
       
-      // Count distribution of cuotas
-      const cuotaDistribution = {};
-      fees?.forEach(fee => {
-        const cuotaNum = fee.numero_cuota || 'unknown';
-        cuotaDistribution[cuotaNum] = (cuotaDistribution[cuotaNum] || 0) + 1;
-      });
+      setPayments(transformedFees);
+      setHasMore(false); // No more records to load since we load all at once
       
-      console.log('Cuota distribution:', cuotaDistribution);
+      // Performance logging (development only)
+      if (import.meta.env.DEV) {
+        const endTime = performance.now();
+        const queryTime = endTime - startTime;
+        console.log(`✅ All records loaded: ${queryTime.toFixed(2)}ms for ${transformedFees.length} records`);
+        
+        // Debug numero_cuota values
+        const cuotaValues = transformedFees.map(f => ({ 
+          id: f.id, 
+          numero_cuota: f.numero_cuota, 
+          type: typeof f.numero_cuota 
+        })).slice(0, 5); // First 5 records
+        console.log('🔍 Debug numero_cuota values:', cuotaValues);
+        
+        console.log('📊 Performance stats:');
+        console.log(`   - Total records: ${transformedFees.length}`);
+        console.log(`   - Query time: ${queryTime.toFixed(2)}ms`);
+        console.log(`   - Records per ms: ${(transformedFees.length / queryTime).toFixed(2)}`);
+      }
       
-      setPayments(fees || []);
     } catch (error) {
       console.error('Error fetching payments:', error);
       toast.error('Error al cargar los pagos');
@@ -191,6 +263,8 @@ export function PaymentsPage() {
       setLoading(false);
     }
   };
+
+  // loadMorePayments function removed since we now load all records at once
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
@@ -233,20 +307,40 @@ export function PaymentsPage() {
         'Notas': payment.notes || '-'
       }));
       
-      const wb = utils.book_new();
-      const ws = utils.json_to_sheet(excelData);
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Pagos');
       
-      utils.book_append_sheet(wb, ws, 'Pagos');
+      // Define headers
+      const headers = Object.keys(excelData[0] || {});
+      ws.addRow(headers);
       
-      const colWidths = Object.keys(excelData[0] || {}).map(key => ({
-        wch: Math.max(key.length, ...excelData.map(row => String(row[key] || '').length))
-      }));
-      ws['!cols'] = colWidths;
+      // Add data rows
+      excelData.forEach(row => {
+        ws.addRow(Object.values(row));
+      });
+      
+      // Auto-adjust column widths
+      headers.forEach((header, index) => {
+        const column = ws.getColumn(index + 1);
+        const maxLength = Math.max(
+          header.length,
+          ...excelData.map(row => String(row[header] || '').length)
+        );
+        column.width = Math.min(maxLength + 2, 50);
+      });
       
       const timestamp = format(new Date(), 'yyyyMMdd-HHmmss');
       const filename = `pagos_${timestamp}.xlsx`;
       
-      writeFile(wb, filename);
+      // Write file
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(url);
       
       toast.success('Archivo Excel exportado exitosamente');
     } catch (error) {
@@ -326,6 +420,31 @@ export function PaymentsPage() {
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
               />
+              
+              {/* Load More Button disabled to fix search and filter conflicts */}
+              {/* 
+              {hasMore && !loading && (
+                <div className="flex justify-center mt-4">
+                  <Button
+                    onClick={loadMorePayments}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M224,128a8,8,0,0,1-8,8H128v88a8,8,0,0,1-16,0V136H24a8,8,0,0,1,0-16h88V32a8,8,0,0,1,16,0v88h88A8,8,0,0,1,224,128Z"/>
+                    </svg>
+                    Cargar más registros ({totalCount - payments.length} restantes)
+                  </Button>
+                </div>
+              )}
+              */}
+              
+              {/* Performance info for debugging */}
+              {import.meta.env.DEV && (
+                <div className="text-xs text-gray-500 mt-2 text-center">
+                  Mostrando todos los {payments.length} registros (filtros aplicados: {filteredPayments.length})
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -335,14 +454,14 @@ export function PaymentsPage() {
         <PaymentDetailsModal
           payment={selectedPayment}
           onClose={() => setSelectedPayment(null)}
-          onSuccess={fetchPayments}
+          onSuccess={() => fetchPayments(true)}
         />
       )}
       
       <RegisterPaymentModal
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
-        onSuccess={fetchPayments}
+        onSuccess={() => fetchPayments(true)}
       />
     </main>
   );

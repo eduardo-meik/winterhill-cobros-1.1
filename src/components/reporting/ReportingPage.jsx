@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { format, parseISO } from 'date-fns';
-import { utils, writeFile } from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabase';
 import { PDFReport } from './PDFReport';
@@ -503,9 +503,11 @@ export function ReportingPage() {
           toast.loading('Generando Excel, por favor espere...');
           
           // Excel export with summary information and formatted filters
-          const wb = utils.book_new();
+          const wb = new ExcelJS.Workbook();
           
           // Add info sheet with filter information
+          const filterWs = wb.addWorksheet('Información');
+          
           const filterInfo = [
             [reportTitle],
             ['Generado el:', format(new Date(), 'dd/MM/yyyy HH:mm')],
@@ -526,18 +528,14 @@ export function ReportingPage() {
             ['Tasa de Morosidad:', `${summaryData.delinquencyRate}%`]
           ];
           
-          // Create and style the filter info sheet
-          const filterWs = utils.aoa_to_sheet(filterInfo);
+          // Add rows to filter sheet
+          filterInfo.forEach(row => {
+            filterWs.addRow(row);
+          });
           
-          // Add styles to the header cells
-          filterWs['!merges'] = [{
-            s: { r: 0, c: 0 },
-            e: { r: 0, c: 1 }
-          }];
-          
-          filterWs['!cols'] = [{ wch: 25 }, { wch: 50 }];
-          
-          utils.book_append_sheet(wb, filterWs, 'Información');
+          // Style the filter sheet
+          filterWs.getColumn(1).width = 25;
+          filterWs.getColumn(2).width = 50;
           
           // Add data sheet with all cuotas - ensure data formatting is consistent
           const formattedForExcel = formattedData.map(item => ({
@@ -553,24 +551,35 @@ export function ReportingPage() {
           }));
           
           // Create and add the data sheet
-          const ws = utils.json_to_sheet(formattedForExcel);
-          utils.book_append_sheet(wb, ws, 'Aranceles');
+          const ws = wb.addWorksheet('Aranceles');
+          
+          // Add headers
+          const headers = Object.keys(formattedForExcel[0] || {});
+          ws.addRow(headers);
+          
+          // Add data rows
+          formattedForExcel.forEach(row => {
+            ws.addRow(Object.values(row));
+          });
           
           // Set column widths
-          ws['!cols'] = [
-            { wch: 30 }, // Estudiante
-            { wch: 15 }, // Curso
-            { wch: 12 }, // RUN
-            { wch: 10 }, // Cuota N°
-            { wch: 12 }, // Monto
-            { wch: 10 }, // Estado
-            { wch: 16 }, // Fecha Vencimiento
-            { wch: 16 }, // Fecha Pago
-            { wch: 15 }  // Método Pago
-          ];
+          const columnWidths = [30, 15, 12, 10, 12, 10, 16, 16, 15];
+          columnWidths.forEach((width, index) => {
+            ws.getColumn(index + 1).width = width;
+          });
           
           const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-          writeFile(wb, `informe_aranceles_${timestamp}.xlsx`);
+          const filename = `informe_aranceles_${timestamp}.xlsx`;
+          
+          // Write file
+          const buffer = await wb.xlsx.writeBuffer();
+          const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          window.URL.revokeObjectURL(url);
           
           // Dismiss loading and show success
           toast.dismiss();

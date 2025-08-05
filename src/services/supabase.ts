@@ -17,31 +17,51 @@ export const supabase = createClient(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: 'pkce'
+      flowType: 'pkce',
+      storage: window.localStorage,
+      storageKey: 'supabase.auth.token'
     }
   }
 );
 
 // Add Google Auth helper functions
 export const signInWithGoogle = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      }
+    });
+
+    if (error) {
+      console.error('Google Auth error:', error);
+      toast.error(`Error al iniciar sesión con Google: ${error.message}`);
+      throw error;
     }
-  });
-  
-  if (error) {
-    console.error('Google Auth error:', error);
-    toast.error('Error al iniciar sesión con Google');
+
+    return data;
+  } catch (error) {
+    console.error('An unexpected error occurred during Google sign-in:', error);
+    toast.error('Ocurrió un error inesperado. Por favor, intenta nuevamente.');
     throw error;
   }
-  
-  return data;
+};
+
+// Clear invalid sessions
+export const clearInvalidSession = async () => {
+  try {
+    await supabase.auth.signOut();
+    // Clear local storage
+    localStorage.removeItem('supabase.auth.token');
+    window.location.reload();
+  } catch (error) {
+    console.error('Error clearing session:', error);
+  }
 };
 
 // Add error handler function
@@ -51,8 +71,9 @@ export const handleSupabaseError = (error: any) => {
     return;
   }
   
-  if (error.message?.includes('JWT')) {
-    toast.error('Sesión expirada. Por favor, inicia sesión nuevamente');
+  if (error.message?.includes('JWT') || error.message?.includes('Invalid Refresh Token')) {
+    toast.error('Sesión expirada. Reiniciando...');
+    clearInvalidSession();
     return;
   }
 

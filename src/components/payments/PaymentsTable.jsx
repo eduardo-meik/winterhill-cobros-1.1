@@ -78,8 +78,11 @@ export function PaymentsTable({
     return <p className="text-center text-gray-500 dark:text-gray-400 py-4">No hay pagos para mostrar.</p>;
   }
 
-  // Log cuotas for debugging
-  const cuotaNumbers = [...new Set(sortedPayments.map(p => p.numero_cuota))].sort((a, b) => parseInt(a) - parseInt(b));
+  // Log cuotas for debugging - handle numeric type correctly
+  const cuotaNumbers = [...new Set(sortedPayments
+    .map(p => p.numero_cuota)
+    .filter(c => c !== null && c !== undefined)
+  )].sort((a, b) => Number(a) - Number(b));
   console.log('Cuota numbers in display:', cuotaNumbers);
 
   return (
