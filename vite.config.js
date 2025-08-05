@@ -5,7 +5,7 @@ import path from 'path';
 export default defineConfig(({ mode }) => {
   // Set default VITE_SITE_URL if not provided
   if (mode === 'production' && !process.env.VITE_SITE_URL) {
-    process.env.VITE_SITE_URL = 'https://your-domain.com';
+    process.env.VITE_SITE_URL = 'https://winterhill-cobros-oeob29ghh-eduardomeiks-projects.vercel.app';
     console.warn('⚠️  VITE_SITE_URL not set, using default. Please set it in .env.production for production deployment.');
   }
 
