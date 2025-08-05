@@ -2,8 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
-import { ProductionEnvCheck } from './components/debug/ProductionEnvCheck';
-import { VercelEnvDiagnostic } from './components/debug/VercelEnvDiagnostic';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
@@ -19,13 +17,10 @@ import { ReportingPage } from './components/reporting/ReportingPage.jsx';
 import { AssistantPage } from './components/assistant/AssistantPage';
 import { ProfilePage } from './components/profile/ProfilePage';
 import { SettingsPage } from './components/settings/SettingsPage';
-import { DiagnosticPage } from './pages/DiagnosticPage';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <ProductionEnvCheck />
-      <VercelEnvDiagnostic />
       <AuthProvider>
         <Routes>
           {/* Public routes that do not require authentication */}
@@ -34,7 +29,6 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
-          <Route path="/diagnostic" element={<DiagnosticPage />} />
 
           {/* Protected routes that require authentication */}
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>

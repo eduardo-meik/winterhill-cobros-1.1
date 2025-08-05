@@ -3,8 +3,6 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { GoogleAuthButton } from '../../components/auth/GoogleAuthButton';
-import { GoogleAuthDebug } from '../../components/debug/GoogleAuthDebug';
-import { EnvTest } from '../../components/debug/EnvTest';
 
 interface LoginForm {
   email: string;
@@ -166,14 +164,6 @@ export function LoginPage() {
           </Link>
         </p>
       </div>
-      
-      {/* Debug components - only in development */}
-      {import.meta.env.DEV && (
-        <div className="mt-8 space-y-4">
-          <GoogleAuthDebug />
-          <EnvTest />
-        </div>
-      )}
     </div>
   );
 }
