@@ -22,15 +22,19 @@ export function ProductionEnvCheck() {
     <div className="fixed top-0 left-0 right-0 z-50 bg-red-100 border border-red-400 text-red-700 px-4 py-3">
       <div className="flex items-center justify-between">
         <div>
-          <strong className="font-bold">Environment Configuration Issue:</strong>
-          <span className="block sm:inline"> Missing required environment variables.</span>
+          <strong className="font-bold">⚠️ Environment Configuration Issue:</strong>
+          <span className="block sm:inline"> Missing required environment variables in production.</span>
+          <span className="block text-sm mt-1">Please configure environment variables in Vercel dashboard.</span>
         </div>
         <details className="cursor-pointer">
-          <summary className="text-sm underline">Details</summary>
-          <div className="mt-2 text-xs">
+          <summary className="text-sm underline">Show Details</summary>
+          <div className="mt-2 text-xs space-y-1">
             {Object.entries(env).map(([key, value]) => (
-              <div key={key}>
-                {key}: {value ? "✅" : "❌"}
+              <div key={key} className="flex justify-between">
+                <span className="font-mono">{key}:</span>
+                <span className={value ? "text-green-600" : "text-red-600"}>
+                  {value ? "✅ Set" : "❌ Missing"}
+                </span>
               </div>
             ))}
           </div>
