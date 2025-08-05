@@ -3,10 +3,32 @@ import toast from 'react-hot-toast';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
+const siteUrl = import.meta.env.VITE_SITE_URL as string;
+
+// Debug environment variables in development
+if (import.meta.env.DEV) {
+  console.log('🔧 Environment Variables Check:');
+  console.log('VITE_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
+  console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? '✅ Set' : '❌ Missing');
+  console.log('VITE_GOOGLE_CLIENT_ID:', googleClientId ? '✅ Set' : '❌ Missing');
+  console.log('VITE_SITE_URL:', siteUrl ? `✅ ${siteUrl}` : '❌ Missing');
+  console.log('Window Origin:', window.location.origin);
+}
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  toast.error('Error de configuración: Variables de entorno de Supabase no encontradas');
-  console.error('Missing Supabase environment variables');
+  const errorMsg = 'Error de configuración: Variables de entorno de Supabase no encontradas';
+  console.error('Missing Supabase environment variables:', {
+    VITE_SUPABASE_URL: !!supabaseUrl,
+    VITE_SUPABASE_ANON_KEY: !!supabaseAnonKey,
+    VITE_GOOGLE_CLIENT_ID: !!googleClientId,
+    VITE_SITE_URL: !!siteUrl
+  });
+  toast.error(errorMsg);
+}
+
+if (!googleClientId) {
+  console.warn('⚠️ Google Client ID not found - Google OAuth will not work');
 }
 
 export const supabase = createClient(
@@ -26,11 +48,28 @@ export const supabase = createClient(
 
 // Add Google Auth helper functions
 export const signInWithGoogle = async () => {
+  if (!googleClientId) {
+    const errorMsg = 'Google OAuth no está configurado. Verifique las variables de entorno.';
+    console.error('Google OAuth configuration missing');
+    toast.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+
   try {
+    // Use the configured site URL or fallback to window.location.origin
+    const redirectUrl = siteUrl || window.location.origin;
+    const callbackUrl = `${redirectUrl}/auth/callback`;
+    
+    console.log('🔄 Initiating Google OAuth with:', {
+      provider: 'google',
+      redirectTo: callbackUrl,
+      clientId: googleClientId ? 'Present' : 'Missing'
+    });
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -44,6 +83,7 @@ export const signInWithGoogle = async () => {
       throw error;
     }
 
+    console.log('✅ Google OAuth initiated successfully');
     return data;
   } catch (error) {
     console.error('An unexpected error occurred during Google sign-in:', error);

@@ -13,8 +13,40 @@ export function GoogleAuthButton({
 }: GoogleAuthButtonProps) {
   const { signInWithGoogle, loading } = useAuth();
 
+  // Check if Google Client ID is available
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  
+  // Debug info in development
+  if (import.meta.env.DEV) {
+    console.log('🔍 GoogleAuthButton Debug:', {
+      hasGoogleClientId: !!googleClientId,
+      loading,
+      disabled,
+      text
+    });
+  }
+
+  // Don't render if Google OAuth is not configured
+  if (!googleClientId) {
+    console.warn('GoogleAuthButton: Google Client ID not found - button will not be rendered');
+    
+    // Show a warning in development
+    if (import.meta.env.DEV) {
+      return (
+        <div className="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            ⚠️ Google OAuth no configurado (VITE_GOOGLE_CLIENT_ID no encontrado)
+          </p>
+        </div>
+      );
+    }
+    
+    return null;
+  }
+
   const handleGoogleSignIn = async () => {
     try {
+      console.log('🚀 Google sign-in button clicked');
       await signInWithGoogle();
     } catch (error) {
       // Error is handled by the AuthContext
