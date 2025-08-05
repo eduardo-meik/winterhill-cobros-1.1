@@ -1,5 +1,5 @@
 //src/components/payments/RegisterPaymentModal.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import { Card } from '../ui/Card';
@@ -14,7 +14,9 @@ const defaultValues = {
   payment_method: '',
   num_boleta: '',
   mov_bancario: '',
-  notes: ''
+  notes: '',
+  numero_cuota: '',
+  is_free_payment: false
 };
 
 export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
@@ -31,22 +33,178 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
   });
 
   const selectedStudentId = watch('student_id');
+  const selectedAmount = watch('amount');
+  const selectedNumeroCuota = watch('numero_cuota');
+  const isFreePayment = watch('is_free_payment');
+
+  // State for cuota management
+  const [availableCuotas, setAvailableCuotas] = useState([]);
+  const [selectedCuotaInfo, setSelectedCuotaInfo] = useState(null);
+  const [validationMessage, setValidationMessage] = useState('');
+  const [isLoadingCuotas, setIsLoadingCuotas] = useState(false);
+
+  // Fetch available cuotas when student changes
+  useEffect(() => {
+    if (selectedStudentId) {
+      fetchAvailableCuotas();
+    } else {
+      setAvailableCuotas([]);
+      setSelectedCuotaInfo(null);
+      setValidationMessage('');
+    }
+  }, [selectedStudentId]);
+
+  // Validate cuota selection and amount
+  useEffect(() => {
+    if (selectedNumeroCuota && !isFreePayment) {
+      validateCuotaSelection();
+    } else {
+      setValidationMessage('');
+      setSelectedCuotaInfo(null);
+    }
+  }, [selectedNumeroCuota, selectedAmount, isFreePayment]);
+
+  const fetchAvailableCuotas = async () => {
+    try {
+      setIsLoadingCuotas(true);
+      
+      // Fetch existing fee records for this student to identify cuotas
+      const { data: fees, error } = await supabase
+        .from('fee')
+        .select('numero_cuota, amount, status, due_date, payment_date')
+        .eq('student_id', selectedStudentId)
+        .order('numero_cuota', { ascending: true });
+
+      if (error) throw error;
+
+      // Process fees to identify available, paid, and pending cuotas
+      const cuotaMap = new Map();
+      fees?.forEach(fee => {
+        if (fee.numero_cuota) {
+          const existing = cuotaMap.get(fee.numero_cuota);
+          if (!existing || (fee.status === 'paid' && existing.status !== 'paid')) {
+            cuotaMap.set(fee.numero_cuota, fee);
+          }
+        }
+      });
+
+      const processedCuotas = Array.from(cuotaMap.values()).map(fee => ({
+        numero: fee.numero_cuota,
+        amount: fee.amount,
+        status: fee.status,
+        due_date: fee.due_date,
+        payment_date: fee.payment_date,
+        isPaid: fee.status === 'paid',
+        isPending: fee.status === 'pending' || fee.status === 'overdue'
+      }));
+
+      setAvailableCuotas(processedCuotas);
+    } catch (error) {
+      console.error('Error fetching cuotas:', error);
+      toast.error('Error al cargar información de cuotas');
+    } finally {
+      setIsLoadingCuotas(false);
+    }
+  };
+
+  // Auto-fill amount when cuota is selected
+  useEffect(() => {
+    if (selectedNumeroCuota && !isFreePayment && selectedCuotaInfo) {
+      setValue('amount', selectedCuotaInfo.amount);
+    }
+  }, [selectedNumeroCuota, selectedCuotaInfo, isFreePayment, setValue]);
+
+  const validateCuotaSelection = () => {
+    if (!selectedNumeroCuota || isFreePayment) {
+      setValidationMessage('');
+      setSelectedCuotaInfo(null);
+      return;
+    }
+
+    const cuotaNumber = parseInt(selectedNumeroCuota);
+    const selectedCuota = availableCuotas.find(c => c.numero === cuotaNumber);
+
+    if (!selectedCuota) {
+      setValidationMessage('⚠️ Esta cuota no existe en el sistema para este estudiante');
+      setSelectedCuotaInfo(null);
+      return;
+    }
+
+    setSelectedCuotaInfo(selectedCuota);
+
+    if (selectedCuota.isPaid) {
+      setValidationMessage('❌ Esta cuota ya está pagada');
+      return;
+    }
+
+    if (selectedAmount && parseFloat(selectedAmount) !== selectedCuota.amount) {
+      setValidationMessage(`⚠️ El monto no coincide con la cuota (esperado: $${selectedCuota.amount.toLocaleString()})`);
+      return;
+    }
+
+    if (selectedAmount && parseFloat(selectedAmount) === selectedCuota.amount) {
+      setValidationMessage('✅ Cuota válida - monto correcto');
+      return;
+    }
+
+    setValidationMessage('ℹ️ Cuota disponible para pago');
+  };
 
   const onSubmit = async (data) => {
     try {
+      // Validation before submission
+      if (!isFreePayment) {
+        if (!data.numero_cuota) {
+          toast.error('Debe seleccionar una cuota o marcar como pago libre');
+          return;
+        }
+
+        const cuotaNumber = parseInt(data.numero_cuota);
+        const selectedCuota = availableCuotas.find(c => c.numero === cuotaNumber);
+
+        if (!selectedCuota) {
+          toast.error('La cuota seleccionada no es válida');
+          return;
+        }
+
+        if (selectedCuota.isPaid) {
+          toast.error('Esta cuota ya está pagada');
+          return;
+        }
+
+        if (parseFloat(data.amount) !== selectedCuota.amount) {
+          const proceed = window.confirm(
+            `El monto ingresado ($${parseFloat(data.amount).toLocaleString()}) no coincide con el monto esperado de la cuota ($${selectedCuota.amount.toLocaleString()}). ¿Desea continuar?`
+          );
+          if (!proceed) return;
+        }
+      }
+
+      const paymentData = {
+        amount: parseFloat(data.amount),
+        payment_date: data.payment_date,
+        payment_method: data.payment_method,
+        status: 'paid',
+        student_id: data.student_id,
+        notes: data.notes,
+        num_boleta: data.num_boleta,
+        mov_bancario: data.mov_bancario,
+        owner_id: (await supabase.auth.getUser()).data.user.id
+      };
+
+      // Add numero_cuota if not a free payment
+      if (!isFreePayment && data.numero_cuota) {
+        paymentData.numero_cuota = parseInt(data.numero_cuota);
+      }
+
+      // Add free payment indicator in notes if applicable
+      if (isFreePayment) {
+        paymentData.notes = `[PAGO LIBRE] ${data.notes || ''}`.trim();
+      }
+
       const { error } = await supabase
         .from('fee')
-        .insert([{
-          amount: parseFloat(data.amount),
-          payment_date: data.payment_date,
-          payment_method: data.payment_method,
-          status: 'paid',
-          student_id: data.student_id,
-          notes: data.notes,
-          num_boleta: data.num_boleta,
-          mov_bancario: data.mov_bancario,
-          owner_id: (await supabase.auth.getUser()).data.user.id
-        }]);
+        .insert([paymentData]);
 
       if (error) throw error;
 
@@ -120,9 +278,129 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
                     {/* --- End error display --- */}
                   </div>
 
+                  {/* Free Payment Checkbox */}
+                  <div className="col-span-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        {...register('is_free_payment')}
+                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Pago libre (no asociado a cuota específica)
+                      </span>
+                    </label>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Marque esta opción para pagos de años anteriores o abonos sin cuota específica
+                    </p>
+                  </div>
+
+                  {/* Cuota Selection - Only show if not free payment and student is selected */}
+                  {!isFreePayment && selectedStudentId && (
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Cuota *
+                      </label>
+                      {isLoadingCuotas ? (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                          <span className="ml-2 text-sm text-gray-500">Cargando cuotas...</span>
+                        </div>
+                      ) : availableCuotas.length > 0 ? (
+                        <>
+                          <select
+                            {...register('numero_cuota', { 
+                              required: !isFreePayment ? 'Debe seleccionar una cuota o marcar como pago libre' : false
+                            })}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          >
+                            <option value="">Seleccionar cuota...</option>
+                            {availableCuotas.map((cuota) => (
+                              <option 
+                                key={cuota.numero} 
+                                value={cuota.numero}
+                                disabled={cuota.isPaid}
+                              >
+                                Cuota {cuota.numero} - ${cuota.amount.toLocaleString()} 
+                                {cuota.isPaid ? ' (PAGADA)' : ''} 
+                                {cuota.isPending ? ' (PENDIENTE)' : ''}
+                              </option>
+                            ))}
+                          </select>
+                          
+                          {/* Cuota Information Display */}
+                          {selectedCuotaInfo && (
+                            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Información de la Cuota {selectedCuotaInfo.numero}
+                              </h4>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                                <p>Monto: ${selectedCuotaInfo.amount.toLocaleString()}</p>
+                                <p>Estado: {selectedCuotaInfo.isPaid ? 'Pagada' : 'Pendiente'}</p>
+                                {selectedCuotaInfo.due_date && (
+                                  <p>Vencimiento: {new Date(selectedCuotaInfo.due_date).toLocaleDateString()}</p>
+                                )}
+                                {selectedCuotaInfo.payment_date && (
+                                  <p>Fecha de pago: {new Date(selectedCuotaInfo.payment_date).toLocaleDateString()}</p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Validation Message */}
+                          {validationMessage && (
+                            <div className={`mt-2 p-2 rounded-lg text-sm ${
+                              validationMessage.includes('✅') 
+                                ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                                : validationMessage.includes('❌')
+                                ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
+                                : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300'
+                            }`}>
+                              {validationMessage}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                          <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                            No se encontraron cuotas para este estudiante. Puede marcar como "pago libre" para registrar el pago.
+                          </p>
+                        </div>
+                      )}
+                      
+                      {errors.numero_cuota && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.numero_cuota.message}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Manual Cuota Number Input for Free Payments */}
+                  {isFreePayment && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Número de Cuota (Opcional)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        {...register('numero_cuota')}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        placeholder="Ej: 1, 2, 3..."
+                      />
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Solo si desea asociar el pago a un número de cuota específico
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Monto *
+                      {selectedCuotaInfo && !isFreePayment && (
+                        <span className="text-xs text-green-600 dark:text-green-400 ml-2">
+                          (Auto-completado desde cuota)
+                        </span>
+                      )}
                     </label>
                     <input
                       type="number"
@@ -135,11 +413,19 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
                         max: { value: 5000000, message: 'El monto máximo es 99,999,999.99' }
                         // --- End max validation ---
                       })}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className={`w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary ${
+                        selectedCuotaInfo && !isFreePayment ? 'bg-green-50 dark:bg-green-900/20' : ''
+                      }`}
+                      placeholder={selectedCuotaInfo && !isFreePayment ? `Monto sugerido: $${selectedCuotaInfo.amount.toLocaleString()}` : 'Ingrese el monto'}
                     />
                     {/* This part correctly displays the error message */}
                     {errors.amount && (
                       <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount.message}</p>
+                    )}
+                    {selectedCuotaInfo && !isFreePayment && (
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Puede modificar el monto si es necesario
+                      </p>
                     )}
                   </div>
 
