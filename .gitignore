@@ -30,3 +30,6 @@ client_secret_14877592509-uh2v1l445qqe7mm767apc5c3go64nhp0.apps.googleuserconten
 .env.development
 .env.test
 .env.production
+
+# Python tools and data processing scripts
+python_tool/
