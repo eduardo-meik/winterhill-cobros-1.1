@@ -8,7 +8,7 @@ const plans = [
     price: '$29',
     period: 'month',
     features: [
-      'Up to 1,000 customers',
+  'Up to 1,000 registros',
       'Basic analytics',
       'Email support',
       '5 team members'
@@ -20,7 +20,7 @@ const plans = [
     price: '$79',
     period: 'month',
     features: [
-      'Up to 10,000 customers',
+  'Up to 10,000 registros',
       'Advanced analytics',
       'Priority support',
       'Unlimited team members'
@@ -32,7 +32,7 @@ const plans = [
     price: '$199',
     period: 'month',
     features: [
-      'Unlimited customers',
+  'Registros ilimitados',
       'Custom analytics',
       '24/7 support',
       'Custom features'

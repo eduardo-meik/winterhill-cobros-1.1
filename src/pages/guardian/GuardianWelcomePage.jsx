@@ -25,10 +25,11 @@ const normalizeStudentForDisplay = (studentRow) => {
   return {
     id: studentRow.id,
     displayName: wholeNameCandidate || `${firstName} ${remaining}`.trim(),
-    run: studentRow.run || '',
-    courseLabel: studentRow.cursos?.nom_curso || studentRow.curso || '',
+    whole_name: studentRow.whole_name,
     firstName,
     lastNames: remaining,
+    run: studentRow.run || '',
+    courseLabel: studentRow.cursos?.nom_curso || studentRow.curso || '',
   };
 };
 
@@ -246,17 +247,20 @@ export const GuardianWelcomePage = () => {
         <div className="col-span-1 border rounded-md bg-white dark:bg-gray-800 p-4 shadow-sm">
           <h3 className="font-medium mb-3 text-sm text-gray-500 uppercase tracking-wide">Estudiantes Asociados</h3>
           {students.length > 0 ? (
-            <ul className="text-sm divide-y divide-gray-200 dark:divide-gray-700">
-              {students.map(s => (
-                <li key={s.id} className="py-2 flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{s.displayName || 'Sin nombre'}</div>
-                    {s.run && <div className="text-xs text-gray-500">{s.run}</div>}
-                  </div>
-                  <Chip>{s.courseLabel || 'Sin curso'}</Chip>
-                </li>
-              ))}
-            </ul>
+            <>
+              <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">Mis Alumnos Asociados</div>
+              <ul className="text-sm divide-y divide-gray-200 dark:divide-gray-700">
+                {students.map(s => (
+                  <li key={s.id} className="py-2 flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">{s.displayName || s.whole_name || `${s.firstName} ${s.lastNames}`.trim() || 'Sin nombre'}</div>
+                      {s.run && <div className="text-xs text-gray-500">{s.run}</div>}
+                    </div>
+                    <Chip>{s.courseLabel || 'Sin curso'}</Chip>
+                  </li>
+                ))}
+              </ul>
+            </>
           ) : <div className="text-sm text-gray-500">Aún no hay estudiantes vinculados.</div>}
           <div className="mt-4">
             <Link to="/matricula" className="text-primary text-sm hover:underline">Ir a matrícula</Link>

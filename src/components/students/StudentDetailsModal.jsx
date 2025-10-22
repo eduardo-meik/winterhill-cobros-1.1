@@ -334,7 +334,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                       >
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            {guardian.first_name} {guardian.last_name} • {guardian.family_tie || guardian.relationship_type || 'Relación no especificada'}
+                            {guardian.first_name} {guardian.last_name} • {guardian.relationship_type}
                           </p>
                           <div className="flex flex-col sm:flex-row sm:gap-4">
                             <p className="text-sm text-gray-500 dark:text-gray-400">

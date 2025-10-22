@@ -3,13 +3,8 @@ import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
 
 export function MobileMenu({ isOpen, onClose, currentPage, onNavigate }) {
-  const menuItems = [
-    { id: 'dashboard', label: 'Home', icon: HomeIcon },
-    { id: 'customers', label: 'Customers', icon: CustomersIcon },
-    { id: 'conversations', label: 'Conversations', icon: ConversationsIcon },
-    { id: 'campaigns', label: 'Campaigns', icon: CampaignsIcon },
-    { id: 'reporting', label: 'Reporting', icon: ReportingIcon },
-  ];
+  // Remove legacy CRM menu items
+  const menuItems = [];
 
   return (
     <Dialog
@@ -22,7 +17,7 @@ export function MobileMenu({ isOpen, onClose, currentPage, onNavigate }) {
       <div className="fixed inset-y-0 left-0 w-full max-w-xs">
         <Dialog.Panel className="h-full bg-white dark:bg-dark-card shadow-xl">
           <div className="flex h-16 items-center justify-between px-4 border-b border-gray-100 dark:border-gray-800">
-            <span className="text-xl font-bold text-primary">Bolt CRM</span>
+            {/* Removed legacy Bolt CRM branding */}
             <button
               onClick={onClose}
               className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg"
@@ -33,26 +28,7 @@ export function MobileMenu({ isOpen, onClose, currentPage, onNavigate }) {
             </button>
           </div>
 
-          <nav className="p-4">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onNavigate(item.id);
-                  onClose();
-                }}
-                className={clsx(
-                  'flex w-full items-center gap-3 px-3 py-2 rounded-xl mb-1 transition-colors',
-                  currentPage === item.id
-                    ? 'bg-primary bg-opacity-15 text-primary dark:bg-opacity-20'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-hover'
-                )}
-              >
-                <item.icon />
-                <span className="text-sm font-medium">{item.label}</span>
-              </button>
-            ))}
-          </nav>
+          {/* Removed legacy CRM menu navigation */}
         </Dialog.Panel>
       </div>
     </Dialog>
