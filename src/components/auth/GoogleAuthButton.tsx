@@ -14,10 +14,25 @@ export function GoogleAuthButton({
   const { signInWithGoogle, loading } = useAuth();
 
   // Check if Google Client ID is available
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  // Safe env access (browser + tests)
+  const googleClientId = ((): string | undefined => {
+    try { // @ts-ignore
+      if (import.meta?.env?.VITE_GOOGLE_CLIENT_ID) { // @ts-ignore
+        return import.meta.env.VITE_GOOGLE_CLIENT_ID as string; }
+    } catch { /* ignore */ }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof process !== 'undefined' && process.env?.VITE_GOOGLE_CLIENT_ID) return process.env.VITE_GOOGLE_CLIENT_ID;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (globalThis as any).__TEST_GOOGLE_CLIENT_ID__;
+  })();
   
   // Debug info in development
-  if (import.meta.env.DEV) {
+  const isDev = (() => {
+    try { // @ts-ignore
+      return !!import.meta?.env?.DEV; } catch { return typeof process !== 'undefined' ? process.env?.NODE_ENV !== 'production' : false; }
+  })();
+
+  if (isDev) {
     console.log('🔍 GoogleAuthButton Debug:', {
       hasGoogleClientId: !!googleClientId,
       loading,
@@ -31,7 +46,7 @@ export function GoogleAuthButton({
     console.warn('GoogleAuthButton: Google Client ID not found - button will not be rendered');
     
     // Show a warning in development
-    if (import.meta.env.DEV) {
+    if (isDev) {
       return (
         <div className="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-sm text-yellow-800">

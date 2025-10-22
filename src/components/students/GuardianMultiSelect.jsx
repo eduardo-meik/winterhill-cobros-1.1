@@ -22,6 +22,7 @@ export function GuardianMultiSelect({ selectedGuardiansInfo = [], onChange, erro
           last_name,
           run,
           relationship_type,
+          family_tie,
           tipo_apoderado 
         `)
         .order('last_name', { ascending: true });
@@ -100,7 +101,7 @@ export function GuardianMultiSelect({ selectedGuardiansInfo = [], onChange, erro
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       RUT: {guardian.run}
-                      {guardian.relationship_type ? ` • Relación: ${guardian.relationship_type}` : ''}
+                      {(guardian.family_tie || guardian.relationship_type) ? ` • Relación: ${guardian.family_tie || guardian.relationship_type}` : ''}
                       {guardian.tipo_apoderado ? ` • Tipo General: ${guardian.tipo_apoderado}` : ''}
                     </p>
                   </div>

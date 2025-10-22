@@ -19,14 +19,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AuthState>(initialAuthState);
   const navigate = useNavigate();
 
-  const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined): LocalUser | null => {
+  const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string): LocalUser | null => {
     if (!supabaseUser) return null;
+    // Normalize role to lowercase to avoid casing mismatches (e.g. 'GUARDIAN' vs 'guardian').
+    const normalizedRole = role ? role.toLowerCase() : undefined;
     return {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
-      created_at: supabaseUser.created_at, 
+      created_at: supabaseUser.created_at,
       updated_at: supabaseUser.updated_at || supabaseUser.created_at,
+      role: normalizedRole,
     };
+  };
+
+  const fetchProfileRole = async (userId: string | undefined): Promise<string | undefined> => {
+    if (!userId) return undefined;
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+      if (error) {
+        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile role: ${error.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error });
+        return undefined;
+      }
+  return data?.role ? String(data.role).toLowerCase() : undefined;
+    } catch (err: any) {
+      Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile role: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
+      return undefined;
+    }
   };
 
   useEffect(() => {
@@ -37,7 +59,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching session initial: ${error.message}`, undefined, 'getSession', { level: 'ERROR', area: 'AUTH', error });
           throw error;
         }
-        setState({ session, user: mapSupabaseUserToLocalUser(session?.user), loading: false });
+  const role = await fetchProfileRole(session?.user?.id);
+  setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role), loading: false });
       } catch (error: any) {
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Catch getSession: ${error.message}`, undefined, 'getSessionCatch', { level: 'ERROR', area: 'AUTH', errorMessage: error.message });
         setState(prev => ({ ...prev, loading: false }));
@@ -47,7 +70,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       Logger.getInstance().log(LogCode.AUTH_STATE_CHANGED, `Auth event: ${event}`, session?.user?.id, 'onAuthStateChange', { level: 'INFO', area: 'AUTH', session });
-      setState({ session, user: mapSupabaseUserToLocalUser(session?.user), loading: false });
+      (async () => {
+        const role = await fetchProfileRole(session?.user?.id);
+        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role), loading: false });
+      })();
       
       if (event === 'PASSWORD_RECOVERY') {
         toast.success('Puedes establecer tu nueva contraseña ahora.');
@@ -221,8 +247,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const refreshProfileRole = async () => {
+    const userId = state.user?.id;
+    if (!userId) return;
+    const role = await fetchProfileRole(userId);
+    setState(prev => ({ ...prev, user: prev.user ? { ...prev.user, role } : prev.user }));
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogle: signInWithGoogleProvider }}>
+    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogle: signInWithGoogleProvider, refreshProfileRole }}>
       {children}
     </AuthContext.Provider>
   );

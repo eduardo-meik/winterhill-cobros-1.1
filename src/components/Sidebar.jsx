@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { House, UsersThree, ChatDots, Money, ChartPie, Guardian } from './Icons';
 import clsx from 'clsx';
 
@@ -6,13 +7,13 @@ import clsx from 'clsx';
  * Navigation menu items configuration
  * Each item defines an id, icon component, and display text
  */
-const menuItems = [
-  { id: 'dashboard', icon: House, text: 'Inicio' },
-  { id: 'students', icon: UsersThree, text: 'Estudiantes' },
-  { id: 'guardians', icon: Guardian, text: 'Apoderados' }, // Changed from UsersThree to Bell
-  { id: 'payments', icon: Money, text: 'Aranceles' }, // Changed from Megaphone to ShoppingCart
-  { id: 'reporting', icon: ChartPie, text: 'Reportes' },
-  { id: 'assistant', icon: ChatDots, text: 'Asistente' }
+const baseMenuItems = [
+  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'guardian', undefined] },
+  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: ['admin'] },
+  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin'] },
+  { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'guardian'] },
+  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin'] },
+  { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin'] }
 ];
 
 /**
@@ -20,6 +21,8 @@ const menuItems = [
  * Handles both desktop and mobile layouts
  */
 export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick, isCollapsed, onToggleCollapse }) {
+  const { user } = useAuth();
+  const role = user?.role;
   // Handle escape key to close mobile sidebar
   useEffect(() => {
     const handleEscape = (e) => {
@@ -82,7 +85,11 @@ export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick,
             "flex flex-col gap-1 flex-shrink-0",
             isCollapsed ? "p-2" : "p-4"
           )}>
-            {menuItems.map((item) => (
+            {baseMenuItems
+              .filter(item => !item.roles || item.roles.includes(role))
+              .map((item) => {
+                const text = item.id === 'dashboard' && role === 'guardian' ? 'Bienvenida' : item.text;
+                return (
               <button
                 key={item.id}
                 onClick={() => onMenuItemClick(item.id)}
@@ -95,14 +102,14 @@ export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick,
                 aria-label={item.text}
               >
                 <item.icon />
-                {!isCollapsed && <span className="text-sm font-medium">{item.text}</span>}
+                {!isCollapsed && <span className="text-sm font-medium">{text}</span>}
                 {isCollapsed && (
                   <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
-                    {item.text}
+                    {text}
                   </div>
                 )}
               </button>
-            ))}
+            )})}
           </nav>
         </div>
       </div>

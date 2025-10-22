@@ -5,8 +5,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { GuardianRegisterPage } from './pages/auth/GuardianRegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
+import { GuardianClaimPage } from './pages/auth/GuardianClaimPage';
+import { GuardianAcceptInvitePage } from './pages/auth/GuardianAcceptInvitePage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { MainLayout } from './components/layouts/MainLayout';
 import Dashboard from './components/Dashboard';
@@ -17,6 +20,40 @@ import { ReportingPage } from './components/reporting/ReportingPage.jsx';
 import { AssistantPage } from './components/assistant/AssistantPage';
 import { ProfilePage } from './components/profile/ProfilePage';
 import { SettingsPage } from './components/settings/SettingsPage';
+import { MatriculaWizard } from './components/matricula/MatriculaWizard';
+import { GuardianIntakePage } from './pages/guardian/GuardianIntakePage';
+import { GuardianWelcomePage } from './pages/guardian/GuardianWelcomePage';
+import GuardianPortalPage from './pages/guardian/GuardianPortalPage';
+import { useAuth } from './contexts/AuthContext';
+
+// Dynamic root redirect based on role
+export function RootRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
+      </div>
+    );
+  }
+  if (user?.role && user.role.toLowerCase() === 'guardian') return <Navigate to="/apoderado/bienvenido" replace />;
+  return <Navigate to="/dashboard" replace />;
+}
+
+export function DashboardRoute() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
+      </div>
+    );
+  }
+  if (user?.role && user.role.toLowerCase() === 'guardian') {
+    return <Navigate to="/apoderado/bienvenido" replace />;
+  }
+  return <Dashboard />;
+}
 
 export default function App() {
   return (
@@ -26,17 +63,20 @@ export default function App() {
           {/* Public routes that do not require authentication */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/registro-apoderado" element={<GuardianClaimPage />} />
+          <Route path="/registro-apoderado/nuevo" element={<GuardianRegisterPage />} />
+          <Route path="/apoderado/aceptar" element={<GuardianAcceptInvitePage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
           {/* Protected routes that require authentication */}
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-            {/* Redirect from root to dashboard */}
-            <Route index element={<Navigate to="/dashboard" replace />} />
+            {/* Root redirect: guardian -> bienvenida, others -> dashboard */}
+            <Route index element={<RootRedirect />} />
 
             {/* Main application routes */}
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<DashboardRoute />} />
             <Route path="students" element={<StudentsPage />} />
             <Route path="guardians" element={<GuardiansPage />} />
             <Route path="payments" element={<PaymentsPage />} />
@@ -44,6 +84,10 @@ export default function App() {
             <Route path="assistant" element={<AssistantPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="matricula" element={<MatriculaWizard />} />
+            <Route path="apoderado/encuesta" element={<GuardianIntakePage />} />
+            <Route path="apoderado/bienvenido" element={<GuardianWelcomePage />} />
+            <Route path="apoderado/portal" element={<GuardianPortalPage />} />
           </Route>
         </Routes>
         <Toaster position="top-right" />

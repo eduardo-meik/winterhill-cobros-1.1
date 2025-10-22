@@ -3,6 +3,7 @@ export interface User {
   email: string;
   created_at: string;
   updated_at: string;
+  role?: string; // role from profiles table (e.g., 'admin', 'guardian')
 }
 
 export interface AuthState {
@@ -18,4 +19,5 @@ export interface AuthContextType extends AuthState {
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  refreshProfileRole: () => Promise<void>; // fetch role from profiles and update state
 }

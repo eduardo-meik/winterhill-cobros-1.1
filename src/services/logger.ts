@@ -54,9 +54,9 @@ class Logger {
       metadata
     };
 
-    // Log to console in development
-    if (import.meta.env.DEV) {
-      console.log(this.formatMessage(entry));
+    // Log to console in development; guard for test environment where import.meta may not be defined
+    if (typeof process !== 'undefined' ? process.env?.NODE_ENV !== 'production' : true) {
+      try { console.log(this.formatMessage(entry)); } catch { /* ignore */ }
     }
 
     // Persist log with retry logic
@@ -77,7 +77,7 @@ class Logger {
   }
 
   public getActionableStep(code: LogCode): string {
-    const actionableSteps: Record<LogCode, string> = {
+    const actionableSteps: { [k: string]: string } = {
       [LogCode.AUTH_LOGIN_FAILED]: 'Verifica tus credenciales e intenta nuevamente',
       [LogCode.SECURITY_ACCOUNT_LOCKED]: 'Contacta a soporte para desbloquear tu cuenta',
       [LogCode.VALIDATION_PASSWORD]: 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número',
@@ -85,7 +85,6 @@ class Logger {
       [LogCode.SECURITY_SESSION_EXPIRED]: 'Inicia sesión nuevamente',
       [LogCode.EMAIL_VERIFICATION_FAILED]: 'Solicita un nuevo enlace de verificación'
     };
-
     return actionableSteps[code] || 'Contacta a soporte si el problema persiste';
   }
 }
