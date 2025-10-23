@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from '../ui/Header';
 import Sidebar from '../Sidebar';
@@ -6,7 +6,6 @@ import { MobileMenu } from '../ui/MobileMenu';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
-import { useGuardianDashboardRedirect } from '../../hooks/useGuardianDashboardRedirect';
 
 export function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,7 +14,6 @@ export function MainLayout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { checking } = useGuardianIntakeGate();
-  const redirected = useGuardianDashboardRedirect();
 
   const restrictedForGuardian = new Set(['students','guardians','reporting','assistant']);
 
@@ -60,7 +58,7 @@ export function MainLayout() {
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
-          {checking || redirected ? (
+          {checking ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
             </div>

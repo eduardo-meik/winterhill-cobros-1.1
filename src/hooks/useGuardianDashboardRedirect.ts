@@ -6,14 +6,22 @@ export function useGuardianDashboardRedirect(target: string = '/apoderado/bienve
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [redirected, setRedirected] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-  if (user?.role && user.role.toLowerCase() === 'guardian' && location.pathname === '/dashboard') {
-      navigate(target, { replace: true });
-      setRedirected(true);
-    }
-  }, [user?.role, location.pathname, navigate, target]);
+    const isGuardian = user?.role && user.role.toLowerCase() === 'guardian';
+    const onDashboard = location.pathname === '/dashboard';
 
-  return redirected;
+    if (isGuardian && onDashboard) {
+      setRedirecting(true);
+      navigate(target, { replace: true });
+      return;
+    }
+
+    if (redirecting && (!isGuardian || !onDashboard)) {
+      setRedirecting(false);
+    }
+  }, [user?.role, location.pathname, navigate, target, redirecting]);
+
+  return redirecting;
 }
