@@ -205,6 +205,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Guardia
   const studentIds = (links || []).map(l => l.student_id).filter(Boolean);
   if (!studentIds.length) return [];
 
+  // Fetch students WITHOUT curso join first (to avoid RLS issues)
   const { data: studentRows, error: studentsErr } = await supabase
     .from('students')
     .select(`
@@ -223,13 +224,31 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Guardia
       direccion,
       comuna,
       con_quien_vive,
-      institucion_procedencia,
-      cursos!curso(nom_curso)
+      institucion_procedencia
     `)
     .in('id', studentIds);
+  
   if (studentsErr) {
     console.error('fetchGuardianStudents students error', studentsErr);
     return [];
+  }
+
+  // Fetch curso names separately if needed
+  const cursoIds = (studentRows || []).map(s => s.curso).filter(Boolean);
+  let cursoMap: Record<string, string> = {};
+  
+  if (cursoIds.length > 0) {
+    const { data: cursoRows } = await supabase
+      .from('cursos')
+      .select('id, nom_curso')
+      .in('id', cursoIds);
+    
+    if (cursoRows) {
+      cursoMap = cursoRows.reduce((acc: any, c: any) => {
+        acc[c.id] = c.nom_curso;
+        return acc;
+      }, {});
+    }
   }
 
   return (studentRows || []).map((row: any) => {
@@ -243,7 +262,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Guardia
       date_of_birth: row.date_of_birth ?? null,
       grade: row.nivel ?? null,
       curso_id: row.curso ?? null,
-      curso_label: row.cursos?.nom_curso ?? row.nivel ?? null,
+      curso_label: (row.curso ? cursoMap[row.curso] : null) ?? row.nivel ?? null,
       nombre_social: row.nombre_social ?? null,
       genero: row.genero ?? null,
       nacionalidad: row.nacionalidad ?? null,

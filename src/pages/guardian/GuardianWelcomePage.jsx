@@ -118,18 +118,28 @@ export const GuardianWelcomePage = () => {
 
         // 5. Fee totals for linked students
         if (linkedStudentIds.length) {
-          const { data: feeRows, error: feeErr } = await supabase
-            .from('fee')
-            .select('amount, status, year')
-            .in('student_id', linkedStudentIds)
-            .eq('year', currentYear);
-          if (!feeErr && feeRows && active) {
-            const totalPaid = feeRows.filter(f => f.status === 'paid').reduce((a,b)=>a+Number(b.amount||0),0);
-            const totalPending = feeRows.filter(f => f.status === 'pending').reduce((a,b)=>a+Number(b.amount||0),0);
-            const totalOverdue = feeRows.filter(f => f.status === 'overdue').reduce((a,b)=>a+Number(b.amount||0),0);
-            setFeeTotals({ totalPaid, totalPending, totalOverdue, count: feeRows.length });
-          } else if (active) {
-            setFeeTotals(EMPTY_FEE_TOTALS);
+          try {
+            // Query fees using year_academico column (added in database migration)
+            const { data: feeRows, error: feeErr } = await supabase
+              .from('fee')
+              .select('amount, status, due_date, year_academico')
+              .in('student_id', linkedStudentIds)
+              .eq('year_academico', currentYear);
+            
+            if (feeErr) {
+              console.error('Error fetching fees:', feeErr);
+              if (active) setFeeTotals(EMPTY_FEE_TOTALS);
+            } else if (feeRows && active) {
+              const totalPaid = feeRows.filter(f => f.status === 'paid').reduce((a,b)=>a+Number(b.amount||0),0);
+              const totalPending = feeRows.filter(f => f.status === 'pending').reduce((a,b)=>a+Number(b.amount||0),0);
+              const totalOverdue = feeRows.filter(f => f.status === 'overdue').reduce((a,b)=>a+Number(b.amount||0),0);
+              setFeeTotals({ totalPaid, totalPending, totalOverdue, count: feeRows.length });
+            } else if (active) {
+              setFeeTotals(EMPTY_FEE_TOTALS);
+            }
+          } catch (err) {
+            console.error('Exception fetching fees:', err);
+            if (active) setFeeTotals(EMPTY_FEE_TOTALS);
           }
         } else if (active) {
           setFeeTotals(EMPTY_FEE_TOTALS);
