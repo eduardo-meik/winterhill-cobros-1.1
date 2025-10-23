@@ -91,6 +91,13 @@ export async function fetchCurrentIntake(force = false): Promise<GuardianIntakeR
             : []
         };
       }
+
+      if (record && typeof record.status === 'string') {
+        record = {
+          ...record,
+          status: record.status.toLowerCase() as GuardianIntakeRecord['status']
+        };
+      }
       
       // If not found (404 / PGRST116) try auto-create a minimal draft once.
       if (!record && !_intakeAutoCreateAttempted) {
@@ -130,6 +137,7 @@ export async function saveIntakeDraft(payload: Record<string, any>) {
 export async function submitIntake() {
   const { data, error } = await supabase.rpc('submit_guardian_intake_survey');
   if (error) throw error;
+  clearGuardianIntakeCache();
   return data;
 }
 
@@ -137,7 +145,7 @@ export async function needsIntakeCheck(force = false): Promise<boolean> {
   try {
     const rec = await fetchCurrentIntake(force);
     if (!rec) return true; // none yet => should complete
-    return rec.status !== 'submitted';
+    return rec.status?.toLowerCase() !== 'submitted';
   } catch (e) {
     // Conservative: require completion if error
     return true;

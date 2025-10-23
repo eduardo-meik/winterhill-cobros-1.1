@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { fetchCurrentGuardian, getOrCreateEnrollment } from '../../services/matricula';
+import { fetchCurrentGuardian, getOrCreateEnrollment, fetchGuardianStudents } from '../../services/matricula';
 // Intake need now provided through gate hook caching; we also traeremos el registro para rellenar campos
 import { Link, useNavigate } from 'react-router-dom';
 import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
@@ -76,37 +76,37 @@ export const GuardianWelcomePage = () => {
           setIntakeNeeded(gateIntakeNeeded);
         }
 
-        // 3. Enrollment requires guardian id
+        // 3. Students via service function (requires guardian id)
         let linkedStudentIds = [];
         if (g?.id) {
-          const { data: links, error: linkErr } = await supabase
-            .from('student_guardian')
-            .select('student_id')
-            .eq('guardian_id', g.id);
-          if (!linkErr && links?.length) {
-            linkedStudentIds = links
-              .map(l => l.student_id)
-              .filter((id) => Boolean(id));
-          }
-        }
-
-        if (linkedStudentIds.length) {
-          const { data: studentRows, error: stuErr } = await supabase
-            .from('students')
-            .select('id, first_name, last_name, whole_name, run, curso, cursos:curso(nom_curso)')
-            .in('id', linkedStudentIds);
-          if (!stuErr && active) {
-            const normalized = (studentRows || [])
-              .map(normalizeStudentForDisplay)
-              .filter(Boolean);
-            setStudents(normalized);
-          } else if (active) {
-            setStudents([]);
+          try {
+            const linkedStudents = await fetchGuardianStudents(g.id);
+            if (active) {
+              const normalized = linkedStudents
+                .map(s => ({
+                  id: s.id,
+                  displayName: s.whole_name || `${s.first_name || ''} ${s.last_name || ''}`.trim(),
+                  whole_name: s.whole_name,
+                  firstName: s.first_name,
+                  lastNames: s.last_name,
+                  run: s.run || '',
+                  courseLabel: s.curso_label || ''
+                }))
+                .filter(Boolean);
+              setStudents(normalized);
+              
+              // Collect IDs for fee query
+              linkedStudentIds = normalized.map(s => s.id);
+            }
+          } catch (err) {
+            console.error('Error fetching guardian students', err);
+            if (active) setStudents([]);
           }
         } else if (active) {
           setStudents([]);
         }
 
+        // 4. Enrollment for current year
         let enr = null;
         if (g?.id) {
           enr = await getOrCreateEnrollment(g.id, currentYear).catch(() => null);
@@ -116,6 +116,7 @@ export const GuardianWelcomePage = () => {
           setEnrollment(null);
         }
 
+        // 5. Fee totals for linked students
         if (linkedStudentIds.length) {
           const { data: feeRows, error: feeErr } = await supabase
             .from('fee')
