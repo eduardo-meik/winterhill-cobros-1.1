@@ -15,8 +15,10 @@ import {
   renderTemplate,
   createPagareDocument,
   signEnrollmentDocument,
-  sha256
+  sha256,
+  getDocumentPDFUrl
 } from '../../services/matricula';
+import { downloadPDFBlob, previewPDFBlob } from '../../services/pdfGenerator';
 import { supabase } from '../../services/supabase';
 
 // Simple wizard steps definition
@@ -46,18 +48,35 @@ export function MatriculaWizard() {
   const [previewHtml, setPreviewHtml] = useState('');
   const [documentRecord, setDocumentRecord] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Load guardian & enrollment baseline
   useEffect(() => {
     if (!user) return;
     (async () => {
+      console.log('🔍 MatriculaWizard: Loading guardian for user:', user.id);
       setLoading(true);
+      setError(null);
       const g = await fetchCurrentGuardian(user.id);
-      if (!g) { setLoading(false); return; }
+      console.log('🔍 MatriculaWizard: Guardian fetched:', g);
+      if (!g) { 
+        setLoading(false); 
+        setError('No se encontró registro de apoderado. Por favor contacte al administrador para crear su perfil.');
+        toast.error('No se encontró registro de apoderado');
+        return; 
+      }
       setGuardian(g);
+      console.log('🔍 MatriculaWizard: Creating enrollment for guardian:', g.id, 'year:', year);
       const enr = await getOrCreateEnrollment(g.id, year);
-      if (enr) setEnrollment(enr);
+      console.log('🔍 MatriculaWizard: Enrollment created/fetched:', enr);
+      if (!enr) {
+        setError('No se pudo crear la matrícula. Intente nuevamente.');
+        toast.error('Error creando matrícula');
+      } else {
+        setEnrollment(enr);
+      }
       setLoading(false);
+      console.log('🔍 MatriculaWizard: Loading complete');
     })();
   }, [user, year]);
 
@@ -141,12 +160,62 @@ export function MatriculaWizard() {
     const payload = buildPagarePayload({ guardian, year, students, economic: econNumbers });
     const html = renderTemplate(tmpl.content, payload).replace('{{students_table}}', payload.students_table);
     setPreviewHtml(html);
-    // Create doc record now (without PDF yet)
+    // Create doc record with PDF generation
     const contentHash = await sha256(html);
-    const doc = await createPagareDocument({ enrollmentId: enrollment.id, template: tmpl, payload, finalContent: html, contentHash });
+    const doc = await createPagareDocument({ 
+      enrollmentId: enrollment.id, 
+      template: tmpl, 
+      payload, 
+      finalContent: html, 
+      contentHash,
+      generatePDF: true, // Enable PDF generation
+      guardianRun: guardian.run // For signature section
+    });
     setDocumentRecord(doc);
     setLoading(false);
     if (doc) setStep(3); // jump to final step for review & sign
+  };
+
+  // Download PDF
+  const handleDownloadPDF = async () => {
+    if (!documentRecord?.storage_path) {
+      toast.error('No hay PDF disponible para descargar');
+      return;
+    }
+    
+    try {
+      const url = await getDocumentPDFUrl(documentRecord.storage_path);
+      if (url) {
+        // Download using anchor element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Pagare_${year}_${guardian?.run || 'documento'}.pdf`;
+        link.click();
+        toast.success('Descargando PDF...');
+      }
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error('Error al descargar el PDF');
+    }
+  };
+
+  // Preview PDF in new tab
+  const handlePreviewPDF = async () => {
+    if (!documentRecord?.storage_path) {
+      toast.error('No hay PDF disponible para previsualizar');
+      return;
+    }
+    
+    try {
+      const url = await getDocumentPDFUrl(documentRecord.storage_path);
+      if (url) {
+        window.open(url, '_blank');
+        toast.success('Abriendo vista previa...');
+      }
+    } catch (err) {
+      console.error('Preview error:', err);
+      toast.error('Error al abrir la vista previa');
+    }
   };
 
   // Sign document
@@ -165,11 +234,47 @@ export function MatriculaWizard() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Matrícula {year}</h1>
       <p className="text-sm text-gray-600 dark:text-gray-400">Asistente básico de matrícula y generación de Pagaré (versión inicial).</p>
 
-      <div className="flex gap-2 flex-wrap">
-        {STEPS.map((s, idx) => (
-          <span key={s} className={`px-3 py-1 rounded text-xs font-medium ${idx === step ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>{idx + 1}. {s}</span>
-        ))}
-      </div>
+      {/* Error State */}
+      {error && (
+        <Card className="border-red-500 bg-red-50 dark:bg-red-900/20">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⚠️</span>
+              <div>
+                <h3 className="font-semibold text-red-900 dark:text-red-100 mb-1">Error de Configuración</h3>
+                <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+                <div className="mt-3 space-y-1 text-xs text-red-700 dark:text-red-300">
+                  <p><strong>Posibles soluciones:</strong></p>
+                  <ul className="list-disc ml-5 space-y-1">
+                    <li>Contacte al administrador para crear su perfil de apoderado</li>
+                    <li>Verifique que su cuenta esté correctamente configurada</li>
+                    <li>Intente cerrar sesión y volver a ingresar</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Loading State */}
+      {loading && !error && (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Cargando información...</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Show wizard only if no error and guardian exists */}
+      {!error && guardian && (
+        <>
+          <div className="flex gap-2 flex-wrap">
+            {STEPS.map((s, idx) => (
+              <span key={s} className={`px-3 py-1 rounded text-xs font-medium ${idx === step ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>{idx + 1}. {s}</span>
+            ))}
+          </div>
 
       {/* STEP 0 */}
       {step === 0 && (
@@ -262,12 +367,51 @@ export function MatriculaWizard() {
         <Card>
           <CardHeader className="flex items-center justify-between">
             <h2 className="font-semibold">Revisión y Firma</h2>
-            {documentRecord?.status === 'signed' && <span className="text-xs px-2 py-1 rounded bg-green-600 text-white">Firmado</span>}
+            <div className="flex gap-2 items-center">
+              {documentRecord?.pdf_url && (
+                <span className="text-xs px-2 py-1 rounded bg-blue-600 text-white">PDF Generado</span>
+              )}
+              {documentRecord?.status === 'signed' && (
+                <span className="text-xs px-2 py-1 rounded bg-green-600 text-white">Firmado</span>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {!previewHtml && <p className="text-sm text-gray-500">Aún no hay contenido</p>}
             {previewHtml && (
-              <div className="border rounded p-3 max-h-[500px] overflow-auto prose prose-sm dark:prose-invert bg-white dark:bg-dark/40 shadow-inner" dangerouslySetInnerHTML={{ __html: previewHtml.replace(/\n/g, '<br/>') }} />
+              <>
+                <div className="border rounded p-3 max-h-[500px] overflow-auto prose prose-sm dark:prose-invert bg-white dark:bg-dark/40 shadow-inner" dangerouslySetInnerHTML={{ __html: previewHtml.replace(/\n/g, '<br/>') }} />
+                
+                {/* PDF Actions */}
+                {documentRecord?.pdf_url && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <h3 className="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-100">Documento PDF</h3>
+                    <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                      El PDF ha sido generado con formato profesional incluyendo logo, bordes y secciones de firma.
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={handleDownloadPDF}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        📥 Descargar PDF
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={handlePreviewPDF}
+                      >
+                        👁️ Vista Previa PDF
+                      </Button>
+                    </div>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-3">
+                      💡 Descarga el PDF para imprimirlo y llevarlo a la notaría para firma física.
+                    </p>
+                  </div>
+                )}
+              </>
             )}
             <div className="flex gap-2">
               {documentRecord?.status !== 'signed' && <Button onClick={handleSign} disabled={loading}>Firmar</Button>}
@@ -278,10 +422,14 @@ export function MatriculaWizard() {
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={back} disabled={step === 0}>Atrás</Button>
-        {step < 2 && <Button onClick={next} disabled={!canProceed()}>Siguiente</Button>}
-      </div>
+      {!error && guardian && (
+        <div className="flex justify-between pt-2">
+          <Button variant="outline" onClick={back} disabled={step === 0}>Atrás</Button>
+          {step < 2 && <Button onClick={next} disabled={!canProceed()}>Siguiente</Button>}
+        </div>
+      )}
+        </>
+      )}
     </main>
   );
 }

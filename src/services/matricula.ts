@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import toast from 'react-hot-toast';
+import { generatePDFFromHTML } from './pdfGenerator';
 
 // Types (lightweight to avoid adding global type deps now)
 export interface GuardianRecord {
@@ -90,19 +91,26 @@ let _attemptedAutoCreate: Record<string, boolean> = {};
 
 // 1. Fetch guardian for current user (assuming one guardian per owner/user)
 export async function fetchCurrentGuardian(userId: string): Promise<GuardianRecord | null> {
+  console.log('🔍 fetchCurrentGuardian called with userId:', userId);
   if (!userId) return null;
-  if (_guardianCache[userId] !== undefined) return _guardianCache[userId] || null;
+  if (_guardianCache[userId] !== undefined) {
+    console.log('🔍 fetchCurrentGuardian: Returning from cache:', _guardianCache[userId]);
+    return _guardianCache[userId] || null;
+  }
   if (Object.prototype.hasOwnProperty.call(_guardianFetchInFlight, userId) && _guardianFetchInFlight[userId]) {
+    console.log('🔍 fetchCurrentGuardian: Returning existing promise');
     return _guardianFetchInFlight[userId] as Promise<GuardianRecord | null>;
   }
 
   _guardianFetchInFlight[userId] = (async () => {
     try {
+      console.log('🔍 fetchCurrentGuardian: Querying database for owner_id:', userId);
       const { data, error } = await supabase
         .from('guardians')
         .select('*')
         .eq('owner_id', userId)
         .limit(1);
+      console.log('🔍 fetchCurrentGuardian: Query result - data:', data, 'error:', error);
       if (error) {
         console.error('fetchCurrentGuardian error', error);
         toast.error('Error cargando apoderado');
@@ -110,6 +118,7 @@ export async function fetchCurrentGuardian(userId: string): Promise<GuardianReco
         return null;
       }
       let guardian = data?.[0] || null;
+      console.log('🔍 fetchCurrentGuardian: Guardian from query:', guardian);
 
       // Auto-create attempt only if function exists (skip if previously flagged missing)
       if (!guardian && !_missingEnsureGuardianFn && !_attemptedAutoCreate[userId]) {
@@ -139,6 +148,7 @@ export async function fetchCurrentGuardian(userId: string): Promise<GuardianReco
         }
       }
       _guardianCache[userId] = guardian;
+      console.log('🔍 fetchCurrentGuardian: Final result - caching and returning:', guardian);
       return guardian;
     } finally {
       delete _guardianFetchInFlight[userId];
@@ -392,36 +402,116 @@ export function renderTemplate(raw: string, payload: Record<string, any>): strin
   });
 }
 
-// 8. Create enrollment document (PAGARE)
+// 8. Create enrollment document (PAGARE) with PDF generation
 export async function createPagareDocument(params: {
   enrollmentId: string;
   template: DocumentTemplate;
   payload: PagarePayload;
   finalContent: string;
   contentHash?: string; // computed client-side (e.g., SHA-256)
+  generatePDF?: boolean; // default true
+  guardianRun?: string; // for PDF signature section
 }): Promise<EnrollmentDocumentRecord | null> {
-  const { enrollmentId, template, payload, finalContent, contentHash } = params;
-  const insertObj: any = {
-    enrollment_id: enrollmentId,
-    type: 'PAGARE',
-    template_version: template.version,
-    status: 'generated',
-    generated_payload: payload,
-    final_content: finalContent,
-    content_hash: contentHash || null
-  };
-  const { data, error } = await supabase
-    .from('enrollment_documents')
-    .insert(insertObj)
-    .select()
-    .single();
-  if (error) {
-    console.error('createPagareDocument error', error);
-    toast.error('No se pudo crear el documento');
+  const { 
+    enrollmentId, 
+    template, 
+    payload, 
+    finalContent, 
+    contentHash,
+    generatePDF = true,
+    guardianRun
+  } = params;
+
+  let pdfUrl: string | null = null;
+  let storagePath: string | null = null;
+  let pdfHash: string | null = null;
+
+  try {
+    // Generate PDF if requested
+    if (generatePDF) {
+      toast.loading('Generando PDF...', { id: 'pdf-generation' });
+      
+      // Generate PDF blob
+      const pdfBlob = await generatePDFFromHTML({
+        htmlContent: finalContent,
+        includeHeader: true,
+        includeSignatureSection: true,
+        watermark: 'NO FIRMADO', // Will be removed when signed
+        guardianRun: guardianRun
+      });
+
+      // Compute PDF hash
+      const pdfArrayBuffer = await pdfBlob.arrayBuffer();
+      const pdfHashBuffer = await crypto.subtle.digest('SHA-256', pdfArrayBuffer);
+      pdfHash = Array.from(new Uint8Array(pdfHashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      // Upload to Storage
+      storagePath = await uploadDocumentPDF(pdfBlob, enrollmentId, 'PAGARE');
+      
+      if (!storagePath) {
+        toast.error('No se pudo subir el PDF', { id: 'pdf-generation' });
+        throw new Error('Failed to upload PDF to storage');
+      }
+
+      // Get signed URL (valid for 1 year for long-term access)
+      pdfUrl = await getDocumentPDFUrl(storagePath, 31536000); // 365 days
+      
+      if (!pdfUrl) {
+        toast.error('No se pudo obtener URL del PDF', { id: 'pdf-generation' });
+        throw new Error('Failed to get PDF URL');
+      }
+
+      toast.success('PDF generado exitosamente', { id: 'pdf-generation' });
+    }
+
+    // Insert document record with PDF info
+    const insertObj: any = {
+      enrollment_id: enrollmentId,
+      type: 'PAGARE',
+      template_version: template.version,
+      status: 'generated',
+      generated_payload: payload,
+      final_content: finalContent,
+      content_hash: contentHash || null,
+      pdf_url: pdfUrl,
+      storage_path: storagePath,
+      pdf_hash: pdfHash
+    };
+
+    const { data, error } = await supabase
+      .from('enrollment_documents')
+      .insert(insertObj)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('createPagareDocument error', error);
+      toast.error('No se pudo crear el documento en la base de datos');
+      
+      // Cleanup: Delete uploaded PDF if database insert failed
+      if (storagePath) {
+        await deleteDocumentPDF(storagePath);
+      }
+      
+      return null;
+    }
+
+    toast.success('Pagaré generado correctamente');
+    return data;
+
+  } catch (err) {
+    console.error('createPagareDocument exception:', err);
+    toast.error('Error al generar el documento');
+    
+    // Cleanup: Delete uploaded PDF if any error occurred
+    if (storagePath) {
+      await deleteDocumentPDF(storagePath);
+    }
+    
     return null;
   }
-  toast.success('Pagaré generado');
-  return data;
 }
 
 // 9. Sign document (guardian)
@@ -457,4 +547,104 @@ export async function sha256(text: string): Promise<string> {
   const enc = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest('SHA-256', enc);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// =====================================================
+// STORAGE FUNCTIONS FOR PDF DOCUMENTS
+// =====================================================
+
+/**
+ * Upload PDF blob to Supabase Storage
+ * @param pdfBlob - The PDF file as a Blob
+ * @param enrollmentId - The enrollment ID
+ * @param documentType - Document type (e.g., 'PAGARE')
+ * @returns Storage path if successful, null otherwise
+ */
+export async function uploadDocumentPDF(
+  pdfBlob: Blob,
+  enrollmentId: string,
+  documentType: string = 'PAGARE'
+): Promise<string | null> {
+  try {
+    // Generate unique filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `${enrollmentId}_${documentType}_${timestamp}.pdf`;
+    const path = `${enrollmentId}/${filename}`;
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('enrollment-documents')
+      .upload(path, pdfBlob, {
+        contentType: 'application/pdf',
+        upsert: false // Don't overwrite existing files
+      });
+
+    if (error) {
+      console.error('Upload PDF error:', error);
+      toast.error('No se pudo subir el PDF al almacenamiento');
+      return null;
+    }
+
+    console.log('PDF uploaded successfully:', data.path);
+    return data.path;
+  } catch (err) {
+    console.error('Upload PDF exception:', err);
+    toast.error('Error al subir el PDF');
+    return null;
+  }
+}
+
+/**
+ * Get signed URL for a document in Storage
+ * @param storagePath - Path to the file in Storage
+ * @param expiresIn - Expiration time in seconds (default: 3600 = 1 hour)
+ * @returns Signed URL if successful, null otherwise
+ */
+export async function getDocumentPDFUrl(
+  storagePath: string,
+  expiresIn: number = 3600
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.storage
+      .from('enrollment-documents')
+      .createSignedUrl(storagePath, expiresIn);
+
+    if (error) {
+      console.error('Get signed URL error:', error);
+      toast.error('No se pudo obtener la URL del documento');
+      return null;
+    }
+
+    return data.signedUrl;
+  } catch (err) {
+    console.error('Get signed URL exception:', err);
+    toast.error('Error al obtener URL del documento');
+    return null;
+  }
+}
+
+/**
+ * Delete PDF from Storage (admin only)
+ * @param storagePath - Path to the file in Storage
+ * @returns true if successful, false otherwise
+ */
+export async function deleteDocumentPDF(storagePath: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.storage
+      .from('enrollment-documents')
+      .remove([storagePath]);
+
+    if (error) {
+      console.error('Delete PDF error:', error);
+      toast.error('No se pudo eliminar el PDF');
+      return false;
+    }
+
+    toast.success('PDF eliminado del almacenamiento');
+    return true;
+  } catch (err) {
+    console.error('Delete PDF exception:', err);
+    toast.error('Error al eliminar PDF');
+    return false;
+  }
 }
