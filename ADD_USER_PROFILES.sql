@@ -1,9 +1,10 @@
 -- =====================================================
 -- AÑADIR PERFILES DE USUARIO PARA CONTROL DE PERMISOS
+-- VERSIÓN CORREGIDA: Usar tabla 'profiles' en lugar de 'auth.users'
 -- =====================================================
 
--- 1. Agregar columna 'profile' a tabla usuarios existente
-ALTER TABLE auth.users 
+-- 1. Agregar columna 'profile' a tabla profiles (accesible vía REST API)
+ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS profile VARCHAR(20) DEFAULT 'ADMIN';
 
 -- 2. Crear enum para los tipos de perfil (opcional pero recomendado)
@@ -15,19 +16,19 @@ BEGIN
 END $$;
 
 -- 3. Actualizar la columna para usar el enum
-ALTER TABLE auth.users 
+ALTER TABLE profiles 
 ALTER COLUMN profile TYPE user_profile_enum USING profile::user_profile_enum;
 
 -- 4. Agregar constraint para validar valores
-ALTER TABLE auth.users 
+ALTER TABLE profiles 
 ADD CONSTRAINT check_valid_profile 
 CHECK (profile IN ('ADMIN', 'ASIST', 'READONLY'));
 
 -- 5. Crear índice para mejorar performance en consultas por perfil
-CREATE INDEX IF NOT EXISTS idx_users_profile ON auth.users(profile);
+CREATE INDEX IF NOT EXISTS idx_profiles_profile ON profiles(profile);
 
 -- 6. Actualizar todos los usuarios existentes a ADMIN (sin cambios en funcionalidad)
-UPDATE auth.users 
+UPDATE profiles 
 SET profile = 'ADMIN' 
 WHERE profile IS NULL;
 

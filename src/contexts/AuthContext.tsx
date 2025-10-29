@@ -36,31 +36,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchProfileRole = async (userId: string | undefined): Promise<{ role?: string; profile?: string }> => {
     if (!userId) return {};
     try {
-      // Fetch role from profiles table
+      // Fetch both role and profile from profiles table (this is accessible via REST API)
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
-      
-      // Fetch profile from auth.users table
-      const { data: userData, error: userError } = await supabase
-        .from('auth.users')
-        .select('profile')
+        .select('role, profile')
         .eq('id', userId)
         .single();
       
       if (profileError && profileError.code !== 'PGRST116') { // PGRST116 = no rows found
-        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile role: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
-      }
-      
-      if (userError && userError.code !== 'PGRST116') {
-        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching user profile: ${userError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: userError });
+        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile data: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
       }
 
       return {
         role: profileData?.role ? String(profileData.role).toLowerCase() : undefined,
-        profile: userData?.profile || 'ADMIN' // Default to ADMIN for backward compatibility
+        profile: profileData?.profile || 'ADMIN' // Default to ADMIN for backward compatibility
       };
     } catch (err: any) {
       Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile data: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
@@ -267,8 +256,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const refreshProfileRole = async () => {
     const userId = state.user?.id;
     if (!userId) return;
-    const role = await fetchProfileRole(userId);
-    setState(prev => ({ ...prev, user: prev.user ? { ...prev.user, role } : prev.user }));
+    const { role, profile } = await fetchProfileRole(userId);
+    setState(prev => ({ 
+      ...prev, 
+      user: prev.user ? { 
+        ...prev.user, 
+        role: role,
+        profile: profile as 'ADMIN' | 'ASIST' | 'READONLY'
+      } : prev.user 
+    }));
   };
 
   return (
