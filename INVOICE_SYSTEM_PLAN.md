@@ -1,221 +1,230 @@
-# 🧾 INVOICE SYSTEM - Sistema de Facturación/Recibos
+import React from 'react';
+import { usePermissions } from '../hooks/usePermissions';
 
-## 📋 **OBJETIVO**
+        {permissions.isAdmin() && (
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+            🔓 Acceso Completo
+          </span>
+        )}
+        {permissions.isAssistant() && (
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+            🔓 Acceso Completo (Asistente)
+          </span>
+        )}
+        {permissions.isReadOnly() && (
+          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">
+            👁️ Solo Lectura
+          </span>
+        )}nte que muestra diferentes botones según los permisos del usuario
+ * Ejemplo de implementación de restricciones de UI
+ */
+export const PaymentActionsComponent: React.FC<{
+  paymentId?: string;
+  onCreateFreePayment?: () => void;
+  onCreateSpecificPayment?: () => void;
+  onEditPayment?: (id: string) => void;
+  onDeletePayment?: (id: string) => void;
+}> = ({
+  paymentId,
+  onCreateFreePayment,
+  onCreateSpecificPayment,
+  onEditPayment,
+  onDeletePayment
+}) => {
+  const permissions = usePermissions();
 
-Desarrollar sistema de **"Generación de recibo"** como **documentación previa a la generación de boleta en SII**.
+  return (
+    <div className="payment-actions space-y-2">
+      {/* Información del perfil actual (solo para debugging) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-gray-100 p-2 rounded text-xs">
+          <strong>Perfil:</strong> {permissions.userProfile} | 
+          <strong> Email:</strong> {permissions.user?.email}
+        </div>
+      )}
 
-**Contexto del proyecto:** Módulo 1, línea 18 de proyecto.txt:
-> "Generación de recibo (Documentación previa a la generación de boleta en SII)."
+      {/* Botones de creación de pagos */}
+      <div className="payment-creation-buttons space-x-2">
+        {/* Pago a cuota específica - TODOS los perfiles pueden hacer esto */}
+        {permissions.canCreateSpecificPayment() && (
+          <button
+            onClick={onCreateSpecificPayment}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            📋 Registrar Pago a Cuota
+          </button>
+        )}
 
----
+        {/* Pago libre - SOLO ADMIN puede hacer esto */}
+        {permissions.showFreePaymentOption && (
+          <button
+            onClick={onCreateFreePayment}
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+          >
+            💰 Pago Libre
+          </button>
+        )}
+      </div>
 
-## 🎯 **ALCANCE DEL MÓDULO**
+      {/* Botones de gestión de pagos (solo si hay un pago seleccionado) */}
+      {paymentId && (
+        <div className="payment-management-buttons space-x-2">
+          {/* Botón Editar - SOLO ADMIN */}
+          {permissions.showEditPaymentButton && (
+            <button
+              onClick={() => onEditPayment?.(paymentId)}
+              className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+            >
+              ✏️ Editar
+            </button>
+          )}
 
-### Funcionalidad Principal:
-**Generar recibos de pago** que servirán como:
-1. **Comprobante para apoderados** - Documento que confirma pago realizado, este documento contiene:
-   - Nombre del apoderado
-   - RUT del apoderado
-   - Monto pagado
-   - Fecha de pago
-   - Detalle Nombre de los estudiantes y el numero de cuota que se paga por cada uno.
-2. **Documentación previa** para posterior generación de boleta oficial en SII. En esta parte se requiere que se guarde la informacion en una tabla que luego pueda ser exportada a excel.
-3. **Registro interno** los pago deben actualizar la base de datos del sistema de cobros de manera automatica.
+          {/* Botón Eliminar - SOLO ADMIN */}
+          {permissions.showDeletePaymentButton && (
+            <button
+              onClick={() => onDeletePayment?.(paymentId)}
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+            >
+              🗑️ Eliminar
+            </button>
+          )}
 
-### Integración:
-- **Base:** Sistema de cobros existente (`gestion.colegiowinterhill.cl`)
-- **Conexión:** Sistema de matrícula ya desarrollado (datos de guardian/estudiante)
-- **Futuro:** Preparación para integración con SII (Servicio de Impuestos Internos)
+          {/* Ya no hay mensajes especiales - ASIST = ADMIN */}
+        </div>
+      )}
 
----
+      {/* Indicador visual del nivel de acceso */}
+      <div className="access-level-indicator">
+        {permissions.isAdmin() && (
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+            🔓 Acceso Completo
+          </span>
+        )}
+        {permissions.isAssistant() && (
+          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+            � Asistente (Acceso completo - Solo sin pago libre/editar/eliminar)
+          </span>
+        )}
+        {permissions.isReadOnly() && (
+          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">
+            👁️ Solo Lectura
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
 
-## 📊 **FLUJO DE TRABAJO**
+/**
+ * Componente para mostrar/ocultar contenido según permisos
+ */
+export const PermissionGuard: React.FC<{
+  action: string;
+  fallback?: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ action, fallback = null, children }) => {
+  const permissions = usePermissions();
+  
+  if (!permissions.can(action as any)) {
+    return <>{fallback}</>;
+  }
+  
+  return <>{children}</>;
+};
 
-### Proceso Actual (Sin Sistema):
-```
-1. Apoderado realiza pago (transferencia/cheque/efectivo)
-2. ❌ Administración debe crear recibo manualmente
-3. ❌ No hay trazabilidad automática
-4. ❌ Proceso manual para boleta en SII
-```
+/**
+ * Componente de ejemplo para el modal de "Registrar Pago"
+ */
+export const PaymentRegistrationModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+}> = ({ isOpen, onClose }) => {
+  const permissions = usePermissions();
 
-### Proceso Con Sistema (Objetivo):
-```
-1. Apoderado realiza pago
-2. ✅ Administrador ingresa pago al sistema
-3. ✅ Sistema genera recibo automáticamente
-4. ✅ Recibo se envía por email al apoderado
-5. ✅ Data queda lista para boleta SII
-6. ✅ Trazabilidad completa en DB
-```
+  if (!isOpen) return null;
 
----
+  return (
+    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg max-w-md w-full">
+        <h2 className="text-xl font-bold mb-4">Registrar Pago</h2>
+        
+        {/* Formulario adaptado según permisos */}
+        <form className="space-y-4">
+          {/* Campo Estudiante - Todos */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Estudiante</label>
+            <select className="w-full border rounded px-3 py-2">
+              <option>Seleccionar estudiante...</option>
+            </select>
+          </div>
 
-## 🛠 **COMPONENTES A DESARROLLAR**
+          {/* Campo Cuota - Para todos los usuarios */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Cuota
+            </label>
+            <select className="w-full border rounded px-3 py-2">
+              <option value="">Seleccionar cuota...</option>
+              <option value="matricula">Matrícula 2025</option>
+              <option value="marzo">Marzo 2025</option>
+              <option value="abril">Abril 2025</option>
+            </select>
+          </div>
 
-### 1. **Registro de Pagos**
-- Formulario para ingresar pagos recibidos
-- Campos: monto, fecha, método de pago, concepto, estudiante
-- Validaciones y verificaciones
+          {/* Opción "Pago Libre" - ADMIN y ASIST pueden usar */}
+          {permissions.showFreePaymentOption && (
+            <div>
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                <span className="text-sm">Pago libre (no asociado a cuota)</span>
+              </label>
+            </div>
+          )}
 
-### 2. **Generación de Recibos**
-- Template de recibo (similar a Pagaré)
-- Datos dinámicos: guardian, estudiante, monto, fecha, concepto
-- Formato PDF descargable/imprimible
+          {/* Campo Monto */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Monto</label>
+            <input
+              type="number"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Ej: 350000"
+            />
+          </div>
 
-### 3. **Gestión de Recibos**
-- Lista de recibos generados
-- Búsqueda por apoderado/estudiante/fecha
-- Re-impresión de recibos
+          {/* Método de Pago */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Método de Pago</label>
+            <select className="w-full border rounded px-3 py-2">
+              <option>Transferencia</option>
+              <option>Cheque</option>
+              <option>Efectivo</option>
+              <option>Tarjeta</option>
+            </select>
+          </div>
 
-### 4. **Envío Automático**
-- Email automático al apoderado con recibo adjunto
-- Templates de email personalizables
-- Registro de envíos
+          {/* Botones */}
+          <div className="flex space-x-2 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            >
+              Registrar Pago
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
----
+export default PaymentActionsComponent;
+};
 
-## 📁 **ESTRUCTURA DE DATOS**
-
-### Tabla: `payment_receipts`
-```sql
-CREATE TABLE payment_receipts (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  enrollment_id uuid REFERENCES enrollments(id),
-  guardian_id uuid REFERENCES guardians(id),
-  amount decimal(10,2) NOT NULL,
-  payment_date date NOT NULL,
-  payment_method varchar(50), -- 'transferencia', 'cheque', 'efectivo', 'tarjeta'
-  concept varchar(200), -- 'matrícula', 'colegiatura', 'materiales', etc.
-  receipt_number varchar(50) UNIQUE, -- Numeración correlativa
-  notes text,
-  created_at timestamptz DEFAULT now(),
-  created_by uuid REFERENCES auth.users(id),
-  sent_email boolean DEFAULT false,
-  sent_at timestamptz
-);
-```
-
-### Campos Clave:
-- **`receipt_number`:** Numeración correlativa (ej: "REC-2025-001")
-- **`concept`:** Tipo de pago (matrícula, colegiatura mensual, materiales)
-- **`payment_method`:** Método usado (integrar con formas de pago del Pagaré)
-- **`sent_email`:** Control de envío automático
-
----
-
-## 🎨 **TEMPLATES DE RECIBO**
-
-### Información a incluir:
-```
-COLEGIO WINTERHILL
-RUT: 65.152.884-4
-
-RECIBO DE PAGO N° REC-2025-001
-
-Fecha: 29 de octubre de 2025
-
-DATOS DEL APODERADO:
-Nombre: {{guardian_full_name}}
-RUT: {{guardian_run}}
-Email: {{guardian_email}}
-
-DATOS DEL ESTUDIANTE:
-Nombre: {{student_name}}
-Curso: {{student_course}}
-
-DETALLE DEL PAGO:
-Concepto: {{concept}}
-Monto: ${{amount}}
-Método de Pago: {{payment_method}}
-Fecha de Pago: {{payment_date}}
-
-Este recibo certifica la recepción del pago indicado.
-
-_________________________
-Administración
-Colegio Winterhill
-```
-
----
-
-## 🔄 **INTEGRACIÓN CON SISTEMA EXISTENTE**
-
-### Conectar con Matrícula:
-- Usar datos de `guardians` y `students` ya existentes
-- Aprovechar `enrollments` para vincular pagos
-- Reutilizar lógica de generación PDF (jsPDF + html2canvas)
-
-### Conectar con Cobros:
-- Integrar con sistema de gestión actual
-- Usar misma autenticación y permisos
-- Sincronizar con estado de pagos
-
----
-
-## 📈 **FASES DE DESARROLLO**
-
-### Fase 1: Base de Datos y Servicios (1 semana)
-- Crear tabla `payment_receipts`
-- Servicios CRUD básicos
-- Numeración correlativa
-
-### Fase 2: UI para Registro de Pagos (1 semana)
-- Formulario de ingreso de pagos
-- Búsqueda de guardian/estudiante
-- Validaciones
-
-### Fase 3: Generación de Recibos (1 semana)
-- Template de recibo
-- Generación PDF
-- Descarga/impresión
-
-### Fase 4: Envío Automático (1 semana)
-- Integración con servicio de email
-- Templates de email
-- Logs de envío
-
----
-
-## 🎯 **CRITERIOS DE ÉXITO**
-
-### MVP (Minimum Viable Product):
-1. ✅ Registrar pago manualmente
-2. ✅ Generar recibo PDF
-3. ✅ Descargar/imprimir recibo
-4. ✅ Lista de recibos generados
-
-### Funcionalidades Avanzadas:
-5. ✅ Envío automático por email
-6. ✅ Búsqueda y filtros avanzados
-7. ✅ Reportes de pagos
-8. ✅ Integración con estados de cuenta
-
----
-
-## 📋 **PRÓXIMOS PASOS**
-
-### Immediate TODOs:
-1. **Diseñar esquema DB** - Crear tabla `payment_receipts`
-2. **Crear servicios base** - CRUD operations
-3. **Diseñar UI mockups** - Formulario de registro
-4. **Definir template recibo** - Layout y campos
-5. **Configurar numeración** - Sistema correlativo
-
-### Decisiones Pendientes:
-- **Numeración:** ¿Anual? ¿Global? ¿Por tipo de pago?
-- **Conceptos:** Lista fija o libre input?
-- **Métodos de pago:** ¿Mismo que Pagaré o extender?
-- **Permisos:** ¿Quién puede generar recibos?
-
----
-
-## 🔗 **RELACIÓN CON PROYECTO GENERAL**
-
-Este módulo es parte del **Módulo 1: Mejoras en el Software de Cobros**:
-- ✅ **Pagaré:** Ya completado (documentación para cobro futuro)
-- 🚧 **Recibos:** En desarrollo (documentación de pago realizado)
-- ⏳ **Acceso apoderados:** Futuro (ver situación financiera)
-- ⏳ **Emails automáticos:** Futuro (recordatorios de pago)
-
-**BRANCH:** `invoice` - Listo para desarrollo 🚀
+export default PaymentActionsComponent;
