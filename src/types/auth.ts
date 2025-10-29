@@ -4,6 +4,7 @@ export interface User {
   created_at: string;
   updated_at: string;
   role?: string; // role from profiles table (e.g., 'admin', 'guardian')
+  profile?: 'ADMIN' | 'ASIST' | 'READONLY'; // new profile field for permissions
 }
 
 export interface AuthState {

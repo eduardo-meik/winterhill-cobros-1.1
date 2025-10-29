@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AuthState>(initialAuthState);
   const navigate = useNavigate();
 
-  const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string): LocalUser | null => {
+  const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string, profile?: string): LocalUser | null => {
     if (!supabaseUser) return null;
     // Normalize role to lowercase to avoid casing mismatches (e.g. 'GUARDIAN' vs 'guardian').
     const normalizedRole = role ? role.toLowerCase() : undefined;
@@ -29,25 +29,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       created_at: supabaseUser.created_at,
       updated_at: supabaseUser.updated_at || supabaseUser.created_at,
       role: normalizedRole,
+      profile: (profile as 'ADMIN' | 'ASIST' | 'READONLY') || 'ADMIN', // Default to ADMIN for existing users
     };
   };
 
-  const fetchProfileRole = async (userId: string | undefined): Promise<string | undefined> => {
-    if (!userId) return undefined;
+  const fetchProfileRole = async (userId: string | undefined): Promise<{ role?: string; profile?: string }> => {
+    if (!userId) return {};
     try {
-      const { data, error } = await supabase
+      // Fetch role from profiles table
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', userId)
         .single();
-      if (error) {
-        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile role: ${error.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error });
-        return undefined;
+      
+      // Fetch profile from auth.users table
+      const { data: userData, error: userError } = await supabase
+        .from('auth.users')
+        .select('profile')
+        .eq('id', userId)
+        .single();
+      
+      if (profileError && profileError.code !== 'PGRST116') { // PGRST116 = no rows found
+        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile role: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
       }
-  return data?.role ? String(data.role).toLowerCase() : undefined;
+      
+      if (userError && userError.code !== 'PGRST116') {
+        Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching user profile: ${userError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: userError });
+      }
+
+      return {
+        role: profileData?.role ? String(profileData.role).toLowerCase() : undefined,
+        profile: userData?.profile || 'ADMIN' // Default to ADMIN for backward compatibility
+      };
     } catch (err: any) {
-      Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile role: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
-      return undefined;
+      Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile data: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
+      return { profile: 'ADMIN' }; // Safe default
     }
   };
 
@@ -59,8 +76,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching session initial: ${error.message}`, undefined, 'getSession', { level: 'ERROR', area: 'AUTH', error });
           throw error;
         }
-  const role = await fetchProfileRole(session?.user?.id);
-  setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role), loading: false });
+        const { role, profile } = await fetchProfileRole(session?.user?.id);
+        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role, profile), loading: false });
       } catch (error: any) {
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Catch getSession: ${error.message}`, undefined, 'getSessionCatch', { level: 'ERROR', area: 'AUTH', errorMessage: error.message });
         setState(prev => ({ ...prev, loading: false }));
@@ -71,8 +88,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       Logger.getInstance().log(LogCode.AUTH_STATE_CHANGED, `Auth event: ${event}`, session?.user?.id, 'onAuthStateChange', { level: 'INFO', area: 'AUTH', session });
       (async () => {
-        const role = await fetchProfileRole(session?.user?.id);
-        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role), loading: false });
+        const { role, profile } = await fetchProfileRole(session?.user?.id);
+        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role, profile), loading: false });
       })();
       
       if (event === 'PASSWORD_RECOVERY') {
