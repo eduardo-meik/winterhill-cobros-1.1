@@ -5,6 +5,7 @@ import { Card } from '../ui/Card';
 import { useEffect } from 'react';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../../hooks/usePermissions';
 
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
@@ -29,6 +30,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     notes: payment.notes || ''
   });
   const [loading, setLoading] = useState(false);
+  const permissions = usePermissions();
 
   useEffect(() => {
     fetchGuardianInfo();
@@ -426,24 +428,28 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={handleDelete}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
-                  >
-                    Eliminar
-                  </button>
+                  {permissions.showDeletePaymentButton && (
+                    <button
+                      onClick={handleDelete}
+                      className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                    >
+                      Eliminar
+                    </button>
+                  )}
                   <button
                     onClick={onClose}
                     className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors"
                   >
                     Cerrar
                   </button>
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
-                  >
-                    Editar Pago
-                  </button>
+                  {permissions.showEditPaymentButton && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
+                    >
+                      Editar Pago
+                    </button>
+                  )}
                 </>
               )}
             </div>

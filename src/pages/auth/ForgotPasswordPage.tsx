@@ -1,4 +1,4 @@
-import React from 'react';
+// React import not required with react-jsx runtime
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';

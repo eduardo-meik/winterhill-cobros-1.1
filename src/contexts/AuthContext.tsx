@@ -7,7 +7,7 @@ import Logger from '../services/logger';
 import { LogCode } from '../types/logging'; 
 import { AuthContextType, AuthState, User as LocalUser } from '../types/auth';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const initialAuthState: AuthState = {
   session: null,
@@ -23,13 +23,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!supabaseUser) return null;
     // Normalize role to lowercase to avoid casing mismatches (e.g. 'GUARDIAN' vs 'guardian').
     const normalizedRole = role ? role.toLowerCase() : undefined;
+    // Derive profile from role if not explicitly provided (profile column no longer exists)
+    const derivedProfile = (profile || (() => {
+      const r = (role || '').toUpperCase();
+      if (r === 'ADMIN') return 'ADMIN';
+      if (r === 'ASIST') return 'ASIST';
+      return 'READONLY';
+    })()) as 'ADMIN' | 'ASIST' | 'READONLY';
     return {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
       created_at: supabaseUser.created_at,
       updated_at: supabaseUser.updated_at || supabaseUser.created_at,
       role: normalizedRole,
-      profile: (profile as 'ADMIN' | 'ASIST' | 'READONLY') || 'ADMIN', // Default to ADMIN for existing users
+      profile: derivedProfile,
     };
   };
 
@@ -39,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Fetch both role and profile from profiles table (this is accessible via REST API)
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('role, profile')
+        .select('role')
         .eq('id', userId)
         .single();
       
@@ -47,13 +54,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile data: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
       }
 
+      const roleLower = profileData?.role ? String(profileData.role).toLowerCase() : undefined;
+      const roleUpper = profileData?.role ? String(profileData.role).toUpperCase() : undefined;
+      const derivedProfile = roleUpper === 'ADMIN' || roleUpper === 'ASIST' ? roleUpper : 'READONLY';
       return {
-        role: profileData?.role ? String(profileData.role).toLowerCase() : undefined,
-        profile: profileData?.profile || 'ADMIN' // Default to ADMIN for backward compatibility
+        role: roleLower,
+        profile: derivedProfile
       };
     } catch (err: any) {
       Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile data: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
-      return { profile: 'ADMIN' }; // Safe default
+      return { profile: 'READONLY' }; // Safe default
     }
   };
 

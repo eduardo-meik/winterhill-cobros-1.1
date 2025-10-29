@@ -2,11 +2,34 @@ import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { PermissionChecker, USER_PROFILES, UserProfile } from '../services/permissions';
 
+type PermissionMethods = Pick<
+  PermissionChecker,
+  | 'can'
+  | 'cannot'
+  | 'canCreateFreePayment'
+  | 'canEditPayment'
+  | 'canDeletePayment'
+  | 'canCreateSpecificPayment'
+  | 'isAdmin'
+  | 'isAssistant'
+  | 'isReadOnly'
+>;
+
+type PermissionHookReturn = PermissionMethods & {
+  userProfile: UserProfile;
+  user: any;
+  showFreePaymentOption: boolean;
+  showEditPaymentButton: boolean;
+  showDeletePaymentButton: boolean;
+  showAdminFeatures: boolean;
+  isLimitedUser: boolean;
+};
+
 /**
  * Hook para usar permisos en React components
  * Combina el contexto de autenticación con el sistema de permisos
  */
-export const usePermissions = () => {
+export const usePermissions = (): PermissionHookReturn => {
   const authContext = useContext(AuthContext);
   
   if (!authContext) {
@@ -18,7 +41,7 @@ export const usePermissions = () => {
   
   const permissions = new PermissionChecker(userProfile);
   
-  return {
+  const result = {
     ...permissions,
     userProfile,
     user,
@@ -28,7 +51,8 @@ export const usePermissions = () => {
     showDeletePaymentButton: permissions.canDeletePayment(),
     showAdminFeatures: permissions.isAdmin(),
     isLimitedUser: permissions.isAssistant() || permissions.isReadOnly(),
-  };
+  } as unknown as PermissionHookReturn;
+  return result;
 };
 
 /**

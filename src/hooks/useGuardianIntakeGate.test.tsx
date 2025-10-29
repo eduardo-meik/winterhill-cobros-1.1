@@ -1,7 +1,7 @@
 // @jest-environment jsdom
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useGuardianIntakeGate } from './useGuardianIntakeGate';
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mocks

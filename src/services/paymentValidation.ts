@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { requirePermission, ACTIONS, USER_PROFILES, UserProfile, getPermissionErrorMessage } from './permissions';
+import { requirePermission, ACTIONS, USER_PROFILES, UserProfile } from './permissions';
 
 /**
  * Validaciones específicas para el registro de pagos según el perfil del usuario
@@ -177,8 +177,8 @@ export const examplePaymentController = async (req: Request, res: Response) => {
     const userProfile = req.user?.profile as UserProfile;
     const paymentData: PaymentRequest = req.body;
 
-    // Aplicar validaciones adicionales
-    const validationError = await handlePaymentValidation(req, res, /* supabaseClient */);
+  // Aplicar validaciones adicionales
+  const validationError = await handlePaymentValidation(req, res, undefined /* supabaseClient */);
     if (validationError) return; // Response ya enviado
 
     // Log de la acción para auditoría

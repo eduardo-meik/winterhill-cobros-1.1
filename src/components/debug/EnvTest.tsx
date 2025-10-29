@@ -1,4 +1,4 @@
-import React from 'react';
+// React import not required with react-jsx runtime
 
 export function EnvTest() {
   const env = {

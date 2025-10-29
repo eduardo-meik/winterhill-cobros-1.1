@@ -6,6 +6,7 @@ import { Card } from '../ui/Card';
 import { StudentSelect } from './StudentSelect';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../../hooks/usePermissions';
 
 const defaultValues = {
   student_id: '',
@@ -36,6 +37,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
   const selectedAmount = watch('amount');
   const selectedNumeroCuota = watch('numero_cuota');
   const isFreePayment = watch('is_free_payment');
+  const permissions = usePermissions();
 
   // State for cuota management
   const [availableCuotas, setAvailableCuotas] = useState([]);
@@ -53,6 +55,13 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
       setValidationMessage('');
     }
   }, [selectedStudentId]);
+
+  // Enforce: ASIST cannot create free payments
+  useEffect(() => {
+    if (!permissions.showFreePaymentOption) {
+      setValue('is_free_payment', false, { shouldValidate: true });
+    }
+  }, [permissions.showFreePaymentOption, setValue]);
 
   // Validate cuota selection and amount
   useEffect(() => {
@@ -189,7 +198,16 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
         notes: data.notes,
         num_boleta: data.num_boleta,
         mov_bancario: data.mov_bancario,
-        owner_id: (await supabase.auth.getUser()).data.user.id
+        // Ensure DB NOT NULL column is satisfied
+        year_academico: (() => {
+          try {
+            const d = new Date(data.payment_date);
+            const y = d.getFullYear();
+            return Number.isFinite(y) ? y : new Date().getFullYear();
+          } catch {
+            return new Date().getFullYear();
+          }
+        })()
       };
 
       // Add numero_cuota if not a free payment
@@ -202,9 +220,59 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
         paymentData.notes = `[PAGO LIBRE] ${data.notes || ''}`.trim();
       }
 
+      // If it's NOT a free payment, try to update an existing cuota row first to avoid duplicates
+      if (!isFreePayment && data.numero_cuota) {
+        const cuotaNumber = parseInt(data.numero_cuota);
+
+        // Look for an existing fee row for this student and cuota (prefer a non-paid one)
+        const { data: existingRows, error: findErr } = await supabase
+          .from('fee')
+          .select('id, status')
+          .eq('student_id', data.student_id)
+          .eq('numero_cuota', cuotaNumber)
+          .neq('status', 'paid')
+          .limit(1);
+
+        if (findErr) throw findErr;
+
+        if (existingRows && existingRows.length > 0) {
+          const existing = existingRows[0];
+          if (existing.status === 'paid') {
+            toast.error('Esta cuota ya está pagada');
+            return;
+          }
+
+          // Update the existing row to mark it as paid (no student/numero_cuota changes)
+          const updatePayload = {
+            amount: paymentData.amount,
+            payment_date: paymentData.payment_date,
+            payment_method: paymentData.payment_method,
+            status: 'paid',
+            notes: paymentData.notes,
+            num_boleta: paymentData.num_boleta,
+            mov_bancario: paymentData.mov_bancario,
+            year_academico: paymentData.year_academico
+          };
+
+          const { error: updErr } = await supabase
+            .from('fee')
+            .update(updatePayload, { returning: 'minimal' })
+            .eq('id', existing.id);
+
+          if (updErr) throw updErr;
+
+          toast.success('Pago registrado exitosamente');
+          reset();
+          onSuccess();
+          onClose();
+          return;
+        }
+      }
+
+      // Fallback: insert a new row (e.g., no pre-existing cuota row exists)
       const { error } = await supabase
         .from('fee')
-        .insert([paymentData]);
+        .insert([paymentData], { returning: 'minimal', defaultToNull: false });
 
       if (error) throw error;
 
@@ -213,8 +281,11 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error al registrar el pago');
+      // Improve error visibility
+      const message = error?.message || 'Error desconocido';
+      const details = error?.details || error?.hint || '';
+      console.error('Error al registrar el pago:', { message, details, error });
+      toast.error(`Error al registrar el pago${details ? `: ${details}` : ''}`);
     }
   };
 
@@ -278,22 +349,24 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
                     {/* --- End error display --- */}
                   </div>
 
-                  {/* Free Payment Checkbox */}
-                  <div className="col-span-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        {...register('is_free_payment')}
-                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
-                      />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Pago libre (no asociado a cuota específica)
-                      </span>
-                    </label>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Marque esta opción para pagos de años anteriores o abonos sin cuota específica
-                    </p>
-                  </div>
+                  {/* Free Payment Checkbox - visible only if allowed */}
+                  {permissions.showFreePaymentOption && (
+                    <div className="col-span-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          {...register('is_free_payment')}
+                          className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
+                        />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Pago libre (no asociado a cuota específica)
+                        </span>
+                      </label>
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Marque esta opción para pagos de años anteriores o abonos sin cuota específica
+                      </p>
+                    </div>
+                  )}
 
                   {/* Cuota Selection - Only show if not free payment and student is selected */}
                   {!isFreePayment && selectedStudentId && (

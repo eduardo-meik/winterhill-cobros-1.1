@@ -175,6 +175,65 @@ DROP VIEW IF EXISTS payment_summary CASCADE;
 -- 6.4 Eliminar columna redundante profiles.profile
 ALTER TABLE profiles DROP COLUMN IF EXISTS profile;
 
+-- 6.5 Agregar tracking de propietario en fee (quién registró el pago)
+-- Nota: Usamos DEFAULT auth.uid() para que cada inserción guarde el usuario autenticado.
+-- Para filas existentes, dejaremos NULL (no forzamos actualización para evitar usar auth.uid() fuera de contexto).
+ALTER TABLE public.fee
+  ADD COLUMN IF NOT EXISTS owner_id uuid DEFAULT auth.uid();
+
+-- Índice para consultas por propietario
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relname = 'idx_fee_owner_id' AND n.nspname = 'public'
+  ) THEN
+    CREATE INDEX idx_fee_owner_id ON public.fee(owner_id);
+  END IF;
+END $$;
+
+-- Trigger para asegurar owner_id siempre se complete con el usuario autenticado
+CREATE OR REPLACE FUNCTION public.set_fee_owner_default()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF NEW.owner_id IS NULL THEN
+    NEW.owner_id := auth.uid();
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_fee_set_owner'
+  ) THEN
+    CREATE TRIGGER trg_fee_set_owner
+    BEFORE INSERT ON public.fee
+    FOR EACH ROW
+    EXECUTE FUNCTION public.set_fee_owner_default();
+  END IF;
+END $$;
+
+-- 6.6 Evitar duplicados de pagos: un pago "paid" por estudiante/cuota/año
+-- Índice único parcial: permite múltiples estados pendientes, pero sólo un registro con status='paid'
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relname = 'uniq_fee_paid_student_cuota_year' AND n.nspname = 'public'
+  ) THEN
+    CREATE UNIQUE INDEX uniq_fee_paid_student_cuota_year
+      ON public.fee (student_id, numero_cuota, year_academico)
+      WHERE status = 'paid';
+  END IF;
+END $$;
+
 -- =============================================================================
 -- PASO 7: CREAR POLÍTICAS RLS LIMPIAS Y CONSISTENTES
 -- =============================================================================
@@ -184,6 +243,7 @@ DROP POLICY IF EXISTS "profiles_select" ON public.profiles;
 DROP POLICY IF EXISTS "profiles_update" ON public.profiles;
 DROP POLICY IF EXISTS "profiles_own_record" ON public.profiles;
 DROP POLICY IF EXISTS "profiles_admin_access" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_asist_access" ON public.profiles;
 
 CREATE POLICY "profiles_own_record" ON public.profiles
   FOR ALL TO authenticated
@@ -195,9 +255,17 @@ CREATE POLICY "profiles_admin_access" ON public.profiles
   USING (get_current_user_role() = 'ADMIN')
   WITH CHECK (get_current_user_role() = 'ADMIN');
 
+CREATE POLICY "profiles_asist_access" ON public.profiles
+  FOR ALL TO authenticated
+  USING (get_current_user_role() = 'ASIST')
+  WITH CHECK (get_current_user_role() = 'ASIST');
+
 -- 7.2 Políticas limpias para fee (tabla principal de pagos)
 DROP POLICY IF EXISTS "fee_admin_access" ON public.fee;
 DROP POLICY IF EXISTS "fee_asist_access" ON public.fee;
+DROP POLICY IF EXISTS "fee_asist_select" ON public.fee;
+DROP POLICY IF EXISTS "fee_asist_insert_specific" ON public.fee;
+DROP POLICY IF EXISTS "fee_asist_update_mark_paid" ON public.fee;
 DROP POLICY IF EXISTS "fee_guardian_read" ON public.fee;
 
 CREATE POLICY "fee_admin_access" ON public.fee
@@ -205,10 +273,38 @@ CREATE POLICY "fee_admin_access" ON public.fee
   USING (get_current_user_role() = 'ADMIN')
   WITH CHECK (get_current_user_role() = 'ADMIN');
 
-CREATE POLICY "fee_asist_access" ON public.fee
-  FOR ALL TO authenticated
-  USING (get_current_user_role() = 'ASIST')
-  WITH CHECK (get_current_user_role() = 'ASIST');
+-- ASIST: lectura total y creación de pagos SOLO asociados a una cuota específica
+CREATE POLICY "fee_asist_select" ON public.fee
+  FOR SELECT TO authenticated
+  USING (get_current_user_role() = 'ASIST');
+
+CREATE POLICY "fee_asist_insert_specific" ON public.fee
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    get_current_user_role() = 'ASIST'
+    AND numero_cuota IS NOT NULL
+    AND student_id IS NOT NULL
+    AND (owner_id IS NULL OR owner_id = auth.uid())
+  );
+
+-- ASIST: puede actualizar una cuota existente (no pagada) para marcarla como pagada
+-- Restringimos a filas con numero_cuota y student_id, y el resultado debe quedar en 'paid'
+CREATE POLICY "fee_asist_update_mark_paid" ON public.fee
+  FOR UPDATE TO authenticated
+  USING (
+    get_current_user_role() = 'ASIST'
+    AND numero_cuota IS NOT NULL
+    AND student_id IS NOT NULL
+    AND status IS DISTINCT FROM 'paid'
+  )
+  WITH CHECK (
+    get_current_user_role() = 'ASIST'
+    AND numero_cuota IS NOT NULL
+    AND student_id IS NOT NULL
+    AND status = 'paid'
+    AND payment_date IS NOT NULL
+    AND amount IS NOT NULL
+  );
 
 CREATE POLICY "fee_guardian_read" ON public.fee
   FOR SELECT TO authenticated
@@ -266,6 +362,7 @@ CREATE POLICY "student_guardian_asist_access" ON public.student_guardian
 -- 7.6 Políticas esenciales para auth_logs
 DROP POLICY IF EXISTS "auth_logs_admin_read" ON public.auth_logs;
 DROP POLICY IF EXISTS "auth_logs_insert_all" ON public.auth_logs;
+DROP POLICY IF EXISTS "auth_logs_asist_read" ON public.auth_logs;
 
 CREATE POLICY "auth_logs_admin_read" ON public.auth_logs
   FOR SELECT TO authenticated
@@ -274,6 +371,10 @@ CREATE POLICY "auth_logs_admin_read" ON public.auth_logs
 CREATE POLICY "auth_logs_insert_all" ON public.auth_logs
   FOR INSERT TO authenticated
   WITH CHECK (true);
+
+CREATE POLICY "auth_logs_asist_read" ON public.auth_logs
+  FOR SELECT TO authenticated
+  USING (get_current_user_role() = 'ASIST');
 
 -- =============================================================================
 -- PASO 8: NORMALIZAR VALORES DE ROLES (MAYÚSCULAS)

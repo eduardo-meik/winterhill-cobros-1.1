@@ -34,13 +34,14 @@ export function useSignOut() {
       // Redirect to login page
       navigate('/login', { replace: true });
 
-    } catch (error) {
+    } catch (error: unknown) {
       // Log the error but don't expose it to the user
+      const message = error instanceof Error ? error.message : String(error);
       await logger.log(
         LogCode.AUTH_LOGOUT_FAILED,
         'Error durante el cierre de sesión',
         user?.id,
-        error.message
+        message
       );
       throw error;
     }

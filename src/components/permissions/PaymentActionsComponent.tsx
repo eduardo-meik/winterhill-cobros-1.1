@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePermissions } from '../hooks/usePermissions';
+import { usePermissions } from '../../hooks/usePermissions';
 
 /**
  * Componente que muestra diferentes botones según los permisos del usuario

@@ -348,7 +348,7 @@ export function formatCurrency(amount: number): string {
  */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return new Intl.DateFormat('es-CL', {
+  return new Intl.DateTimeFormat('es-CL', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',

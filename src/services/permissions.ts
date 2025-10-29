@@ -63,18 +63,21 @@ export const PERMISSIONS: Record<UserProfile, Record<Action, boolean>> = {
   [USER_PROFILES.ASIST]: {
     // ASIST tiene acceso limitado - NO puede pagos libres ni editar/eliminar
     [ACTIONS.CREATE_FREE_PAYMENT]: false,  // ❌ NO puede hacer pagos libres
-    [ACTIONS.EDIT_PAYMENT]: false,         // ❌ NO puede editar pagos
+    [ACTIONS.EDIT_PAYMENT]: false,         // ❌ NO puede editar pagos existentes
     [ACTIONS.DELETE_PAYMENT]: false,       // ❌ NO puede eliminar pagos
-    [ACTIONS.CREATE_SPECIFIC_PAYMENT]: true, // ✅ SÍ puede pagos a cuotas específicas
+    [ACTIONS.CREATE_SPECIFIC_PAYMENT]: true, // ✅ Puede registrar pagos a cuotas específicas
     [ACTIONS.VIEW_PAYMENTS]: true,
-    [ACTIONS.EDIT_STUDENT]: false,
-    [ACTIONS.DELETE_STUDENT]: false,
-    [ACTIONS.EDIT_GUARDIAN]: false,
-    [ACTIONS.DELETE_GUARDIAN]: false,
+    // Acceso completo a gestión de estudiantes y apoderados
+    [ACTIONS.EDIT_STUDENT]: true,
+    [ACTIONS.DELETE_STUDENT]: true,
+    [ACTIONS.EDIT_GUARDIAN]: true,
+    [ACTIONS.DELETE_GUARDIAN]: true,
+    // Reportes y exportaciones
     [ACTIONS.GENERATE_REPORTS]: true,
-    [ACTIONS.EXPORT_DATA]: false,
-    [ACTIONS.MANAGE_USERS]: false,
-    [ACTIONS.VIEW_LOGS]: false
+    [ACTIONS.EXPORT_DATA]: true,
+    // Sistema
+    [ACTIONS.MANAGE_USERS]: true,
+    [ACTIONS.VIEW_LOGS]: true
   },
   
   [USER_PROFILES.READONLY]: {
