@@ -31,7 +31,7 @@ export default function Dashboard() {
         .from('fee')
         .select(`
           *,
-          student:students!inner (
+          student:students (
             id,
             first_name, 
             apellido_paterno,
