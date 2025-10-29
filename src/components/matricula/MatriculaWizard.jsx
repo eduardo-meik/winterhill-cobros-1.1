@@ -15,18 +15,16 @@ import {
   renderTemplate,
   createPagareDocument,
   signEnrollmentDocument,
-  sha256,
-  getDocumentPDFUrl
+  sha256
 } from '../../services/matricula';
-import { downloadPDFBlob, previewPDFBlob } from '../../services/pdfGenerator';
+import { generatePDFFromHTML, downloadPDFBlob } from '../../services/pdfGenerator';
 import { supabase } from '../../services/supabase';
 
 // Simple wizard steps definition
 const STEPS = [
-  'Seleccionar Año y Alumnos',
+  'Seleccionar Alumnos',
   'Datos Económicos',
-  'Generar Pagaré',
-  'Revisar y Firmar'
+  'Vista Previa y Descarga'
 ];
 
 export function MatriculaWizard() {
@@ -38,10 +36,17 @@ export function MatriculaWizard() {
   const [students, setStudents] = useState([]);
   const [allMyStudents, setAllMyStudents] = useState([]); // potential associated students via student_guardian
   const [economic, setEconomic] = useState({
+    monto_matricula: '',
     colegiatura_anual: '',
     cantidad_cuotas: '10',
     monto_cuota: '',
     dia_vencimiento: '5'
+  });
+  const [paymentMethod, setPaymentMethod] = useState({
+    cheques: false,
+    transferencia: true, // Default
+    efectivo: false,
+    tarjeta: false
   });
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState(null);
@@ -89,6 +94,44 @@ export function MatriculaWizard() {
 
   useEffect(() => { reloadEnrollmentStudents(); }, [reloadEnrollmentStudents]);
 
+  // Load economic data and payment methods from enrollment.meta
+  useEffect(() => {
+    if (!enrollment || !enrollment.meta) return;
+    
+    console.log('📊 Loading saved economic data from enrollment.meta:', enrollment.meta);
+    
+    // Load economic data
+    setEconomic(prev => ({
+      ...prev,
+      monto_matricula: enrollment.meta.monto_matricula?.toString() || prev.monto_matricula,
+      colegiatura_anual: enrollment.meta.colegiatura_anual?.toString() || prev.colegiatura_anual,
+      cantidad_cuotas: enrollment.meta.cantidad_cuotas?.toString() || prev.cantidad_cuotas,
+      monto_cuota: enrollment.meta.monto_cuota?.toString() || prev.monto_cuota,
+      dia_vencimiento: enrollment.meta.dia_vencimiento?.toString() || prev.dia_vencimiento
+    }));
+    
+    // Load payment methods
+    setPaymentMethod(prev => ({
+      ...prev,
+      cheques: enrollment.meta.forma_pago_cheques ?? prev.cheques,
+      transferencia: enrollment.meta.forma_pago_transferencia ?? prev.transferencia,
+      efectivo: enrollment.meta.forma_pago_efectivo ?? prev.efectivo,
+      tarjeta: enrollment.meta.forma_pago_tarjeta ?? prev.tarjeta
+    }));
+  }, [enrollment]);
+
+  // Auto-calculate monto_cuota when colegiatura_anual or cantidad_cuotas change
+  useEffect(() => {
+    const colegiatura = parseFloat(economic.colegiatura_anual);
+    const cuotas = parseInt(economic.cantidad_cuotas);
+    
+    if (!isNaN(colegiatura) && !isNaN(cuotas) && cuotas > 0 && colegiatura > 0) {
+      const montoPorCuota = Math.round(colegiatura / cuotas);
+      console.log('🧮 Auto-calculando monto_cuota:', { colegiatura, cuotas, montoPorCuota });
+      setEconomic(prev => ({ ...prev, monto_cuota: montoPorCuota.toString() }));
+    }
+  }, [economic.colegiatura_anual, economic.cantidad_cuotas]);
+
   const loadAssociatedStudents = useCallback(async () => {
     if (!guardian) return;
     const { data, error } = await supabase
@@ -131,90 +174,189 @@ export function MatriculaWizard() {
   // Save economic info
   const handleSaveEconomic = async () => {
     if (!enrollment) return;
+    
     const patch = {
+      // Economic data
+      monto_matricula: Number(economic.monto_matricula) || 0,
       colegiatura_anual: Number(economic.colegiatura_anual) || 0,
       cantidad_cuotas: Number(economic.cantidad_cuotas) || 0,
       monto_cuota: Number(economic.monto_cuota) || 0,
-      dia_vencimiento: Number(economic.dia_vencimiento) || 0
+      dia_vencimiento: Number(economic.dia_vencimiento) || 0,
+      // Payment methods
+      forma_pago_cheques: paymentMethod.cheques || false,
+      forma_pago_transferencia: paymentMethod.transferencia || false,
+      forma_pago_efectivo: paymentMethod.efectivo || false,
+      forma_pago_tarjeta: paymentMethod.tarjeta || false
     };
+    
+    console.log('💾 Guardando datos económicos y formas de pago:', patch);
     await updateEnrollmentMeta(enrollment.id, patch);
+    
+    // Auto-calculate monto_cuota if not provided
     if (!economic.monto_cuota && patch.colegiatura_anual && patch.cantidad_cuotas) {
-      const calc = (patch.colegiatura_anual / patch.cantidad_cuotas).toFixed(0);
-      setEconomic(e => ({ ...e, monto_cuota: calc }));
+      const calc = Math.round(patch.colegiatura_anual / patch.cantidad_cuotas);
+      setEconomic(e => ({ ...e, monto_cuota: calc.toString() }));
     }
+    
+    toast.success('Datos económicos guardados correctamente');
   };
 
-  // Generate pagaré preview
+  // Generate pagaré HTML preview (no PDF yet)
   const handleGeneratePagare = async () => {
-    if (!guardian || !enrollment) return;
+    if (!guardian || !enrollment) {
+      console.error('❌ Missing guardian or enrollment:', { guardian, enrollment });
+      toast.error('Faltan datos del apoderado o matrícula');
+      return;
+    }
+    
     setLoading(true);
+    
+    console.log('🎯 handleGeneratePagare started');
+    console.log('👤 Guardian COMPLETO:', JSON.stringify(guardian, null, 2));
+    console.log('👥 Students COMPLETO:', JSON.stringify(students, null, 2));
+    console.log('💰 Economic data COMPLETO:', JSON.stringify(economic, null, 2));
+    console.log('💳 Payment method COMPLETO:', JSON.stringify(paymentMethod, null, 2));
+    
     const tmpl = await getActivePagareTemplate();
-    if (!tmpl) { setLoading(false); return; }
+    if (!tmpl) { 
+      setLoading(false); 
+      toast.error('No se encontró plantilla activa');
+      return; 
+    }
+    
+    console.log('📄 Template loaded:');
+    console.log('  - ID:', tmpl.id);
+    console.log('  - Type:', tmpl.type);
+    console.log('  - Version:', tmpl.version);
+    console.log('  - Content length:', tmpl.content?.length || 0);
+    console.log('  - Content preview (first 300 chars):', tmpl.content?.substring(0, 300));
+    
     setTemplate(tmpl);
     const econNumbers = {
+      monto_matricula: Number(economic.monto_matricula) || undefined,
       colegiatura_anual: Number(economic.colegiatura_anual) || undefined,
       cantidad_cuotas: Number(economic.cantidad_cuotas) || undefined,
       monto_cuota: Number(economic.monto_cuota) || undefined,
       dia_vencimiento: Number(economic.dia_vencimiento) || undefined,
     };
-    const payload = buildPagarePayload({ guardian, year, students, economic: econNumbers });
-    const html = renderTemplate(tmpl.content, payload).replace('{{students_table}}', payload.students_table);
+    
+    console.log('💵 Economic numbers parsed:', JSON.stringify(econNumbers, null, 2));
+    
+    const payload = buildPagarePayload({ 
+      guardian, 
+      year, 
+      students, 
+      economic: econNumbers,
+      paymentMethod 
+    });
+    
+    console.log('📦 Payload COMPLETO generated:', JSON.stringify(payload, null, 2));
+    
+    const html = renderTemplate(tmpl.content, payload);
+    
+    console.log('📄 HTML AFTER renderTemplate (length):', html.length);
+    console.log('📄 HTML AFTER renderTemplate (first 500 chars):', html.substring(0, 500));
+    console.log('📄 Checking if placeholders were replaced:');
+    console.log('  - Contains {{fecha_actual}}?', html.includes('{{fecha_actual}}'));
+    console.log('  - Contains {{guardian_full_name}}?', html.includes('{{guardian_full_name}}'));
+    console.log('  - Contains {{guardian_run}}?', html.includes('{{guardian_run}}'));
+    
     setPreviewHtml(html);
-    // Create doc record with PDF generation
+    
+    // Create document record (HTML only, PDF generated client-side on download)
     const contentHash = await sha256(html);
     const doc = await createPagareDocument({ 
       enrollmentId: enrollment.id, 
       template: tmpl, 
       payload, 
       finalContent: html, 
-      contentHash,
-      generatePDF: true, // Enable PDF generation
-      guardianRun: guardian.run // For signature section
+      contentHash
     });
     setDocumentRecord(doc);
     setLoading(false);
-    if (doc) setStep(3); // jump to final step for review & sign
+    if (doc) {
+      setStep(2); // Stay on step 2 to show HTML preview (was step 3 before)
+      toast.success('Vista previa generada. Revise el documento antes de descargar.');
+    }
   };
 
-  // Download PDF
+  // Download PDF - Generate on-the-fly from HTML
   const handleDownloadPDF = async () => {
-    if (!documentRecord?.storage_path) {
-      toast.error('No hay PDF disponible para descargar');
+    if (!previewHtml || !guardian) {
+      toast.error('No hay documento para descargar');
       return;
     }
     
     try {
-      const url = await getDocumentPDFUrl(documentRecord.storage_path);
-      if (url) {
-        // Download using anchor element
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Pagare_${year}_${guardian?.run || 'documento'}.pdf`;
-        link.click();
-        toast.success('Descargando PDF...');
-      }
+      toast.loading('Generando PDF...', { id: 'pdf-download' });
+      
+      // Generate PDF from HTML (client-side, no server upload)
+      const pdfBlob = await generatePDFFromHTML({
+        htmlContent: previewHtml,
+        includeHeader: true,
+        includeSignatureSection: true,
+        watermark: documentRecord?.status === 'signed' ? undefined : 'NO FIRMADO',
+        guardianRun: guardian.run
+      });
+      
+      // Download directly
+      downloadPDFBlob(pdfBlob, `Pagare_${year}_${guardian?.run || 'documento'}.pdf`);
+      
+      toast.success('PDF descargado exitosamente', { id: 'pdf-download' });
     } catch (err) {
-      console.error('Download error:', err);
-      toast.error('Error al descargar el PDF');
+      console.error('Download PDF error:', err);
+      toast.error('Error al generar el PDF', { id: 'pdf-download' });
     }
   };
 
-  // Preview PDF in new tab
-  const handlePreviewPDF = async () => {
-    if (!documentRecord?.storage_path) {
-      toast.error('No hay PDF disponible para previsualizar');
+  // Print HTML preview
+  const handlePrint = () => {
+    if (!previewHtml) {
+      toast.error('No hay documento para imprimir');
       return;
     }
     
-    try {
-      const url = await getDocumentPDFUrl(documentRecord.storage_path);
-      if (url) {
-        window.open(url, '_blank');
-        toast.success('Abriendo vista previa...');
-      }
-    } catch (err) {
-      console.error('Preview error:', err);
-      toast.error('Error al abrir la vista previa');
+    // Open print dialog with the HTML content
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Pagaré ${year}</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              padding: 40px; 
+              line-height: 1.6;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            h1, h2 { color: #333; }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin: 20px 0;
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 8px; 
+              text-align: left;
+            }
+            th { background-color: #f2f2f2; }
+            @media print {
+              body { padding: 20px; }
+            }
+          </style>
+        </head>
+        <body>
+          ${previewHtml}
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 250);
     }
   };
 
@@ -319,104 +461,209 @@ export function MatriculaWizard() {
         </Card>
       )}
 
-      {/* STEP 1 */}
+      {/* STEP 1: Economic Data */}
       {step === 1 && (
         <Card>
           <CardHeader>
-            <h2 className="font-semibold">Datos Económicos</h2>
+            <h2 className="font-semibold">Datos Económicos y Forma de Pago</h2>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs mb-1">Coleg. Anual (CLP)</label>
-                <input className="w-full border rounded px-2 py-1" value={economic.colegiatura_anual} onChange={e => setEconomic({ ...economic, colegiatura_anual: e.target.value })} />
-              </div>
-              <div>
-                <label className="block text-xs mb-1">Cantidad Cuotas</label>
-                <input className="w-full border rounded px-2 py-1" value={economic.cantidad_cuotas} onChange={e => setEconomic({ ...economic, cantidad_cuotas: e.target.value })} />
-              </div>
-              <div>
-                <label className="block text-xs mb-1">Monto por Cuota (CLP)</label>
-                <input className="w-full border rounded px-2 py-1" value={economic.monto_cuota} onChange={e => setEconomic({ ...economic, monto_cuota: e.target.value })} />
-              </div>
-              <div>
-                <label className="block text-xs mb-1">Día Vencimiento (1-28)</label>
-                <input className="w-full border rounded px-2 py-1" value={economic.dia_vencimiento} onChange={e => setEconomic({ ...economic, dia_vencimiento: e.target.value })} />
+          <CardContent className="space-y-6 text-sm">
+            {/* Economic Data Section */}
+            <div>
+              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300">💰 Información Económica</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Monto Matrícula (CLP)</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded px-2 py-1" 
+                    value={economic.monto_matricula} 
+                    onChange={e => setEconomic({ ...economic, monto_matricula: e.target.value })} 
+                    placeholder="Ej: 150000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Colegiatura Anual (CLP)</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded px-2 py-1" 
+                    value={economic.colegiatura_anual} 
+                    onChange={e => setEconomic({ ...economic, colegiatura_anual: e.target.value })} 
+                    placeholder="Ej: 3600000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Cantidad Cuotas</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded px-2 py-1" 
+                    value={economic.cantidad_cuotas} 
+                    onChange={e => setEconomic({ ...economic, cantidad_cuotas: e.target.value })} 
+                    placeholder="Ej: 10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Monto por Cuota (CLP) - Auto-calculado</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded px-2 py-1 bg-gray-100" 
+                    value={economic.monto_cuota} 
+                    readOnly
+                    placeholder="Se calcula automáticamente"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-28)</label>
+                  <input 
+                    type="number" 
+                    min="1" 
+                    max="28" 
+                    className="w-full border rounded px-2 py-1" 
+                    value={economic.dia_vencimiento} 
+                    onChange={e => setEconomic({ ...economic, dia_vencimiento: e.target.value })} 
+                    placeholder="Ej: 5"
+                  />
+                </div>
               </div>
             </div>
-            <Button onClick={handleSaveEconomic}>Guardar Datos</Button>
+
+            {/* Payment Method Section */}
+            <div className="border-t pt-4">
+              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300">💳 Forma de Pago</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Seleccione uno o más métodos de pago:</p>
+              <div className="grid md:grid-cols-2 gap-3">
+                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input 
+                    type="checkbox" 
+                    checked={paymentMethod.cheques} 
+                    onChange={e => setPaymentMethod({ ...paymentMethod, cheques: e.target.checked })} 
+                    className="w-4 h-4"
+                  />
+                  <span>📝 Cheques</span>
+                </label>
+                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input 
+                    type="checkbox" 
+                    checked={paymentMethod.transferencia} 
+                    onChange={e => setPaymentMethod({ ...paymentMethod, transferencia: e.target.checked })} 
+                    className="w-4 h-4"
+                  />
+                  <span>💸 Transferencia Electrónica</span>
+                </label>
+                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input 
+                    type="checkbox" 
+                    checked={paymentMethod.efectivo} 
+                    onChange={e => setPaymentMethod({ ...paymentMethod, efectivo: e.target.checked })} 
+                    className="w-4 h-4"
+                  />
+                  <span>💵 Pago en Efectivo</span>
+                </label>
+                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input 
+                    type="checkbox" 
+                    checked={paymentMethod.tarjeta} 
+                    onChange={e => setPaymentMethod({ ...paymentMethod, tarjeta: e.target.checked })} 
+                    className="w-4 h-4"
+                  />
+                  <span>💳 Tarjeta de Crédito</span>
+                </label>
+              </div>
+            </div>
+
+            <Button onClick={handleSaveEconomic} className="mt-4">💾 Guardar Datos</Button>
           </CardContent>
         </Card>
       )}
 
-      {/* STEP 2 */}
+      {/* STEP 2: Preview Pagaré and Generate PDF */}
       {step === 2 && (
         <Card>
-          <CardHeader>
-            <h2 className="font-semibold">Generar Pagaré</h2>
-          </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <p className="text-gray-600 dark:text-gray-400">Se construirá el documento usando la plantilla activa y los datos ingresados.</p>
-              <Button onClick={handleGeneratePagare} disabled={loading}>Generar Documento</Button>
-            </CardContent>
-        </Card>
-      )}
-
-      {/* STEP 3 */}
-      {step === 3 && (
-        <Card>
           <CardHeader className="flex items-center justify-between">
-            <h2 className="font-semibold">Revisión y Firma</h2>
+            <h2 className="font-semibold">Vista Previa del Pagaré</h2>
             <div className="flex gap-2 items-center">
-              {documentRecord?.pdf_url && (
-                <span className="text-xs px-2 py-1 rounded bg-blue-600 text-white">PDF Generado</span>
+              {documentRecord && (
+                <span className="text-xs px-2 py-1 rounded bg-green-600 text-white">✓ Documento Generado</span>
               )}
               {documentRecord?.status === 'signed' && (
-                <span className="text-xs px-2 py-1 rounded bg-green-600 text-white">Firmado</span>
+                <span className="text-xs px-2 py-1 rounded bg-blue-600 text-white">✓ Firmado</span>
               )}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!previewHtml && <p className="text-sm text-gray-500">Aún no hay contenido</p>}
+            {!previewHtml && !loading && (
+              <div className="text-center py-8">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Haga clic en "Generar Vista Previa" para crear el documento.
+                </p>
+                <Button onClick={handleGeneratePagare} disabled={loading || students.length === 0}>
+                  📄 Generar Vista Previa
+                </Button>
+                {students.length === 0 && (
+                  <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                    Debe agregar al menos un alumno en el paso anterior
+                  </p>
+                )}
+              </div>
+            )}
+            
             {previewHtml && (
               <>
-                <div className="border rounded p-3 max-h-[500px] overflow-auto prose prose-sm dark:prose-invert bg-white dark:bg-dark/40 shadow-inner" dangerouslySetInnerHTML={{ __html: previewHtml.replace(/\n/g, '<br/>') }} />
-                
-                {/* PDF Actions */}
-                {documentRecord?.pdf_url && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                    <h3 className="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-100">Documento PDF</h3>
-                    <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
-                      El PDF ha sido generado con formato profesional incluyendo logo, bordes y secciones de firma.
-                    </p>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={handleDownloadPDF}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        📥 Descargar PDF
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={handlePreviewPDF}
-                      >
-                        👁️ Vista Previa PDF
-                      </Button>
-                    </div>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-3">
-                      💡 Descarga el PDF para imprimirlo y llevarlo a la notaría para firma física.
-                    </p>
+                {/* HTML Preview */}
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg p-1">
+                  <div 
+                    className="border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 max-h-[600px] overflow-auto bg-white dark:bg-gray-800 shadow-lg prose prose-sm dark:prose-invert max-w-none"
+                    style={{ fontFamily: 'Arial, sans-serif' }}
+                    dangerouslySetInnerHTML={{ __html: previewHtml.replace(/\n/g, '<br/>') }} 
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <h3 className="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-100">
+                    📋 Acciones del Documento
+                  </h3>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mb-4">
+                    Revise el contenido del documento. Puede descargarlo como PDF o imprimirlo directamente.
+                  </p>
+                  <div className="flex gap-3 flex-wrap">
+                    <Button 
+                      variant="default" 
+                      onClick={handleDownloadPDF}
+                      disabled={loading}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      📥 Descargar PDF
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handlePrint}
+                      disabled={loading}
+                    >
+                      🖨️ Imprimir
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => { setStep(1); setPreviewHtml(''); setDocumentRecord(null); }}
+                      disabled={loading}
+                    >
+                      ✏️ Editar Datos
+                    </Button>
                   </div>
-                )}
+                  <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      💡 <strong>Importante:</strong> El PDF se genera con formato profesional incluyendo:
+                    </p>
+                    <ul className="text-xs text-blue-600 dark:text-blue-400 mt-2 ml-4 space-y-1">
+                      <li>✓ Logo y datos del colegio</li>
+                      <li>✓ Secciones con bordes profesionales</li>
+                      <li>✓ Áreas de firma para apoderado y corporación</li>
+                      <li>✓ Marca de agua "NO FIRMADO" (hasta firmar digitalmente)</li>
+                    </ul>
+                  </div>
+                </div>
               </>
             )}
-            <div className="flex gap-2">
-              {documentRecord?.status !== 'signed' && <Button onClick={handleSign} disabled={loading}>Firmar</Button>}
-              <Button variant="outline" onClick={() => { setStep(2); }}>Regenerar</Button>
-            </div>
           </CardContent>
         </Card>
       )}
@@ -424,8 +671,8 @@ export function MatriculaWizard() {
       {/* Navigation */}
       {!error && guardian && (
         <div className="flex justify-between pt-2">
-          <Button variant="outline" onClick={back} disabled={step === 0}>Atrás</Button>
-          {step < 2 && <Button onClick={next} disabled={!canProceed()}>Siguiente</Button>}
+          <Button variant="outline" onClick={back} disabled={step === 0 || loading}>Atrás</Button>
+          {step < 2 && <Button onClick={next} disabled={!canProceed() || loading}>Siguiente</Button>}
         </div>
       )}
         </>

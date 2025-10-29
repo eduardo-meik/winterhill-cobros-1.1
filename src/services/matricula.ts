@@ -1,6 +1,5 @@
 import { supabase } from './supabase';
 import toast from 'react-hot-toast';
-import { generatePDFFromHTML } from './pdfGenerator';
 
 // Types (lightweight to avoid adding global type deps now)
 export interface GuardianRecord {
@@ -18,17 +17,22 @@ export interface GuardianRecord {
   date_birth?: string;
   nivel_educacional?: string;
   family_tie?: string;
+  nacionalidad?: string;
+  profesion?: string;
+  estado_civil?: string;
 }
 
 export interface StudentRecord {
   id: string;
   whole_name?: string;
   run?: string;
-  curso?: string; // assembled client-side if needed
+  curso?: string; // UUID del curso
+  curso_nombre?: string; // Nombre del curso (ej: "4° MEDIO A")
   curso_id?: string;
   first_name?: string;
   last_name?: string;
   grade?: string;
+  nivel?: string;
   date_of_birth?: string;
 }
 
@@ -189,17 +193,77 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
 
 // 3. Manage enrollment_students
 export async function listEnrollmentStudents(enrollmentId: string): Promise<StudentRecord[]> {
-  type Row = { student_id: string; students: { id: string; whole_name?: string; run?: string } | null };
+  type Row = { 
+    student_id: string; 
+    students: { 
+      id: string; 
+      whole_name?: string; 
+      run?: string;
+      first_name?: string;
+      apellido_paterno?: string;
+      apellido_materno?: string;
+      nivel?: string;
+      curso?: string;
+      cursos?: {
+        id: string;
+        nom_curso?: string;
+        nivel?: number;
+        letra_curso?: string;
+      } | null;
+    } | null 
+  };
+  
+  console.log('📚 listEnrollmentStudents: Fetching students for enrollment:', enrollmentId);
+  
   const { data, error } = await supabase
     .from('enrollment_students')
-    .select('student_id, students:student_id(id, whole_name, run)')
+    .select(`
+      student_id, 
+      students:student_id(
+        id, 
+        whole_name, 
+        run,
+        first_name,
+        apellido_paterno,
+        apellido_materno,
+        nivel,
+        curso,
+        cursos:curso(
+          id,
+          nom_curso,
+          nivel,
+          letra_curso
+        )
+      )
+    `)
     .eq('enrollment_id', enrollmentId) as { data: Row[] | null; error: any };
+    
   if (error) {
     console.error('listEnrollmentStudents error', error);
     toast.error('Error cargando alumnos de la matrícula');
     return [];
   }
-  return (data || []).map(r => ({ id: r.students?.id || r.student_id, whole_name: r.students?.whole_name, run: r.students?.run }));
+  
+  const students = (data || []).map(r => {
+    const apellidos = [r.students?.apellido_paterno, r.students?.apellido_materno].filter(Boolean).join(' ').trim();
+    const cursoNombre = r.students?.cursos?.nom_curso || r.students?.nivel || r.students?.curso || '';
+    
+    return {
+      id: r.students?.id || r.student_id,
+      whole_name: r.students?.whole_name,
+      run: r.students?.run,
+      first_name: r.students?.first_name,
+      last_name: (apellidos || undefined) as string | undefined,
+      grade: cursoNombre, // Use curso name instead of nivel
+      nivel: r.students?.nivel,
+      curso: r.students?.curso,
+      curso_nombre: cursoNombre // Add new field
+    };
+  });
+  
+  console.log('📚 listEnrollmentStudents: Students fetched:', students);
+  
+  return students;
 }
 
 export async function fetchGuardianStudents(guardianId: string): Promise<GuardianLinkedStudent[]> {
@@ -341,34 +405,71 @@ export async function updateEnrollmentMeta(enrollmentId: string, metaPatch: Reco
 
 // 5. Templates
 export async function getActivePagareTemplate(): Promise<DocumentTemplate | null> {
-  const { data, error } = await supabase
-    .from('document_templates')
-    .select('*')
-    .eq('type', 'PAGARE')
-    .eq('active', true)
-    .order('version', { ascending: false })
-    .limit(1);
-  if (error) {
-    console.error('getActivePagareTemplate error', error);
-    toast.error('No se pudo cargar plantilla Pagaré');
+  console.log('📄 getActivePagareTemplate: FORCING load from file (DB template has wrong format)...');
+  
+  // TEMPORARY FIX: Skip DB because template has _____ instead of {{placeholders}}
+  // TODO: Update DB template with correct {{placeholder}} format
+  
+  // Load from file ALWAYS
+  console.log('📄 Loading template from /contratos/pagare.txt');
+  
+  try {
+    const response = await fetch('/contratos/pagare.txt');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch template: ${response.status}`);
+    }
+    const content = await response.text();
+    console.log('✅ Template loaded from file, length:', content.length);
+    console.log('✅ File content preview (first 200 chars):', content.substring(0, 200));
+    
+    return {
+      id: 'file-fallback',
+      type: 'PAGARE',
+      version: 1,
+      content: content,
+      active: true
+    } as DocumentTemplate;
+  } catch (fileError) {
+    console.error('❌ Failed to load template from file:', fileError);
+    toast.error('No se pudo cargar plantilla Pagaré desde archivo');
     return null;
   }
-  return data?.[0] || null;
 }
 
 // 6. Payload builder
 export interface PagarePayload {
+  // Fecha actual
+  fecha_actual: string;
+  
+  // Guardian data
   guardian_full_name: string;
   guardian_run: string;
   guardian_address: string;
   guardian_email: string;
   guardian_phone: string;
+  guardian_nacionalidad: string;
+  guardian_profesion: string;
+  guardian_estado_civil: string;
+  
+  // Year
   year: number;
+  
+  // Students table
   students_table: string; // HTML fragment
-  colegiatura_anual?: number;
-  cantidad_cuotas?: number;
-  monto_cuota?: number;
-  dia_vencimiento?: number;
+  
+  // Economic data
+  monto_matricula?: number | string;
+  colegiatura_anual?: number | string;
+  cantidad_cuotas?: number | string;
+  monto_cuota?: number | string;
+  dia_vencimiento?: number | string;
+  
+  // Payment method (from survey)
+  forma_pago_cheques?: string;
+  forma_pago_transferencia?: string;
+  forma_pago_efectivo?: string;
+  forma_pago_tarjeta?: string;
+  
   [k: string]: any;
 }
 
@@ -376,21 +477,123 @@ export function buildPagarePayload(opts: {
   guardian: GuardianRecord;
   year: number;
   students: StudentRecord[];
-  economic?: { colegiatura_anual?: number; cantidad_cuotas?: number; monto_cuota?: number; dia_vencimiento?: number };
+  economic?: { 
+    monto_matricula?: number;
+    colegiatura_anual?: number; 
+    cantidad_cuotas?: number; 
+    monto_cuota?: number; 
+    dia_vencimiento?: number;
+  };
+  paymentMethod?: {
+    cheques?: boolean;
+    transferencia?: boolean;
+    efectivo?: boolean;
+    tarjeta?: boolean;
+  };
 }): PagarePayload {
-  const { guardian, year, students, economic } = opts;
-  const tableRows = students.map((s, idx) => `<tr><td>${idx + 1}</td><td>${escapeHtml(s.whole_name || '')}</td><td>${escapeHtml(s.run || '')}</td><td>${escapeHtml(s.curso || '')}</td></tr>`).join('');
-  const studentsTable = `<table><thead><tr><th>#</th><th>Nombre</th><th>RUN</th><th>Curso</th></tr></thead><tbody>${tableRows}</tbody></table>`;
-  return {
-    guardian_full_name: [guardian.first_name, guardian.last_name].filter(Boolean).join(' ') || '—',
-    guardian_run: guardian.run || '—',
-    guardian_address: guardian.address || '—',
-    guardian_email: guardian.email || '—',
-    guardian_phone: guardian.phone || '—',
+  const { guardian, year, students, economic, paymentMethod } = opts;
+  
+  // Format current date in Spanish
+  const now = new Date();
+  const day = now.getDate();
+  const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const month = months[now.getMonth()];
+  const yearFull = now.getFullYear();
+  const fecha_actual = `${day} de ${month} del ${yearFull}`;
+  
+  // Build students table HTML
+  const tableRows = students.map((s, idx) => {
+    // Prioritize curso_nombre (from JOIN), fallback to grade, nivel, or curso UUID
+    const cursoDisplay = s.curso_nombre || s.grade || s.nivel || s.curso || 'Sin curso asignado';
+    return `<tr><td>${idx + 1}</td><td>${escapeHtml(s.whole_name || s.first_name || '')}</td><td>${escapeHtml(s.run || '')}</td><td>${escapeHtml(cursoDisplay)}</td></tr>`;
+  }).join('');
+  
+  const studentsTable = `<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #f0f0f0;">
+        <th>Número</th>
+        <th>Nombre</th>
+        <th>RUT</th>
+        <th>Curso año ${year}</th>
+      </tr>
+    </thead>
+    <tbody>${tableRows}</tbody>
+  </table>`;
+  
+  // Format numbers with thousand separators
+  const formatCurrency = (value?: number | string) => {
+    if (!value) return '_______________';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return num.toLocaleString('es-CL');
+  };
+  
+  const payload = {
+    fecha_actual,
+    guardian_full_name: [guardian.first_name, guardian.last_name]
+      .filter((s): s is string => Boolean(s))
+      .map(s => s.trim())
+      .join(' ') || '_______________',
+    guardian_run: guardian.run || '_______________',
+    guardian_address: guardian.address || '_______________',
+    guardian_email: guardian.email || '_______________',
+    guardian_phone: guardian.phone || '_______________',
+    guardian_nacionalidad: guardian.nacionalidad || 'Chilena',
+    guardian_profesion: guardian.profesion || '_______________',
+    guardian_estado_civil: guardian.estado_civil || '_______________',
     year,
     students_table: studentsTable,
-    ...economic
+    monto_matricula: formatCurrency(economic?.monto_matricula),
+    colegiatura_anual: formatCurrency(economic?.colegiatura_anual),
+    cantidad_cuotas: economic?.cantidad_cuotas?.toString() || '_______________',
+    monto_cuota: (() => {
+      // Calculate monto_cuota automatically: colegiatura_anual / cantidad_cuotas
+      if (economic?.colegiatura_anual && economic?.cantidad_cuotas) {
+        const total = typeof economic.colegiatura_anual === 'string' 
+          ? parseFloat(economic.colegiatura_anual) 
+          : economic.colegiatura_anual;
+        const cuotas = typeof economic.cantidad_cuotas === 'string'
+          ? parseInt(economic.cantidad_cuotas)
+          : economic.cantidad_cuotas;
+        
+        if (!isNaN(total) && !isNaN(cuotas) && cuotas > 0) {
+          const montoPorCuota = Math.round(total / cuotas);
+          return formatCurrency(montoPorCuota);
+        }
+      }
+      // Fallback to manual monto_cuota if provided
+      return formatCurrency(economic?.monto_cuota) || '_______________';
+    })(),
+    dia_vencimiento: economic?.dia_vencimiento?.toString() || '_______________',
+    forma_pago_cheques: paymentMethod?.cheques ? '☑' : '☐',
+    forma_pago_transferencia: paymentMethod?.transferencia ? '☑' : '☐',
+    forma_pago_efectivo: paymentMethod?.efectivo ? '☐' : '☐',
+    forma_pago_tarjeta: paymentMethod?.tarjeta ? '☑' : '☐',
+    // Formatted payment methods list (one per line)
+    formas_pago_lista: [
+      `Cheques: ${paymentMethod?.cheques ? '☑' : '☐'}`,
+      `Transferencia Electrónica: ${paymentMethod?.transferencia ? '☑' : '☐'}`,
+      `Pago en efectivo: ${paymentMethod?.efectivo ? '☑' : '☐'}`,
+      `Tarjeta de Crédito: ${paymentMethod?.tarjeta ? '☑' : '☐'}`
+    ].join('\n')
   };
+  
+  console.log('🔧 buildPagarePayload - Guardian data:', {
+    first_name: guardian.first_name,
+    last_name: guardian.last_name,
+    run: guardian.run,
+    address: guardian.address,
+    nacionalidad: guardian.nacionalidad,
+    profesion: guardian.profesion,
+    estado_civil: guardian.estado_civil
+  });
+  console.log('📅 Fecha actual:', fecha_actual);
+  console.log('👥 Students count:', students.length);
+  console.log('💰 Economic data:', economic);
+  console.log('💳 Payment method:', paymentMethod);
+  console.log('✅ Final payload:', payload);
+  
+  return payload;
 }
 
 // 7. Render template with placeholders {{key}}
@@ -402,83 +605,44 @@ export function renderTemplate(raw: string, payload: Record<string, any>): strin
   });
 }
 
-// 8. Create enrollment document (PAGARE) with PDF generation
+// 8. Create enrollment document (PAGARE) - HTML only, PDF generated on-demand
 export async function createPagareDocument(params: {
   enrollmentId: string;
   template: DocumentTemplate;
   payload: PagarePayload;
   finalContent: string;
   contentHash?: string; // computed client-side (e.g., SHA-256)
-  generatePDF?: boolean; // default true
-  guardianRun?: string; // for PDF signature section
 }): Promise<EnrollmentDocumentRecord | null> {
   const { 
     enrollmentId, 
     template, 
     payload, 
     finalContent, 
-    contentHash,
-    generatePDF = true,
-    guardianRun
+    contentHash
   } = params;
 
-  let pdfUrl: string | null = null;
-  let storagePath: string | null = null;
-  let pdfHash: string | null = null;
-
   try {
-    // Generate PDF if requested
-    if (generatePDF) {
-      toast.loading('Generando PDF...', { id: 'pdf-generation' });
-      
-      // Generate PDF blob
-      const pdfBlob = await generatePDFFromHTML({
-        htmlContent: finalContent,
-        includeHeader: true,
-        includeSignatureSection: true,
-        watermark: 'NO FIRMADO', // Will be removed when signed
-        guardianRun: guardianRun
-      });
+    toast.loading('Generando documento...', { id: 'document-generation' });
 
-      // Compute PDF hash
-      const pdfArrayBuffer = await pdfBlob.arrayBuffer();
-      const pdfHashBuffer = await crypto.subtle.digest('SHA-256', pdfArrayBuffer);
-      pdfHash = Array.from(new Uint8Array(pdfHashBuffer))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-
-      // Upload to Storage
-      storagePath = await uploadDocumentPDF(pdfBlob, enrollmentId, 'PAGARE');
-      
-      if (!storagePath) {
-        toast.error('No se pudo subir el PDF', { id: 'pdf-generation' });
-        throw new Error('Failed to upload PDF to storage');
-      }
-
-      // Get signed URL (valid for 1 year for long-term access)
-      pdfUrl = await getDocumentPDFUrl(storagePath, 31536000); // 365 days
-      
-      if (!pdfUrl) {
-        toast.error('No se pudo obtener URL del PDF', { id: 'pdf-generation' });
-        throw new Error('Failed to get PDF URL');
-      }
-
-      toast.success('PDF generado exitosamente', { id: 'pdf-generation' });
-    }
-
-    // Insert document record with PDF info
+    // Insert document record (HTML content only, PDF generated client-side on download)
     const insertObj: any = {
       enrollment_id: enrollmentId,
       type: 'PAGARE',
       template_version: template.version,
       status: 'generated',
       generated_payload: payload,
-      final_content: finalContent,
       content_hash: contentHash || null,
-      pdf_url: pdfUrl,
-      storage_path: storagePath,
-      pdf_hash: pdfHash
+      pdf_url: null, // PDF not stored on server, generated client-side on-demand
+      storage_path: null,
+      pdf_hash: null
     };
+
+    // Try to add final_content if the column exists
+    try {
+      insertObj.final_content = finalContent;
+    } catch (e) {
+      console.warn('final_content column may not exist, continuing without it');
+    }
 
     const { data, error } = await supabase
       .from('enrollment_documents')
@@ -488,28 +652,38 @@ export async function createPagareDocument(params: {
 
     if (error) {
       console.error('createPagareDocument error', error);
-      toast.error('No se pudo crear el documento en la base de datos');
       
-      // Cleanup: Delete uploaded PDF if database insert failed
-      if (storagePath) {
-        await deleteDocumentPDF(storagePath);
+      // If error is about final_content column, retry without it
+      if (error.message?.includes('final_content')) {
+        console.log('Retrying insert without final_content column...');
+        delete insertObj.final_content;
+        
+        const { data: retryData, error: retryError } = await supabase
+          .from('enrollment_documents')
+          .insert(insertObj)
+          .select()
+          .single();
+          
+        if (retryError) {
+          console.error('Retry failed:', retryError);
+          toast.error('No se pudo crear el documento en la base de datos', { id: 'document-generation' });
+          return null;
+        }
+        
+        toast.success('Documento generado correctamente', { id: 'document-generation' });
+        return retryData;
       }
       
+      toast.error('No se pudo crear el documento en la base de datos', { id: 'document-generation' });
       return null;
     }
 
-    toast.success('Pagaré generado correctamente');
+    toast.success('Documento generado correctamente', { id: 'document-generation' });
     return data;
 
   } catch (err) {
     console.error('createPagareDocument exception:', err);
-    toast.error('Error al generar el documento');
-    
-    // Cleanup: Delete uploaded PDF if any error occurred
-    if (storagePath) {
-      await deleteDocumentPDF(storagePath);
-    }
-    
+    toast.error('Error al generar el documento', { id: 'document-generation' });
     return null;
   }
 }
@@ -605,16 +779,20 @@ export async function getDocumentPDFUrl(
   expiresIn: number = 3600
 ): Promise<string | null> {
   try {
+    console.log('🔍 Getting signed URL for path:', storagePath, 'expires in:', expiresIn);
+    
     const { data, error } = await supabase.storage
       .from('enrollment-documents')
       .createSignedUrl(storagePath, expiresIn);
 
     if (error) {
       console.error('Get signed URL error:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       toast.error('No se pudo obtener la URL del documento');
       return null;
     }
 
+    console.log('✅ Signed URL created successfully:', data.signedUrl);
     return data.signedUrl;
   } catch (err) {
     console.error('Get signed URL exception:', err);
