@@ -13,9 +13,14 @@ Desarrollar sistema de **"Generación de recibo"** como **documentación previa 
 
 ### Funcionalidad Principal:
 **Generar recibos de pago** que servirán como:
-1. **Comprobante para apoderados** - Documento que confirma pago realizado
-2. **Documentación previa** para posterior generación de boleta oficial en SII
-3. **Registro interno** para auditoría y control financiero
+1. **Comprobante para apoderados** - Documento que confirma pago realizado, este documento contiene:
+   - Nombre del apoderado
+   - RUT del apoderado
+   - Monto pagado
+   - Fecha de pago
+   - Detalle Nombre de los estudiantes y el numero de cuota que se paga por cada uno.
+2. **Documentación previa** para posterior generación de boleta oficial en SII. En esta parte se requiere que se guarde la informacion en una tabla que luego pueda ser exportada a excel.
+3. **Registro interno** los pago deben actualizar la base de datos del sistema de cobros de manera automatica.
 
 ### Integración:
 - **Base:** Sistema de cobros existente (`gestion.colegiowinterhill.cl`)
