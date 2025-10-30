@@ -55,35 +55,76 @@ export function MatriculaWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Assisted mode (ADMIN/ASIST)
+  const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
+  const [assistedGuardian, setAssistedGuardian] = useState(null);
+  const [guardianSearch, setGuardianSearch] = useState('');
+  const [guardianResults, setGuardianResults] = useState([]);
+  const [guardianSearchLoading, setGuardianSearchLoading] = useState(false);
+
+  const searchGuardians = useCallback(async (q) => {
+    if (!q || q.trim().length < 2) { setGuardianResults([]); return; }
+    try {
+      setGuardianSearchLoading(true);
+      const orFilter = `first_name.ilike.%${q}%,last_name.ilike.%${q}%,run.ilike.%${q}%,email.ilike.%${q}%`;
+      const { data, error } = await supabase
+        .from('guardians')
+        .select('id, first_name, last_name, run, email')
+        .or(orFilter)
+        .limit(10);
+      if (error) throw error;
+      setGuardianResults(data || []);
+    } catch (e) {
+      console.error('Guardian search error', e);
+    } finally {
+      setGuardianSearchLoading(false);
+    }
+  }, []);
+
   // Load guardian & enrollment baseline
   useEffect(() => {
     if (!user) return;
     (async () => {
-      console.log('🔍 MatriculaWizard: Loading guardian for user:', user.id);
       setLoading(true);
       setError(null);
-      const g = await fetchCurrentGuardian(user.id);
-      console.log('🔍 MatriculaWizard: Guardian fetched:', g);
-      if (!g) { 
-        setLoading(false); 
-        setError('No se encontró registro de apoderado. Por favor contacte al administrador para crear su perfil.');
-        toast.error('No se encontró registro de apoderado');
-        return; 
+      try {
+        let g = guardian;
+        if (assistedMode) {
+          // In assisted mode, require selecting a guardian first
+          if (!assistedGuardian) {
+            setGuardian(null);
+            setEnrollment(null);
+            setLoading(false);
+            return;
+          }
+          g = assistedGuardian;
+        } else {
+          console.log('🔍 MatriculaWizard: Loading guardian for user:', user.id);
+          g = await fetchCurrentGuardian(user.id);
+          console.log('🔍 MatriculaWizard: Guardian fetched:', g);
+          if (!g) {
+            setError('No se encontró registro de apoderado. Por favor contacte al administrador para crear su perfil.');
+            toast.error('No se encontró registro de apoderado');
+            setLoading(false);
+            return;
+          }
+        }
+        setGuardian(g);
+        console.log('🔍 MatriculaWizard: Creating enrollment for guardian:', g.id, 'year:', year);
+        const enr = await getOrCreateEnrollment(g.id, year);
+        console.log('🔍 MatriculaWizard: Enrollment created/fetched:', enr);
+        if (!enr) {
+          setError('No se pudo crear la matrícula. Intente nuevamente.');
+          toast.error('Error creando matrícula');
+        } else {
+          setEnrollment(enr);
+        }
+      } finally {
+        setLoading(false);
+        console.log('🔍 MatriculaWizard: Loading complete');
       }
-      setGuardian(g);
-      console.log('🔍 MatriculaWizard: Creating enrollment for guardian:', g.id, 'year:', year);
-      const enr = await getOrCreateEnrollment(g.id, year);
-      console.log('🔍 MatriculaWizard: Enrollment created/fetched:', enr);
-      if (!enr) {
-        setError('No se pudo crear la matrícula. Intente nuevamente.');
-        toast.error('Error creando matrícula');
-      } else {
-        setEnrollment(enr);
-      }
-      setLoading(false);
-      console.log('🔍 MatriculaWizard: Loading complete');
     })();
-  }, [user, year]);
+  }, [user, year, assistedMode, assistedGuardian]);
 
   // Load enrolled students & potential students (simplified: all students joined to guardian via student_guardian)
   const reloadEnrollmentStudents = useCallback(async () => {
@@ -93,6 +134,19 @@ export function MatriculaWizard() {
   }, [enrollment]);
 
   useEffect(() => { reloadEnrollmentStudents(); }, [reloadEnrollmentStudents]);
+
+  // Record assisted mode auditing in enrollment meta
+  useEffect(() => {
+    if (!assistedMode) return;
+    if (!enrollment || !assistedGuardian || !user) return;
+    // Minimal, fire-and-forget; ignore errors for UX smoothness
+    updateEnrollmentMeta(enrollment.id, {
+      assisted_by_user_id: user.id,
+      assisted_by_role: user.profile,
+      assisted_by_name: user.email || null,
+      assisted_at: new Date().toISOString(),
+    });
+  }, [assistedMode, enrollment?.id, assistedGuardian?.id, user?.id]);
 
   // Load economic data and payment methods from enrollment.meta
   useEffect(() => {
@@ -376,8 +430,68 @@ export function MatriculaWizard() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Matrícula {year}</h1>
       <p className="text-sm text-gray-600 dark:text-gray-400">Asistente básico de matrícula y generación de Pagaré (versión inicial).</p>
 
+      {/* Assisted mode selector for ADMIN/ASIST */}
+      {assistedMode && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Modo asistido</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Selecciona el apoderado para operar en su nombre.</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {!assistedGuardian ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={guardianSearch}
+                    onChange={(e) => {
+                      const q = e.target.value;
+                      setGuardianSearch(q);
+                      // Debounce-lite: search after short delay
+                      setTimeout(() => searchGuardians(q), 250);
+                    }}
+                    placeholder="Buscar por nombre, RUN o email..."
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                  <Button onClick={() => searchGuardians(guardianSearch)} disabled={guardianSearchLoading}>
+                    {guardianSearchLoading ? 'Buscando...' : 'Buscar'}
+                  </Button>
+                </div>
+                <div className="max-h-64 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800 rounded-lg border border-gray-100 dark:border-gray-800">
+                  {(guardianResults || []).map((g) => (
+                    <button
+                      key={g.id}
+                      onClick={() => setAssistedGuardian(g)}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-dark-hover"
+                    >
+                      <div className="font-medium text-gray-900 dark:text-white">{g.first_name} {g.last_name}</div>
+                      <div className="text-xs text-gray-500">RUN: {g.run || '—'} · {g.email || 'sin email'}</div>
+                    </button>
+                  ))}
+                  {!guardianResults?.length && (
+                    <div className="px-4 py-6 text-sm text-gray-500">Sin resultados. Ingresa al menos 2 caracteres.</div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Operando en nombre de:</div>
+                  <div className="text-base font-medium text-gray-900 dark:text-white">{assistedGuardian.first_name} {assistedGuardian.last_name} · RUN: {assistedGuardian.run || '—'}</div>
+                </div>
+                <Button variant="secondary" onClick={() => { setAssistedGuardian(null); setGuardian(null); setEnrollment(null); }}>Cambiar apoderado</Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Error State */}
-      {error && (
+      {error && !assistedMode && (
         <Card className="border-red-500 bg-red-50 dark:bg-red-900/20">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
