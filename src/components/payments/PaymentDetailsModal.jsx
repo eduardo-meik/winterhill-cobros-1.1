@@ -261,6 +261,35 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     }
   };
 
+  // Print receipt for already paid fees
+  const handlePrintReceipt = async () => {
+    try {
+      const cashierName = permissions?.user?.user_metadata?.full_name 
+        || permissions?.user?.email 
+        || 'Usuario';
+      const year = (() => {
+        if (payment.year_academico) return payment.year_academico;
+        try { const d = new Date(payment.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+      })();
+      await generateReceiptPdf({
+        feeId: payment.id,
+        studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+        courseName: payment.student?.cursos?.nom_curso || null,
+        numeroCuota: payment.numero_cuota || null,
+        yearAcademico: year,
+        amount: Number(payment.amount),
+        paymentDate: payment.payment_date || new Date().toISOString(),
+        paymentMethod: payment.payment_method || '—',
+        movBancario: payment.mov_bancario || null,
+        notes: payment.notes || null,
+        cashierName,
+      });
+    } catch (err) {
+      console.error('Error al generar recibo:', err);
+      toast.error('No se pudo generar el recibo');
+    }
+  };
+
   return (
     <Dialog
       open={true}
@@ -645,6 +674,14 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                       className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
                     >
                       Eliminar
+                    </button>
+                  )}
+                  {payment.status === 'paid' && (
+                    <button
+                      onClick={handlePrintReceipt}
+                      className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
+                    >
+                      Imprimir Recibo
                     </button>
                   )}
                   <button
