@@ -8,12 +8,12 @@ import clsx from 'clsx';
  * Each item defines an id, icon component, and display text
  */
 const baseMenuItems = [
-  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'guardian', undefined] },
-  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: ['admin'] },
-  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin'] },
-  { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'guardian'] },
-  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin'] },
-  { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin'] }
+  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'asist', 'guardian', undefined] },
+  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: ['admin', 'asist'] },
+  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin', 'asist'] },
+  { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'asist', 'guardian'] },
+  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin', 'asist'] },
+  { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] }
 ];
 
 /**
