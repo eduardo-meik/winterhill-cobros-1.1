@@ -11,6 +11,13 @@ export interface PDFGenerationOptions {
   includeSignatureSection?: boolean;
   watermark?: string; // 'BORRADOR', 'NO FIRMADO', etc.
   guardianRun?: string;
+  metadata?: {
+    title?: string;
+    subject?: string;
+    author?: string;
+    keywords?: string;
+    creator?: string;
+  };
 }
 
 /**
@@ -146,7 +153,8 @@ export async function generatePDFFromHTML(
     includeHeader = true,
     includeSignatureSection = true,
     watermark,
-    guardianRun
+    guardianRun,
+    metadata
   } = options;
 
   // Create PDF
@@ -261,13 +269,13 @@ export async function generatePDFFromHTML(
       }
     }
 
-    // Add metadata
+    // Add metadata (allow override)
     pdf.setProperties({
-      title: 'Pagaré - Contrato de Prestación de Servicios Educacionales',
-      subject: 'Contrato de Matrícula Colegio Winterhill',
-      author: 'Corporación Educacional Winterhill',
-      keywords: 'pagare, matricula, educacion, contrato',
-      creator: 'Sistema de Matrícula Winterhill'
+      title: metadata?.title || 'Pagaré - Contrato de Prestación de Servicios Educacionales',
+      subject: metadata?.subject || 'Contrato de Matrícula Colegio Winterhill',
+      author: metadata?.author || 'Corporación Educacional Winterhill',
+      keywords: metadata?.keywords || 'pagare, matricula, educacion, contrato',
+      creator: metadata?.creator || 'Sistema de Matrícula Winterhill'
     });
 
     // Return as blob

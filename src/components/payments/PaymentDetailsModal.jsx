@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
+import { generateReceiptPdf } from '../../services/receiptGenerator';
 
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
@@ -82,6 +83,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
 
   const handleSave = async () => {
     try {
+      const wasPaid = payment.status === 'paid';
+      const willBePaid = formData.status === 'paid';
+      const becamePaid = !wasPaid && willBePaid;
+
       // Validate payment_method before sending to database
       const validPaymentMethods = ["CHEQUE", "TRANSFERENCIA", "TARJETA", "DESCUENTO PLANILLA", "EFECTIVO"];
       
@@ -110,6 +115,31 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       if (error) throw error;
 
       toast.success('Pago actualizado exitosamente');
+      // If ADMIN (or any role) changed status to paid, offer printing the receipt
+      if (becamePaid) {
+        const wantsReceipt = window.confirm('¿Desea imprimir el recibo?');
+        if (wantsReceipt) {
+          const cashierName = permissions?.user?.user_metadata?.full_name 
+            || permissions?.user?.email 
+            || 'Usuario';
+          const year = (() => {
+            try { const d = new Date(formData.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+          })();
+          await generateReceiptPdf({
+            feeId: payment.id,
+            studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+            courseName: payment.student?.cursos?.nom_curso || null,
+            numeroCuota: payment.numero_cuota || null,
+            yearAcademico: year,
+            amount: Number(formData.amount || payment.amount),
+            paymentDate: formData.payment_date || new Date().toISOString(),
+            paymentMethod: formData.payment_method || payment.payment_method || '—',
+            movBancario: formData.mov_bancario || null,
+            notes: formData.notes || null,
+            cashierName,
+          });
+        }
+      }
       onSuccess?.();
       onClose();
     } catch (error) {
@@ -199,6 +229,26 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
 
       toast.success('Pago registrado exitosamente');
       setIsRegistering(false);
+      // Offer receipt printing for ASIST (and any role using this flow)
+      const wantsReceipt = window.confirm('¿Desea imprimir el recibo?');
+      if (wantsReceipt) {
+        const cashierName = permissions?.user?.user_metadata?.full_name 
+          || permissions?.user?.email 
+          || 'Usuario';
+        await generateReceiptPdf({
+          feeId: payment.id,
+          studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+          courseName: payment.student?.cursos?.nom_curso || null,
+          numeroCuota: payment.numero_cuota || null,
+          yearAcademico: year,
+          amount: amountNum,
+          paymentDate: registerData.payment_date,
+          paymentMethod: registerData.payment_method,
+          movBancario: registerData.mov_bancario || null,
+          notes: registerData.notes || null,
+          cashierName,
+        });
+      }
       onSuccess?.();
       onClose();
     } catch (err) {

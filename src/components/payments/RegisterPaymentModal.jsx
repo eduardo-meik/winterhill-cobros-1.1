@@ -7,6 +7,7 @@ import { StudentSelect } from './StudentSelect';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
+import { generateReceiptPdf } from '../../services/receiptGenerator';
 
 const defaultValues = {
   student_id: '',
@@ -262,6 +263,31 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
           if (updErr) throw updErr;
 
           toast.success('Pago registrado exitosamente');
+          // Ask to print receipt
+          const wantsReceipt = window.confirm('¿Desea imprimir el recibo?');
+          if (wantsReceipt) {
+            // Fetch student basic info for the receipt
+            const { data: studentRows } = await supabase
+              .from('students')
+              .select('first_name,last_name,cursos(nom_curso)')
+              .eq('id', data.student_id)
+              .limit(1);
+            const student = studentRows?.[0];
+            const cashierName = (permissions?.user?.user_metadata?.full_name) || permissions?.user?.email || 'Usuario';
+            await generateReceiptPdf({
+              feeId: existing.id,
+              studentName: `${student?.first_name || ''} ${student?.last_name || ''}`.trim(),
+              courseName: student?.cursos?.nom_curso || null,
+              numeroCuota: cuotaNumber,
+              yearAcademico: paymentData.year_academico,
+              amount: paymentData.amount,
+              paymentDate: paymentData.payment_date,
+              paymentMethod: paymentData.payment_method,
+              movBancario: paymentData.mov_bancario || null,
+              notes: paymentData.notes || null,
+              cashierName,
+            });
+          }
           reset();
           onSuccess();
           onClose();
@@ -270,13 +296,40 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
       }
 
       // Fallback: insert a new row (e.g., no pre-existing cuota row exists)
-      const { error } = await supabase
+      const { data: insertedRows, error } = await supabase
         .from('fee')
-        .insert([paymentData], { returning: 'minimal', defaultToNull: false });
+        .insert([paymentData])
+        .select('id')
+        .limit(1);
 
       if (error) throw error;
 
       toast.success('Pago registrado exitosamente');
+      // Ask to print receipt
+      const wantsReceipt = window.confirm('¿Desea imprimir el recibo?');
+      if (wantsReceipt) {
+        const feeId = insertedRows?.[0]?.id || '';
+        const { data: studentRows } = await supabase
+          .from('students')
+          .select('first_name,last_name,cursos(nom_curso)')
+          .eq('id', data.student_id)
+          .limit(1);
+        const student = studentRows?.[0];
+        const cashierName = (permissions?.user?.user_metadata?.full_name) || permissions?.user?.email || 'Usuario';
+        await generateReceiptPdf({
+          feeId,
+          studentName: `${student?.first_name || ''} ${student?.last_name || ''}`.trim(),
+          courseName: student?.cursos?.nom_curso || null,
+          numeroCuota: isFreePayment ? (data.numero_cuota ? parseInt(data.numero_cuota) : null) : parseInt(data.numero_cuota),
+          yearAcademico: paymentData.year_academico,
+          amount: paymentData.amount,
+          paymentDate: paymentData.payment_date,
+          paymentMethod: paymentData.payment_method,
+          movBancario: paymentData.mov_bancario || null,
+          notes: paymentData.notes || null,
+          cashierName,
+        });
+      }
       reset();
       onSuccess();
       onClose();
