@@ -13,8 +13,8 @@ const baseMenuItems = [
   { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin', 'asist'] },
   { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'asist', 'guardian'] },
   { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin', 'asist'] },
-  { id: 'matricula', icon: Guardian, text: 'Matrícula', roles: ['admin', 'asist'] },
-  { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] }
+  { id: 'matricula', icon: Guardian, text: 'Matrícula', roles: ['admin', 'asist'] }
+  // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   
 ];
 
