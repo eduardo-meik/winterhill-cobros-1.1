@@ -41,8 +41,9 @@ export const usePermissions = (): PermissionHookReturn => {
   
   const permissions = new PermissionChecker(userProfile);
   
-  const result = {
-    ...permissions,
+  // Importante: conservar el prototipo del PermissionChecker para que los métodos (isAssistant, isAdmin, etc.)
+  // sigan siendo funciones. No usar spread sobre la instancia, ya que no copia métodos del prototipo.
+  const enhanced = Object.assign(permissions as any, {
     userProfile,
     user,
     // Shortcuts adicionales para facilitar el uso
@@ -51,8 +52,8 @@ export const usePermissions = (): PermissionHookReturn => {
     showDeletePaymentButton: permissions.canDeletePayment(),
     showAdminFeatures: permissions.isAdmin(),
     isLimitedUser: permissions.isAssistant() || permissions.isReadOnly(),
-  } as unknown as PermissionHookReturn;
-  return result;
+  }) as PermissionHookReturn;
+  return enhanced;
 };
 
 /**

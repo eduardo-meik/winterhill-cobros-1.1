@@ -32,6 +32,17 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const permissions = usePermissions();
 
+  // Registrar pago (ASIST) state
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerData, setRegisterData] = useState({
+    amount: payment.amount,
+    payment_date: '',
+    payment_method: '',
+    mov_bancario: '',
+    notes: ''
+  });
+
   useEffect(() => {
     fetchGuardianInfo();
   }, [payment.student.id]);
@@ -131,6 +142,72 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       toast.error('Error al eliminar el pago');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helpers for Registrar pago
+  const handleRegisterChange = (e) => {
+    const { name, value } = e.target;
+    setRegisterData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRegisterPay = async () => {
+    try {
+      // Basic validations
+      const amountNum = Number(payment.amount);
+      if (!registerData.payment_date) {
+        toast.error('La fecha de pago es requerida');
+        return;
+      }
+      if (!registerData.payment_method) {
+        toast.error('El método de pago es requerido');
+        return;
+      }
+      if (!Number.isFinite(amountNum) || amountNum <= 0) {
+        toast.error('El monto debe ser mayor a 0');
+        return;
+      }
+
+      // Build update payload
+      const year = (() => {
+        try {
+          const d = new Date(registerData.payment_date);
+          const y = d.getFullYear();
+          return Number.isFinite(y) ? y : new Date().getFullYear();
+        } catch {
+          return new Date().getFullYear();
+        }
+      })();
+
+      const updatePayload = {
+        amount: amountNum,
+        payment_date: registerData.payment_date,
+        payment_method: registerData.payment_method,
+        status: 'paid',
+        mov_bancario: registerData.mov_bancario || null,
+        notes: registerData.notes || null,
+        year_academico: year
+      };
+
+      setRegisterLoading(true);
+      const { error } = await supabase
+        .from('fee')
+        .update(updatePayload, { returning: 'minimal' })
+        .eq('id', payment.id);
+
+      if (error) throw error;
+
+      toast.success('Pago registrado exitosamente');
+      setIsRegistering(false);
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      const message = err?.message || 'Error al registrar el pago';
+      const details = err?.details || err?.hint || '';
+      console.error('Registrar pago error:', err);
+      toast.error(`${message}${details ? `: ${details}` : ''}`);
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
@@ -296,6 +373,71 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                     </div>
                   </div>
                 </div>
+              ) : isRegistering ? (
+                <div className="space-y-6">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Registrar pago</h3>
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* Cuota y Monto (solo lectura) */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cuota número</label>
+                      <div className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                        {payment.numero_cuota || 'No especificado'}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto</label>
+                      <div className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                        ${payment.amount?.toLocaleString?.() || Number(payment.amount).toLocaleString()}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Pago *</label>
+                      <input
+                        type="date"
+                        name="payment_date"
+                        value={registerData.payment_date}
+                        onChange={handleRegisterChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Método de Pago *</label>
+                      <select
+                        name="payment_method"
+                        value={registerData.payment_method}
+                        onChange={handleRegisterChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      >
+                        <option value="">Seleccionar...</option>
+                        <option value="CHEQUE">Cheque</option>
+                        <option value="TRANSFERENCIA">Transferencia</option>
+                        <option value="TARJETA">Tarjeta</option>
+                        <option value="DESCUENTO PLANILLA">Descuento Planilla</option>
+                        <option value="EFECTIVO">Efectivo</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movimiento Bancario</label>
+                      <input
+                        type="text"
+                        name="mov_bancario"
+                        value={registerData.mov_bancario}
+                        onChange={handleRegisterChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notas</label>
+                      <textarea
+                        name="notes"
+                        value={registerData.notes}
+                        onChange={handleRegisterChange}
+                        rows={3}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-6"> {/* Details container */}
                    {/* Student Info */}
@@ -426,6 +568,25 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                     {loading ? 'Guardando...' : 'Guardar Cambios'}
                   </button>
                 </>
+              ) : isRegistering ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsRegistering(false)}
+                    disabled={registerLoading}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRegisterPay}
+                    disabled={registerLoading}
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {registerLoading ? 'Registrando...' : 'Confirmar Pago'}
+                  </button>
+                </>
               ) : (
                 <>
                   {permissions.showDeletePaymentButton && (
@@ -448,6 +609,15 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                       className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
                     >
                       Editar Pago
+                    </button>
+                  )}
+                  {/* ASIST: Registrar pago si no está pagado */}
+                  {permissions.isAssistant() && payment.status !== 'paid' && (
+                    <button
+                      onClick={() => setIsRegistering(true)}
+                      className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
+                    >
+                      Registrar Pago
                     </button>
                   )}
                 </>
