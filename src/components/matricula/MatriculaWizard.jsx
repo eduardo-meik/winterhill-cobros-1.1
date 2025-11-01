@@ -18,6 +18,7 @@ import {
   sha256
 } from '../../services/matricula';
 import { generatePDFFromHTML, downloadPDFBlob } from '../../services/pdfGenerator';
+import { sendEmailViaFunction, blobToBase64 } from '../../services/email';
 import { supabase } from '../../services/supabase';
 
 // Simple wizard steps definition
@@ -54,6 +55,7 @@ export function MatriculaWizard() {
   const [documentRecord, setDocumentRecord] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sendingPagare, setSendingPagare] = useState(false);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -414,6 +416,50 @@ export function MatriculaWizard() {
     }
   };
 
+  // Email pagare as PDF attachment to guardian
+  const handleSendPagareEmail = async () => {
+    if (!previewHtml || !guardian) {
+      toast.error('No hay documento para enviar');
+      return;
+    }
+    if (!guardian.email) {
+      toast.error('El apoderado no tiene email registrado');
+      return;
+    }
+    try {
+      setSendingPagare(true);
+      toast.loading('Generando y enviando Pagaré...', { id: 'pagare-send' });
+      const pdfBlob = await generatePDFFromHTML({
+        htmlContent: previewHtml,
+        includeHeader: true,
+        includeSignatureSection: true,
+        watermark: documentRecord?.status === 'signed' ? undefined : 'NO FIRMADO',
+        guardianRun: guardian.run
+      });
+      const base64 = await blobToBase64(pdfBlob);
+      const filename = `Pagare_${year}_${guardian?.run || 'documento'}.pdf`;
+      const subject = `Pagaré Matrícula ${year} - Winterhill`;
+      const html = `<p>Estimado(a) ${guardian.first_name} ${guardian.last_name},</p>
+        <p>Adjuntamos el Pagaré correspondiente a la matrícula ${year}. Por favor, revise el documento y conserve una copia para sus registros.</p>
+        <p>Saludos cordiales,<br/>Corporación Educacional Winterhill</p>`;
+      await sendEmailViaFunction({
+        to: guardian.email,
+        subject,
+        html,
+        type: 'pagare',
+        related_id: documentRecord?.id || undefined,
+        attachments: [{ filename, content: base64, type: 'application/pdf' }],
+      });
+      toast.success('Pagaré enviado por correo', { id: 'pagare-send' });
+    } catch (err) {
+      console.error('Enviar pagaré error:', err);
+      const msg = err?.message || 'No se pudo enviar el pagaré';
+      toast.error(msg, { id: 'pagare-send' });
+    } finally {
+      setSendingPagare(false);
+    }
+  };
+
   // Sign document
   const handleSign = async () => {
     if (!documentRecord) return;
@@ -755,6 +801,14 @@ export function MatriculaWizard() {
                       disabled={loading}
                     >
                       🖨️ Imprimir
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleSendPagareEmail}
+                      disabled={loading || sendingPagare || !guardian?.email}
+                      title={!guardian?.email ? 'Apoderado sin email' : ''}
+                    >
+                      {sendingPagare ? 'Enviando…' : 'Enviar por correo'}
                     </Button>
                     <Button 
                       variant="outline" 

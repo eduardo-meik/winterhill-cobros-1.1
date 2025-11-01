@@ -6,7 +6,8 @@ import { useEffect } from 'react';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
-import { generateReceiptPdf } from '../../services/receiptGenerator';
+import { generateReceiptPdf, buildReceiptEmailHtml } from '../../services/receiptGenerator';
+import { sendEmailViaFunction } from '../../services/email';
 
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
@@ -36,6 +37,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
   // Registrar pago (ASIST) state
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [sendingReceipt, setSendingReceipt] = useState(false);
   const [registerData, setRegisterData] = useState({
     amount: payment.amount,
     payment_date: '',
@@ -287,6 +289,58 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     } catch (err) {
       console.error('Error al generar recibo:', err);
       toast.error('No se pudo generar el recibo');
+    }
+  };
+
+  // Email receipt to guardian
+  const handleEmailReceipt = async () => {
+    try {
+      if (!guardianInfo?.email) {
+        toast.error('El apoderado no tiene email registrado');
+        return;
+      }
+      setSendingReceipt(true);
+      const cashierName = permissions?.user?.user_metadata?.full_name 
+        || permissions?.user?.email 
+        || 'Usuario';
+      const year = (() => {
+        if (payment.year_academico) return payment.year_academico;
+        try { const d = new Date(payment.payment_date || formData.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+      })();
+      const html = buildReceiptEmailHtml({
+        feeId: payment.id,
+        studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+        courseName: payment.student?.cursos?.nom_curso || null,
+        numeroCuota: payment.numero_cuota || null,
+        yearAcademico: year,
+        amount: Number(payment.amount),
+        paymentDate: payment.payment_date || formData.payment_date || new Date().toISOString(),
+        paymentMethod: payment.payment_method || formData.payment_method || '—',
+        movBancario: payment.mov_bancario || formData.mov_bancario || null,
+        notes: payment.notes || formData.notes || null,
+        cashierName,
+      });
+      const subject = `Comprobante de Pago - Colegio Winterhill - ${new Date().toLocaleDateString('es-CL')}`;
+      await sendEmailViaFunction({
+        to: guardianInfo.email,
+        subject,
+        html,
+        type: 'receipt',
+        related_id: payment.id,
+      });
+      toast.success('Recibo enviado por correo');
+    } catch (err) {
+      console.error('Enviar recibo error:', err);
+      console.error('Error details:', {
+        message: err?.message,
+        status: err?.status,
+        context: err?.context,
+        full: err
+      });
+      const msg = err?.message || 'No se pudo enviar el recibo';
+      toast.error(`Error al enviar: ${msg}`);
+    } finally {
+      setSendingReceipt(false);
     }
   };
 
@@ -682,6 +736,16 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                       className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"
                     >
                       Imprimir Recibo
+                    </button>
+                  )}
+                  {payment.status === 'paid' && (
+                    <button
+                      onClick={handleEmailReceipt}
+                      disabled={sendingReceipt || !guardianInfo?.email}
+                      className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors disabled:opacity-50"
+                      title={!guardianInfo?.email ? 'Apoderado sin email' : ''}
+                    >
+                      {sendingReceipt ? 'Enviando…' : 'Enviar Recibo'}
                     </button>
                   )}
                   <button
