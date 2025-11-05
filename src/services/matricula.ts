@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { templates } from '../contracts/templates';
 import toast from 'react-hot-toast';
 
 // Types (lightweight to avoid adding global type deps now)
@@ -193,246 +194,239 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
 
 // 3. Manage enrollment_students
 export async function listEnrollmentStudents(enrollmentId: string): Promise<StudentRecord[]> {
-  type Row = { 
-    student_id: string; 
-    students: { 
-      id: string; 
-      whole_name?: string; 
-      run?: string;
-      first_name?: string;
-      apellido_paterno?: string;
-      apellido_materno?: string;
-      nivel?: string;
-      curso?: string;
-      cursos?: {
-        id: string;
-        nom_curso?: string;
-        nivel?: number;
-        letra_curso?: string;
-      } | null;
-    } | null 
-  };
-  
-  console.log('📚 listEnrollmentStudents: Fetching students for enrollment:', enrollmentId);
-  
-  const { data, error } = await supabase
-    .from('enrollment_students')
-    .select(`
-      student_id, 
-      students:student_id(
-        id, 
-        whole_name, 
-        run,
-        first_name,
-        apellido_paterno,
-        apellido_materno,
-        nivel,
-        curso,
-        cursos:curso(
-          id,
-          nom_curso,
-          nivel,
-          letra_curso
-        )
-      )
-    `)
-    .eq('enrollment_id', enrollmentId) as { data: Row[] | null; error: any };
-    
-  if (error) {
-    console.error('listEnrollmentStudents error', error);
-    toast.error('Error cargando alumnos de la matrícula');
-    return [];
-  }
-  
-  const students = (data || []).map(r => {
-    const apellidos = [r.students?.apellido_paterno, r.students?.apellido_materno].filter(Boolean).join(' ').trim();
-    const cursoNombre = r.students?.cursos?.nom_curso || r.students?.nivel || r.students?.curso || '';
-    
-    return {
-      id: r.students?.id || r.student_id,
-      whole_name: r.students?.whole_name,
-      run: r.students?.run,
-      first_name: r.students?.first_name,
-      last_name: (apellidos || undefined) as string | undefined,
-      grade: cursoNombre, // Use curso name instead of nivel
-      nivel: r.students?.nivel,
-      curso: r.students?.curso,
-      curso_nombre: cursoNombre // Add new field
-    };
-  });
-  
-  console.log('📚 listEnrollmentStudents: Students fetched:', students);
-  
-  return students;
-}
-
-export async function fetchGuardianStudents(guardianId: string): Promise<GuardianLinkedStudent[]> {
-  if (!guardianId) return [];
-  const { data: links, error: linkErr } = await supabase
-    .from('student_guardian')
-    .select('student_id')
-    .eq('guardian_id', guardianId);
-  if (linkErr) {
-    console.error('fetchGuardianStudents link error', linkErr);
-    return [];
-  }
-  const studentIds = (links || []).map(l => l.student_id).filter(Boolean);
-  if (!studentIds.length) return [];
-
-  // Fetch students WITHOUT curso join first (to avoid RLS issues)
-  const { data: studentRows, error: studentsErr } = await supabase
-    .from('students')
-    .select(`
-      id,
-      first_name,
-      apellido_paterno,
-      apellido_materno,
-      whole_name,
-      run,
-      date_of_birth,
-      nivel,
-      curso,
-      nombre_social,
-      genero,
-      nacionalidad,
-      direccion,
-      comuna,
-      con_quien_vive,
-      institucion_procedencia
-    `)
-    .in('id', studentIds);
-  
-  if (studentsErr) {
-    console.error('fetchGuardianStudents students error', studentsErr);
-    return [];
-  }
-
-  // Fetch curso names separately if needed
-  const cursoIds = (studentRows || []).map(s => s.curso).filter(Boolean);
-  let cursoMap: Record<string, string> = {};
-  
-  if (cursoIds.length > 0) {
-    const { data: cursoRows } = await supabase
-      .from('cursos')
-      .select('id, nom_curso')
-      .in('id', cursoIds);
-    
-    if (cursoRows) {
-      cursoMap = cursoRows.reduce((acc: any, c: any) => {
-        acc[c.id] = c.nom_curso;
-        return acc;
-      }, {});
-    }
-  }
-
-  return (studentRows || []).map((row: any) => {
-    const lastName = [row.apellido_paterno, row.apellido_materno].filter(Boolean).join(' ').trim() || null;
-    return {
-      id: row.id,
-      first_name: row.first_name ?? null,
-      last_name: lastName,
-      whole_name: row.whole_name ?? null,
-      run: row.run ?? null,
-      date_of_birth: row.date_of_birth ?? null,
-      grade: row.nivel ?? null,
-      curso_id: row.curso ?? null,
-      curso_label: (row.curso ? cursoMap[row.curso] : null) ?? row.nivel ?? null,
-      nombre_social: row.nombre_social ?? null,
-      genero: row.genero ?? null,
-      nacionalidad: row.nacionalidad ?? null,
-      direccion: row.direccion ?? null,
-      comuna: row.comuna ?? null,
-      convive_con: row.con_quien_vive ?? null,
-      institucion_procedencia: row.institucion_procedencia ?? null
-    };
-  });
-}
-
-export async function addStudentToEnrollment(enrollmentId: string, studentId: string) {
-  const { error } = await supabase
-    .from('enrollment_students')
-    .insert({ enrollment_id: enrollmentId, student_id: studentId });
-  if (error) {
-    if (error.code === '23505') { // duplicate
-      toast('Alumno ya está agregado');
-      return;
-    }
-    console.error('addStudentToEnrollment error', error);
-    toast.error('No se pudo agregar alumno');
-  } else {
-    toast.success('Alumno agregado');
-  }
-}
-
-export async function removeStudentFromEnrollment(enrollmentId: string, studentId: string) {
-  const { error } = await supabase
-    .from('enrollment_students')
-    .delete()
-    .eq('enrollment_id', enrollmentId)
-    .eq('student_id', studentId);
-  if (error) {
-    console.error('removeStudentFromEnrollment error', error);
-    toast.error('No se pudo remover alumno');
-  } else {
-    toast.success('Alumno removido');
-  }
-}
-
-// 4. Economic meta update
-export async function updateEnrollmentMeta(enrollmentId: string, metaPatch: Record<string, any>) {
-  const { data: existing, error: selError } = await supabase
-    .from('enrollments')
-    .select('meta')
-    .eq('id', enrollmentId)
-    .single();
-  if (selError) {
-    console.error('updateEnrollmentMeta select error', selError);
-    toast.error('No se pudo leer matrícula');
-    return;
-  }
-  const newMeta = { ...(existing?.meta || {}), ...metaPatch };
-  const { error } = await supabase
-    .from('enrollments')
-    .update({ meta: newMeta })
-    .eq('id', enrollmentId);
-  if (error) {
-    console.error('updateEnrollmentMeta update error', error);
-    toast.error('No se pudo actualizar datos económicos');
-  } else {
-    toast.success('Datos guardados');
-  }
-}
-
-// 5. Templates
-export async function getActivePagareTemplate(): Promise<DocumentTemplate | null> {
-  console.log('📄 getActivePagareTemplate: FORCING load from file (DB template has wrong format)...');
-  
-  // TEMPORARY FIX: Skip DB because template has _____ instead of {{placeholders}}
-  // TODO: Update DB template with correct {{placeholder}} format
-  
-  // Load from file ALWAYS
-  console.log('📄 Loading template from /contratos/pagare.txt');
-  
   try {
-    const response = await fetch('/contratos/pagare.txt');
-    if (!response.ok) {
-      throw new Error(`Failed to fetch template: ${response.status}`);
+    const { data, error } = await supabase
+      .from('enrollment_students')
+      .select(`
+        student_id,
+        students (
+          id,
+          whole_name,
+          run,
+          curso,
+          first_name,
+          apellido_paterno,
+          apellido_materno,
+          date_of_birth,
+          cursos:curso (
+            id,
+            nom_curso,
+            nivel,
+            letra_curso
+          )
+        )
+      `)
+      .eq('enrollment_id', enrollmentId);
+    if (error) throw error;
+    const rows = (data || []) as Array<{ student_id: string; students: any | null }>;
+    const mapped: StudentRecord[] = rows
+      .map(r => r.students)
+      .filter(Boolean)
+      .map((s: any): StudentRecord => {
+        const apellidosStr = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim();
+  const lastName: string | undefined = apellidosStr ? apellidosStr : undefined;
+        const full = s.whole_name || [s.first_name, lastName ?? ''].filter(Boolean).join(' ').trim();
+        const c = s.cursos || null;
+        const cursoLabel = c?.nom_curso
+          || (c ? `${c.nivel ?? ''}${c.letra_curso ? ' ' + c.letra_curso : ''}`.trim() : null)
+          || s.curso
+          || null;
+        const obj: StudentRecord = {
+          id: s.id as string,
+          whole_name: (full || undefined) as string | undefined,
+          run: (s.run || undefined) as string | undefined,
+          curso: (s.curso || undefined) as string | undefined,
+          curso_nombre: (cursoLabel || undefined) as string | undefined,
+          first_name: (s.first_name || undefined) as string | undefined,
+          grade: (c?.nivel || undefined) as string | undefined,
+          nivel: (c?.nivel || undefined) as string | undefined,
+          date_of_birth: (s.date_of_birth || undefined) as string | undefined
+        };
+        if (lastName) obj.last_name = lastName;
+        return obj;
+      });
+    return mapped;
+  } catch (e) {
+    console.error('listEnrollmentStudents error', e);
+    toast.error('No se pudieron cargar los alumnos de la matrícula');
+    return [] as StudentRecord[];
+  }
+}
+
+// Add a student to an enrollment (idempotent)
+export async function addStudentToEnrollment(enrollmentId: string, studentId: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('enrollment_students')
+      .insert({ enrollment_id: enrollmentId, student_id: studentId });
+    if (error) {
+      // Ignore unique violation gracefully (already added)
+      const code = `${(error as any).code || ''}`;
+      const msg = (error as any).message || '';
+      const details = (error as any).details || '';
+      const isDuplicate = code === '23505' || code === '409' || /duplicate/i.test(msg) || /duplicate/i.test(details);
+      if (!isDuplicate) {
+        console.error('addStudentToEnrollment error', error);
+        toast.error('No se pudo agregar el alumno');
+        return false;
+      }
     }
-    const content = await response.text();
-    console.log('✅ Template loaded from file, length:', content.length);
-    console.log('✅ File content preview (first 200 chars):', content.substring(0, 200));
-    
-    return {
-      id: 'file-fallback',
-      type: 'PAGARE',
-      version: 1,
-      content: content,
-      active: true
-    } as DocumentTemplate;
-  } catch (fileError) {
-    console.error('❌ Failed to load template from file:', fileError);
-    toast.error('No se pudo cargar plantilla Pagaré desde archivo');
+    return true;
+  } catch (e) {
+    console.error('addStudentToEnrollment exception', e);
+    toast.error('Error inesperado al agregar alumno');
+    return false;
+  }
+}
+
+// Remove a student from an enrollment
+export async function removeStudentFromEnrollment(enrollmentId: string, studentId: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('enrollment_students')
+      .delete()
+      .eq('enrollment_id', enrollmentId)
+      .eq('student_id', studentId);
+    if (error) {
+      console.error('removeStudentFromEnrollment error', error);
+      toast.error('No se pudo quitar el alumno');
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('removeStudentFromEnrollment exception', e);
+    toast.error('Error inesperado al quitar alumno');
+    return false;
+  }
+}
+
+// Update enrollment.meta merging existing JSON with a patch
+export async function updateEnrollmentMeta(enrollmentId: string, patch: Record<string, any>): Promise<boolean> {
+  try {
+    const { data: existing, error: selErr } = await supabase
+      .from('enrollments')
+      .select('meta')
+      .eq('id', enrollmentId)
+      .limit(1)
+      .single();
+    if (selErr) throw selErr;
+    const currentMeta = (existing?.meta as any) || {};
+    const merged = { ...currentMeta, ...patch };
+    const { error: updErr } = await supabase
+      .from('enrollments')
+      .update({ meta: merged })
+      .eq('id', enrollmentId);
+    if (updErr) throw updErr;
+    return true;
+  } catch (e) {
+    console.error('updateEnrollmentMeta error', e);
+    toast.error('No se pudo actualizar los datos económicos');
+    return false;
+  }
+}
+
+// Fetch latest active PAGARE template
+export async function getActivePagareTemplate(): Promise<DocumentTemplate | null> {
+  try {
+    const { data, error } = await supabase
+      .from('document_templates')
+      .select('*')
+      .eq('type', 'PAGARE')
+      .eq('active', true)
+      .order('version', { ascending: false })
+      .limit(1)
+      .single();
+    if (error) throw error;
+    return data as unknown as DocumentTemplate;
+  } catch (e) {
+    console.error('getActivePagareTemplate error', e);
+    toast.error('No se pudo cargar la plantilla del Pagaré');
     return null;
+  }
+}
+
+// List students linked to a guardian (via student_guardian)
+export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
+  id: string;
+  whole_name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  run?: string | null;
+  curso_id?: string | null;
+  curso_label?: string | null;
+  date_of_birth?: string | null;
+  genero?: string | null;
+  nombre_social?: string | null;
+  nacionalidad?: string | null;
+  direccion?: string | null;
+  comuna?: string | null;
+  institucion_procedencia?: string | null;
+  convive_con?: string | null;
+}> > {
+  try {
+    const { data, error } = await supabase
+      .from('student_guardian')
+      .select(`
+        student_id,
+        students (
+          id,
+          whole_name,
+          first_name,
+          apellido_paterno,
+          apellido_materno,
+          run,
+          curso,
+          date_of_birth,
+          genero,
+          nombre_social,
+          nacionalidad,
+          direccion,
+          comuna,
+          institucion_procedencia,
+          convive_con,
+          cursos:curso (
+            id,
+            nom_curso,
+            nivel,
+            letra_curso
+          )
+        )
+      `)
+      .eq('guardian_id', guardianId);
+    if (error) throw error;
+    const rows = (data || []) as Array<{ student_id: string; students: any | null }>;
+    return rows
+      .map(r => r.students)
+      .filter(Boolean)
+      .map((s: any) => {
+        const c = s.cursos || null;
+        const label = c?.nom_curso
+          || (c ? `${c.nivel ?? ''}${c.letra_curso ? ' ' + c.letra_curso : ''}`.trim() : null)
+          || s.curso
+          || null;
+        const apellidos = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim() || null;
+        return {
+          id: s.id,
+          whole_name: s.whole_name || null,
+          first_name: s.first_name || null,
+          last_name: apellidos,
+          run: s.run || null,
+          curso_id: c?.id || s.curso || null,
+          curso_label: label,
+          date_of_birth: s.date_of_birth || null,
+          genero: s.genero || null,
+          nombre_social: s.nombre_social || null,
+          nacionalidad: s.nacionalidad || null,
+          direccion: s.direccion || null,
+          comuna: s.comuna || null,
+          institucion_procedencia: s.institucion_procedencia || null,
+          convive_con: s.convive_con || null
+        };
+      });
+  } catch (e) {
+    console.error('fetchGuardianStudents error', e);
+    toast.error('No se pudieron cargar los alumnos vinculados');
+    return [];
   }
 }
 
@@ -490,8 +484,23 @@ export function buildPagarePayload(opts: {
     efectivo?: boolean;
     tarjeta?: boolean;
   };
+  cheques?: Array<{
+    numero_cuota?: number;
+    numero_serie?: string;
+    banco?: string;
+    fecha_emision?: string;
+    monto?: number;
+    notas?: string;
+  }>;
+  chequeData?: {
+    numero_serie?: string;
+    banco?: string;
+    fecha_emision?: string;
+    monto?: number;
+    notas?: string;
+  } | null;
 }): PagarePayload {
-  const { guardian, year, students, economic, paymentMethod } = opts;
+  const { guardian, year, students, economic, paymentMethod, cheques, chequeData } = opts;
   
   // Format current date in Spanish
   const now = new Date();
@@ -528,6 +537,43 @@ export function buildPagarePayload(opts: {
     return num.toLocaleString('es-CL');
   };
   
+  // If we have multiple cheques, render a table HTML
+  const hasChequesArray = Array.isArray(cheques) && cheques.length > 0;
+  const chequesTableHtml = hasChequesArray
+    ? (() => {
+        const rows = (cheques || []).map((c, i) => {
+          const montoFmt = c?.monto ? formatCurrency(c.monto) : '—';
+          return `<tr>
+            <td>${c?.numero_cuota ?? (i + 1)}</td>
+            <td>${escapeHtml(c?.numero_serie || '')}</td>
+            <td>${escapeHtml(c?.banco || '')}</td>
+            <td>${escapeHtml(c?.fecha_emision || '')}</td>
+            <td style="text-align:right;">${montoFmt}</td>
+            <td>${escapeHtml(c?.notas || '')}</td>
+          </tr>`;
+        }).join('');
+        return `
+          <div style="margin-top: 15px;">
+            <strong>Cheques por Cuota</strong>
+            <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse; margin-top: 5px;">
+              <thead>
+                <tr style="background-color:#f0f0f0;">
+                  <th>Cuota</th>
+                  <th>N° Serie</th>
+                  <th>Banco</th>
+                  <th>Fecha Emisión</th>
+                  <th>Monto</th>
+                  <th>Notas</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      })()
+    : '';
+
+  const firstCheque = hasChequesArray ? (cheques && cheques[0]) : null;
+
   const payload = {
     fecha_actual,
     guardian_full_name: [guardian.first_name, guardian.last_name]
@@ -575,7 +621,27 @@ export function buildPagarePayload(opts: {
       `Transferencia Electrónica: ${paymentMethod?.transferencia ? '☑' : '☐'}`,
       `Pago en efectivo: ${paymentMethod?.efectivo ? '☑' : '☐'}`,
       `Tarjeta de Crédito: ${paymentMethod?.tarjeta ? '☑' : '☐'}`
-    ].join('\n')
+    ].join('\n'),
+    // Cheques data (multi or single)
+    // For backward compatibility, keep single fields filled from first cheque when array provided
+  cheque_numero_serie: hasChequesArray ? (firstCheque?.numero_serie || 'N/A') : (chequeData?.numero_serie || 'N/A'),
+  cheque_banco: hasChequesArray ? (firstCheque?.banco || 'N/A') : (chequeData?.banco || 'N/A'),
+  cheque_fecha_emision: hasChequesArray ? (firstCheque?.fecha_emision || 'N/A') : (chequeData?.fecha_emision || 'N/A'),
+  cheque_monto: hasChequesArray ? (firstCheque?.monto ? formatCurrency(firstCheque.monto) : 'N/A') : (chequeData?.monto ? formatCurrency(chequeData.monto) : 'N/A'),
+  cheque_notas: hasChequesArray ? (firstCheque?.notas || '') : (chequeData?.notas || ''),
+    // Preferred rich block used by the template
+    cheque_info: hasChequesArray ? chequesTableHtml : (chequeData ? `
+      <div style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9;">
+        <strong>Información del Cheque:</strong><br/>
+        Número de Serie: ${escapeHtml(chequeData.numero_serie || 'N/A')}<br/>
+        Banco: ${escapeHtml(chequeData.banco || 'N/A')}<br/>
+        Fecha Emisión: ${chequeData.fecha_emision || 'N/A'}<br/>
+        Monto: ${chequeData.monto ? formatCurrency(chequeData.monto) : 'N/A'}
+        ${chequeData.notas ? `<br/>Notas: ${escapeHtml(chequeData.notas)}` : ''}
+      </div>
+    ` : ''),
+    // Also expose explicit table key for future templates
+    cheques_table: hasChequesArray ? chequesTableHtml : ''
   };
   
   console.log('🔧 buildPagarePayload - Guardian data:', {
@@ -596,9 +662,457 @@ export function buildPagarePayload(opts: {
   return payload;
 }
 
+// ---------- Prestación: helpers and payload ----------
+export interface PrestacionPayload {
+  fecha_actual: string;
+  year: number;
+  // Guardian
+  guardian_full_name: string;
+  guardian_run: string;
+  guardian_address: string;
+  guardian_email: string;
+  guardian_comuna?: string;
+  guardian_profesion?: string;
+  guardian_estado_civil?: string;
+  // Students
+  students_table: string;
+  students_list: string;
+  // Economic
+  monto_matricula?: string | number;
+  colegiatura_anual?: string | number;
+  colegiatura_anual_texto?: string;
+  cantidad_cuotas?: string | number;
+  monto_cuota?: string | number;
+  monto_cuota_texto?: string;
+  dia_vencimiento?: string | number;
+  // Payment
+  forma_pago_cheques?: string;
+  forma_pago_transferencia?: string;
+  forma_pago_efectivo?: string;
+  forma_pago_tarjeta?: string;
+  forma_pago_pagare?: string;
+  formas_pago_lista: string;
+  // Cheques block
+  cheques_table?: string;
+  // Annex/Pagaré optional
+  folio_number?: string;
+  [k: string]: any;
+}
+
+// minimal Spanish number-to-words (CLP) converter (0..999,999,999)
+function numberToWordsEs(n: number): string {
+  if (!isFinite(n) || n < 0) return '';
+  if (n === 0) return 'cero';
+  const unidades = ['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve'];
+  const especiales = ['diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve'];
+  const decenas = ['','','veinte','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+  const centenas = ['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+
+  const toWordsUnder100 = (x: number): string => {
+    if (x < 10) return unidades[x];
+    if (x < 20) return especiales[x - 10];
+    if (x < 30) return x === 20 ? 'veinte' : 'veinti' + unidades[x - 20];
+    const d = Math.floor(x / 10), u = x % 10;
+    return decenas[d] + (u ? ' y ' + unidades[u] : '');
+  };
+  const toWordsUnder1000 = (x: number): string => {
+    if (x === 100) return 'cien';
+    const c = Math.floor(x / 100), r = x % 100;
+    const cpart = c ? centenas[c] : '';
+    const rpart = r ? toWordsUnder100(r) : '';
+    return [cpart, rpart].filter(Boolean).join(' ').trim();
+  };
+  const millions = Math.floor(n / 1_000_000);
+  const thousands = Math.floor((n % 1_000_000) / 1000);
+  const rest = n % 1000;
+  const parts: string[] = [];
+  if (millions) parts.push(millions === 1 ? 'un millón' : toWordsUnder1000(millions) + ' millones');
+  if (thousands) parts.push(thousands === 1 ? 'mil' : toWordsUnder1000(thousands) + ' mil');
+  if (rest) parts.push(toWordsUnder1000(rest));
+  return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+function buildStudentsList(students: StudentRecord[], year: number): string {
+  const rows = students.map((s, idx) => {
+    const cursoDisplay = s.curso_nombre || s.grade || s.nivel || s.curso || 'Sin curso asignado';
+    const name = s.whole_name || s.first_name || '';
+    const rut = s.run || '';
+    return `${idx + 1}. ${name} — RUT: ${rut} — Curso ${year}: ${cursoDisplay}`;
+  }).join('\n');
+  return `<pre style="white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.35;">${rows}</pre>`;
+}
+
+export function buildPrestacionPayload(opts: {
+  guardian: GuardianRecord;
+  year: number;
+  students: StudentRecord[];
+  economic?: {
+    monto_matricula?: number;
+    colegiatura_anual?: number;
+    cantidad_cuotas?: number;
+    monto_cuota?: number;
+    dia_vencimiento?: number;
+  };
+  paymentMethod?: {
+    cheques?: boolean;
+    transferencia?: boolean;
+    efectivo?: boolean;
+    tarjeta?: boolean;
+    pagare?: boolean;
+  };
+  cheques?: Array<{ numero_cuota?: number; numero_serie?: string; banco?: string; fecha_emision?: string; monto?: number; notas?: string; }>;
+  descuento?: {
+    porcentaje?: number;
+    motivo?: string;
+    condiciones?: string;
+  } | null;
+}): PrestacionPayload {
+  const { guardian, year, students, economic, paymentMethod, cheques } = opts;
+
+  const now = new Date();
+  const day = now.getDate();
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const month = months[now.getMonth()];
+  const yearFull = now.getFullYear();
+  const fecha_actual = `${day} de ${month} del ${yearFull}`;
+
+  const studentsTable = (() => {
+    const rows = students.map((s, idx) => {
+      const cursoDisplay = s.curso_nombre || s.grade || s.nivel || s.curso || 'Sin curso asignado';
+      return `<tr><td>${idx + 1}</td><td>${escapeHtml(s.whole_name || s.first_name || '')}</td><td>${escapeHtml(s.run || '')}</td><td>${escapeHtml(cursoDisplay)}</td></tr>`;
+    }).join('');
+    return `<table class="table" border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background-color:#f5f7fa;">
+          <th>N°</th><th>Nombre</th><th>RUT</th><th>Curso año ${year}</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  })();
+
+  const studentsList = buildStudentsList(students, year);
+
+  const formatCurrency = (value?: number | string) => {
+    if (value === undefined || value === null || value === '') return '_______________';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (!isFinite(num)) return '_______________';
+    return num.toLocaleString('es-CL');
+  };
+
+  const hasChequesArray = Array.isArray(cheques) && cheques.length > 0;
+  const chequesTableHtml = hasChequesArray ? (() => {
+    const rows = (cheques || []).map((c, i) => {
+      const montoFmt = c?.monto ? formatCurrency(c.monto) : '—';
+      return `<tr>
+        <td>${c?.numero_cuota ?? (i + 1)}</td>
+        <td>${escapeHtml(c?.numero_serie || '')}</td>
+        <td>${escapeHtml(c?.banco || '')}</td>
+        <td>${escapeHtml(c?.fecha_emision || '')}</td>
+        <td style="text-align:right;">${montoFmt}</td>
+        <td>${escapeHtml(c?.notas || '')}</td>
+      </tr>`;
+    }).join('');
+    return `<div style="margin-top: 10px;">
+      <strong>Detalle de Cheques</strong>
+      <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse; margin-top: 5px;">
+        <thead>
+          <tr style="background-color:#f5f7fa;"><th>Cuota</th><th>N° Serie</th><th>Banco</th><th>Fecha Emisión</th><th>Monto</th><th>Notas</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  })() : '';
+
+  const colegAnual = economic?.colegiatura_anual || 0;
+  const cuotasNum = Number(economic?.cantidad_cuotas) || 0;
+  const montoCuotaCalc = (() => {
+    if (economic?.colegiatura_anual && economic?.cantidad_cuotas) {
+      const total = Number(economic.colegiatura_anual) || 0;
+      const cuotas = Number(economic.cantidad_cuotas) || 0;
+      if (total > 0 && cuotas > 0) return Math.round(total / cuotas);
+    }
+    return economic?.monto_cuota || 0;
+  })();
+
+  // Descuento por planilla calculations (if provided)
+  const porcentajeDesc = Number(opts.descuento?.porcentaje) || 0;
+  const descuentoMotivo = (opts.descuento?.motivo || '').trim();
+  const descuentoCondiciones = (opts.descuento?.condiciones || '').trim();
+  const montoTotalDescuento = (colegAnual > 0 && porcentajeDesc > 0)
+    ? Math.round(colegAnual * (porcentajeDesc / 100))
+    : 0;
+  const montoNetoAnual = (colegAnual > 0)
+    ? Math.max(0, colegAnual - montoTotalDescuento)
+    : 0;
+  const montoCuotaNetaCalc = (montoNetoAnual > 0 && cuotasNum > 0)
+    ? Math.round(montoNetoAnual / cuotasNum)
+    : 0;
+
+  const payload: PrestacionPayload = {
+    fecha_actual,
+    year,
+    guardian_full_name: [guardian.first_name, guardian.last_name].filter(Boolean).map(s => (s as string).trim()).join(' ') || '_______________',
+    guardian_run: guardian.run || '_______________',
+    // Address/comuna handled dynamically to avoid showing guiones when address is missing
+    guardian_address: (guardian.address || '').trim(),
+    guardian_email: guardian.email || '_______________',
+    guardian_comuna: guardian.comuna || undefined,
+    guardian_profesion: guardian.profesion || undefined,
+    guardian_estado_civil: guardian.estado_civil || undefined,
+    students_table: studentsTable,
+    students_list: studentsList,
+    monto_matricula: formatCurrency(economic?.monto_matricula),
+    colegiatura_anual: formatCurrency(colegAnual),
+    colegiatura_anual_texto: colegAnual ? `${numberToWordsEs(colegAnual)} pesos` : undefined,
+    cantidad_cuotas: economic?.cantidad_cuotas?.toString() || '_______________',
+    monto_cuota: formatCurrency(montoCuotaCalc),
+    monto_cuota_texto: montoCuotaCalc ? `${numberToWordsEs(montoCuotaCalc)} pesos` : undefined,
+    dia_vencimiento: economic?.dia_vencimiento?.toString() || '_______________',
+    forma_pago_cheques: paymentMethod?.cheques ? '☑' : '☐',
+    forma_pago_transferencia: paymentMethod?.transferencia ? '☑' : '☐',
+    forma_pago_efectivo: paymentMethod?.efectivo ? '☑' : '☐',
+    forma_pago_tarjeta: paymentMethod?.tarjeta ? '☑' : '☐',
+    forma_pago_pagare: paymentMethod?.pagare ? '☑' : '☐',
+    formas_pago_lista: [
+      `Cheques: ${paymentMethod?.cheques ? '☑' : '☐'}`,
+      `Transferencia Electrónica: ${paymentMethod?.transferencia ? '☑' : '☐'}`,
+      `Pago en efectivo: ${paymentMethod?.efectivo ? '☑' : '☐'}`,
+      `Tarjeta de Crédito: ${paymentMethod?.tarjeta ? '☑' : '☐'}`,
+      `Pagaré: ${paymentMethod?.pagare ? '☑' : '☐'}`
+    ].join('\n'),
+    cheques_table: chequesTableHtml,
+  };
+
+  // Provide optional comuna for templates using {{guardian_comuna?}}
+  // If address exists, prepend with comma; if address is empty, render comuna without comma.
+  const _addr = (guardian.address || '').trim();
+  const _com = (guardian.comuna || '').trim();
+  (payload as any)['guardian_comuna?'] = _com ? (_addr ? `, ${_com}` : `${_com}`) : '';
+
+  // Inject descuento placeholders for the Descuento por Planilla annex
+  (payload as any).descuento_porcentaje = porcentajeDesc ? String(porcentajeDesc) : '0';
+  (payload as any).descuento_motivo = descuentoMotivo || '—';
+  (payload as any).condicion_especial_beca = descuentoCondiciones || '—';
+  (payload as any).monto_total_descuento = porcentajeDesc > 0 ? formatCurrency(montoTotalDescuento) : '0';
+  (payload as any).monto_neto_anual = (montoNetoAnual > 0) ? formatCurrency(montoNetoAnual) : (colegAnual ? formatCurrency(colegAnual) : '_______________');
+  (payload as any).monto_cuota_neta = (montoCuotaNetaCalc > 0) ? formatCurrency(montoCuotaNetaCalc) : '_______________';
+
+  return payload;
+}
+
+export function renderPrestacionWithAnnex(payload: PrestacionPayload, options: { annex?: 'descuento' | 'pagare' | null } = {}): string {
+  const main = renderTemplate(templates.prestacion, payload);
+  let combined = main;
+  if (options.annex === 'descuento') {
+    const annex = renderTemplate(templates.descuento, payload);
+    combined = `${main}\n<div class="page-break"></div>\n${annex}`;
+  } else if (options.annex === 'pagare') {
+    const annex = renderTemplate(templates.pagare, payload);
+    combined = `${main}\n<div class="page-break"></div>\n${annex}`;
+  }
+  return combined;
+}
+
+// Create Prestación document record
+export async function createPrestacionDocument(params: {
+  enrollmentId: string;
+  payload: PrestacionPayload;
+  finalContent: string;
+  contentHash?: string;
+}): Promise<EnrollmentDocumentRecord | null> {
+  const { enrollmentId, payload, finalContent, contentHash } = params;
+  try {
+    toast.loading('Generando contrato...', { id: 'prestacion-generation' });
+    const insertObj: any = {
+      enrollment_id: enrollmentId,
+      type: 'PRESTACION',
+      template_version: 1,
+      status: 'generated',
+      generated_payload: payload,
+      content_hash: contentHash || null,
+      pdf_url: null,
+      storage_path: null,
+      pdf_hash: null,
+      final_content: finalContent
+    };
+    const { data, error } = await supabase
+      .from('enrollment_documents')
+      .insert(insertObj)
+      .select()
+      .single();
+    if (error) {
+      console.error('createPrestacionDocument error', error);
+      // Retry without final_content if fails on column
+      if ((error as any).message?.includes('final_content')) {
+        delete insertObj.final_content;
+        const { data: retryData, error: retryError } = await supabase
+          .from('enrollment_documents')
+          .insert(insertObj)
+          .select()
+          .single();
+        if (retryError) {
+          console.error('createPrestacionDocument retry error', retryError);
+          toast.error('No se pudo crear el contrato en la base de datos', { id: 'prestacion-generation' });
+          return null;
+        }
+        toast.success('Contrato generado correctamente', { id: 'prestacion-generation' });
+        return retryData as EnrollmentDocumentRecord;
+      }
+      // Second fallback: try minimal insert (avoid optional columns)
+      try {
+        const minimal: any = {
+          enrollment_id: enrollmentId,
+          type: 'PRESTACION',
+          status: 'generated',
+          generated_payload: payload
+        };
+        const { data: minData, error: minErr } = await supabase
+          .from('enrollment_documents')
+          .insert(minimal)
+          .select()
+          .single();
+        if (minErr) {
+          console.error('createPrestacionDocument minimal insert error', minErr);
+          toast.error('No se pudo crear el contrato en la base de datos', { id: 'prestacion-generation' });
+          return null;
+        }
+        toast.success('Contrato generado correctamente', { id: 'prestacion-generation' });
+        return minData as EnrollmentDocumentRecord;
+      } catch (e2) {
+        console.error('createPrestacionDocument fallback exception', e2);
+        toast.error('No se pudo crear el contrato en la base de datos', { id: 'prestacion-generation' });
+        return null;
+      }
+    }
+    toast.success('Contrato generado correctamente', { id: 'prestacion-generation' });
+    return data as EnrollmentDocumentRecord;
+  } catch (e) {
+    console.error('createPrestacionDocument exception', e);
+    toast.error('Error al generar el contrato', { id: 'prestacion-generation' });
+    return null;
+  }
+}
+
+// Support type for saving cheques
+export interface ChequeSaveInput {
+  numero_serie: string;
+  banco: string;
+  fecha_emision: string; // YYYY-MM-DD
+  monto: number;
+  notas?: string;
+}
+
+/**
+ * Save (replace) cheque for an enrollment. If there are existing cheques for the enrollment,
+ * they are deleted and a single new row is inserted. Optionally attaches document_id and folio_number
+ * so we can trace the cheque to the generated Pagaré.
+ */
+export async function saveChequeForEnrollment(params: {
+  enrollmentId: string;
+  cheque: ChequeSaveInput;
+  documentId?: string | null;
+  folioNumber?: string | null;
+  createdBy?: string | null; // user id
+}): Promise<boolean> {
+  const { enrollmentId, cheque, documentId, folioNumber, createdBy } = params;
+  try {
+    // Remove previous cheques for this enrollment (simple strategy for now)
+    const { error: delErr } = await supabase
+      .from('cheques')
+      .delete()
+      .eq('enrollment_id', enrollmentId);
+    if (delErr) {
+      console.warn('[cheques] delete previous error (non-fatal):', delErr);
+    }
+
+    const insertRow: Record<string, any> = {
+      enrollment_id: enrollmentId,
+      numero_serie: cheque.numero_serie,
+      banco: cheque.banco,
+      fecha_emision: cheque.fecha_emision,
+      monto: cheque.monto,
+      notas: cheque.notas || null,
+    };
+    if (documentId) insertRow.document_id = documentId;
+    if (folioNumber) insertRow.folio_number = folioNumber;
+    if (createdBy) insertRow.created_by = createdBy;
+
+    const { error: insErr } = await supabase
+      .from('cheques')
+      .insert(insertRow);
+    if (insErr) {
+      console.error('[cheques] insert error', insErr);
+      toast.error('No se pudo guardar el cheque');
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('[cheques] unexpected save error', e);
+    toast.error('Error inesperado guardando cheque');
+    return false;
+  }
+}
+
+/**
+ * Save (replace) multiple cheques for an enrollment. Deletes previous cheques for the enrollment
+ * and inserts the provided array, assigning numero_cuota if missing. Optionally links to document/folio.
+ */
+export async function saveChequesForEnrollment(params: {
+  enrollmentId: string;
+  cheques: Array<ChequeSaveInput & { numero_cuota?: number }>;
+  documentId?: string | null;
+  folioNumber?: string | null;
+  createdBy?: string | null;
+}): Promise<boolean> {
+  const { enrollmentId, cheques, documentId, folioNumber, createdBy } = params;
+  if (!Array.isArray(cheques) || cheques.length === 0) return true; // nothing to insert
+  try {
+    // Remove previous cheques for this enrollment
+    const { error: delErr } = await supabase
+      .from('cheques')
+      .delete()
+      .eq('enrollment_id', enrollmentId);
+    if (delErr) {
+      console.warn('[cheques] delete previous error (non-fatal):', delErr);
+    }
+
+    const rows = cheques.map((c, idx) => {
+      const r: Record<string, any> = {
+        enrollment_id: enrollmentId,
+        numero_cuota: c.numero_cuota ?? (idx + 1),
+        numero_serie: c.numero_serie,
+        banco: c.banco,
+        fecha_emision: c.fecha_emision,
+        monto: c.monto,
+        notas: c.notas || null
+      };
+      if (documentId) r.document_id = documentId;
+      if (folioNumber) r.folio_number = folioNumber;
+      if (createdBy) r.created_by = createdBy;
+      return r;
+    });
+
+    const { error: insErr } = await supabase
+      .from('cheques')
+      .insert(rows);
+    if (insErr) {
+      console.error('[cheques] bulk insert error', insErr);
+      toast.error('No se pudieron guardar los cheques');
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('[cheques] unexpected bulk save error', e);
+    toast.error('Error inesperado guardando cheques');
+    return false;
+  }
+}
+
 // 7. Render template with placeholders {{key}}
 export function renderTemplate(raw: string, payload: Record<string, any>): string {
-  return raw.replace(/{{\s*([a-zA-Z0-9_]+)\s*}}/g, (_m, key) => {
+  // Support keys with optional question mark suffix (e.g., guardian_comuna?)
+  return raw.replace(/{{\s*([a-zA-Z0-9_?]+)\s*}}/g, (_m, key) => {
     const v = payload[key];
     if (v === undefined || v === null) return `{{${key}}}`; // leave marker if missing
     return typeof v === 'string' ? v : String(v);

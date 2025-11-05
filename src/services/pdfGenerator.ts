@@ -11,6 +11,7 @@ export interface PDFGenerationOptions {
   includeSignatureSection?: boolean;
   watermark?: string; // 'BORRADOR', 'NO FIRMADO', etc.
   guardianRun?: string;
+  folioNumber?: string; // Número de folio del documento
   metadata?: {
     title?: string;
     subject?: string;
@@ -21,12 +22,13 @@ export interface PDFGenerationOptions {
 }
 
 /**
- * Add professional header with logo
+ * Add professional header with logo (aligned left) - REDUCIDO AL 25%
  */
-async function addPDFHeader(pdf: jsPDF, pageWidth: number): Promise<number> {
-  const headerHeight = 35; // mm
+async function addPDFHeader(pdf: jsPDF, pageWidth: number, folioNumber?: string): Promise<number> {
+  const headerHeight = 20; // mm - REDUCIDO de 35 a 20 (aprox 25% menos)
+  const leftMargin = 15;
   
-  // Logo (assumes logo exists in public folder)
+  // Logo (aligned to the left, proportional) - MÁS PEQUEÑO
   try {
     const logoImg = new Image();
     logoImg.src = '/logo-winterhill.png';
@@ -36,37 +38,54 @@ async function addPDFHeader(pdf: jsPDF, pageWidth: number): Promise<number> {
       setTimeout(reject, 3000); // 3s timeout
     });
     
-    // Add logo (centered, 30mm width)
-    const logoWidth = 30;
-    const logoHeight = 20;
-    pdf.addImage(logoImg, 'PNG', (pageWidth - logoWidth) / 2, 10, logoWidth, logoHeight);
+    // Calculate proportional dimensions (maintaining aspect ratio) - REDUCIDO
+    const maxLogoWidth = 20; // Reducido de 35 a 20
+    const maxLogoHeight = 15; // Reducido de 25 a 15
+    const logoAspectRatio = logoImg.width / logoImg.height;
+    
+    let logoWidth = maxLogoWidth;
+    let logoHeight = logoWidth / logoAspectRatio;
+    
+    // Adjust if height exceeds max
+    if (logoHeight > maxLogoHeight) {
+      logoHeight = maxLogoHeight;
+      logoWidth = logoHeight * logoAspectRatio;
+    }
+    
+    // Add logo (left-aligned)
+    pdf.addImage(logoImg, 'PNG', leftMargin, 5, logoWidth, logoHeight);
   } catch (error) {
     console.warn('Logo not loaded, skipping header image');
   }
   
-  // School name and RUT
-  pdf.setFontSize(12);
+  // School name and RUT (aligned with logo on the right side) - MÁS COMPACTO
+  const textStartX = 40; // Reducido de 55 a 40
+  
+  pdf.setFontSize(9); // Reducido de 12 a 9
   pdf.setFont('helvetica', 'bold');
-  pdf.text('CORPORACIÓN EDUCACIONAL WINTERHILL', pageWidth / 2, 32, {
-    align: 'center'
-  });
+  pdf.text('CORPORACIÓN EDUCACIONAL WINTERHILL', textStartX, 10);
   
-  pdf.setFontSize(10);
+  pdf.setFontSize(7); // Reducido de 10 a 7
   pdf.setFont('helvetica', 'normal');
-  pdf.text('RUT: 65.152.884-4', pageWidth / 2, 37, {
-    align: 'center'
-  });
+  pdf.text('RUT: 65.152.884-4 | Viña del Mar', textStartX, 14);
   
-  // Horizontal line below header
-  pdf.setDrawColor(0, 0, 0);
-  pdf.setLineWidth(0.5);
-  pdf.line(15, headerHeight + 5, pageWidth - 15, headerHeight + 5);
+  // Add folio number (top right corner)
+  if (folioNumber) {
+    pdf.setFontSize(8); // Reducido de 10 a 8
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(`FOLIO N° ${folioNumber}`, pageWidth - 15, 8, { align: 'right' });
+  }
   
-  return headerHeight + 10; // Return content start position
+  // Horizontal line below header - MÁS DELGADA
+  pdf.setDrawColor(0, 51, 102); // Dark blue
+  pdf.setLineWidth(0.5); // Reducido de 0.8 a 0.5
+  pdf.line(15, headerHeight + 2, pageWidth - 15, headerHeight + 2);
+  
+  return headerHeight + 5; // Return content start position - REDUCIDO
 }
 
 /**
- * Add signature section at bottom
+ * Add signature section at bottom with BOXES
  */
 function addSignatureSection(
   pdf: jsPDF, 
@@ -74,7 +93,7 @@ function addSignatureSection(
   pageHeight: number,
   guardianRun?: string
 ) {
-  const signatureY = pageHeight - 60;
+  const signatureY = pageHeight - 65; // Más espacio
   
   // Horizontal line above signatures
   pdf.setDrawColor(0, 0, 0);
@@ -84,35 +103,65 @@ function addSignatureSection(
   // Title
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('FIRMAS:', 20, signatureY + 10);
+  pdf.text('FIRMAS:', 20, signatureY + 8);
   
-  // Guardian signature
-  const col1X = 30;
-  const col2X = pageWidth / 2 + 20;
-  const sigY = signatureY + 25;
+  // Signature boxes
+  const col1X = 25;
+  const col2X = pageWidth / 2 + 10;
+  const boxY = signatureY + 12;
+  const boxWidth = 75;
+  const boxHeight = 35;
   
-  // Signature lines
+  // BOX 1 - APODERADO/A (con borde)
+  pdf.setDrawColor(0, 51, 102); // Dark blue border
+  pdf.setLineWidth(0.8);
+  pdf.rect(col1X, boxY, boxWidth, boxHeight);
+  
+  // Signature line inside box
+  pdf.setDrawColor(0, 0, 0);
   pdf.setLineWidth(0.3);
-  pdf.line(col1X, sigY, col1X + 60, sigY);
-  pdf.line(col2X, sigY, col2X + 60, sigY);
+  const sigLineY = boxY + 22;
+  pdf.line(col1X + 10, sigLineY, col1X + boxWidth - 10, sigLineY);
   
-  // Labels
+  // Labels inside box
   pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'normal');
-  pdf.text('APODERADO/A', col1X, sigY + 5);
-  if (guardianRun && guardianRun !== '11111111-1') {
-    pdf.text(`RUN: ${guardianRun}`, col1X, sigY + 10);
-  } else {
-    pdf.text('RUN: _______________', col1X, sigY + 10);
-  }
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('APODERADO/A', col1X + boxWidth / 2, boxY + 6, { align: 'center' });
   
-  pdf.text('CORPORACIÓN WINTERHILL', col2X, sigY + 5);
-  pdf.text('RUT: 65.152.884-4', col2X, sigY + 10);
-  pdf.text('Representante Legal', col2X, sigY + 15);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  if (guardianRun && guardianRun !== '11111111-1') {
+    pdf.text(`RUN: ${guardianRun}`, col1X + boxWidth / 2, sigLineY + 5, { align: 'center' });
+  } else {
+    pdf.text('RUN: _______________', col1X + boxWidth / 2, sigLineY + 5, { align: 'center' });
+  }
+  pdf.text('Firma', col1X + boxWidth / 2, sigLineY - 3, { align: 'center' });
+  
+  // BOX 2 - CORPORACIÓN WINTERHILL (con borde)
+  pdf.setDrawColor(0, 51, 102); // Dark blue border
+  pdf.setLineWidth(0.8);
+  pdf.rect(col2X, boxY, boxWidth, boxHeight);
+  
+  // Signature line inside box
+  pdf.setDrawColor(0, 0, 0);
+  pdf.setLineWidth(0.3);
+  pdf.line(col2X + 10, sigLineY, col2X + boxWidth - 10, sigLineY);
+  
+  // Labels inside box
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('CORPORACIÓN WINTERHILL', col2X + boxWidth / 2, boxY + 6, { align: 'center' });
+  
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.text('RUT: 65.152.884-4', col2X + boxWidth / 2, boxY + 12, { align: 'center' });
+  pdf.text('Firma', col2X + boxWidth / 2, sigLineY - 3, { align: 'center' });
+  pdf.text('Representante Legal', col2X + boxWidth / 2, sigLineY + 5, { align: 'center' });
   
   // Date and place
   pdf.setFontSize(8);
-  pdf.text(`Viña del Mar, ${new Date().toLocaleDateString('es-CL')}`, pageWidth / 2, signatureY + 55, {
+  pdf.setFont('helvetica', 'normal');
+  pdf.text(`Viña del Mar, ${new Date().toLocaleDateString('es-CL')}`, pageWidth / 2, boxY + boxHeight + 8, {
     align: 'center'
   });
 }
@@ -140,6 +189,27 @@ function addWatermark(pdf: jsPDF, pageWidth: number, pageHeight: number, text: s
 }
 
 /**
+ * Add page numbers to all pages
+ */
+function addPageNumbers(pdf: jsPDF, pageWidth: number, pageHeight: number) {
+  const totalPages = pdf.getNumberOfPages();
+  
+  for (let i = 1; i <= totalPages; i++) {
+    pdf.setPage(i);
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(100, 100, 100); // Gray
+    pdf.text(
+      `Página ${i} de ${totalPages}`,
+      pageWidth / 2,
+      pageHeight - 10,
+      { align: 'center' }
+    );
+    pdf.setTextColor(0, 0, 0); // Reset to black
+  }
+}
+
+/**
  * Generate PDF from HTML content with professional styling
  */
 export async function generatePDFFromHTML(
@@ -152,8 +222,9 @@ export async function generatePDFFromHTML(
     margin = 20,
     includeHeader = true,
     includeSignatureSection = true,
-    watermark,
+    watermark, // Nota: Ya no se usa por defecto
     guardianRun,
+    folioNumber,
     metadata
   } = options;
 
@@ -169,9 +240,9 @@ export async function generatePDFFromHTML(
   
   let contentStartY = margin;
 
-  // Add header with logo
+  // Add header with logo and folio
   if (includeHeader) {
-    contentStartY = await addPDFHeader(pdf, pageWidth);
+    contentStartY = await addPDFHeader(pdf, pageWidth, folioNumber);
   }
 
   // Create temporary container for HTML
@@ -182,36 +253,67 @@ export async function generatePDFFromHTML(
   container.style.width = `${pageWidth - 2 * margin}mm`;
   container.style.padding = `${margin}mm`;
   container.style.paddingTop = `${contentStartY}mm`;
-  container.style.paddingBottom = includeSignatureSection ? '70mm' : `${margin}mm`;
+  container.style.paddingBottom = includeSignatureSection ? '90mm' : '40mm'; // AUMENTADO: 90mm/40mm (era 80mm/30mm)
   container.style.backgroundColor = 'white';
   container.style.fontFamily = 'Arial, Helvetica, sans-serif';
   container.style.fontSize = '11pt';
-  container.style.lineHeight = '1.5';
+  container.style.lineHeight = '1.6'; // Mejor espaciado
   container.style.color = '#000';
   
-  // Add professional styling to content
+  // Add professional styling to content - MANTENER SALTOS DE LÍNEA
   container.style.textAlign = 'justify';
+  container.style.whiteSpace = 'pre-wrap'; // Mantiene saltos de línea
+  container.style.wordWrap = 'break-word';
+  
+  // Estilos para tablas (evitar sobreposición)
+  const tables = container.querySelectorAll('table');
+  tables.forEach(table => {
+    (table as HTMLElement).style.width = '100%';
+    (table as HTMLElement).style.borderCollapse = 'collapse';
+    (table as HTMLElement).style.marginTop = '15px';
+    (table as HTMLElement).style.marginBottom = '15px';
+    (table as HTMLElement).style.pageBreakInside = 'avoid'; // Evitar corte de tabla
+    (table as HTMLElement).style.border = '1px solid #333';
+    
+    // Estilo para celdas
+    const cells = table.querySelectorAll('td, th');
+    cells.forEach(cell => {
+      (cell as HTMLElement).style.padding = '8px';
+      (cell as HTMLElement).style.border = '1px solid #666';
+      (cell as HTMLElement).style.fontSize = '10pt';
+    });
+    
+    // Estilo para encabezados
+    const headers = table.querySelectorAll('th');
+    headers.forEach(header => {
+      (header as HTMLElement).style.backgroundColor = '#003366';
+      (header as HTMLElement).style.color = 'white';
+      (header as HTMLElement).style.fontWeight = 'bold';
+    });
+  });
   
   document.body.appendChild(container);
 
   try {
     // Capture HTML as canvas
     const canvas = await html2canvas(container, {
-      scale: 2, // High quality (300 DPI equivalent)
+      scale: 2.5, // Mayor calidad para mejor renderizado
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
       windowWidth: container.scrollWidth,
-      windowHeight: container.scrollHeight
-    } as any); // Type assertion needed as scale is not in official types but works in practice
+      windowHeight: container.scrollHeight,
+      imageTimeout: 0,
+      removeContainer: false
+    } as any);
 
     // Calculate dimensions
     const imgWidth = pageWidth - 2 * margin;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
     const availableHeight = includeSignatureSection 
-      ? pageHeight - contentStartY - 70 
-      : pageHeight - contentStartY - margin;
+      ? pageHeight - contentStartY - 90 // AUMENTADO: Mayor espacio para firmas (era 80)
+      : pageHeight - contentStartY - 40; // AUMENTADO: Mayor margen inferior (era 30)
 
     let heightLeft = imgHeight;
     let position = contentStartY;
@@ -225,7 +327,7 @@ export async function generatePDFFromHTML(
       imgWidth,
       imgHeight,
       undefined,
-      'FAST' // Compression
+      'FAST'
     );
     
     heightLeft -= availableHeight;
@@ -235,9 +337,9 @@ export async function generatePDFFromHTML(
       position = heightLeft - imgHeight + contentStartY;
       pdf.addPage();
       
-      // Re-add header on new pages
+      // RE-ADD HEADER ON ALL PAGES (SIEMPRE)
       if (includeHeader) {
-        await addPDFHeader(pdf, pageWidth);
+        await addPDFHeader(pdf, pageWidth, folioNumber);
       }
       
       pdf.addImage(
@@ -259,15 +361,11 @@ export async function generatePDFFromHTML(
       addSignatureSection(pdf, pageWidth, pageHeight, guardianRun);
     }
 
-    // Add watermark if specified
-    if (watermark) {
-      // Add watermark to all pages
-      const totalPages = pdf.internal.pages.length - 1; // -1 because first item is metadata
-      for (let i = 1; i <= totalPages; i++) {
-        pdf.setPage(i);
-        addWatermark(pdf, pageWidth, pageHeight, watermark);
-      }
-    }
+    // ADD PAGE NUMBERS TO ALL PAGES
+    addPageNumbers(pdf, pageWidth, pageHeight);
+
+    // MARCA DE AGUA REMOVIDA - Solo se agrega si se pasa explícitamente
+    // if (watermark) { ... } - Comentado para quitar marca de agua por defecto
 
     // Add metadata (allow override)
     pdf.setProperties({

@@ -281,7 +281,7 @@ VALUES (
   'Pagaré Winterhill v1',
   $$CONTRATO DE PRESTACIÓN DE SERVICIOS EDUCACIONALES 
 
-En Viña del Mar, a _____ de _____ del 202__ entre la CORPORACIÓN EDUCACIONAL WINTERHILL. RUT 65.152.884-4, representada legalmente por doña Loreto León Marín, cédula de Identidad N 11.605.852-9 ambas domiciliadas en Pasaje Anwandter N° 31. Viña del Mar, en adelante, "LA CORPORACIÓN" y Don(a), _____ (nacionalidad) _____ (profesión u oficio). fano _____ (estado civil) _____ cédula de identidad N° _____ domiciliado/a en: _____ 
+En Viña del Mar, a _____ de _____ del 202__ entre la CORPORACIÓN EDUCACIONAL WINTERHILL. RUT 65.152.884-4, representada legalmente por doña Orlando Borquéz Domingo, cédula de Identidad N° 7.269.437-6 ambos domiciliadas en Pasaje Anwandter N° 31. Viña del Mar, en adelante, "LA CORPORACIÓN" y Don(a), _____ (nacionalidad) _____ (profesión u oficio). fano _____ (estado civil) _____ cédula de identidad N° _____ domiciliado/a en: _____ 
 
 
 

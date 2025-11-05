@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader } from '../ui/Card';
@@ -17,9 +17,37 @@ import {
   signEnrollmentDocument,
   sha256
 } from '../../services/matricula';
+import { buildPrestacionPayload, renderPrestacionWithAnnex, createPrestacionDocument } from '../../services/matricula';
+import { saveChequesForEnrollment } from '../../services/matricula';
+import { 
+  buildAutorizacionPayload, 
+  generateAutorizacionHTML 
+} from '../../services/autorizacionDescuento';
 import { generatePDFFromHTML, downloadPDFBlob } from '../../services/pdfGenerator';
 import { sendEmailViaFunction, blobToBase64 } from '../../services/email';
 import { supabase } from '../../services/supabase';
+import { ChequesDataModal } from './ChequesDataModal';
+
+// Renders full HTML (including <style> in <head>) inside an iframe for accurate preview
+function HtmlIframePreview({ html, height = 600 }) {
+  const iframeRef = useRef(null);
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+    if (!doc) return;
+    doc.open();
+    doc.write(html || '');
+    doc.close();
+  }, [html]);
+  return (
+    <iframe
+      ref={iframeRef}
+      title="Vista previa del documento"
+      style={{ width: '100%', height: `${height}px`, border: '0', background: 'white' }}
+    />
+  );
+}
 
 // Simple wizard steps definition
 const STEPS = [
@@ -47,8 +75,18 @@ export function MatriculaWizard() {
     cheques: false,
     transferencia: true, // Default
     efectivo: false,
-    tarjeta: false
+    tarjeta: false,
+    pagare: false
   });
+  const [descuentoPlanilla, setDescuentoPlanilla] = useState(false);
+  const [descuentoInfo, setDescuentoInfo] = useState({
+    porcentaje_descuento: 0,
+    monto_total_descuento: 0,
+    motivo: '',
+    condiciones: ''
+  });
+  const [cheques, setCheques] = useState([]);
+  const [showChequesModal, setShowChequesModal] = useState(false);
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState(null);
   const [previewHtml, setPreviewHtml] = useState('');
@@ -172,7 +210,8 @@ export function MatriculaWizard() {
       cheques: enrollment.meta.forma_pago_cheques ?? prev.cheques,
       transferencia: enrollment.meta.forma_pago_transferencia ?? prev.transferencia,
       efectivo: enrollment.meta.forma_pago_efectivo ?? prev.efectivo,
-      tarjeta: enrollment.meta.forma_pago_tarjeta ?? prev.tarjeta
+      tarjeta: enrollment.meta.forma_pago_tarjeta ?? prev.tarjeta,
+      pagare: enrollment.meta.forma_pago_pagare ?? prev.pagare
     }));
   }, [enrollment]);
 
@@ -242,7 +281,8 @@ export function MatriculaWizard() {
       forma_pago_cheques: paymentMethod.cheques || false,
       forma_pago_transferencia: paymentMethod.transferencia || false,
       forma_pago_efectivo: paymentMethod.efectivo || false,
-      forma_pago_tarjeta: paymentMethod.tarjeta || false
+      forma_pago_tarjeta: paymentMethod.tarjeta || false,
+      forma_pago_pagare: paymentMethod.pagare || false
     };
     
     console.log('💾 Guardando datos económicos y formas de pago:', patch);
@@ -257,7 +297,7 @@ export function MatriculaWizard() {
     toast.success('Datos económicos guardados correctamente');
   };
 
-  // Generate pagaré HTML preview (no PDF yet)
+  // Generate pagaré HTML preview OR Autorización de Descuento (depending on descuentoPlanilla flag)
   const handleGeneratePagare = async () => {
     if (!guardian || !enrollment) {
       console.error('❌ Missing guardian or enrollment:', { guardian, enrollment });
@@ -272,22 +312,8 @@ export function MatriculaWizard() {
     console.log('👥 Students COMPLETO:', JSON.stringify(students, null, 2));
     console.log('💰 Economic data COMPLETO:', JSON.stringify(economic, null, 2));
     console.log('💳 Payment method COMPLETO:', JSON.stringify(paymentMethod, null, 2));
+    console.log('🎁 Descuento planilla:', descuentoPlanilla);
     
-    const tmpl = await getActivePagareTemplate();
-    if (!tmpl) { 
-      setLoading(false); 
-      toast.error('No se encontró plantilla activa');
-      return; 
-    }
-    
-    console.log('📄 Template loaded:');
-    console.log('  - ID:', tmpl.id);
-    console.log('  - Type:', tmpl.type);
-    console.log('  - Version:', tmpl.version);
-    console.log('  - Content length:', tmpl.content?.length || 0);
-    console.log('  - Content preview (first 300 chars):', tmpl.content?.substring(0, 300));
-    
-    setTemplate(tmpl);
     const econNumbers = {
       monto_matricula: Number(economic.monto_matricula) || undefined,
       colegiatura_anual: Number(economic.colegiatura_anual) || undefined,
@@ -298,41 +324,66 @@ export function MatriculaWizard() {
     
     console.log('💵 Economic numbers parsed:', JSON.stringify(econNumbers, null, 2));
     
-    const payload = buildPagarePayload({ 
-      guardian, 
-      year, 
-      students, 
+    // Always generate Contrato de Prestación + anexos según método de pago
+    const prestacionPayload = buildPrestacionPayload({
+      guardian,
+      year,
+      students,
       economic: econNumbers,
-      paymentMethod 
+      paymentMethod,
+      cheques,
+      descuento: descuentoPlanilla ? {
+        porcentaje: Number(descuentoInfo.porcentaje_descuento) || 0,
+        motivo: descuentoInfo.motivo || '',
+        condiciones: descuentoInfo.condiciones || ''
+      } : null
     });
+
+    const annex = descuentoPlanilla ? 'descuento' : (paymentMethod.pagare ? 'pagare' : null);
+    const html = renderPrestacionWithAnnex(prestacionPayload, { annex });
     
-    console.log('📦 Payload COMPLETO generated:', JSON.stringify(payload, null, 2));
-    
-    const html = renderTemplate(tmpl.content, payload);
-    
-    console.log('📄 HTML AFTER renderTemplate (length):', html.length);
-    console.log('📄 HTML AFTER renderTemplate (first 500 chars):', html.substring(0, 500));
-    console.log('📄 Checking if placeholders were replaced:');
-    console.log('  - Contains {{fecha_actual}}?', html.includes('{{fecha_actual}}'));
-    console.log('  - Contains {{guardian_full_name}}?', html.includes('{{guardian_full_name}}'));
-    console.log('  - Contains {{guardian_run}}?', html.includes('{{guardian_run}}'));
+    console.log('📄 HTML generated (length):', html.length);
     
     setPreviewHtml(html);
     
-    // Create document record (HTML only, PDF generated client-side on download)
+    // Create document record
     const contentHash = await sha256(html);
-    const doc = await createPagareDocument({ 
-      enrollmentId: enrollment.id, 
-      template: tmpl, 
-      payload, 
-      finalContent: html, 
+    const doc = await createPrestacionDocument({
+      enrollmentId: enrollment.id,
+      payload: prestacionPayload,
+      finalContent: html,
       contentHash
     });
+    
     setDocumentRecord(doc);
+    // If cheques were selected and we have cheques data, persist them linked to document/folio
+  if (paymentMethod?.cheques && Array.isArray(cheques) && cheques.length && doc?.id) {
+      try {
+        const folioNumber = doc.id.substring(0, 8).toUpperCase();
+        await saveChequesForEnrollment({
+          enrollmentId: enrollment.id,
+          cheques: cheques.map((c, idx) => ({
+            numero_cuota: c.numero_cuota ?? (idx + 1),
+            numero_serie: c.numero_serie,
+            banco: c.banco,
+            fecha_emision: c.fecha_emision,
+            monto: Number(c.monto) || 0,
+            notas: c.notas || ''
+          })),
+          documentId: doc.id,
+          folioNumber,
+          createdBy: user?.id || null
+        });
+      } catch (e) {
+        console.error('saveChequesForEnrollment error', e);
+      }
+    }
+
     setLoading(false);
+    
     if (doc) {
-      setStep(2); // Stay on step 2 to show HTML preview (was step 3 before)
-      toast.success('Vista previa generada. Revise el documento antes de descargar.');
+      setStep(2);
+      toast.success(`Vista previa del Contrato de Prestación generada. Revise el documento antes de descargar.`);
     }
   };
 
@@ -346,17 +397,23 @@ export function MatriculaWizard() {
     try {
       toast.loading('Generando PDF...', { id: 'pdf-download' });
       
+      // Generar número de folio (basado en ID del documento o timestamp)
+      const folioNumber = documentRecord?.id 
+        ? documentRecord.id.substring(0, 8).toUpperCase() 
+        : Date.now().toString().slice(-8);
+      
       // Generate PDF from HTML (client-side, no server upload)
       const pdfBlob = await generatePDFFromHTML({
         htmlContent: previewHtml,
         includeHeader: true,
         includeSignatureSection: true,
-        watermark: documentRecord?.status === 'signed' ? undefined : 'NO FIRMADO',
+        folioNumber: folioNumber, // Añadido número de folio
         guardianRun: guardian.run
+        // watermark removida - ya no se usa por defecto
       });
       
       // Download directly
-      downloadPDFBlob(pdfBlob, `Pagare_${year}_${guardian?.run || 'documento'}.pdf`);
+  downloadPDFBlob(pdfBlob, `Contrato_Prestacion_${year}_${guardian?.run || 'documento'}.pdf`);
       
       toast.success('PDF descargado exitosamente', { id: 'pdf-download' });
     } catch (err) {
@@ -429,28 +486,35 @@ export function MatriculaWizard() {
     try {
       setSendingPagare(true);
       toast.loading('Generando y enviando Pagaré...', { id: 'pagare-send' });
+      
+      // Generar número de folio
+      const folioNumber = documentRecord?.id 
+        ? documentRecord.id.substring(0, 8).toUpperCase() 
+        : Date.now().toString().slice(-8);
+      
       const pdfBlob = await generatePDFFromHTML({
         htmlContent: previewHtml,
         includeHeader: true,
         includeSignatureSection: true,
-        watermark: documentRecord?.status === 'signed' ? undefined : 'NO FIRMADO',
+        folioNumber: folioNumber, // Añadido número de folio
         guardianRun: guardian.run
+        // watermark removida
       });
-      const base64 = await blobToBase64(pdfBlob);
-      const filename = `Pagare_${year}_${guardian?.run || 'documento'}.pdf`;
-      const subject = `Pagaré Matrícula ${year} - Winterhill`;
+  const base64 = await blobToBase64(pdfBlob);
+  const filename = `Contrato_Prestacion_${year}_${guardian?.run || 'documento'}.pdf`;
+      const subject = `Contrato de Prestación Matrícula ${year} - Winterhill`;
       const html = `<p>Estimado(a) ${guardian.first_name} ${guardian.last_name},</p>
-        <p>Adjuntamos el Pagaré correspondiente a la matrícula ${year}. Por favor, revise el documento y conserve una copia para sus registros.</p>
+        <p>Adjuntamos el Contrato de Prestación (y anexos, si corresponden) para la matrícula ${year}. Por favor, revise el documento y conserve una copia para sus registros.</p>
         <p>Saludos cordiales,<br/>Corporación Educacional Winterhill</p>`;
       await sendEmailViaFunction({
         to: guardian.email,
         subject,
         html,
-        type: 'pagare',
+        type: 'prestacion',
         related_id: documentRecord?.id || undefined,
         attachments: [{ filename, content: base64, type: 'application/pdf' }],
       });
-      toast.success('Pagaré enviado por correo', { id: 'pagare-send' });
+      toast.success('Contrato de Prestación enviado por correo', { id: 'pagare-send' });
     } catch (err) {
       console.error('Enviar pagaré error:', err);
       const msg = err?.message || 'No se pudo enviar el pagaré';
@@ -467,7 +531,7 @@ export function MatriculaWizard() {
     const ok = await signEnrollmentDocument(documentRecord.id, 'checkbox', user?.id);
     setLoading(false);
     if (ok) {
-      toast.success('Pagaré firmado');
+  toast.success('Contrato firmado');
     }
   };
 
@@ -696,11 +760,26 @@ export function MatriculaWizard() {
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.cheques} 
-                    onChange={e => setPaymentMethod({ ...paymentMethod, cheques: e.target.checked })} 
+                    onChange={e => {
+                      setPaymentMethod({ ...paymentMethod, cheques: e.target.checked });
+                      if (e.target.checked) {
+                        setShowChequesModal(true);
+                      }
+                    }} 
                     className="w-4 h-4"
                   />
                   <span>📝 Cheques</span>
                 </label>
+                {paymentMethod.cheques && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowChequesModal(true)}
+                    className="col-span-2"
+                  >
+                    {cheques && cheques.length ? '✏️ Editar Cheques' : '➕ Agregar Cheques'}
+                  </Button>
+                )}
                 <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
                   <input 
                     type="checkbox" 
@@ -728,7 +807,91 @@ export function MatriculaWizard() {
                   />
                   <span>💳 Tarjeta de Crédito</span>
                 </label>
+                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <input 
+                    type="checkbox" 
+                    checked={paymentMethod.pagare} 
+                    onChange={e => setPaymentMethod({ ...paymentMethod, pagare: e.target.checked })} 
+                    className="w-4 h-4"
+                  />
+                  <span>📜 Pagaré</span>
+                </label>
               </div>
+            </div>
+
+            {/* Descuento por Planilla Section */}
+            <div className="border-t pt-4">
+              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300">🎁 Descuento por Planilla</h3>
+              <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-300 dark:border-yellow-700">
+                <input 
+                  type="checkbox" 
+                  checked={descuentoPlanilla} 
+                  onChange={e => setDescuentoPlanilla(e.target.checked)} 
+                  className="w-4 h-4"
+                />
+                <span className="font-medium">¿Aplica Descuento por Planilla?</span>
+              </label>
+              
+              {descuentoPlanilla && (
+                <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg space-y-3">
+                  <p className="text-xs text-yellow-800 dark:text-yellow-200 mb-3">
+                    ℹ️ Se generará una <strong>Autorización de Descuento</strong> en lugar de un Pagaré.
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs mb-1 font-medium">Porcentaje de Descuento (%)</label>
+                      <input 
+                        type="number" 
+                        min="0"
+                        max="100"
+                        step="1"
+                        className="w-full border rounded px-2 py-1" 
+                        value={descuentoInfo.porcentaje_descuento} 
+                        onChange={e => {
+                          const pct = Number(e.target.value);
+                          const total = (Number(economic.colegiatura_anual) || 0) * (pct / 100);
+                          setDescuentoInfo({ 
+                            ...descuentoInfo, 
+                            porcentaje_descuento: pct,
+                            monto_total_descuento: Math.round(total)
+                          });
+                        }} 
+                        placeholder="Ej: 20"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs mb-1 font-medium">Monto Total Descuento (CLP)</label>
+                      <input 
+                        type="number" 
+                        className="w-full border rounded px-2 py-1 bg-gray-100" 
+                        value={descuentoInfo.monto_total_descuento} 
+                        readOnly
+                        placeholder="Se calcula automáticamente"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs mb-1 font-medium">Motivo del Descuento</label>
+                      <input 
+                        type="text" 
+                        className="w-full border rounded px-2 py-1" 
+                        value={descuentoInfo.motivo} 
+                        onChange={e => setDescuentoInfo({ ...descuentoInfo, motivo: e.target.value })} 
+                        placeholder="Ej: Beneficio laboral"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs mb-1 font-medium">Condiciones</label>
+                      <textarea 
+                        className="w-full border rounded px-2 py-1" 
+                        rows="2"
+                        value={descuentoInfo.condiciones} 
+                        onChange={e => setDescuentoInfo({ ...descuentoInfo, condiciones: e.target.value })} 
+                        placeholder="Ej: Descuento aplicable mientras se mantenga relación laboral"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button onClick={handleSaveEconomic} className="mt-4">💾 Guardar Datos</Button>
@@ -736,11 +899,11 @@ export function MatriculaWizard() {
         </Card>
       )}
 
-      {/* STEP 2: Preview Pagaré and Generate PDF */}
+      {/* STEP 2: Preview Pagaré or Autorización and Generate PDF */}
       {step === 2 && (
         <Card>
           <CardHeader className="flex items-center justify-between">
-            <h2 className="font-semibold">Vista Previa del Pagaré</h2>
+            <h2 className="font-semibold">Vista Previa del Contrato de Prestación y Anexos</h2>
             <div className="flex gap-2 items-center">
               {documentRecord && (
                 <span className="text-xs px-2 py-1 rounded bg-green-600 text-white">✓ Documento Generado</span>
@@ -756,9 +919,7 @@ export function MatriculaWizard() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Haga clic en "Generar Vista Previa" para crear el documento.
                 </p>
-                <Button onClick={handleGeneratePagare} disabled={loading || students.length === 0}>
-                  📄 Generar Vista Previa
-                </Button>
+                <Button onClick={handleGeneratePagare} disabled={loading || students.length === 0}>📄 Generar Vista Previa</Button>
                 {students.length === 0 && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-2">
                     Debe agregar al menos un alumno en el paso anterior
@@ -771,11 +932,9 @@ export function MatriculaWizard() {
               <>
                 {/* HTML Preview */}
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg p-1">
-                  <div 
-                    className="border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 max-h-[600px] overflow-auto bg-white dark:bg-gray-800 shadow-lg prose prose-sm dark:prose-invert max-w-none"
-                    style={{ fontFamily: 'Arial, sans-serif' }}
-                    dangerouslySetInnerHTML={{ __html: previewHtml.replace(/\n/g, '<br/>') }} 
-                  />
+                  <div className="border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-lg">
+                    <HtmlIframePreview html={previewHtml} height={600} />
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -826,7 +985,7 @@ export function MatriculaWizard() {
                       <li>✓ Logo y datos del colegio</li>
                       <li>✓ Secciones con bordes profesionales</li>
                       <li>✓ Áreas de firma para apoderado y corporación</li>
-                      <li>✓ Marca de agua "NO FIRMADO" (hasta firmar digitalmente)</li>
+                      <li>✓ Anexos según forma de pago (Descuento por Planilla / Pagaré)</li>
                     </ul>
                   </div>
                 </div>
@@ -845,6 +1004,19 @@ export function MatriculaWizard() {
       )}
         </>
       )}
+
+      {/* Cheques Data Modal */}
+      <ChequesDataModal
+        isOpen={showChequesModal}
+        onClose={() => setShowChequesModal(false)}
+        onSave={(rows) => {
+          setCheques(rows);
+          toast.success('Cheques guardados');
+        }}
+        initialData={cheques}
+        cantidadCuotas={Number(economic.cantidad_cuotas) || 1}
+        montoCuota={Number(economic.monto_cuota) || 0}
+      />
     </main>
   );
 }
