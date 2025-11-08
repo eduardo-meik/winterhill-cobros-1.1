@@ -18,6 +18,10 @@ const initialAuthState: AuthState = {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AuthState>(initialAuthState);
   const navigate = useNavigate();
+  // Idle session timeout (30 min) implementation
+  const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutos
+  const [lastActivity, setLastActivity] = useState<number>(Date.now());
+  const [idleTimerId, setIdleTimerId] = useState<number | null>(null);
 
   const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string, profile?: string): LocalUser | null => {
     if (!supabaseUser) return null;
@@ -105,6 +109,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authListener.subscription.unsubscribe();
     };
   }, [navigate]);
+
+  // ------------------------------------------------------
+  // Idle timeout: registra actividad y cierra sesión tras inactividad
+  // ------------------------------------------------------
+  useEffect(() => {
+    const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    const markActivity = () => setLastActivity(Date.now());
+    activityEvents.forEach(ev => window.addEventListener(ev, markActivity, { passive: true }));
+
+    return () => {
+      activityEvents.forEach(ev => window.removeEventListener(ev, markActivity));
+    };
+  }, []);
+
+  useEffect(() => {
+    // Limpia timer anterior
+    if (idleTimerId) {
+      window.clearTimeout(idleTimerId);
+    }
+    // Programa nuevo timeout solo si usuario autenticado
+    if (state.session && state.user) {
+      const remaining = IDLE_TIMEOUT_MS - (Date.now() - lastActivity);
+      const timeoutMs = Math.max(5_000, remaining); // Nunca menos de 5s para evitar loops
+      const tid = window.setTimeout(async () => {
+        // Verifica nuevamente que siga autenticado
+        if (state.session && state.user) {
+          toast('Sesión terminada por inactividad (30 min).', { icon: '⏱️' });
+          try {
+            await signOut();
+          } catch {/* ya se maneja en signOut */}
+        }
+      }, timeoutMs);
+      setIdleTimerId(tid);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastActivity, state.session, state.user]);
 
 
   const signIn = async (email: string, password: string /*, remember = false */) => {
