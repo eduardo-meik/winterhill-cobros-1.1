@@ -14,6 +14,11 @@ import {
   buildPagarePayload,
   renderTemplate,
   createPagareDocument,
+    getGuardianOutstandingDebt,
+    buildPagareDeudaPayload,
+    renderPagareDeuda,
+    createDebtPagareDocument,
+    hasSignedRegularization,
   signEnrollmentDocument,
   sha256
 } from '../../services/matricula';
@@ -94,6 +99,13 @@ export function MatriculaWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sendingPagare, setSendingPagare] = useState(false);
+  // Debt gating state
+  const [debtInfo, setDebtInfo] = useState({ total: 0, items: [] });
+  const [debtDoc, setDebtDoc] = useState(null); // record of PAGARE_DEUDA if generated
+  const [debtLoading, setDebtLoading] = useState(false);
+  const [showDebtGenerator, setShowDebtGenerator] = useState(false);
+  const [debtForm, setDebtForm] = useState({ cuotas: 6, dia_vencimiento: 5 });
+  const [hasRegularized, setHasRegularized] = useState(false);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -158,6 +170,23 @@ export function MatriculaWizard() {
           toast.error('Error creando matrícula');
         } else {
           setEnrollment(enr);
+          // Load outstanding debt once we have guardian & enrollment
+          try {
+            setDebtLoading(true);
+            const debt = await getGuardianOutstandingDebt(g.id);
+            if (debt) {
+              setDebtInfo({ total: debt.total || 0, items: debt.items || [] });
+            }
+            // Check if there is any signed regularization doc
+            try {
+              const ok = await hasSignedRegularization(enr.id);
+              setHasRegularized(!!ok);
+            } catch {}
+          } catch (e) {
+            console.warn('Debt load error', e);
+          } finally {
+            setDebtLoading(false);
+          }
         }
       } finally {
         setLoading(false);
@@ -245,7 +274,11 @@ export function MatriculaWizard() {
 
   // Step navigation guards
   const canProceed = () => {
-    if (step === 0) return students.length > 0; // need at least one student
+    if (step === 0) {
+      // need at least one student and no blocking debt
+      const debtBlocked = debtInfo.total > 0 && !debtDoc;
+      return students.length > 0 && !debtBlocked;
+    }
     if (step === 1) return economic.colegiatura_anual && economic.cantidad_cuotas && economic.dia_vencimiento;
     if (step === 2) return !!previewHtml; // must have preview generated
     return true;
@@ -338,6 +371,12 @@ export function MatriculaWizard() {
         condiciones: descuentoInfo.condiciones || ''
       } : null
     });
+
+    // Provide a provisional folio number for templates that display it (e.g., Anexo Pagaré)
+    try {
+      const provisionalFolio = (enrollment?.id ? String(enrollment.id).slice(0, 8) : Date.now().toString().slice(-8)).toUpperCase();
+      prestacionPayload.folio_number = provisionalFolio;
+    } catch {}
 
     const annex = descuentoPlanilla ? 'descuento' : (paymentMethod.pagare ? 'pagare' : null);
     const html = renderPrestacionWithAnnex(prestacionPayload, { annex });
@@ -641,6 +680,79 @@ export function MatriculaWizard() {
               <span key={s} className={`px-3 py-1 rounded text-xs font-medium ${idx === step ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>{idx + 1}. {s}</span>
             ))}
           </div>
+
+          {/* Debt gating banner */}
+          {debtInfo.total > 0 && !hasRegularized && (
+            <div className="mt-4 p-4 rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/30 dark:border-red-700">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🛑</span>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-800 dark:text-red-200 text-sm mb-1">Deuda Pendiente Detectada</h3>
+                  <p className="text-xs text-red-700 dark:text-red-300 mb-2">Antes de continuar con la matrícula, debe regularizar la deuda. Puede generar un <strong>Pagaré de Deuda</strong> simple o hacerlo mediante el módulo de <strong>Repactación</strong>.</p>
+                  <p className="text-sm font-medium text-red-900 dark:text-red-100">Total deuda: $ {debtInfo.total.toLocaleString('es-CL')}</p>
+                  <div className="mt-3 flex gap-2 flex-wrap">
+                    <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
+                    <a href="/repactacion" className="inline-flex"><Button size="sm" variant="secondary">Ir a Repactación</Button></a>
+                    <Button size="sm" variant="outline" onClick={() => { setDebtLoading(true); getGuardianOutstandingDebt(guardian.id).then(d => { setDebtInfo({ total: d?.total || 0, items: d?.items || [] }); setDebtLoading(false); }); }}>↻ Recalcular</Button>
+                  </div>
+                  {debtLoading && <p className="text-xs mt-2 text-red-600">Verificando deuda...</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Debt generator modal-lite */}
+          {showDebtGenerator && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="bg-white dark:bg-dark rounded-lg shadow-lg w-full max-w-lg p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Generar Pagaré de Deuda</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Configure el número de cuotas para regularizar la deuda. El monto de cada cuota se calculará automáticamente.</p>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <label className="block text-xs mb-1 font-medium">Total Deuda (CLP)</label>
+                    <input type="text" readOnly value={debtInfo.total.toLocaleString('es-CL')} className="w-full border rounded px-2 py-1 bg-gray-100" />
+                  </div>
+                  <div>
+                    <label className="block text-xs mb-1 font-medium">Cuotas</label>
+                    <input type="number" min={1} max={24} value={debtForm.cuotas} onChange={e => setDebtForm(df => ({ ...df, cuotas: Number(e.target.value) }))} className="w-full border rounded px-2 py-1" />
+                  </div>
+                  <div>
+                    <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-28)</label>
+                    <input type="number" min={1} max={28} value={debtForm.dia_vencimiento} onChange={e => setDebtForm(df => ({ ...df, dia_vencimiento: Number(e.target.value) }))} className="w-full border rounded px-2 py-1" />
+                  </div>
+                  <div>
+                    <label className="block text-xs mb-1 font-medium">Monto por Cuota (CLP)</label>
+                    <input type="text" readOnly value={Math.round(debtInfo.total / Math.max(1, debtForm.cuotas)).toLocaleString('es-CL')} className="w-full border rounded px-2 py-1 bg-gray-100" />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowDebtGenerator(false)}>Cancelar</Button>
+                  <Button size="sm" onClick={async () => {
+                    if (!guardian) return;
+                    try {
+                      toast.loading('Generando pagaré de deuda...', { id: 'debt-gen' });
+                      const payload = buildPagareDeudaPayload({ guardian, year, students, debt: { total: debtInfo.total, cuotas: debtForm.cuotas, dia_vencimiento: debtForm.dia_vencimiento } });
+                      // provisional folio
+                      payload.folio_number = (enrollment?.id ? String(enrollment.id).slice(0, 8) : Date.now().toString().slice(-8)).toUpperCase();
+                      const html = renderPagareDeuda(payload);
+                      const hash = await sha256(html);
+                      const doc = await createDebtPagareDocument({ enrollmentId: enrollment.id, payload, finalContent: html, contentHash: hash });
+                      if (doc) {
+                        setDebtDoc(doc);
+                        toast.success('Pagaré de deuda generado');
+                        setShowDebtGenerator(false);
+                      }
+                    } catch (e) {
+                      console.error('Debt pagare generation error', e);
+                      toast.error('Error generando pagaré de deuda', { id: 'debt-gen' });
+                    } finally {
+                      toast.dismiss('debt-gen');
+                    }
+                  }}>Generar</Button>
+                </div>
+              </div>
+            </div>
+          )}
 
       {/* STEP 0 */}
       {step === 0 && (
@@ -999,7 +1111,7 @@ export function MatriculaWizard() {
       {!error && guardian && (
         <div className="flex justify-between pt-2">
           <Button variant="outline" onClick={back} disabled={step === 0 || loading}>Atrás</Button>
-          {step < 2 && <Button onClick={next} disabled={!canProceed() || loading}>Siguiente</Button>}
+          {step < 2 && <Button onClick={next} disabled={!canProceed() || loading || (debtInfo.total > 0 && !hasRegularized)}>{debtInfo.total > 0 && !hasRegularized ? 'Regularice la Deuda' : 'Siguiente'}</Button>}
         </div>
       )}
         </>

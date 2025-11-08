@@ -22,6 +22,7 @@ import { ProfilePage } from './components/profile/ProfilePage';
 import { SettingsPage } from './components/settings/SettingsPage';
 import { MatriculaWizard } from './components/matricula/MatriculaWizard';
 import { GuardianIntakePage } from './pages/guardian/GuardianIntakePage';
+import RepactacionWizard from './components/repactacion/RepactacionWizard';
 import { GuardianWelcomePage } from './pages/guardian/GuardianWelcomePage';
 import GuardianPortalPage from './pages/guardian/GuardianPortalPage';
 import { useAuth } from './contexts/AuthContext';
@@ -85,6 +86,7 @@ export default function App() {
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="matricula" element={<MatriculaWizard />} />
+            <Route path="repactacion" element={<RepactacionWizard />} />
             <Route path="apoderado/encuesta" element={<GuardianIntakePage />} />
             <Route path="apoderado/bienvenido" element={<GuardianWelcomePage />} />
             <Route path="apoderado/portal" element={<GuardianPortalPage />} />

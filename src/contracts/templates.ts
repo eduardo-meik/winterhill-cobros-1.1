@@ -3,9 +3,13 @@
 import prestacionHtml from '../../contratos/prestacion.html?raw';
 import pagareHtml from '../../contratos/pagare.html?raw';
 import descuentoHtml from '../../contratos/descuento.html?raw';
+import pagarerepacHtml from '../../contratos/pagarerepac.html?raw';
+import pagareDeudaHtml from '../../contratos/pagare_deuda.html?raw';
 
 export const templates = {
   prestacion: prestacionHtml,
   pagare: pagareHtml,
   descuento: descuentoHtml,
+  pagarerepac: pagarerepacHtml,
+  pagare_deuda: pagareDeudaHtml,
 };

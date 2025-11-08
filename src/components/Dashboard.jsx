@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Button } from './ui/Button';
 import { StatCard } from './dashboard/StatCard';
 import { DebtTrendChart } from './dashboard/graphs/DebtTrendChart';
 import { DebtDistributionChart } from './dashboard/graphs/DebtDistributionChart';
@@ -89,6 +92,7 @@ export default function Dashboard() {
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap justify-between gap-3 p-4">
           <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+          <DashboardActions />
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
@@ -129,5 +133,25 @@ export default function Dashboard() {
         </div>
       </div>
     </main>
+  );
+}
+
+function DashboardActions() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const role = user?.role?.toLowerCase();
+  const canMatricular = role === 'admin' || role === 'asist';
+  if (!canMatricular) return null;
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="primary"
+        onClick={() => navigate('/matricula')}
+        className="shadow-sm"
+        title="Ir al asistente de matrícula"
+      >
+        📝 Ir a Matrícula
+      </Button>
+    </div>
   );
 }

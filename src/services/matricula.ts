@@ -450,12 +450,16 @@ export interface PagarePayload {
   
   // Students table
   students_table: string; // HTML fragment
+  // Students list (plain text-like block used by some templates)
+  students_list?: string;
   
   // Economic data
   monto_matricula?: number | string;
   colegiatura_anual?: number | string;
+  colegiatura_anual_texto?: string;
   cantidad_cuotas?: number | string;
   monto_cuota?: number | string;
+  monto_cuota_texto?: string;
   dia_vencimiento?: number | string;
   
   // Payment method (from survey)
@@ -529,6 +533,8 @@ export function buildPagarePayload(opts: {
     </thead>
     <tbody>${tableRows}</tbody>
   </table>`;
+  // Also provide a compact students list block (used by some annex templates)
+  const studentsListBlock = buildStudentsList(students, year);
   
   // Format numbers with thousand separators
   const formatCurrency = (value?: number | string) => {
@@ -574,6 +580,28 @@ export function buildPagarePayload(opts: {
 
   const firstCheque = hasChequesArray ? (cheques && cheques[0]) : null;
 
+  // Pre-calculate numeric helpers
+  const colegAnualNum = economic?.colegiatura_anual !== undefined
+    ? (typeof economic.colegiatura_anual === 'string' ? parseFloat(economic.colegiatura_anual) : economic.colegiatura_anual)
+    : undefined;
+
+  // Calculate monto_cuota numeric for text rendering
+  const montoCuotaCalcNumber = (() => {
+    if (economic?.colegiatura_anual && economic?.cantidad_cuotas) {
+      const total = typeof economic.colegiatura_anual === 'string' 
+        ? parseFloat(economic.colegiatura_anual) 
+        : economic.colegiatura_anual;
+      const cuotas = typeof economic.cantidad_cuotas === 'string'
+        ? parseInt(economic.cantidad_cuotas as any)
+        : economic.cantidad_cuotas;
+      if (!isNaN(total) && !isNaN(cuotas) && cuotas > 0) {
+        return Math.round(total / cuotas);
+      }
+    }
+    const manual = economic?.monto_cuota;
+    return typeof manual === 'string' ? parseFloat(manual) : (manual || 0);
+  })();
+
   const payload = {
     fecha_actual,
     guardian_full_name: [guardian.first_name, guardian.last_name]
@@ -589,8 +617,10 @@ export function buildPagarePayload(opts: {
     guardian_estado_civil: guardian.estado_civil || '_______________',
     year,
     students_table: studentsTable,
+    students_list: studentsListBlock,
     monto_matricula: formatCurrency(economic?.monto_matricula),
     colegiatura_anual: formatCurrency(economic?.colegiatura_anual),
+    colegiatura_anual_texto: (colegAnualNum !== undefined && isFinite(colegAnualNum)) ? `${numberToWordsEs(Math.round(colegAnualNum))} pesos` : undefined,
     cantidad_cuotas: economic?.cantidad_cuotas?.toString() || '_______________',
     monto_cuota: (() => {
       // Calculate monto_cuota automatically: colegiatura_anual / cantidad_cuotas
@@ -610,6 +640,7 @@ export function buildPagarePayload(opts: {
       // Fallback to manual monto_cuota if provided
       return formatCurrency(economic?.monto_cuota) || '_______________';
     })(),
+    monto_cuota_texto: isFinite(montoCuotaCalcNumber) ? `${numberToWordsEs(Math.round(montoCuotaCalcNumber))} pesos` : undefined,
     dia_vencimiento: economic?.dia_vencimiento?.toString() || '_______________',
     forma_pago_cheques: paymentMethod?.cheques ? '☑' : '☐',
     forma_pago_transferencia: paymentMethod?.transferencia ? '☑' : '☐',
@@ -643,6 +674,15 @@ export function buildPagarePayload(opts: {
     // Also expose explicit table key for future templates
     cheques_table: hasChequesArray ? chequesTableHtml : ''
   };
+
+  // Provide optional comuna/city for templates using {{guardian_comuna?}} and {{guardian_city?}}
+  const _addr = (guardian.address || '').trim();
+  const _com = (guardian.comuna || '').trim();
+  (payload as any)['guardian_comuna?'] = _com ? (_addr ? `, ${_com}` : `${_com}`) : '';
+  const _city = ((guardian as any).ciudad || (guardian as any).city || '').toString().trim();
+  (payload as any)['guardian_city?'] = _city ? ((_addr || _com) ? `, ${_city}` : `${_city}`) : '';
+  // Alias phone as guardian_fono when needed by templates (e.g., pagarerepac)
+  (payload as any).guardian_fono = guardian.phone || '_______________';
   
   console.log('🔧 buildPagarePayload - Guardian data:', {
     first_name: guardian.first_name,
@@ -672,6 +712,7 @@ export interface PrestacionPayload {
   guardian_address: string;
   guardian_email: string;
   guardian_comuna?: string;
+  guardian_fono?: string;
   guardian_profesion?: string;
   guardian_estado_civil?: string;
   // Students
@@ -863,11 +904,11 @@ export function buildPrestacionPayload(opts: {
     students_table: studentsTable,
     students_list: studentsList,
     monto_matricula: formatCurrency(economic?.monto_matricula),
-    colegiatura_anual: formatCurrency(colegAnual),
-    colegiatura_anual_texto: colegAnual ? `${numberToWordsEs(colegAnual)} pesos` : undefined,
+  colegiatura_anual: formatCurrency(colegAnual),
+  colegiatura_anual_texto: `${numberToWordsEs(colegAnual)} pesos`,
     cantidad_cuotas: economic?.cantidad_cuotas?.toString() || '_______________',
-    monto_cuota: formatCurrency(montoCuotaCalc),
-    monto_cuota_texto: montoCuotaCalc ? `${numberToWordsEs(montoCuotaCalc)} pesos` : undefined,
+  monto_cuota: formatCurrency(montoCuotaCalc),
+  monto_cuota_texto: `${numberToWordsEs(montoCuotaCalc)} pesos`,
     dia_vencimiento: economic?.dia_vencimiento?.toString() || '_______________',
     forma_pago_cheques: paymentMethod?.cheques ? '☑' : '☐',
     forma_pago_transferencia: paymentMethod?.transferencia ? '☑' : '☐',
@@ -889,6 +930,13 @@ export function buildPrestacionPayload(opts: {
   const _addr = (guardian.address || '').trim();
   const _com = (guardian.comuna || '').trim();
   (payload as any)['guardian_comuna?'] = _com ? (_addr ? `, ${_com}` : `${_com}`) : '';
+
+  // Optional city for templates using {{guardian_city?}}. If present, prefix with comma when address/comuna exists
+  const _city = ((guardian as any).ciudad || (guardian as any).city || '').toString().trim();
+  (payload as any)['guardian_city?'] = _city ? ((_addr || _com) ? `, ${_city}` : `${_city}`) : '';
+
+  // Alias for phone expected by some templates (e.g., pagarerepac.html)
+  (payload as any).guardian_fono = guardian.phone || '_______________';
 
   // Inject descuento placeholders for the Descuento por Planilla annex
   (payload as any).descuento_porcentaje = porcentajeDesc ? String(porcentajeDesc) : '0';
@@ -1119,6 +1167,352 @@ export function renderTemplate(raw: string, payload: Record<string, any>): strin
   });
 }
 
+// 7b. Debt helpers and payload builder
+export async function getGuardianOutstandingDebt(guardianId: string): Promise<{ total: number; items: any[] } | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_guardian_outstanding_debt', { guardian_id: guardianId });
+    if (error) {
+      console.warn('[debt] RPC get_guardian_outstanding_debt error, fallback to 0', error);
+      return { total: 0, items: [] };
+    }
+    if (!data) return { total: 0, items: [] };
+    if (typeof (data as any).total === 'number') return data as any;
+    const maybeArray = Array.isArray(data) ? data[0] : data;
+    const total = Number((maybeArray && (maybeArray.total ?? maybeArray.sum)) || 0) || 0;
+    const items = (maybeArray && (maybeArray.items || [])) || [];
+    return { total, items };
+  } catch (e) {
+    console.error('[debt] unexpected error', e);
+    return { total: 0, items: [] };
+  }
+}
+
+// Detailed debt fetch: attempts RPC then falls back to fee table queries.
+// Cached flag to avoid repeated 404 attempts; persisted to localStorage to survive reloads
+let _missingDebtRpc = false;
+try {
+  if (typeof window !== 'undefined' && window?.localStorage) {
+    _missingDebtRpc = window.localStorage.getItem('wh_missing_debt_rpc') === '1';
+  }
+} catch {}
+export async function fetchGuardianDebtDetailed(guardianId: string): Promise<{ total: number; items: Array<{
+  id: string; student_id: string; guardian_id: string | null; amount: number; due_date: string; status: string; year_academico: number | null; numero_cuota: number | null; }>; source: 'rpc' | 'fallback'; }> {
+  try {
+    // Try RPC first
+  // If RPC returns structured data, use it directly; otherwise fallback
+    if (!_missingDebtRpc) {
+      try {
+        const { data, error } = await supabase.rpc('get_guardian_outstanding_debt', { guardian_id: guardianId });
+        if (error) {
+          const msg = (error as any).message?.toLowerCase() || '';
+          if (msg.includes('not found') || msg.includes('404')) {
+            _missingDebtRpc = true; // cache absence
+            try { if (typeof window !== 'undefined' && window?.localStorage) window.localStorage.setItem('wh_missing_debt_rpc', '1'); } catch {}
+          }
+        }
+        if (!error && data) {
+          const total = Number((data as any).total ?? (Array.isArray(data) ? (data[0] as any)?.total : 0) ?? 0) || 0;
+          const itemsRaw = (data as any).items || (Array.isArray(data) ? (data[0] as any)?.items : []) || [];
+          if (Array.isArray(itemsRaw)) {
+            const items = itemsRaw.map((r: any) => ({
+              id: r.id || crypto.randomUUID(),
+              student_id: r.student_id || r.students_id || '',
+              guardian_id: r.guardian_id || null,
+              amount: Number(r.amount || r.monto || 0) || 0,
+              due_date: r.due_date || r.fecha_vencimiento || '',
+              status: r.status || r.estado || 'pending',
+              year_academico: r.year_academico || null,
+              numero_cuota: r.numero_cuota || null,
+            })).filter(it => it.amount > 0);
+            return { total, items, source: 'rpc' };
+          }
+        }
+      } catch (e) {
+        // Network / RPC exception, mark missing if 404-like
+        const msg = (e as any)?.message?.toLowerCase() || '';
+        if (msg.includes('404') || msg.includes('not found')) {
+          _missingDebtRpc = true;
+          try { if (typeof window !== 'undefined' && window?.localStorage) window.localStorage.setItem('wh_missing_debt_rpc', '1'); } catch {}
+        }
+        // continue to fallback
+      }
+    }
+
+    // Fallback: query fee table directly
+    // 1) Direct fees with guardian_id
+    const { data: directFees, error: directErr } = await supabase
+      .from('fee')
+      .select('id, student_id, guardian_id, amount, due_date, status, year_academico, numero_cuota')
+      .eq('guardian_id', guardianId)
+      .in('status', ['pending','overdue']);
+    if (directErr) console.warn('[debt] direct fees error', directErr);
+    const directMap: Record<string, any> = {};
+    (directFees || []).forEach(f => { directMap[f.id] = f; });
+
+    // 2) Get student_ids for guardian
+    const { data: sg, error: sgErr } = await supabase
+      .from('student_guardian')
+      .select('student_id')
+      .eq('guardian_id', guardianId);
+    if (sgErr) console.warn('[debt] student_guardian error', sgErr);
+    const studentIds = (sg || []).map(r => r.student_id).filter(Boolean);
+
+    let byStudents: any[] = [];
+    if (studentIds.length) {
+      const { data: studentFees, error: sfErr } = await supabase
+        .from('fee')
+        .select('id, student_id, guardian_id, amount, due_date, status, year_academico, numero_cuota')
+        .in('student_id', studentIds)
+        .in('status', ['pending','overdue']);
+      if (sfErr) console.warn('[debt] fees by students error', sfErr);
+      byStudents = (studentFees || []).filter(f => !directMap[f.id]); // avoid duplicates
+    }
+
+    const all = [...Object.values(directMap), ...byStudents];
+    const items = all.map(f => ({
+      id: f.id,
+      student_id: f.student_id,
+      guardian_id: f.guardian_id || null,
+      amount: Number(f.amount) || 0,
+      due_date: f.due_date,
+      status: f.status || 'pending',
+      year_academico: f.year_academico ?? null,
+      numero_cuota: f.numero_cuota ?? null,
+    })).filter(it => it.amount > 0);
+    const total = items.reduce((sum, r) => sum + r.amount, 0);
+    return { total, items, source: 'fallback' };
+  } catch (e) {
+    console.error('[debt] fetchGuardianDebtDetailed unexpected', e);
+    return { total: 0, items: [], source: 'fallback' };
+  }
+}
+
+// Check if enrollment has a signed regularization document (debt or repactación)
+export async function hasSignedRegularization(enrollmentId: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('enrollment_documents')
+      .select('id, type, status')
+      .eq('enrollment_id', enrollmentId)
+      .in('type', ['PAGARE_DEUDA','PAGARE_REPACTACION'])
+      .eq('status', 'signed');
+    if (error) {
+      console.warn('[regularization] query error', error);
+      return false;
+    }
+    return Array.isArray(data) && data.length > 0;
+  } catch (e) {
+    console.error('[regularization] unexpected error', e);
+    return false;
+  }
+}
+
+export interface PagareDeudaPayload {
+  fecha_actual: string;
+  guardian_full_name: string;
+  guardian_run: string;
+  guardian_address: string;
+  guardian_email: string;
+  guardian_fono?: string;
+  year?: number;
+  students_list?: string;
+  guardian_comuna?: string;
+  [k: string]: any;
+}
+
+export function buildPagareDeudaPayload(opts: {
+  guardian: GuardianRecord;
+  year?: number;
+  students?: StudentRecord[];
+  debt: { total: number; cuotas: number; dia_vencimiento: number };
+}): PagareDeudaPayload {
+  const { guardian, year, students = [], debt } = opts;
+
+  const now = new Date();
+  const day = now.getDate();
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const month = months[now.getMonth()];
+  const yearFull = now.getFullYear();
+  const fecha_actual = `${day} de ${month} del ${yearFull}`;
+
+  const formatCurrency = (value?: number | string) => {
+    if (value === undefined || value === null || value === '') return '_______________';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (!isFinite(num)) return '_______________';
+    return num.toLocaleString('es-CL');
+  };
+
+  const studentsList = students.length ? buildStudentsList(students, year || yearFull) : '<pre style="white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.35;">—</pre>';
+
+  const cuotas = Math.max(1, Math.floor(Number(debt.cuotas) || 1));
+  const total = Math.max(0, Math.round(Number(debt.total) || 0));
+  const montoCuota = cuotas > 0 ? Math.round(total / cuotas) : total;
+
+  const payload: PagareDeudaPayload = {
+    fecha_actual,
+    guardian_full_name: [guardian.first_name, guardian.last_name].filter(Boolean).map(s => (s as string).trim()).join(' ') || '_______________',
+    guardian_run: guardian.run || '_______________',
+    guardian_address: (guardian.address || '').trim(),
+    guardian_email: guardian.email || '_______________',
+    guardian_fono: guardian.phone || '_______________',
+    guardian_comuna: guardian.comuna || undefined,
+    year,
+    students_list: studentsList,
+    debt_total: formatCurrency(total),
+    debt_total_texto: `${numberToWordsEs(total)} pesos`,
+    debt_cuotas: String(cuotas),
+    debt_monto_cuota: formatCurrency(montoCuota),
+    debt_monto_cuota_texto: `${numberToWordsEs(montoCuota)} pesos`,
+    dia_vencimiento: String(Math.max(1, Math.min(28, Number(debt.dia_vencimiento) || 5)))
+  } as any;
+
+  const _addr = (guardian.address || '').trim();
+  const _com = (guardian.comuna || '').trim();
+  (payload as any)['guardian_comuna?'] = _com ? (_addr ? `, ${_com}` : `${_com}`) : '';
+  const _city = ((guardian as any).ciudad || (guardian as any).city || '').toString().trim();
+  (payload as any)['guardian_city?'] = _city ? ((_addr || _com) ? `, ${_city}` : `${_city}`) : '';
+
+  return payload;
+}
+
+export function renderPagareDeuda(payload: Record<string, any>): string {
+  return renderTemplate(templates.pagare_deuda, payload);
+}
+
+// 7c. Repactación helpers and payload builder (for PAGARE_REPACTACION)
+export interface RepactacionPayload {
+  fecha_actual: string;
+  guardian_full_name: string;
+  guardian_run: string;
+  guardian_address: string;
+  guardian_email: string;
+  guardian_fono?: string;
+  year?: number;
+  students_list?: string;
+  // Economic (repactación schedule)
+  colegiatura_anual: string; // total capital adeudado (formatted)
+  colegiatura_anual_texto: string; // total in words
+  cantidad_cuotas: string;
+  monto_cuota: string; // formatted amount per installment
+  monto_cuota_texto: string; // amount in words
+  dia_vencimiento: string;
+  [k: string]: any;
+}
+
+export function buildRepactacionPayload(opts: {
+  guardian: GuardianRecord;
+  year?: number;
+  students?: StudentRecord[];
+  schedule: { total: number; cuotas: number; dia_vencimiento: number };
+}): RepactacionPayload {
+  const { guardian, year, students = [], schedule } = opts;
+
+  const now = new Date();
+  const day = now.getDate();
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const month = months[now.getMonth()];
+  const yearFull = now.getFullYear();
+  const fecha_actual = `${day} de ${month} del ${yearFull}`;
+
+  const formatCurrency = (value?: number | string) => {
+    if (value === undefined || value === null || value === '') return '_______________';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (!isFinite(num)) return '_______________';
+    return num.toLocaleString('es-CL');
+  };
+
+  const studentsList = students.length ? buildStudentsList(students, year || yearFull) : '<pre style="white-space: pre-wrap; font-family: Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.35;">—</pre>';
+
+  const cuotas = Math.max(1, Math.floor(Number(schedule.cuotas) || 1));
+  const total = Math.max(0, Math.round(Number(schedule.total) || 0));
+  const montoCuota = cuotas > 0 ? Math.round(total / cuotas) : total;
+
+  const payload: RepactacionPayload = {
+    fecha_actual,
+    guardian_full_name: [guardian.first_name, guardian.last_name].filter(Boolean).map(s => (s as string).trim()).join(' ') || '_______________',
+    guardian_run: guardian.run || '_______________',
+    guardian_address: (guardian.address || '').trim(),
+    guardian_email: guardian.email || '_______________',
+    guardian_fono: guardian.phone || '_______________',
+    year,
+    students_list: studentsList,
+    colegiatura_anual: formatCurrency(total),
+    colegiatura_anual_texto: `${numberToWordsEs(total)} pesos`,
+    cantidad_cuotas: String(cuotas),
+    monto_cuota: formatCurrency(montoCuota),
+    monto_cuota_texto: `${numberToWordsEs(montoCuota)} pesos`,
+    dia_vencimiento: String(Math.max(1, Math.min(28, Number(schedule.dia_vencimiento) || 5)))
+  } as any;
+
+  const _addr = (guardian.address || '').trim();
+  const _com = (guardian.comuna || '').trim();
+  (payload as any)['guardian_comuna?'] = _com ? (_addr ? `, ${_com}` : `${_com}`) : '';
+  const _city = ((guardian as any).ciudad || (guardian as any).city || '').toString().trim();
+  (payload as any)['guardian_city?'] = _city ? ((_addr || _com) ? `, ${_city}` : `${_city}`) : '';
+
+  return payload;
+}
+
+export function renderRepactacionPagare(payload: Record<string, any>): string {
+  return renderTemplate(templates.pagarerepac, payload);
+}
+
+export async function createRepactacionPagareDocument(params: {
+  enrollmentId: string;
+  payload: Record<string, any>;
+  finalContent: string;
+  contentHash?: string;
+}): Promise<EnrollmentDocumentRecord | null> {
+  const { enrollmentId, payload, finalContent, contentHash } = params;
+  try {
+    toast.loading('Generando pagaré de repactación...', { id: 'repac-doc-generation' });
+    const insertObj: any = {
+      enrollment_id: enrollmentId,
+      type: 'PAGARE_REPACTACION',
+      template_version: 1,
+      status: 'generated',
+      generated_payload: payload,
+      content_hash: contentHash || null,
+      pdf_url: null,
+      storage_path: null,
+      pdf_hash: null,
+      final_content: finalContent,
+    };
+
+    const { data, error } = await supabase
+      .from('enrollment_documents')
+      .insert(insertObj)
+      .select()
+      .single();
+    if (error) {
+      console.error('createRepactacionPagareDocument error', error);
+      if ((error as any).message?.includes('final_content')) {
+        delete insertObj.final_content;
+        const { data: retryData, error: retryError } = await supabase
+          .from('enrollment_documents')
+          .insert(insertObj)
+          .select()
+          .single();
+        if (retryError) {
+          console.error('createRepactacionPagareDocument retry error', retryError);
+          toast.error('No se pudo crear el pagaré de repactación', { id: 'repac-doc-generation' });
+          return null;
+        }
+        toast.success('Pagaré de repactación generado', { id: 'repac-doc-generation' });
+        return retryData as EnrollmentDocumentRecord;
+      }
+      toast.error('No se pudo crear el pagaré de repactación', { id: 'repac-doc-generation' });
+      return null;
+    }
+    toast.success('Pagaré de repactación generado', { id: 'repac-doc-generation' });
+    return data as EnrollmentDocumentRecord;
+  } catch (e) {
+    console.error('createRepactacionPagareDocument exception', e);
+    toast.error('Error al generar el pagaré de repactación', { id: 'repac-doc-generation' });
+    return null;
+  }
+}
+
 // 8. Create enrollment document (PAGARE) - HTML only, PDF generated on-demand
 export async function createPagareDocument(params: {
   enrollmentId: string;
@@ -1198,6 +1592,63 @@ export async function createPagareDocument(params: {
   } catch (err) {
     console.error('createPagareDocument exception:', err);
     toast.error('Error al generar el documento', { id: 'document-generation' });
+    return null;
+  }
+}
+
+// 8b. Create enrollment document (PAGARE_DEUDA) - HTML only
+export async function createDebtPagareDocument(params: {
+  enrollmentId: string;
+  payload: Record<string, any>;
+  finalContent: string;
+  contentHash?: string;
+}): Promise<EnrollmentDocumentRecord | null> {
+  const { enrollmentId, payload, finalContent, contentHash } = params;
+  try {
+    toast.loading('Generando pagaré de deuda...', { id: 'debt-doc-generation' });
+    const insertObj: any = {
+      enrollment_id: enrollmentId,
+      type: 'PAGARE_DEUDA',
+      template_version: 1,
+      status: 'generated',
+      generated_payload: payload,
+      content_hash: contentHash || null,
+      pdf_url: null,
+      storage_path: null,
+      pdf_hash: null,
+      final_content: finalContent,
+    };
+
+    const { data, error } = await supabase
+      .from('enrollment_documents')
+      .insert(insertObj)
+      .select()
+      .single();
+    if (error) {
+      console.error('createDebtPagareDocument error', error);
+      if ((error as any).message?.includes('final_content')) {
+        delete insertObj.final_content;
+        const { data: retryData, error: retryError } = await supabase
+          .from('enrollment_documents')
+          .insert(insertObj)
+          .select()
+          .single();
+        if (retryError) {
+          console.error('createDebtPagareDocument retry error', retryError);
+          toast.error('No se pudo crear el pagaré de deuda', { id: 'debt-doc-generation' });
+          return null;
+        }
+        toast.success('Pagaré de deuda generado', { id: 'debt-doc-generation' });
+        return retryData as EnrollmentDocumentRecord;
+      }
+      toast.error('No se pudo crear el pagaré de deuda', { id: 'debt-doc-generation' });
+      return null;
+    }
+    toast.success('Pagaré de deuda generado', { id: 'debt-doc-generation' });
+    return data as EnrollmentDocumentRecord;
+  } catch (e) {
+    console.error('createDebtPagareDocument exception', e);
+    toast.error('Error al generar el pagaré de deuda', { id: 'debt-doc-generation' });
     return null;
   }
 }
