@@ -90,6 +90,7 @@ export function MatriculaWizard() {
     motivo: '',
     condiciones: ''
   });
+  const [prioritario, setPrioritario] = useState(false); // Nuevo flag para alumno prioriotario que bloquea economía y forma de pago
   const [cheques, setCheques] = useState([]);
   const [showChequesModal, setShowChequesModal] = useState(false);
   const [step, setStep] = useState(0);
@@ -105,7 +106,10 @@ export function MatriculaWizard() {
   const [debtLoading, setDebtLoading] = useState(false);
   const [showDebtGenerator, setShowDebtGenerator] = useState(false);
   const [debtForm, setDebtForm] = useState({ cuotas: 6, dia_vencimiento: 5 });
-  const [hasRegularized, setHasRegularized] = useState(false);
+  // Regularización: permitir avanzar si existe documento (generated o signed) y diferenciar estado firmado
+  const [hasRegularized, setHasRegularized] = useState(false); // true si hay documento de regularización (generated o signed)
+  const [regularizationSigned, setRegularizationSigned] = useState(false); // true sólo si está firmado
+  const [refreshingState, setRefreshingState] = useState(false);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -177,10 +181,23 @@ export function MatriculaWizard() {
             if (debt) {
               setDebtInfo({ total: debt.total || 0, items: debt.items || [] });
             }
-            // Check if there is any signed regularization doc
+            // Check regularization docs (signed OR generated) para gating y estado
             try {
-              const ok = await hasSignedRegularization(enr.id);
-              setHasRegularized(!!ok);
+              const signed = await hasSignedRegularization(enr.id);
+              if (signed) {
+                setHasRegularized(true);
+                setRegularizationSigned(true);
+              } else {
+                const { data: docsAny } = await supabase
+                  .from('enrollment_documents')
+                  .select('id, status')
+                  .eq('enrollment_id', enr.id)
+                  .in('type', ['PAGARE_DEUDA','PAGARE_REPACTACION'])
+                  .in('status', ['generated']);
+                const hasGen = Array.isArray(docsAny) && docsAny.length > 0;
+                setHasRegularized(hasGen);
+                setRegularizationSigned(false);
+              }
             } catch {}
           } catch (e) {
             console.warn('Debt load error', e);
@@ -203,6 +220,43 @@ export function MatriculaWizard() {
   }, [enrollment]);
 
   useEffect(() => { reloadEnrollmentStudents(); }, [reloadEnrollmentStudents]);
+
+  // Unifica actualización (por distintos usuarios): deuda + estado de regularización
+  const refreshDebtAndRegularization = useCallback(async () => {
+    if (!guardian || !enrollment) return;
+    setRefreshingState(true);
+    try {
+      // Deuda
+      try {
+        setDebtLoading(true);
+        const debt = await getGuardianOutstandingDebt(guardian.id);
+        setDebtInfo({ total: debt?.total || 0, items: debt?.items || [] });
+      } finally { setDebtLoading(false); }
+
+      // Regularización (signed primero)
+      try {
+        const signed = await hasSignedRegularization(enrollment.id);
+        if (signed) {
+          setHasRegularized(true);
+          setRegularizationSigned(true);
+          return; // firmado tiene prioridad
+        }
+        const { data: docsAny } = await supabase
+          .from('enrollment_documents')
+          .select('id, status')
+          .eq('enrollment_id', enrollment.id)
+          .in('type', ['PAGARE_DEUDA','PAGARE_REPACTACION'])
+          .in('status', ['generated']);
+        const hasGen = Array.isArray(docsAny) && docsAny.length > 0;
+        setHasRegularized(hasGen);
+        setRegularizationSigned(false);
+      } catch (e) {
+        console.warn('refresh regularization error', e);
+      }
+    } finally {
+      setRefreshingState(false);
+    }
+  }, [guardian?.id, enrollment?.id]);
 
   // Record assisted mode auditing in enrollment meta
   useEffect(() => {
@@ -232,6 +286,21 @@ export function MatriculaWizard() {
       monto_cuota: enrollment.meta.monto_cuota?.toString() || prev.monto_cuota,
       dia_vencimiento: enrollment.meta.dia_vencimiento?.toString() || prev.dia_vencimiento
     }));
+    // Prioritario
+    if (typeof enrollment.meta.prioritario === 'boolean') {
+      setPrioritario(enrollment.meta.prioritario);
+    }
+    // Descuento (persistir porcentaje si se guardó antes en meta)
+    if (typeof enrollment.meta.porcentaje_descuento === 'number') {
+      setDescuentoInfo(d => ({
+        ...d,
+        porcentaje_descuento: enrollment.meta.porcentaje_descuento,
+        monto_total_descuento: (() => {
+          const total = (Number(enrollment.meta.colegiatura_anual)||0) * (enrollment.meta.porcentaje_descuento/100);
+          return Math.round(total);
+        })()
+      }));
+    }
     
     // Load payment methods
     setPaymentMethod(prev => ({
@@ -242,6 +311,10 @@ export function MatriculaWizard() {
       tarjeta: enrollment.meta.forma_pago_tarjeta ?? prev.tarjeta,
       pagare: enrollment.meta.forma_pago_pagare ?? prev.pagare
     }));
+    // load descuento por planilla desde meta si existe
+    if (typeof enrollment.meta.forma_pago_descuento_planilla === 'boolean') {
+      setDescuentoPlanilla(enrollment.meta.forma_pago_descuento_planilla);
+    }
   }, [enrollment]);
 
   // Auto-calculate monto_cuota when colegiatura_anual or cantidad_cuotas change
@@ -275,11 +348,15 @@ export function MatriculaWizard() {
   // Step navigation guards
   const canProceed = () => {
     if (step === 0) {
-      // need at least one student and no blocking debt
-      const debtBlocked = debtInfo.total > 0 && !debtDoc;
+      // Bloquea sólo si hay deuda y NO existe documento de regularización (generated o signed)
+      const debtBlocked = debtInfo.total > 0 && !hasRegularized && !debtDoc;
       return students.length > 0 && !debtBlocked;
     }
-    if (step === 1) return economic.colegiatura_anual && economic.cantidad_cuotas && economic.dia_vencimiento;
+    if (step === 1) {
+      // Si es prioritario, permitimos avanzar sin requerir completar estos valores
+      if (prioritario) return true;
+      return economic.colegiatura_anual && economic.cantidad_cuotas && economic.dia_vencimiento;
+    }
     if (step === 2) return !!previewHtml; // must have preview generated
     return true;
   };
@@ -315,7 +392,11 @@ export function MatriculaWizard() {
       forma_pago_transferencia: paymentMethod.transferencia || false,
       forma_pago_efectivo: paymentMethod.efectivo || false,
       forma_pago_tarjeta: paymentMethod.tarjeta || false,
-      forma_pago_pagare: paymentMethod.pagare || false
+      forma_pago_pagare: paymentMethod.pagare || false,
+      forma_pago_descuento_planilla: descuentoPlanilla || false,
+      prioritario,
+      porcentaje_descuento: descuentoInfo.porcentaje_descuento || 0,
+      monto_total_descuento: descuentoInfo.monto_total_descuento || 0
     };
     
     console.log('💾 Guardando datos económicos y formas de pago:', patch);
@@ -378,7 +459,8 @@ export function MatriculaWizard() {
       prestacionPayload.folio_number = provisionalFolio;
     } catch {}
 
-    const annex = descuentoPlanilla ? 'descuento' : (paymentMethod.pagare ? 'pagare' : null);
+  // Si es prioritario, no generar anexos aunque existan selecciones previas
+  const annex = prioritario ? null : (descuentoPlanilla ? 'descuento' : (paymentMethod.pagare ? 'pagare' : null));
     const html = renderPrestacionWithAnnex(prestacionPayload, { annex });
     
     console.log('📄 HTML generated (length):', html.length);
@@ -682,7 +764,7 @@ export function MatriculaWizard() {
           </div>
 
           {/* Debt gating banner */}
-          {debtInfo.total > 0 && !hasRegularized && (
+          {debtInfo.total > 0 && !hasRegularized && !debtDoc && (
             <div className="mt-4 p-4 rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/30 dark:border-red-700">
               <div className="flex items-start gap-3">
                 <span className="text-xl">🛑</span>
@@ -693,11 +775,33 @@ export function MatriculaWizard() {
                   <div className="mt-3 flex gap-2 flex-wrap">
                     <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
                     <a href="/repactacion" className="inline-flex"><Button size="sm" variant="secondary">Ir a Repactación</Button></a>
-                    <Button size="sm" variant="outline" onClick={() => { setDebtLoading(true); getGuardianOutstandingDebt(guardian.id).then(d => { setDebtInfo({ total: d?.total || 0, items: d?.items || [] }); setDebtLoading(false); }); }}>↻ Recalcular</Button>
+                    <Button size="sm" variant="outline" onClick={refreshDebtAndRegularization} disabled={refreshingState}>{refreshingState ? 'Actualizando…' : '↻ Actualizar estado'}</Button>
                   </div>
                   {debtLoading && <p className="text-xs mt-2 text-red-600">Verificando deuda...</p>}
                 </div>
               </div>
+            </div>
+          )}
+          {/* Advertencia informativa si hay regularización generada pero no firmada */}
+          {debtInfo.total > 0 && hasRegularized && !regularizationSigned && (
+            <div className="mt-4 p-4 rounded-lg border border-yellow-300 bg-yellow-50 dark:bg-yellow-900/30 dark:border-yellow-700">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">⚠️</span>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 text-sm mb-1">Documento de Regularización Pendiente de Firma</h3>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300 mb-2">Se generó un pagaré de deuda o repactación pero aún no está firmado. Puede continuar con la matrícula; recuerde obtener la firma.</p>
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    <Button size="xs" variant="outline" onClick={refreshDebtAndRegularization} disabled={refreshingState}>{refreshingState ? 'Verificando…' : '↻ Actualizar estado'}</Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* Indicador firmado */}
+          {debtInfo.total > 0 && regularizationSigned && (
+            <div className="mt-4 p-3 rounded-lg border border-green-300 bg-green-50 dark:bg-green-900/30 dark:border-green-700 text-xs text-green-800 dark:text-green-200 flex items-center justify-between">
+              <span>✓ Documento de regularización firmado. Deuda formalizada.</span>
+              <Button size="xs" variant="outline" onClick={refreshDebtAndRegularization} disabled={refreshingState}>{refreshingState ? 'Refrescando…' : '↻ Actualizar estado'}</Button>
             </div>
           )}
 
@@ -737,8 +841,10 @@ export function MatriculaWizard() {
                       const html = renderPagareDeuda(payload);
                       const hash = await sha256(html);
                       const doc = await createDebtPagareDocument({ enrollmentId: enrollment.id, payload, finalContent: html, contentHash: hash });
-                      if (doc) {
-                        setDebtDoc(doc);
+                       if (doc) {
+                         setDebtDoc(doc);
+                         setHasRegularized(true);
+                         setRegularizationSigned(false);
                         toast.success('Pagaré de deuda generado');
                         setShowDebtGenerator(false);
                       }
@@ -806,8 +912,13 @@ export function MatriculaWizard() {
           <CardContent className="space-y-6 text-sm">
             {/* Economic Data Section */}
             <div>
-              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300">💰 Información Económica</h3>
-              <div className="grid md:grid-cols-2 gap-4">
+              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300 flex items-center justify-between">💰 Información Económica
+                <label className="flex items-center gap-2 text-xs font-normal ml-4 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4" checked={prioritario} onChange={e => setPrioritario(e.target.checked)} />
+                  <span className="font-medium text-red-600">Prioritario</span>
+                </label>
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs mb-1 font-medium">Monto Matrícula (CLP)</label>
                   <input 
@@ -815,6 +926,7 @@ export function MatriculaWizard() {
                     className="w-full border rounded px-2 py-1" 
                     value={economic.monto_matricula} 
                     onChange={e => setEconomic({ ...economic, monto_matricula: e.target.value })} 
+                    disabled={prioritario}
                     placeholder="Ej: 150000"
                   />
                 </div>
@@ -825,6 +937,7 @@ export function MatriculaWizard() {
                     className="w-full border rounded px-2 py-1" 
                     value={economic.colegiatura_anual} 
                     onChange={e => setEconomic({ ...economic, colegiatura_anual: e.target.value })} 
+                    disabled={prioritario}
                     placeholder="Ej: 3600000"
                   />
                 </div>
@@ -835,6 +948,7 @@ export function MatriculaWizard() {
                     className="w-full border rounded px-2 py-1" 
                     value={economic.cantidad_cuotas} 
                     onChange={e => setEconomic({ ...economic, cantidad_cuotas: e.target.value })} 
+                    disabled={prioritario}
                     placeholder="Ej: 10"
                   />
                 </div>
@@ -857,10 +971,46 @@ export function MatriculaWizard() {
                     className="w-full border rounded px-2 py-1" 
                     value={economic.dia_vencimiento} 
                     onChange={e => setEconomic({ ...economic, dia_vencimiento: e.target.value })} 
+                    disabled={prioritario}
                     placeholder="Ej: 5"
                   />
                 </div>
+                {/* Nuevo: Porcentaje de Descuento movido aquí */}
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Porcentaje de Descuento (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    className="w-full border rounded px-2 py-1"
+                    value={descuentoInfo.porcentaje_descuento}
+                    disabled={prioritario}
+                    onChange={e => {
+                      const pct = Number(e.target.value);
+                      const total = (Number(economic.colegiatura_anual) || 0) * (pct / 100);
+                      setDescuentoInfo({
+                        ...descuentoInfo,
+                        porcentaje_descuento: pct,
+                        monto_total_descuento: Math.round(total)
+                      });
+                    }}
+                    placeholder="Ej: 20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium">Monto Total Descuento (CLP)</label>
+                  <input
+                    type="number"
+                    className="w-full border rounded px-2 py-1 bg-gray-100"
+                    value={descuentoInfo.monto_total_descuento}
+                    readOnly
+                    placeholder="Auto"
+                  />
+                </div>
               </div>
+              {prioritario && (
+                <p className="text-xs mt-2 text-red-600">⚠️ Prioritario: valores bloqueados; no se aplican métodos de pago ni anexos.</p>
+              )}
             </div>
 
             {/* Payment Method Section */}
@@ -872,6 +1022,7 @@ export function MatriculaWizard() {
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.cheques} 
+                    disabled={prioritario}
                     onChange={e => {
                       setPaymentMethod({ ...paymentMethod, cheques: e.target.checked });
                       if (e.target.checked) {
@@ -888,6 +1039,7 @@ export function MatriculaWizard() {
                     size="sm" 
                     onClick={() => setShowChequesModal(true)}
                     className="col-span-2"
+                    disabled={prioritario}
                   >
                     {cheques && cheques.length ? '✏️ Editar Cheques' : '➕ Agregar Cheques'}
                   </Button>
@@ -896,6 +1048,7 @@ export function MatriculaWizard() {
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.transferencia} 
+                    disabled={prioritario}
                     onChange={e => setPaymentMethod({ ...paymentMethod, transferencia: e.target.checked })} 
                     className="w-4 h-4"
                   />
@@ -905,6 +1058,7 @@ export function MatriculaWizard() {
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.efectivo} 
+                    disabled={prioritario}
                     onChange={e => setPaymentMethod({ ...paymentMethod, efectivo: e.target.checked })} 
                     className="w-4 h-4"
                   />
@@ -914,6 +1068,7 @@ export function MatriculaWizard() {
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.tarjeta} 
+                    disabled={prioritario}
                     onChange={e => setPaymentMethod({ ...paymentMethod, tarjeta: e.target.checked })} 
                     className="w-4 h-4"
                   />
@@ -923,81 +1078,44 @@ export function MatriculaWizard() {
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.pagare} 
+                    disabled={prioritario}
                     onChange={e => setPaymentMethod({ ...paymentMethod, pagare: e.target.checked })} 
                     className="w-4 h-4"
                   />
                   <span>📜 Pagaré</span>
                 </label>
+                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 md:col-span-2">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    checked={descuentoPlanilla}
+                    disabled={prioritario}
+                    onChange={e => setDescuentoPlanilla(e.target.checked)}
+                  />
+                  <span>🎁 Descuento por Planilla</span>
+                </label>
               </div>
-            </div>
-
-            {/* Descuento por Planilla Section */}
-            <div className="border-t pt-4">
-              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300">🎁 Descuento por Planilla</h3>
-              <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-300 dark:border-yellow-700">
-                <input 
-                  type="checkbox" 
-                  checked={descuentoPlanilla} 
-                  onChange={e => setDescuentoPlanilla(e.target.checked)} 
-                  className="w-4 h-4"
-                />
-                <span className="font-medium">¿Aplica Descuento por Planilla?</span>
-              </label>
-              
-              {descuentoPlanilla && (
+              {descuentoPlanilla && !prioritario && (
                 <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg space-y-3">
-                  <p className="text-xs text-yellow-800 dark:text-yellow-200 mb-3">
-                    ℹ️ Se generará una <strong>Autorización de Descuento</strong> en lugar de un Pagaré.
-                  </p>
+                  <p className="text-xs text-yellow-800 dark:text-yellow-200 mb-3">ℹ️ Se generará una <strong>Autorización de Descuento</strong> en lugar de un Pagaré.</p>
                   <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs mb-1 font-medium">Porcentaje de Descuento (%)</label>
-                      <input 
-                        type="number" 
-                        min="0"
-                        max="100"
-                        step="1"
-                        className="w-full border rounded px-2 py-1" 
-                        value={descuentoInfo.porcentaje_descuento} 
-                        onChange={e => {
-                          const pct = Number(e.target.value);
-                          const total = (Number(economic.colegiatura_anual) || 0) * (pct / 100);
-                          setDescuentoInfo({ 
-                            ...descuentoInfo, 
-                            porcentaje_descuento: pct,
-                            monto_total_descuento: Math.round(total)
-                          });
-                        }} 
-                        placeholder="Ej: 20"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs mb-1 font-medium">Monto Total Descuento (CLP)</label>
-                      <input 
-                        type="number" 
-                        className="w-full border rounded px-2 py-1 bg-gray-100" 
-                        value={descuentoInfo.monto_total_descuento} 
-                        readOnly
-                        placeholder="Se calcula automáticamente"
-                      />
-                    </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs mb-1 font-medium">Motivo del Descuento</label>
-                      <input 
-                        type="text" 
-                        className="w-full border rounded px-2 py-1" 
-                        value={descuentoInfo.motivo} 
-                        onChange={e => setDescuentoInfo({ ...descuentoInfo, motivo: e.target.value })} 
+                      <input
+                        type="text"
+                        className="w-full border rounded px-2 py-1"
+                        value={descuentoInfo.motivo}
+                        onChange={e => setDescuentoInfo({ ...descuentoInfo, motivo: e.target.value })}
                         placeholder="Ej: Beneficio laboral"
                       />
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs mb-1 font-medium">Condiciones</label>
-                      <textarea 
-                        className="w-full border rounded px-2 py-1" 
+                      <textarea
+                        className="w-full border rounded px-2 py-1"
                         rows="2"
-                        value={descuentoInfo.condiciones} 
-                        onChange={e => setDescuentoInfo({ ...descuentoInfo, condiciones: e.target.value })} 
+                        value={descuentoInfo.condiciones}
+                        onChange={e => setDescuentoInfo({ ...descuentoInfo, condiciones: e.target.value })}
                         placeholder="Ej: Descuento aplicable mientras se mantenga relación laboral"
                       />
                     </div>
@@ -1111,7 +1229,14 @@ export function MatriculaWizard() {
       {!error && guardian && (
         <div className="flex justify-between pt-2">
           <Button variant="outline" onClick={back} disabled={step === 0 || loading}>Atrás</Button>
-          {step < 2 && <Button onClick={next} disabled={!canProceed() || loading || (debtInfo.total > 0 && !hasRegularized)}>{debtInfo.total > 0 && !hasRegularized ? 'Regularice la Deuda' : 'Siguiente'}</Button>}
+          {step < 2 && (
+            <Button
+              onClick={next}
+              disabled={!canProceed() || loading || (debtInfo.total > 0 && !hasRegularized && !debtDoc)}
+            >
+              {debtInfo.total > 0 && !hasRegularized && !debtDoc ? 'Regularice la Deuda' : 'Siguiente'}
+            </Button>
+          )}
         </div>
       )}
         </>

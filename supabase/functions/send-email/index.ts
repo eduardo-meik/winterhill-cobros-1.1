@@ -2,6 +2,38 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
+// --- Rate limit helper (fixed window) ---
+async function rateLimitOrReject(req: Request, routeId: string, limit: number, windowSeconds: number) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceKey) return null; // Cannot enforce, allow silently
+  const adminClient = createClient(supabaseUrl, serviceKey);
+
+  // Identify subject: prefer authenticated user id else IP
+  const forwarded = req.headers.get("x-forwarded-for") || req.headers.get("X-Forwarded-For") || "";
+  const ip = forwarded.split(",")[0].trim() || req.headers.get("CF-Connecting-IP") || req.headers.get("x-real-ip") || "unknown";
+  // Lightweight user extraction (reuse auth header if present)
+  const authClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") || "", {
+    global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
+  });
+  const { data: userData } = await authClient.auth.getUser();
+  const subject = userData?.user?.id ? `user:${userData.user.id}` : `ip:${ip}`;
+  const key = `${subject}:${routeId}`;
+
+  // Call the SQL function
+  const { data, error } = await adminClient.rpc("check_and_increment_rate_limit", {
+    p_key: key,
+    p_limit: limit,
+    p_window_seconds: windowSeconds,
+  });
+  if (error) {
+    console.warn("Rate limit RPC error", error.message);
+    return null; // fail open
+  }
+  // data shape: { allowed, remaining, reset_at, current_count }
+  return { ...data, key } as any;
+}
+
 // CORS headers (keep permissive for now; tighten to your domain when ready)
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -223,6 +255,23 @@ Deno.serve(async (req: Request) => {
   }
 
   const adminClient: SupabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+
+  // Apply simple rate limit: 30 requests per 60s window per user/IP for this endpoint
+  const rl = await rateLimitOrReject(req, "send-email", 30, 60);
+  if (rl && rl.allowed === false) {
+    const resetSeconds = Math.max(0, Math.ceil((new Date(rl.reset_at).getTime() - Date.now()) / 1000));
+    return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+        "Retry-After": String(resetSeconds),
+        "RateLimit-Limit": "30",
+        "RateLimit-Remaining": String(rl.remaining),
+        "RateLimit-Reset": String(Math.floor(new Date(rl.reset_at).getTime() / 1000)),
+      },
+    });
+  }
   const user = await getAuthUser(req, supabaseUrl, supabaseAnonKey);
   const userId = user?.id ?? null;
 
@@ -276,6 +325,10 @@ Deno.serve(async (req: Request) => {
 
   return new Response(
     JSON.stringify({ id: providerMessageId, status: "sent" }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+    { headers: { ...corsHeaders, "Content-Type": "application/json", ...(rl ? {
+      "RateLimit-Limit": "30",
+      "RateLimit-Remaining": String(rl.remaining),
+      "RateLimit-Reset": String(Math.floor(new Date(rl.reset_at).getTime() / 1000))
+    } : {}) }, status: 200 }
   );
 });
