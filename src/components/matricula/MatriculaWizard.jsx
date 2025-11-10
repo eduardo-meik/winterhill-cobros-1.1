@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader } from '../ui/Card';
@@ -22,7 +23,7 @@ import {
   signEnrollmentDocument,
   sha256
 } from '../../services/matricula';
-import { buildPrestacionPayload, renderPrestacionWithAnnex, createPrestacionDocument } from '../../services/matricula';
+import { buildPrestacionPayload, renderPrestacionWithAnnex, createPrestacionDocument, ensureEnrollmentDocuments } from '../../services/matricula';
 import { saveChequesForEnrollment } from '../../services/matricula';
 import { 
   buildAutorizacionPayload, 
@@ -63,6 +64,7 @@ const STEPS = [
 
 export function MatriculaWizard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
   const [guardian, setGuardian] = useState(null);
@@ -103,6 +105,7 @@ export function MatriculaWizard() {
   // Debt gating state
   const [debtInfo, setDebtInfo] = useState({ total: 0, items: [] });
   const [debtDoc, setDebtDoc] = useState(null); // record of PAGARE_DEUDA if generated
+  const [autoDocSyncing, setAutoDocSyncing] = useState(false);
   const [debtLoading, setDebtLoading] = useState(false);
   const [showDebtGenerator, setShowDebtGenerator] = useState(false);
   const [debtForm, setDebtForm] = useState({ cuotas: 6, dia_vencimiento: 5 });
@@ -257,6 +260,30 @@ export function MatriculaWizard() {
       setRefreshingState(false);
     }
   }, [guardian?.id, enrollment?.id]);
+
+  // Auto document generation effect (debounced)
+  useEffect(() => {
+    if (!enrollment || !guardian) return;
+    const timer = setTimeout(async () => {
+      try {
+        setAutoDocSyncing(true);
+        // Provide minimal debt context: use debtInfo.total if available
+        const debtTotal = debtInfo?.total || 0;
+        await ensureEnrollmentDocuments({
+          enrollment,
+          guardian,
+          students,
+          meta: enrollment.meta || {},
+          debtTotal,
+        });
+      } catch (e) {
+        console.warn('Auto-doc generation error', e);
+      } finally {
+        setAutoDocSyncing(false);
+      }
+    }, 550); // debounce ~550ms
+    return () => clearTimeout(timer);
+  }, [enrollment?.id, guardian?.id, students, enrollment?.meta, prioritario, descuentoPlanilla, paymentMethod, economic, debtInfo?.total]);
 
   // Record assisted mode auditing in enrollment meta
   useEffect(() => {
@@ -774,7 +801,35 @@ export function MatriculaWizard() {
                   <p className="text-sm font-medium text-red-900 dark:text-red-100">Total deuda: $ {debtInfo.total.toLocaleString('es-CL')}</p>
                   <div className="mt-3 flex gap-2 flex-wrap">
                     <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
-                    <a href="/repactacion" className="inline-flex"><Button size="sm" variant="secondary">Ir a Repactación</Button></a>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        if (!guardian) return;
+                        const snapshot = {
+                          id: guardian.id,
+                          first_name: guardian.first_name,
+                          last_name: guardian.last_name,
+                          run: guardian.run,
+                          email: guardian.email ?? null,
+                          address: guardian.address ?? null,
+                          phone: guardian.phone ?? null,
+                          profesion: guardian.profesion ?? null,
+                          estado_civil: guardian.estado_civil ?? null,
+                          comuna: guardian.comuna ?? null,
+                        };
+                        navigate('/repactacion', {
+                          state: {
+                            from: 'matricula',
+                            guardianId: guardian.id,
+                            guardianSnapshot: snapshot,
+                            enrollmentId: enrollment?.id ?? null,
+                          },
+                        });
+                      }}
+                    >
+                      Ir a Repactación
+                    </Button>
                     <Button size="sm" variant="outline" onClick={refreshDebtAndRegularization} disabled={refreshingState}>{refreshingState ? 'Actualizando…' : '↻ Actualizar estado'}</Button>
                   </div>
                   {debtLoading && <p className="text-xs mt-2 text-red-600">Verificando deuda...</p>}

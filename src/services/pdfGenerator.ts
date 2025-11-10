@@ -166,25 +166,12 @@ function addSignatureSection(
   });
 }
 
-/**
- * Add watermark (BORRADOR, NO FIRMADO, etc.)
- */
-function addWatermark(pdf: jsPDF, pageWidth: number, pageHeight: number, text: string) {
+// Watermark inline helper (no declarative unused warnings)
+function _applyWatermark(pdf: jsPDF, pageWidth: number, pageHeight: number, text: string) {
   pdf.setFontSize(60);
-  pdf.setTextColor(220, 220, 220); // Light gray
+  pdf.setTextColor(220, 220, 220);
   pdf.setFont('helvetica', 'bold');
-  
-  // Rotate and center
-  const angle = 45;
-  const x = pageWidth / 2;
-  const y = pageHeight / 2;
-  
-  pdf.text(text, x, y, {
-    align: 'center',
-    angle
-  });
-  
-  // Reset color
+  pdf.text(text, pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
   pdf.setTextColor(0, 0, 0);
 }
 
@@ -222,11 +209,14 @@ export async function generatePDFFromHTML(
     margin = 20,
     includeHeader = true,
     includeSignatureSection = true,
-    watermark, // Nota: Ya no se usa por defecto
+    watermark,
     guardianRun,
     folioNumber,
     metadata
   } = options;
+  // touch watermark to satisfy strict no-unused checks in some toolchains
+  // (real use occurs at the end when adding optional watermark)
+  void watermark;
 
   // Create PDF
   const pdf = new jsPDF({
@@ -250,19 +240,18 @@ export async function generatePDFFromHTML(
   container.innerHTML = htmlContent;
   container.style.position = 'absolute';
   container.style.left = '-9999px';
+  // Ajustes de layout: evitar doble margen/padding y respetar estilos del template
+  // Usamos el ancho efectivo del contenido (sin padding interno extra)
   container.style.width = `${pageWidth - 2 * margin}mm`;
-  container.style.padding = `${margin}mm`;
-  container.style.paddingTop = `${contentStartY}mm`;
-  container.style.paddingBottom = includeSignatureSection ? '90mm' : '40mm'; // AUMENTADO: 90mm/40mm (era 80mm/30mm)
+  container.style.padding = '0';
+  container.style.margin = '0';
   container.style.backgroundColor = 'white';
-  container.style.fontFamily = 'Arial, Helvetica, sans-serif';
-  container.style.fontSize = '11pt';
-  container.style.lineHeight = '1.6'; // Mejor espaciado
+  // No forzamos tipografía ni tamaños para respetar el HTML fuente (más compacto)
   container.style.color = '#000';
   
   // Add professional styling to content - MANTENER SALTOS DE LÍNEA
-  container.style.textAlign = 'justify';
-  container.style.whiteSpace = 'pre-wrap'; // Mantiene saltos de línea
+  // Dejamos que el HTML defina alineación/espaciado; solo aseguramos el wrap correcto
+  container.style.whiteSpace = 'normal';
   container.style.wordWrap = 'break-word';
   
   // Estilos para tablas (evitar sobreposición)
@@ -270,26 +259,8 @@ export async function generatePDFFromHTML(
   tables.forEach(table => {
     (table as HTMLElement).style.width = '100%';
     (table as HTMLElement).style.borderCollapse = 'collapse';
-    (table as HTMLElement).style.marginTop = '15px';
-    (table as HTMLElement).style.marginBottom = '15px';
     (table as HTMLElement).style.pageBreakInside = 'avoid'; // Evitar corte de tabla
-    (table as HTMLElement).style.border = '1px solid #333';
-    
-    // Estilo para celdas
-    const cells = table.querySelectorAll('td, th');
-    cells.forEach(cell => {
-      (cell as HTMLElement).style.padding = '8px';
-      (cell as HTMLElement).style.border = '1px solid #666';
-      (cell as HTMLElement).style.fontSize = '10pt';
-    });
-    
-    // Estilo para encabezados
-    const headers = table.querySelectorAll('th');
-    headers.forEach(header => {
-      (header as HTMLElement).style.backgroundColor = '#003366';
-      (header as HTMLElement).style.color = 'white';
-      (header as HTMLElement).style.fontWeight = 'bold';
-    });
+    // No sobreescribimos padding/bordes/tamaños para respetar el template compacto
   });
   
   document.body.appendChild(container);
@@ -311,9 +282,9 @@ export async function generatePDFFromHTML(
     const imgWidth = pageWidth - 2 * margin;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
-    const availableHeight = includeSignatureSection 
-      ? pageHeight - contentStartY - 90 // AUMENTADO: Mayor espacio para firmas (era 80)
-      : pageHeight - contentStartY - 40; // AUMENTADO: Mayor margen inferior (era 30)
+    // Altura disponible por página (reservando espacio realista)
+    const reservedBottom = includeSignatureSection ? 65 : 20; // mm
+    const availableHeight = pageHeight - contentStartY - reservedBottom;
 
     let heightLeft = imgHeight;
     let position = contentStartY;
@@ -364,8 +335,10 @@ export async function generatePDFFromHTML(
     // ADD PAGE NUMBERS TO ALL PAGES
     addPageNumbers(pdf, pageWidth, pageHeight);
 
-    // MARCA DE AGUA REMOVIDA - Solo se agrega si se pasa explícitamente
-    // if (watermark) { ... } - Comentado para quitar marca de agua por defecto
+    // Opcional: Marca de agua sólo si se provee explícitamente
+    if (watermark) {
+      _applyWatermark(pdf, pageWidth, pageHeight, watermark);
+    }
 
     // Add metadata (allow override)
     pdf.setProperties({

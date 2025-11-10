@@ -5,6 +5,7 @@ import pagareHtml from '../../contratos/pagare.html?raw';
 import descuentoHtml from '../../contratos/descuento.html?raw';
 import pagarerepacHtml from '../../contratos/pagarerepac.html?raw';
 import pagareDeudaHtml from '../../contratos/pagare_deuda.html?raw';
+import prioritarioHtml from '../../contratos/prioritario.html?raw';
 
 export const templates = {
   prestacion: prestacionHtml,
@@ -12,4 +13,5 @@ export const templates = {
   descuento: descuentoHtml,
   pagarerepac: pagarerepacHtml,
   pagare_deuda: pagareDeudaHtml,
+  prioritario: prioritarioHtml,
 };

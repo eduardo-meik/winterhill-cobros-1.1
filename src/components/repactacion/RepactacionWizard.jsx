@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader } from '../ui/Card';
@@ -12,6 +13,10 @@ function HtmlIframePreview({ html, height = 600 }) { return <iframe title="Vista
 
 export default function RepactacionWizard(){
   const { user } = useAuth();
+  const location = useLocation();
+  const navigationState = location.state ?? {};
+  const navigationGuardianId = navigationState.guardianId ?? null;
+  const navigationGuardianSnapshot = navigationState.guardianSnapshot ?? null;
   const currentYear = new Date().getFullYear();
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
   const [guardian,setGuardian]=useState(null);
@@ -28,6 +33,40 @@ export default function RepactacionWizard(){
   const [previewHtml,setPreviewHtml]=useState('');
   const [documentRecord,setDocumentRecord]=useState(null);
   const [loading,setLoading]=useState(false);
+
+  // Pre-cargar apoderado cuando venimos desde matrícula en modo asistido
+  useEffect(() => {
+    if (!assistedMode) return;
+    const targetId = navigationGuardianSnapshot?.id || navigationGuardianId;
+    if (!targetId) return;
+    if (assistedGuardian?.id === targetId) return;
+
+    if (navigationGuardianSnapshot) {
+      setAssistedGuardian(prev => (prev?.id === navigationGuardianSnapshot.id ? prev : navigationGuardianSnapshot));
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('guardians')
+          .select('id, first_name, last_name, run, email, address, phone, profesion, estado_civil, comuna')
+          .eq('id', targetId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!cancelled && data) {
+          setAssistedGuardian(prev => (prev?.id === data.id ? prev : data));
+        }
+      } catch (e) {
+        console.error('Prefetch guardian for repactación', e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [assistedMode, navigationGuardianId, navigationGuardianSnapshot, assistedGuardian?.id]);
 
   // Load guardian + enrollment + debt
   useEffect(()=>{ if(!user) return; (async()=>{ setLoading(true); try{ let g = guardian; if(assistedMode){ if(!assistedGuardian){ setLoading(false); return;} g=assistedGuardian; } else { const self = await fetchCurrentGuardian(user.id); if(!self){ toast.error('No se encontró apoderado'); return;} g=self; } setGuardian(g); const enr=await getOrCreateEnrollment(g.id,currentYear); if(!enr){ toast.error('No se pudo obtener matrícula'); return;} setEnrollment(enr); const list=await listEnrollmentStudents(enr.id); setStudents(list); try{ const det=await fetchGuardianDebtDetailed(g.id); setDebt(det); const allIds=new Set((det.items||[]).map(it=>it.id)); setSelectedDebtIds(allIds); if(!schedule.total || Number(schedule.total)<=0){ setSchedule(s=>({...s,total:String(Math.round(det.total||0))})); } }catch(e){ console.warn('Detalle deuda',e);} } finally { setLoading(false);} })(); },[user,assistedMode,assistedGuardian?.id]);

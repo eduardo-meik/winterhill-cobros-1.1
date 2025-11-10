@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { computeEnrollmentDocumentPlan } from './autodoc';
 import { templates } from '../contracts/templates';
 import toast from 'react-hot-toast';
 
@@ -733,6 +734,7 @@ export interface PrestacionPayload {
   forma_pago_tarjeta?: string;
   forma_pago_pagare?: string;
   formas_pago_lista: string;
+  formas_pago_resumen?: string;
   // Cheques block
   cheques_table?: string;
   // Annex/Pagaré optional
@@ -865,6 +867,26 @@ export function buildPrestacionPayload(opts: {
     </div>`;
   })() : '';
 
+  const paymentSummaryParts: string[] = [];
+  const registerSummaryPart = (condition: boolean | undefined, text: string) => {
+    if (condition) paymentSummaryParts.push(text);
+  };
+  registerSummaryPart(paymentMethod?.cheques, `cheques nominativos a nombre de Corporación Educacional Winterhill, con vencimientos dentro de los primeros diez días de cada mes entre marzo y diciembre ${year}`);
+  registerSummaryPart(paymentMethod?.transferencia, 'transferencia electrónica comprometida');
+  registerSummaryPart(paymentMethod?.efectivo, 'pago en efectivo');
+  registerSummaryPart(paymentMethod?.tarjeta, 'tarjeta de crédito');
+  registerSummaryPart(paymentMethod?.pagare, 'pagaré notarial');
+
+  const joinWithConjunction = (items: string[]): string => {
+    if (!items.length) return '';
+    if (items.length === 1) return items[0];
+    const head = items.slice(0, -1).join(', ');
+    const tail = items[items.length - 1];
+    return head ? `${head} y ${tail}` : tail;
+  };
+
+  const paymentSummary = joinWithConjunction(paymentSummaryParts);
+
   const colegAnual = economic?.colegiatura_anual || 0;
   const cuotasNum = Number(economic?.cantidad_cuotas) || 0;
   const montoCuotaCalc = (() => {
@@ -922,6 +944,7 @@ export function buildPrestacionPayload(opts: {
       `Tarjeta de Crédito: ${paymentMethod?.tarjeta ? '☑' : '☐'}`,
       `Pagaré: ${paymentMethod?.pagare ? '☑' : '☐'}`
     ].join('\n'),
+    formas_pago_resumen: paymentSummary || 'los mecanismos definidos en este contrato',
     cheques_table: chequesTableHtml,
   };
 
@@ -949,17 +972,247 @@ export function buildPrestacionPayload(opts: {
   return payload;
 }
 
+function extractHtmlSections(html: string): { doctype: string; htmlTag: string; bodyTag: string; head: string; body: string } {
+  const doctypeMatch = html.match(/<!doctype\s+html>/i);
+  const htmlTagMatch = html.match(/<html[^>]*>/i);
+  const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const bodyTagMatch = html.match(/<body[^>]*>/i);
+  return {
+    doctype: doctypeMatch ? doctypeMatch[0] : '<!doctype html>',
+    htmlTag: htmlTagMatch ? htmlTagMatch[0] : '<html>',
+    bodyTag: bodyTagMatch ? bodyTagMatch[0] : '<body>',
+    head: headMatch ? headMatch[1] : '',
+    body: bodyMatch ? bodyMatch[1] : html,
+  };
+}
+
+function stripFixedPrintElements(html: string): string {
+  return html
+    .replace(/<div[^>]*class="[^"]*\bprint-header\b[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*class="[^"]*\bprint-footer\b[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '');
+}
+
 export function renderPrestacionWithAnnex(payload: PrestacionPayload, options: { annex?: 'descuento' | 'pagare' | null } = {}): string {
-  const main = renderTemplate(templates.prestacion, payload);
-  let combined = main;
-  if (options.annex === 'descuento') {
-    const annex = renderTemplate(templates.descuento, payload);
-    combined = `${main}\n<div class="page-break"></div>\n${annex}`;
-  } else if (options.annex === 'pagare') {
-    const annex = renderTemplate(templates.pagare, payload);
-    combined = `${main}\n<div class="page-break"></div>\n${annex}`;
+  const mainHtml = renderTemplate(templates.prestacion, payload);
+  const annexType = options.annex;
+  if (!annexType) {
+    return mainHtml;
   }
-  return combined;
+
+  const annexTemplate = annexType === 'descuento' ? templates.descuento : templates.pagare;
+  const annexHtml = renderTemplate(annexTemplate, payload);
+
+  const baseParts = extractHtmlSections(mainHtml);
+  const annexParts = extractHtmlSections(annexHtml);
+
+  const mergedHead = [baseParts.head.trim(), annexParts.head.trim()]
+    .filter(Boolean)
+    .join('\n');
+
+  const cleanedAnnexBody = stripFixedPrintElements(annexParts.body).trim();
+  const bodySegments = [baseParts.body.trim()];
+  if (cleanedAnnexBody) {
+    bodySegments.push('<div class="page-break"></div>');
+    bodySegments.push(cleanedAnnexBody);
+  }
+  const mergedBody = bodySegments.join('\n');
+
+  const doctype = baseParts.doctype || '<!doctype html>';
+  const htmlTag = baseParts.htmlTag || '<html>';
+  const bodyTag = baseParts.bodyTag || '<body>';
+
+  return `${doctype}\n${htmlTag}\n<head>\n${mergedHead}\n</head>\n${bodyTag}\n${mergedBody}\n</body>\n</html>`;
+}
+
+// Decision engine: compute needed documents and generate/update them idempotently
+// Types considered:
+//  - PRESTACION (base, may embed descuento/pagare annex)
+//  - PRIORITARIO (separate annex if prioritario flag true)
+//  - PAGARE_DEUDA (separate if debt exists)
+// Future: PAGARE_REPACTACION handled elsewhere
+export interface AutoDocContext {
+  enrollment: EnrollmentRecord;
+  guardian: GuardianRecord;
+  students: StudentRecord[];
+  meta: any; // enrollment.meta
+  debtTotal?: number; // total outstanding debt (for PAGARE_DEUDA)
+  deudaCuotas?: number; // cuotas for debt pagaré
+  deudaDiaVencimiento?: number; // day of month for debt pagaré
+}
+
+export async function ensureEnrollmentDocuments(ctx: AutoDocContext): Promise<void> {
+  const { enrollment, guardian, students, meta } = ctx;
+  if (!enrollment?.id || !guardian) return;
+
+  // Extract flags
+  const prioritario: boolean = !!meta?.prioritario;
+  const descuentoPlanilla: boolean = !!meta?.forma_pago_descuento_planilla;
+  const pagaréSeleccionado: boolean = !!meta?.forma_pago_pagare;
+  const chequesSeleccionados: boolean = !!meta?.forma_pago_cheques;
+  const porcentaje_descuento: number | undefined = typeof meta?.porcentaje_descuento === 'number' ? meta.porcentaje_descuento : undefined;
+
+  // Debt presence (only generate PAGARE_DEUDA if meaningful total > 0)
+  const debtTotal = Math.max(0, Math.round(Number(ctx.debtTotal) || 0));
+
+  // Compute plan (centralized rules & precedence)
+  const plan = computeEnrollmentDocumentPlan({
+    prioritario,
+    descuentoPlanilla,
+    paymentMethod: { cheques: chequesSeleccionados, pagare: pagaréSeleccionado },
+    debtTotal,
+  });
+
+  // Build economic data for prestacion payload
+  const economic = {
+    monto_matricula: Number(meta?.monto_matricula) || undefined,
+    colegiatura_anual: Number(meta?.colegiatura_anual) || undefined,
+    cantidad_cuotas: Number(meta?.cantidad_cuotas) || undefined,
+    monto_cuota: Number(meta?.monto_cuota) || undefined,
+    dia_vencimiento: Number(meta?.dia_vencimiento) || undefined,
+  };
+
+  // Payment method flags for payload
+  const paymentMethod = {
+    cheques: chequesSeleccionados,
+    transferencia: !!meta?.forma_pago_transferencia,
+    efectivo: !!meta?.forma_pago_efectivo,
+    tarjeta: !!meta?.forma_pago_tarjeta,
+    pagare: pagaréSeleccionado,
+  };
+
+  // Cheques array (if stored as structured data in meta)
+  const chequesArr = Array.isArray(meta?.cheques_detalle) ? meta.cheques_detalle : undefined;
+
+  // Descuento info
+  const descuento = (descuentoPlanilla && !prioritario) ? {
+    porcentaje: porcentaje_descuento || 0,
+    motivo: meta?.descuento_motivo || '',
+    condiciones: meta?.descuento_condiciones || ''
+  } : null;
+
+  // Build base payload
+  const prestacionPayload = buildPrestacionPayload({
+    guardian,
+    year: enrollment.year,
+    students,
+    economic: prioritario ? undefined : economic, // if prioritario we can still pass economic but optionally omit
+    paymentMethod: prioritario ? undefined : paymentMethod,
+    cheques: (!prioritario && chequesSeleccionados && Array.isArray(chequesArr)) ? chequesArr : undefined,
+    descuento,
+  });
+
+  // Determine annex inside prestacion (we only embed 'descuento' or 'pagare').
+  // Cheques are already reflected via payload table; no separate annex page.
+  let annex: 'descuento' | 'pagare' | null = null;
+  if (plan.prestacionAnnex === 'descuento') annex = 'descuento';
+  else if (plan.prestacionAnnex === 'pagare') annex = 'pagare';
+  const prestacionHtml = renderPrestacionWithAnnex(prestacionPayload, { annex });
+
+  // Hash content for idempotence
+  const prestacionHash = await sha256(prestacionHtml);
+
+  // Upsert PRESTACION document
+  await upsertEnrollmentDocument({
+    enrollmentId: enrollment.id,
+    type: 'PRESTACION',
+    finalContent: prestacionHtml,
+    payload: prestacionPayload,
+    contentHash: prestacionHash
+  });
+
+  // PRIORITARIO annex as separate document (only if prioritario)
+  if (plan.types.includes('PRIORITARIO')) {
+    const prioritarioHtml = renderTemplate(templates.prioritario, prestacionPayload);
+    const prioritarioHash = await sha256(prioritarioHtml);
+    await upsertEnrollmentDocument({
+      enrollmentId: enrollment.id,
+      type: 'PRIORITARIO',
+      finalContent: prioritarioHtml,
+      payload: prestacionPayload,
+      contentHash: prioritarioHash
+    });
+  }
+
+  // Debt pagaré (PAGARE_DEUDA) separate
+  if (plan.types.includes('PAGARE_DEUDA')) {
+    const deudaPayload = buildPagareDeudaPayload({
+      guardian,
+      year: enrollment.year,
+      students,
+      debt: {
+        total: debtTotal,
+        cuotas: Math.max(1, Number(ctx.deudaCuotas) || (Number(meta?.cantidad_cuotas) || 1)),
+        dia_vencimiento: Number(ctx.deudaDiaVencimiento) || Number(meta?.dia_vencimiento) || 5
+      }
+    });
+    const deudaHtml = renderPagareDeuda(deudaPayload);
+    const deudaHash = await sha256(deudaHtml);
+    await upsertEnrollmentDocument({
+      enrollmentId: enrollment.id,
+      type: 'PAGARE_DEUDA',
+      finalContent: deudaHtml,
+      payload: deudaPayload,
+      contentHash: deudaHash
+    });
+  }
+}
+
+// Helper: insert or update non-signed document of a given type
+async function upsertEnrollmentDocument(params: {
+  enrollmentId: string;
+  type: string;
+  finalContent: string;
+  payload: any;
+  contentHash: string;
+}): Promise<void> {
+  const { enrollmentId, type, finalContent, payload, contentHash } = params;
+  try {
+    const { data, error } = await supabase
+      .from('enrollment_documents')
+      .select('id, status, content_hash')
+      .eq('enrollment_id', enrollmentId)
+      .eq('type', type)
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      console.warn('[auto-doc] select error', error);
+    }
+    const existing = data || null;
+    if (existing) {
+      if (existing.status === 'signed') {
+        // Do not modify signed docs
+        return;
+      }
+      if (existing.content_hash === contentHash) {
+        // Unchanged
+        return;
+      }
+      // Update
+      const { error: updErr } = await supabase
+        .from('enrollment_documents')
+        .update({ final_content: finalContent, generated_payload: payload, content_hash: contentHash, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+      if (updErr) console.error('[auto-doc] update error', updErr);
+      return;
+    }
+    // Insert
+    const insertObj: any = {
+      enrollment_id: enrollmentId,
+      type,
+      template_version: 1,
+      status: 'generated',
+      generated_payload: payload,
+      final_content: finalContent,
+      content_hash: contentHash
+    };
+    const { error: insErr } = await supabase
+      .from('enrollment_documents')
+      .insert(insertObj);
+    if (insErr) console.error('[auto-doc] insert error', insErr);
+  } catch (e) {
+    console.error('[auto-doc] upsert exception', e);
+  }
 }
 
 // Create Prestación document record
