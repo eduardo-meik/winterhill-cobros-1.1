@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anexo - Pagaré Repactación</title>
+  <style>
+    :root {
+      --font: 'Helvetica', Arial, sans-serif;
+      --text: #000;
+      --muted: #000;
+      --accent: #000;
+      --border: #000;
+    }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      counter-reset: page;
+    }
+
+    @page { size: A4; margin: 12mm; }
+
+    .print-header, .print-footer {
+      position: fixed;
+      left: 0; right: 0;
+      color: var(--text);
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+      padding: 4mm 12mm 2mm;
+      box-sizing: border-box;
+    }
+
+    .print-header { top: 0; border-bottom: 0.5px solid var(--border); }
+    .print-footer { bottom: 0; border-top: 0.5px solid var(--border); padding: 2mm 12mm 4mm; }
+    .print-header .title { font-weight: 600; }
+    .page-number::after { content: "Página " counter(page); }
+    .has-total-pages .page-number::after { content: "Página " counter(page) " de " counter(pages); }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 22mm 12mm 26mm;
+      box-sizing: border-box;
+    }
+
+    @media screen {
+      .print-header, .print-footer { display: none; }
+      .page { padding: 12mm 12mm 16mm; }
+    }
+
+    @media print {
+      body { counter-reset: page; }
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      line-height: 1.2;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    h2 {
+      font-size: 11px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 3px 0;
+      line-height: 1.23;
+      font-size: 11px;
+      hyphens: auto;
+      word-break: break-word;
+      orphans: 2;
+      widows: 2;
+    }
+
+    ul, ol {
+      margin: 4px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 4px 0 8px;
+      font-size: 11px;
+    }
+
+    .table th, .table td {
+      border: 0.75px solid var(--border);
+      padding: 3px 4px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .table thead th {
+      font-weight: 600;
+      background: transparent;
+    }
+
+    .muted { color: var(--muted); }
+    .lead { font-size: 13px; }
+
+    .clause {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+      break-inside: avoid;
+    }
+
+    .sigbox {
+      border-top: 0.75px solid var(--border);
+      padding-top: 4px;
+      font-size: 11px;
+    }
+
+    .table, .table tr, .table td, .table th { break-inside: avoid; }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      if (window.CSS && CSS.supports && CSS.supports('content', 'counter(pages)')) {
+        document.documentElement.classList.add('has-total-pages');
+      }
+    } catch (e) { /* noop */ }
+  </script>
+  <div class="print-header">
+    <div class="title">Anexo Pagaré Repactación</div>
+    <div class="year">Año {{year}}</div>
+  </div>
+  <div class="print-footer">
+    <div class="school">Colegio Winterhill — {{guardian_full_name}} (RUN: {{guardian_run}})</div>
+    <div class="meta">Fecha: {{fecha_actual}} · Folio: {{folio_number?}}</div>
+    <div class="page-number"></div>
+  </div>
+  <section class="page">
+    <h1>Anexo - Pagaré Repactación</h1>
+    <p class="muted">Viña del Mar, a {{fecha_actual}}</p>
+
+    <p><strong>Monto capital adeudado:</strong> ${{colegiatura_anual}} ({{colegiatura_anual_texto}} pesos)</p>
+
+    <p class="clause"><strong>Deudor.</strong> <strong>{{guardian_full_name}}</strong>, RUT <strong>{{guardian_run}}</strong>, con domicilio en {{guardian_address}}{{guardian_comuna?}}{{guardian_city?}}, teléfono {{guardian_fono}}, correo {{guardian_email}}.</p>
+
+    <p class="clause"><strong>Acreedor.</strong> <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, con domicilio en Pasaje Anwandter N° 31, Viña del Mar.</p>
+
+    <p class="clause"><strong>Compromiso de pago.</strong> Debo y pagaré a la orden del acreedor la suma indicada, en {{cantidad_cuotas}} cuotas mensuales, iguales y sucesivas de ${{monto_cuota}} ({{monto_cuota_texto}}), venciendo los días {{dia_vencimiento}} de cada mes a contar de marzo de {{year}}, hasta completar el capital adeudado.</p>
+
+    <p class="clause"><strong>Estudiantes.</strong> Este pagaré respalda obligaciones asociadas a los/las estudiantes individualizados a continuación:</p>
+    {{students_list}}
+
+    <p class="clause"><strong>Cláusula de liberación.</strong> Libero expresamente al acreedor de la obligación de protestar este pagaré y fijo domicilio en Viña del Mar, sometiéndome a la competencia de sus Tribunales Ordinarios de Justicia.</p>
+
+    <p class="clause"><strong>Impuesto.</strong> El impuesto de timbres y estampillas que grave este documento se paga por ingreso de dinero en Tesorerías, conforme al D.L. 3475 Art. 15 N° 2.</p>
+
+    <p class="clause"><strong>Protección de datos.</strong> Para efectos de la Ley 19.628, autorizo irrevocablemente a la Corporación para informar mi morosidad, retardo o protesto a registros o bancos de datos personales.</p>
+
+    <p class="clause"><strong>Indivisibilidad.</strong> Todas las obligaciones derivadas de este pagaré se considerarán indivisibles para el deudor, sus herederos y/o sucesores, especialmente conforme a los artículos 1526 N° 4 y 1528 del Código Civil.</p>
+
+    <p class="muted">Viña del Mar, {{fecha_actual}}</p>
+
+    <div class="signatures">
+      <div class="sigbox">
+        <div><strong>{{guardian_full_name}}</strong></div>
+        <div>RUT: {{guardian_run}}</div>
+        <div>Domicilio: {{guardian_address}}{{guardian_comuna?}}{{guardian_city?}}</div>
+        <div class="muted">SUSCRIPTOR(A)</div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

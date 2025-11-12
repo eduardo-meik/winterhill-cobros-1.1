@@ -1,0 +1,89 @@
+Matrícula Winterhill [Año de Matrícula]
+
+¡Bienvenidos al proceso de matrícula para el año [Año Lectivo]! Agradecemos su interés en ser parte de nuestra comunidad educativa Winterhill. Este formulario tiene como objetivo recopilar toda la información necesaria para inscribir a su hijo(a) en nuestra institución. Por favor, complete cada sección con precisión y asegúrese de que todos los datos proporcionados sean correctos y actualizados.
+
+Instrucciones de llenado:
+Datos del apoderado: Incluya información completa del apoderado principal, quien será responsable del estudiante ante la institución. Asegúrese de incluir un correo electrónico y número de contacto válidos para comunicaciones oficiales.
+Datos del estudiante: Proporcione los datos personales y académicos del estudiante, incluyendo su curso de matrícula para el [Año Lectivo], RUT, dirección y demás información solicitada.
+Relación con el estudiante: Seleccione la relación que tiene el apoderado con el estudiante (ej. Madre, Padre, Tutor legal).
+Información adicional: Si corresponde, detalle datos como institución de procedencia, motivos de retiro, o cualquier otro antecedente que sea relevante para el proceso de matrícula.
+
+Importante:
+Complete todos los campos obligatorios.
+Revise cuidadosamente la información antes de enviar el formulario.
+En caso de dudas o inconvenientes, no dude en contactarnos al correo colegio.winterhill1@gmail.com o al teléfono +56 9 2208 4362
+
+¿Cuál es el nombre del apoderado?
+
+¿Cuál es el apellido paterno del apoderado?
+
+¿Cuál es el apellido materno del apoderado?
+
+¿Cuál es su relación con el estudiante?
+
+¿Cuál es el RUT del apoderado?
+
+¿Cuál es el nivel educacional del apoderado?
+
+¿Cuál es la dirección de residencia del apoderado?
+
+¿Cuál es la comuna de residencia del apoderado?
+
+¿Cuál es el email de contacto del apoderado?
+
+¿Cuál es su teléfono?
+Recuerde colocar el teléfono en el siguiente formato +56 9 XXXX XXXX
+
+¿Cuál es la fecha de matrícula del estudiante?
+
+¿Cuáles son los nombres del estudiante?
+
+¿Cuál es el apellido paterno del estudiante?
+
+¿Cuál es el apellido materno del estudiante?
+
+¿Cuál es el RUN del estudiante?
+Tratándose de alumnos migrantes que no tengan regularizada su situación migratoria y, en consecuencia, no posean RUN, deberá señalarse el Identificador Provisorio Escolar (IPE), de conformidad a las directrices entregadas sobre esta materia por parte del Ministerio de Educación
+
+¿Cuál es el nivel o curso al que pertenece el estudiante?
+
+¿Cuál es la fecha de nacimiento del estudiante?
+
+¿Cuál es la nacionalidad del estudiante?
+
+¿Cuál es el género del estudiante?
+
+Colóque el nombre social con el cuál se identifica el estudiante, si fuese el caso.
+
+¿Cuál es la fecha de incorporación al curso del estudiante?
+
+¿Cuál es la fecha de retiro del estudiante (si corresponde)?
+
+¿Cuál fue el motivo del retiro del estudiante (si corresponde)?
+
+¿El estudiante repite el curso actual?
+
+¿Cuál es la institución de procedencia del estudiante?
+
+¿Cuál es la dirección de residencia del estudiante?
+
+¿En qué comuna reside el estudiante?
+
+¿Con quién vive el estudiante? (Puede seleccionar más de una opción)
+
+Añada el nombre de un contacto distinto al apoderado si fuese el caso
+
+Añada el teléfono del contacto distinto al apoderado si fuese el caso
+Recuerde colocar el teléfono en el siguiente formato +56 9 XXXX XXXX
+
+Porcentaje de Beca aprobado para estudiante
+
+Forma de Pago
+Prioritario
+Documentación con Cheques
+Firma de Pagaré
+Tarjeta de Crédito
+Transferencia Bancaria
+Descuento por Planilla
+
+¿Con que institución financiera trabaja?

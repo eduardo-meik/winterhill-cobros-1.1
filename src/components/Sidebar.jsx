@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useGuardianData } from '../contexts/GuardianContext';
 import { House, UsersThree, ChatDots, Money, ChartPie, Guardian } from './Icons';
 import clsx from 'clsx';
 
@@ -13,7 +14,13 @@ const baseMenuItems = [
   { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin', 'asist'] },
   { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'asist', 'guardian'] },
   { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin', 'asist'] },
-  { id: 'matricula', icon: Guardian, text: 'Matrícula', roles: ['admin', 'asist'] },
+  {
+    id: 'matricula',
+    icon: Guardian,
+    text: 'Matrícula',
+    roles: ['admin', 'asist', 'guardian'],
+    condition: ({ role, guardianReady }) => role !== 'guardian' || guardianReady
+  },
   { id: 'repactacion', icon: Money, text: 'Repactación', roles: ['admin', 'asist'] }
   // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   
@@ -26,6 +33,8 @@ const baseMenuItems = [
 export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick, isCollapsed, onToggleCollapse }) {
   const { user } = useAuth();
   const role = user?.role;
+  const { data: guardianData } = useGuardianData();
+  const guardianReady = role === 'guardian' && guardianData && guardianData.needsIntake === false;
   // Handle escape key to close mobile sidebar
   useEffect(() => {
     const handleEscape = (e) => {
@@ -89,7 +98,13 @@ export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick,
             isCollapsed ? "p-2" : "p-4"
           )}>
             {baseMenuItems
-              .filter(item => !item.roles || item.roles.includes(role))
+              .filter(item => {
+                if (item.roles && !item.roles.includes(role)) return false;
+                if (item.condition) {
+                  return item.condition({ role, guardianReady, guardianData });
+                }
+                return true;
+              })
               .map((item) => {
                 const text = item.id === 'dashboard' && role === 'guardian' ? 'Bienvenida' : item.text;
                 return (

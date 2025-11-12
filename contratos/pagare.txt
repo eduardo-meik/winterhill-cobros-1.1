@@ -1,0 +1,60 @@
+ANEXO - PAGARÉ
+MONTO: ${{colegiatura_anual}} (Suma de: {{colegiatura_anual_texto}} pesos)
+
+N° de Pagaré: [Dejar en blanco o asignar número interno]
+
+En Viña del Mar, a {{fecha_actual}}.
+
+DEUDOR (EL/LA APODERADO/A):
+
+Nombre: {{guardian_full_name}}
+
+RUT: {{guardian_run}}
+
+Nacionalidad: {{guardian_nacionalidad}}
+
+Profesión/Oficio: {{guardian_profesion}}
+
+Estado Civil: {{guardian_estado_civil}}
+
+Domicilio: {{guardian_address}}, Comuna de {{guardian_commune}}, Ciudad de {{guardian_city}}.
+
+ACREEDOR (LA CORPORACIÓN):
+
+Razón Social: CORPORACIÓN EDUCACIONAL WINTERHILL
+
+RUT: 65.152.884-4
+
+Domicilio: Pasaje Anwandter N° 31, Viña del Mar.
+
+Yo, {{guardian_full_name}}, ya individualizado/a, en mi calidad de Deudor, debo y pagaré incondicionalmente a la orden de CORPORACIÓN EDUCACIONAL WINTERHILL, ya individualizada, o a quien sus derechos represente legalmente, la suma total de ${{colegiatura_anual}} ({{colegiatura_anual_texto}} pesos), por concepto de la colegiatura anual correspondiente a los servicios educacionales del año académico {{year}}, prestados a el/los estudiante(s):
+
+{{students_list}} Dicha obligación emana del Contrato de Prestación de Servicios Educacionales suscrito entre las partes con esta misma fecha, el cual se entiende como parte integrante de este instrumento para todos los efectos legales.
+
+FORMA DE PAGO
+
+El monto total adeudado de ${{colegiatura_anual}} será pagado por el Deudor en {{cantidad_cuotas}} cuotas mensuales, iguales y sucesivas de ${{monto_cuota}} ({{monto_cuota_texto}} pesos) cada una.
+
+El vencimiento de la primera cuota será el día {{dia_vencimiento}} de marzo de {{year}}, y las siguientes cuotas vencerán el día {{dia_vencimiento}} de cada mes calendario subsiguiente (abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre y diciembre de {{year}}), hasta el íntegro y total pago de la obligación.
+
+El pago se efectuará mediante transferencia bancaria a la cuenta que la Corporación informe para dichos efectos.
+
+CLÁUSULA DE ACELERACIÓN
+
+El simple retardo o mora en el pago íntegro y oportuno de cualquiera de las cuotas en su fecha de vencimiento, facultará al Acreedor para exigir de inmediato el pago del saldo total adeudado, considerándose la obligación como de plazo vencido, líquida y actualmente exigible en su totalidad, sin necesidad de requerimiento judicial o extrajudicial alguno.
+
+INTERESES
+
+En caso de mora o simple retardo en el pago de cualquiera de las cuotas, el saldo insoluto de la obligación devengará, desde la fecha de la mora y hasta el día del pago efectivo, el interés máximo convencional que la ley permita estipular para operaciones de crédito de dinero no reajustables vigentes a la fecha del respectivo pago.
+
+CLÁUSULAS ADICIONALES
+
+LIBERACIÓN DE PROTESTO: El Deudor libera expresamente al Acreedor de la obligación de protesto del presente Pagaré, tanto por falta de pago como por cualquier otra causal, y de toda otra formalidad o aviso.
+
+GASTOS: Todos los gastos, impuestos, derechos notariales y costas judiciales, tanto procesales como personales, que se generen a raíz del cobro judicial o extrajudicial de la obligación contenida en este Pagaré, serán de cargo exclusivo del Deudor.
+
+DOMICILIO Y JURISDICCIÓN: Para todos los efectos legales derivados de este Pagaré, las partes fijan su domicilio especial en la comuna de Viña del Mar y se someten expresamente a la jurisdicción de sus Tribunales Ordinarios de Justicia.
+
+En comprobante y previa lectura, firma el Deudor en un único ejemplar.
+
+{{guardian_full_name}} RUT: {{guardian_run}} DEUDOR

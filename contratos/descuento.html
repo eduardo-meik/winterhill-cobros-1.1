@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contrato Anexo sobre Beca y Autorización de Descuento por Planilla</title>
+  <style>
+    :root {
+      --font: 'Helvetica', Arial, sans-serif;
+      --text: #000;
+      --muted: #000;
+      --accent: #000;
+      --border: #000;
+    }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      counter-reset: page;
+    }
+
+    @page { size: A4; margin: 12mm; }
+
+    .print-header, .print-footer {
+      position: fixed;
+      left: 0; right: 0;
+      color: var(--text);
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+      padding: 4mm 12mm 2mm;
+      box-sizing: border-box;
+    }
+
+    .print-header { top: 0; border-bottom: 0.5px solid var(--border); }
+    .print-footer { bottom: 0; border-top: 0.5px solid var(--border); padding: 2mm 12mm 4mm; }
+    .print-header .title { font-weight: 600; }
+    .page-number::after { content: "Página " counter(page); }
+    .has-total-pages .page-number::after { content: "Página " counter(page) " de " counter(pages); }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 22mm 12mm 26mm;
+      box-sizing: border-box;
+    }
+
+    @media screen {
+      .print-header, .print-footer { display: none; }
+      .page { padding: 12mm 12mm 16mm; }
+    }
+
+    @media print {
+      body { counter-reset: page; }
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      line-height: 1.2;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    h2 {
+      font-size: 11px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 3px 0;
+      line-height: 1.23;
+      font-size: 11px;
+      hyphens: auto;
+      word-break: break-word;
+      orphans: 2;
+      widows: 2;
+    }
+
+    .muted { color: var(--muted); }
+    .lead { font-size: 13px; }
+
+    .clause {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 4px 0 8px;
+      font-size: 11px;
+    }
+
+    .table th, .table td {
+      border: 0.75px solid var(--border);
+      padding: 3px 4px;
+      vertical-align: top;
+    }
+
+    .table thead th {
+      background: transparent;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+      break-inside: avoid;
+    }
+
+    .sigbox {
+      border-top: 0.75px solid var(--border);
+      padding-top: 4px;
+      font-size: 11px;
+    }
+
+    .table, .table tr, .table td, .table th { break-inside: avoid; }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      if (window.CSS && CSS.supports && CSS.supports('content', 'counter(pages)')) {
+        document.documentElement.classList.add('has-total-pages');
+      }
+    } catch (e) { /* noop */ }
+  </script>
+  <div class="print-header">
+    <div class="title">Anexo Descuento por Planilla</div>
+    <div class="year">Año {{year}}</div>
+  </div>
+  <div class="print-footer">
+    <div class="school">Colegio Winterhill — {{guardian_full_name}} (RUN: {{guardian_run}})</div>
+    <div class="meta">Fecha: {{fecha_actual}} · Folio: {{folio_number?}}</div>
+    <div class="page-number"></div>
+  </div>
+  <section class="page">
+    <h1>Contrato Anexo sobre Beca y Autorización de Descuento por Planilla</h1>
+    <p class="muted">Complementario al Contrato de Prestación de Servicios Educacionales {{year}} — Viña del Mar, a {{fecha_actual}}</p>
+
+    <p>Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, <strong>"LA CORPORACIÓN"</strong>; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, <strong>"EL/LA APODERADO/A"</strong>, trabajador(a) de la Corporación, se acuerda lo siguiente:</p>
+
+    <p class="clause"><strong>Antecedentes.</strong> Las partes han suscrito el Contrato de Prestación de Servicios Educacionales (en adelante, "CPE") para el año {{year}}, en virtud del cual LA CORPORACIÓN presta servicios educativos a el/los alumno(s) individualizados a continuación:</p>
+    {{students_list}}
+    <p>La Cláusula Séptima del CPE fija una colegiatura anual de ${{colegiatura_anual}}, pagadera en {{cantidad_cuotas}} cuotas mensuales de ${{monto_cuota}} cada una. EL/LA APODERADO/A solicita acogerse al beneficio de descuento regulado en este instrumento.</p>
+
+    <p class="clause"><strong>Primero.</strong> LA CORPORACIÓN otorga a EL/LA APODERADO/A un beneficio especial consistente en un <strong>{{descuento_porcentaje}}%</strong> de descuento sobre la colegiatura anual, motivado por <em>{{descuento_motivo}}</em>.</p>
+    <table class="table">
+      <thead>
+        <tr><th>Concepto</th><th>Monto</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Colegiatura Anual (Referencia)</td><td>${{colegiatura_anual}}</td></tr>
+        <tr><td>Monto Total Descuento ({{descuento_porcentaje}}%)</td><td>${{monto_total_descuento}}</td></tr>
+        <tr><td>Monto Neto Anual a Pagar</td><td><strong>${{monto_neto_anual}}</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p class="clause"><strong>Segundo.</strong> EL/LA APODERADO/A pagará el monto neto anual en <strong>{{cantidad_cuotas}}</strong> cuotas mensuales, iguales y sucesivas de <strong>${{monto_cuota_neta}}</strong>, mediante el mecanismo de descuento por planilla que se autoriza a continuación.</p>
+
+    <p class="clause"><strong>Tercero.</strong> EL/LA APODERADO/A autoriza expresa e irrevocablemente a LA CORPORACIÓN, de conformidad con el artículo 58 del Código del Trabajo, a descontar de sus remuneraciones mensuales la suma de ${{monto_cuota_neta}} correspondiente a la cuota mensual de colegiatura neta, desde marzo a diciembre de {{year}}.</p>
+
+    <p class="clause"><strong>Cuarto.</strong> El presente beneficio rige durante el año académico {{year}}, entre el 1 de marzo y el 31 de diciembre, mientras se mantengan las condiciones que le dieron origen.</p>
+
+    <p class="clause"><strong>Quinto.</strong> La mantención del beneficio está sujeta a las siguientes condiciones especiales: <em>{{condicion_especial_beca}}</em>.</p>
+
+    <p class="clause"><strong>Sexto.</strong> El beneficio y el sistema de descuento por planilla terminarán automáticamente si: (a) finaliza la relación laboral entre EL/LA APODERADO/A y LA CORPORACIÓN, (b) se produce el retiro del estudiante, o (c) se incurre en incumplimientos graves establecidos en el CPE o reglamentos internos.</p>
+
+    <p class="clause"><strong>Séptimo.</strong> Producido el término del beneficio, EL/LA APODERADO/A deberá regularizar y pagar directamente a LA CORPORACIÓN el saldo insoluto de la colegiatura, calculado sobre el valor original sin descuento, dentro de los 10 días hábiles siguientes a la fecha de término. LA CORPORACIÓN emitirá la liquidación correspondiente.</p>
+
+    <p class="clause"><strong>Octavo.</strong> Este anexo modifica la Cláusula Séptima del CPE únicamente en cuanto al monto y modalidad de pago. En lo no modificado, rigen íntegramente las cláusulas del CPE {{year}}.</p>
+
+    <p class="clause"><strong>Noveno.</strong> Las partes fijan su domicilio en Viña del Mar y se someten a sus Tribunales Ordinarios de Justicia. El presente contrato se firma en dos ejemplares de igual tenor y fecha.</p>
+
+    <div class="signatures">
+      <div class="sigbox">
+        <div><strong>{{guardian_full_name}}</strong></div>
+        <div>RUT: {{guardian_run}}</div>
+        <div class="muted">EL/LA APODERADO/A Y TRABAJADOR(A)</div>
+      </div>
+      <div class="sigbox">
+        <div><strong>Orlando Bórquez Domingo</strong></div>
+        <div>RUT: 7.269.437-6</div>
+        <div class="muted">p.p. CORPORACIÓN EDUCACIONAL WINTERHILL (RUT: 65.152.884-4)</div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

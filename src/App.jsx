@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
+import { GuardianProvider } from './contexts/GuardianContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
@@ -25,6 +26,7 @@ import { GuardianIntakePage } from './pages/guardian/GuardianIntakePage';
 import RepactacionWizard from './components/repactacion/RepactacionWizard';
 import { GuardianWelcomePage } from './pages/guardian/GuardianWelcomePage';
 import GuardianPortalPage from './pages/guardian/GuardianPortalPage';
+import GuardianEnrollmentPage from './pages/guardian/GuardianEnrollmentPage';
 import { useAuth } from './contexts/AuthContext';
 
 // Dynamic root redirect based on role
@@ -72,7 +74,16 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
           {/* Protected routes that require authentication */}
-          <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+          <Route
+            path="/"
+            element={(
+              <ProtectedRoute>
+                <GuardianProvider>
+                  <MainLayout />
+                </GuardianProvider>
+              </ProtectedRoute>
+            )}
+          >
             {/* Root redirect: guardian -> bienvenida, others -> dashboard */}
             <Route index element={<RootRedirect />} />
 
@@ -90,6 +101,7 @@ export default function App() {
             <Route path="apoderado/encuesta" element={<GuardianIntakePage />} />
             <Route path="apoderado/bienvenido" element={<GuardianWelcomePage />} />
             <Route path="apoderado/portal" element={<GuardianPortalPage />} />
+            <Route path="apoderado/matricula" element={<GuardianEnrollmentPage />} />
           </Route>
         </Routes>
         <Toaster position="top-right" />

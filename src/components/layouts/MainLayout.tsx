@@ -29,11 +29,22 @@ export function MainLayout() {
       if (restrictedForGuardian.has(page)) {
         page = 'dashboard';
       }
-      // Force dashboard menu to guardian welcome page
       if (page === 'dashboard') {
         setCurrentPage('dashboard');
         setIsSidebarOpen(false);
         navigate('/apoderado/bienvenido');
+        return;
+      }
+      if (page === 'payments') {
+        setCurrentPage('payments');
+        setIsSidebarOpen(false);
+        navigate('/apoderado/portal');
+        return;
+      }
+      if (page === 'matricula') {
+        setCurrentPage('matricula');
+        setIsSidebarOpen(false);
+        navigate('/apoderado/matricula');
         return;
       }
     }

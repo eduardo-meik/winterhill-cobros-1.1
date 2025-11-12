@@ -19,6 +19,125 @@ export interface PDFGenerationOptions {
     keywords?: string;
     creator?: string;
   };
+  assetBaseUrl?: string;
+}
+
+const PDF_ENGINE = (import.meta.env?.VITE_PDF_ENGINE || '').toLowerCase();
+const DEFAULT_PDF_SERVICE_URL = import.meta.env?.VITE_PDF_SERVICE_URL || '/api/render-pdf';
+const PDF_SERVICE_TIMEOUT_MS = Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '25000');
+
+type RemoteMarginPayload =
+  | number
+  | {
+      top?: number;
+      right?: number;
+      bottom?: number;
+      left?: number;
+    };
+
+interface RemotePDFRequest {
+  html: string;
+  assetBaseUrl?: string;
+  options: {
+    format: string;
+    landscape: boolean;
+    margin: RemoteMarginPayload;
+    printBackground: boolean;
+  };
+  metadata?: PDFGenerationOptions['metadata'];
+  watermark?: string;
+  guardianRun?: string;
+  folioNumber?: string;
+  includeHeader?: boolean;
+  includeSignatureSection?: boolean;
+}
+
+export async function generatePDFFromHTML(options: PDFGenerationOptions): Promise<Blob> {
+  if (PDF_ENGINE === 'puppeteer') {
+    try {
+      return await generatePuppeteerPDFFromHTML(options);
+    } catch (error) {
+      console.error('[pdfGenerator] Puppeteer pipeline failed, falling back to browser renderer', error);
+    }
+  }
+  return generateClientPDFFromHTML(options);
+}
+
+function resolveAssetBaseUrl(candidate?: string): string | undefined {
+  const trimmed = candidate?.trim();
+  if (trimmed && /^https?:\/\//i.test(trimmed)) {
+    return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+  }
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    const origin = window.location.origin;
+    return origin.endsWith('/') ? origin : `${origin}/`;
+  }
+
+  return undefined;
+}
+
+function buildRemotePayload(options: PDFGenerationOptions): RemotePDFRequest {
+  const {
+    htmlContent,
+    orientation = 'portrait',
+    format = 'a4',
+    margin = 20,
+    includeHeader = true,
+    includeSignatureSection = true,
+    watermark,
+    guardianRun,
+    folioNumber,
+    metadata,
+    assetBaseUrl,
+  } = options;
+
+  if (!htmlContent || typeof htmlContent !== 'string') {
+    throw new Error('Se requiere htmlContent para generar el PDF');
+  }
+
+  return {
+    html: htmlContent,
+    assetBaseUrl: resolveAssetBaseUrl(assetBaseUrl),
+    options: {
+      format: format.toUpperCase(),
+      landscape: orientation === 'landscape',
+      margin,
+      printBackground: true,
+    },
+    metadata,
+    watermark,
+    guardianRun,
+    folioNumber,
+    includeHeader,
+    includeSignatureSection,
+  };
+}
+
+async function generatePuppeteerPDFFromHTML(options: PDFGenerationOptions): Promise<Blob> {
+  const serviceUrl = (import.meta.env?.VITE_PDF_SERVICE_URL || '').trim() || DEFAULT_PDF_SERVICE_URL;
+  const payload = buildRemotePayload(options);
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timeoutId = controller ? window.setTimeout(() => controller.abort(), PDF_SERVICE_TIMEOUT_MS) : null;
+
+  try {
+    const response = await fetch(serviceUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller?.signal,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`Remote PDF service error: ${response.status} ${errorText}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    return new Blob([arrayBuffer], { type: 'application/pdf' });
+  } finally {
+    if (timeoutId) window.clearTimeout(timeoutId);
+  }
 }
 
 /**
@@ -199,7 +318,7 @@ function addPageNumbers(pdf: jsPDF, pageWidth: number, pageHeight: number) {
 /**
  * Generate PDF from HTML content with professional styling
  */
-export async function generatePDFFromHTML(
+async function generateClientPDFFromHTML(
   options: PDFGenerationOptions
 ): Promise<Blob> {
   const {

@@ -38,7 +38,9 @@ python_tool/
 .copilot/
 
 # Contract documents
-contratos/
+#contratos/
 
 # Prompt engineering and schema files
 prompt/
+
+.vercel

@@ -1,0 +1,21 @@
+PAGARÉ COLEGIO WINTERHILL VIÑA DEL MAR
+
+MONTO CAPITAL ADEUDADO $ {{colegiatura_anual}}
+
+Yo, {{guardian_full_name}} RUT: {{guardian_run}} mayor de edad, con domicilio: {{guardian_address}}, Comuna de {{guardian_commune}}, Ciudad de {{guardian_city}}., fono, {{guardian_fono}}, mail {{guardian_email}} declaro:
+
+Que, debo y pagaré, a la orden de Corporación Educacional Winterhill, RUT 65.152.884-4, sostenedora del Colegio Winterhill, con domicilio en Pasaje Anwandter N° 31, Viña del Mar, por concepto de colegiatura, la suma indicada precedentemente, en {{cantidad_cuotas}} cuotas mensuales, iguales y sucesivas, los días {{dia_vencimiento}} de cada mes, a contar del mes de marzo, del año {{year}} enterando la suma mensual de ${{monto_cuota}}.- ({{monto_cuota_texto}}), hasta completar el capital adeudado.
+
+Que, para todos los efectos derivados de este pagaré, expresamente, libero al sostenedor de la obligación de protesto y constituyo domicilio en la ciudad y Comuna de Viña del Mar, sometiéndose a la competencia de sus Tribunales de Justicia.
+
+El Impuesto de Timbres y Estampillas que grave este documento se paga por ingreso de dinero en Tesorerías, según D.L. 3475 Art. 15 N° 2.
+
+Que, con el objeto de dar cumplimiento a la Ley 19.628, sobre protección de datos de carácter personal, como suscriptor del presente pagaré, faculto irrevocablemente a Corporación Educacional Winterhill, para que pueda dar a conocer la morosidad, simple retardo o protesto, en el pago de la obligación que por este instrumento se contrae, en mi calidad de suscriptor y principal obligado al pago, proporcionando dicha información a cualquier registro o banco de datos personales, tales como el Boletín Comercial de la Cámara de Comercio de Santiago, Equifax S.A., Datacred, entre otras, con el objeto de que sea divulgado, relevando a Corporación Educacional Winterhill de cualquier responsabilidad que se pueda derivar de la publicación de dicha información.
+
+Todas las obligaciones derivadas de este pagaré se considerarán indivisibles para el deudor, sus herederos y/o sucesores, para todos los efectos legales y en especial aquellos contemplados en los artículos 1526 número 4 y 1528 del Código Civil.
+
+VIÑA DEL MAR, {{fecha_actual}}
+
+SUSCRIPTOR (firma)
+
+SUSCRIPTOR : {{guardian_full_name}} RUT : {{guardian_run}} DOMICILIO : {{guardian_address}}, Comuna de {{guardian_commune}}, Ciudad de {{guardian_city}} ALUMNO (A)S : {{students_list}}

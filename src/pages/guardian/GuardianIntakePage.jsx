@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { fetchCurrentIntake, saveIntakeDraft, submitIntake } from '../../services/guardianIntake';
 import { normalizeRun, validateRun, formatRunDisplay } from '../../utils/rut';
-import { fetchCurrentGuardian, getOrCreateEnrollment, listEnrollmentStudents, fetchGuardianStudents } from '../../services/matricula';
-import { supabase } from '../../services/supabase';
+import { useGuardianData } from '../../contexts/GuardianContext';
 
 // Basic required fields for validation before submit
 const REQUIRED_FIELDS = [
@@ -20,6 +20,78 @@ const REQUIRED_FIELDS = [
   'student_course',
   'student_birth_date'
 ];
+
+const EMPTY_FORM = {
+  guardian_first_name: '',
+  guardian_last_name_paterno: '',
+  guardian_last_name_materno: '',
+  guardian_relationship: '',
+  guardian_rut: '',
+  guardian_education_level: '',
+  guardian_address: '',
+  guardian_commune: '',
+  guardian_email: '',
+  guardian_phone: '',
+  student_first_names: '',
+  student_last_name_paterno: '',
+  student_last_name_materno: '',
+  student_run: '',
+  student_course: '',
+  student_birth_date: '',
+  student_nationality: '',
+  student_gender: '',
+  student_social_name: '',
+  student_enrollment_date: '',
+  student_previous_institution: '',
+  student_address: '',
+  student_commune: '',
+  student_lives_with: [],
+  alt_contact_name: '',
+  alt_contact_phone: '',
+  scholarship_percentage: '',
+  payment_form_prioritario: false,
+  payment_form_cheques: false,
+  payment_form_pagare: false,
+  payment_form_credit_card: false,
+  payment_form_transfer: false,
+  payment_form_planilla: false,
+  financial_institution: ''
+};
+
+const ARRAY_FIELDS = ['student_lives_with'];
+const BOOLEAN_FIELDS = [
+  'payment_form_prioritario',
+  'payment_form_cheques',
+  'payment_form_pagare',
+  'payment_form_credit_card',
+  'payment_form_transfer',
+  'payment_form_planilla'
+];
+const NUMERIC_STRING_FIELDS = ['scholarship_percentage'];
+
+const normalizeForm = (raw = {}) => {
+  const normalized = { ...EMPTY_FORM };
+  Object.keys(EMPTY_FORM).forEach((key) => {
+    const defaultValue = EMPTY_FORM[key];
+    const value = Object.prototype.hasOwnProperty.call(raw, key) ? raw[key] : defaultValue;
+    if (ARRAY_FIELDS.includes(key)) {
+      if (Array.isArray(value)) {
+        normalized[key] = value.map((v) => (v == null ? '' : String(v).trim())).filter(Boolean);
+      } else if (typeof value === 'string') {
+        normalized[key] = value.split(/[,|;]/).map((v) => v.trim()).filter(Boolean);
+      } else {
+        normalized[key] = [];
+      }
+    } else if (BOOLEAN_FIELDS.includes(key)) {
+      normalized[key] = Boolean(value);
+    } else if (NUMERIC_STRING_FIELDS.includes(key)) {
+      normalized[key] = value === null || value === undefined ? '' : String(value);
+    } else {
+      normalized[key] = value === null || value === undefined ? '' : String(value);
+    }
+  });
+  return normalized;
+};
 
 function Section({ title, children }) {
   return (
@@ -40,7 +112,9 @@ function Field({ label, children, required }) {
 }
 
 export const GuardianIntakePage = () => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { data: bootstrapData, loading: bootstrapLoading, refresh: refreshGuardianData } = useGuardianData();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -48,192 +122,174 @@ export const GuardianIntakePage = () => {
   const [errors, setErrors] = useState({});
   const autosaveTimer = useRef(null);
   const lastSavedSnapshot = useRef(null);
-  const [form, setForm] = useState(() => ({
-    guardian_first_name: '',
-    guardian_last_name_paterno: '',
-    guardian_last_name_materno: '',
-    guardian_relationship: '',
-    guardian_rut: '',
-    guardian_education_level: '',
-    guardian_address: '',
-    guardian_commune: '',
-    guardian_email: '',
-    guardian_phone: '',
-    student_first_names: '',
-    student_last_name_paterno: '',
-    student_last_name_materno: '',
-    student_run: '',
-    student_course: '',
-    student_birth_date: '',
-    student_nationality: '',
-    student_gender: '',
-    student_social_name: '',
-    student_enrollment_date: '',
-    student_previous_institution: '',
-    student_address: '',
-    student_commune: '',
-    student_lives_with: [],
-    alt_contact_name: '',
-    alt_contact_phone: '',
-    scholarship_percentage: '',
-    payment_form_prioritario: false,
-    payment_form_cheques: false,
-    payment_form_pagare: false,
-    payment_form_credit_card: false,
-    payment_form_transfer: false,
-    payment_form_planilla: false,
-    financial_institution: ''
-  }));
+  const [form, setForm] = useState(() => normalizeForm());
+  const initializedRef = useRef(false);
 
-  // Helper to prefill missing fields from guardian/student (NO profiles needed)
-  const applyPrefillFallbacks = async (baseForm) => {
-    let updated = { ...baseForm };
-    try {
-      // Guardian record prefill - única fuente de verdad
-      const guardian = await fetchCurrentGuardian(user.id).catch(() => null);
-      if (guardian) {
-        if (!updated.guardian_rut && guardian.run) updated.guardian_rut = formatRunDisplay(guardian.run);
-        if (!updated.guardian_address && guardian.address) updated.guardian_address = guardian.address;
-        if (!updated.guardian_phone && guardian.phone) updated.guardian_phone = guardian.phone;
-        if (!updated.guardian_email && guardian.email) updated.guardian_email = guardian.email;
-        if (!updated.guardian_commune && guardian.comuna) updated.guardian_commune = guardian.comuna;
-        
-        // Names from guardian
-        const firstName = guardian.first_name || '';
-        const lastName = guardian.last_name || '';
-        if (!updated.guardian_first_name && firstName) updated.guardian_first_name = firstName;
-        if (!updated.guardian_last_name_paterno && lastName) {
-          const tokens = lastName.trim().split(/\s+/);
-          updated.guardian_last_name_paterno = tokens[0] || lastName;
-          if (!updated.guardian_last_name_materno && tokens.length > 1) {
-            updated.guardian_last_name_materno = tokens.slice(1).join(' ');
-          }
-        }
-        
-        // Relationship: prefer family_tie, then relationship_type
-        if (!updated.guardian_relationship) {
-          updated.guardian_relationship = guardian.family_tie || guardian.relationship_type || '';
-        }
-
-        // Prefill from first linked student via student_guardian
-        const linkedStudents = await fetchGuardianStudents(guardian.id).catch(() => []);
-        if (linkedStudents && linkedStudents.length) {
-          const s = linkedStudents[0];
-          
-          // Student names
-          if (!updated.student_first_names && s.first_name) {
-            updated.student_first_names = s.first_name;
-          }
-          if (!updated.student_last_name_paterno && s.last_name) {
-            const tokens = (s.last_name || '').trim().split(/\s+/).filter(Boolean);
-            updated.student_last_name_paterno = tokens[0] || '';
-            if (!updated.student_last_name_materno && tokens.length > 1) {
-              updated.student_last_name_materno = tokens.slice(1).join(' ');
-            }
-          }
-          
-          // Student RUN
-          if (!updated.student_run && s.run) {
-            updated.student_run = formatRunDisplay(s.run);
-          }
-          
-          // Student course
-          if (!updated.student_course && s.curso_label) {
-            updated.student_course = s.curso_label;
-          }
-          
-          // Student birth date
-          if (!updated.student_birth_date && s.date_of_birth) {
-            updated.student_birth_date = s.date_of_birth;
-          }
-          
-          // Optional extras
-          if (!updated.student_nationality && s.nacionalidad) updated.student_nationality = s.nacionalidad;
-          if (!updated.student_gender && s.genero) updated.student_gender = s.genero;
-          if (!updated.student_social_name && s.nombre_social) updated.student_social_name = s.nombre_social;
-          if (!updated.student_address && s.direccion) updated.student_address = s.direccion;
-          if (!updated.student_commune && s.comuna) updated.student_commune = s.comuna;
-          if (!updated.student_previous_institution && s.institucion_procedencia) {
-            updated.student_previous_institution = s.institucion_procedencia;
-          }
-          if (!updated.student_lives_with && s.convive_con) {
-            // Split on common delimiters if stored as text
-            const livesWithTokens = (s.convive_con || '').split(/[,|;]/).map(t => t.trim()).filter(Boolean);
-            if (livesWithTokens.length) updated.student_lives_with = livesWithTokens;
-          }
+  const applyPrefillFallbacks = useCallback((baseForm) => {
+    let updated = normalizeForm(baseForm);
+    const guardian = bootstrapData?.guardian;
+    if (guardian) {
+      if (!updated.guardian_rut && guardian.run) updated.guardian_rut = formatRunDisplay(guardian.run);
+      if (!updated.guardian_address && guardian.address) updated.guardian_address = guardian.address;
+      if (!updated.guardian_phone && guardian.phone) updated.guardian_phone = guardian.phone;
+      if (!updated.guardian_email && guardian.email) updated.guardian_email = guardian.email;
+      if (!updated.guardian_commune && guardian.comuna) updated.guardian_commune = guardian.comuna;
+      const firstName = guardian.first_name || '';
+      const lastName = guardian.last_name || '';
+      if (!updated.guardian_first_name && firstName) updated.guardian_first_name = firstName;
+      if (!updated.guardian_last_name_paterno && lastName) {
+        const tokens = lastName.trim().split(/\s+/);
+        updated.guardian_last_name_paterno = tokens[0] || lastName;
+        if (!updated.guardian_last_name_materno && tokens.length > 1) {
+          updated.guardian_last_name_materno = tokens.slice(1).join(' ');
         }
       }
-    } catch (e) {
-      console.warn('applyPrefillFallbacks failed', e);
+      if (!updated.guardian_relationship) {
+        updated.guardian_relationship = guardian.family_tie || guardian.relationship_type || '';
+      }
     }
-    return updated;
-  };
+
+    const student = bootstrapData?.students?.[0];
+    if (student) {
+      if (!updated.student_first_names && student.first_name) {
+        updated.student_first_names = student.first_name;
+      }
+      if (!updated.student_last_name_paterno && student.last_name) {
+        const tokens = (student.last_name || '').trim().split(/\s+/).filter(Boolean);
+        updated.student_last_name_paterno = tokens[0] || '';
+        if (!updated.student_last_name_materno && tokens.length > 1) {
+          updated.student_last_name_materno = tokens.slice(1).join(' ');
+        }
+      }
+      if (!updated.student_run && student.run) {
+        updated.student_run = formatRunDisplay(student.run);
+      }
+      if (!updated.student_course && student.curso_label) {
+        updated.student_course = student.curso_label;
+      }
+      if (!updated.student_birth_date && student.date_of_birth) {
+        updated.student_birth_date = student.date_of_birth;
+      }
+      if (!updated.student_nationality && student.nacionalidad) updated.student_nationality = student.nacionalidad;
+      if (!updated.student_gender && student.genero) updated.student_gender = student.genero;
+      if (!updated.student_social_name && student.nombre_social) updated.student_social_name = student.nombre_social;
+      if (!updated.student_address && student.direccion) updated.student_address = student.direccion;
+      if (!updated.student_commune && student.comuna) updated.student_commune = student.comuna;
+      if (!updated.student_previous_institution && student.institucion_procedencia) {
+        updated.student_previous_institution = student.institucion_procedencia;
+      }
+      if (!updated.student_lives_with.length && student.convive_con) {
+        updated.student_lives_with = student.convive_con
+          .split(/[,|;]/)
+          .map((token) => token.trim())
+          .filter(Boolean);
+      }
+    }
+
+    return normalizeForm(updated);
+  }, [bootstrapData]);
 
   // load existing draft
   useEffect(() => {
     let ignore = false;
     const load = async () => {
-      if (!user) return;
+      if (!user || bootstrapLoading || initializedRef.current) return;
       setLoading(true);
       try {
         const existing = await fetchCurrentIntake();
-        if (!ignore) {
-          if (existing) {
-            setStatus(existing.status);
-            // Merge existing first, then apply prefill for any missing fields
-            const merged = await applyPrefillFallbacks({ ...form, ...existing, scholarship_percentage: existing.scholarship_percentage ?? '' });
-            setForm(merged);
-          } else {
-            const merged = await applyPrefillFallbacks(form);
-            setForm(merged);
-          }
+        if (ignore) return;
+        const intakeSource = existing || bootstrapData?.intake || null;
+        if (intakeSource) {
+          setStatus(intakeSource.status ?? 'draft');
         }
+        const merged = normalizeForm({
+          ...EMPTY_FORM,
+          ...(intakeSource || {}),
+          scholarship_percentage: intakeSource?.scholarship_percentage ?? ''
+        });
+        const prefilled = applyPrefillFallbacks(merged);
+        setForm(prefilled);
+        lastSavedSnapshot.current = JSON.stringify(prefilled);
+        initializedRef.current = true;
       } catch (e) {
         toast.error('Error cargando encuesta');
       } finally {
         if (!ignore) setLoading(false);
-        if (!ignore) lastSavedSnapshot.current = JSON.stringify(form);
       }
     };
     load();
     return () => { ignore = true; };
-  }, [user]); // Removed profile dependency - not needed
+  }, [user, bootstrapLoading, bootstrapData, applyPrefillFallbacks]);
 
   const updateField = (name, value) => {
-    setForm(prev => ({ ...prev, [name]: value }));
-    // schedule autosave if changed relevant field (only after initial load)
-    if (status === 'submitted') return;
-    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
-    autosaveTimer.current = setTimeout(() => {
-      // avoid saving if no change
-      const snapshot = JSON.stringify({ ...form, [name]: value });
-      if (snapshot === lastSavedSnapshot.current) return;
-      doSave(true); // silent autosave
-    }, 1200);
-  };
-
-  const toggleLivesWith = (option) => {
-    setForm(prev => {
-      const current = new Set(prev.student_lives_with || []);
-      if (current.has(option)) current.delete(option); else current.add(option);
-      return { ...prev, student_lives_with: Array.from(current) };
+    setForm((prev) => {
+      const next = normalizeForm({ ...prev, [name]: value });
+      if (status !== 'submitted') {
+        if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+        autosaveTimer.current = setTimeout(() => {
+          autosaveTimer.current = null;
+          const snapshot = JSON.stringify(next);
+          if (snapshot === lastSavedSnapshot.current) return;
+          doSave(true, next);
+        }, 1200);
+      }
+      return next;
     });
   };
 
-  const doSave = useCallback(async (silent = false) => {
+  const toggleLivesWith = (option) => {
+    setForm((prev) => {
+      const current = new Set(prev.student_lives_with || []);
+      if (current.has(option)) current.delete(option); else current.add(option);
+      const next = normalizeForm({ ...prev, student_lives_with: Array.from(current) });
+      if (status !== 'submitted') {
+        if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+        autosaveTimer.current = setTimeout(() => {
+          autosaveTimer.current = null;
+          const snapshot = JSON.stringify(next);
+          if (snapshot === lastSavedSnapshot.current) return;
+          doSave(true, next);
+        }, 1200);
+      }
+      return next;
+    });
+  };
+
+  const doSave = useCallback(async (silent = false, nextFormState = null) => {
     setSaving(true);
     try {
-      const payload = { ...form, scholarship_percentage: form.scholarship_percentage === '' ? null : Number(form.scholarship_percentage) };
+      const currentForm = nextFormState ? normalizeForm(nextFormState) : form;
+      const payload = {
+        ...currentForm,
+        scholarship_percentage: currentForm.scholarship_percentage === ''
+          ? null
+          : Number(currentForm.scholarship_percentage)
+      };
       const saved = await saveIntakeDraft(payload);
       setStatus(saved.status);
-      lastSavedSnapshot.current = JSON.stringify(saved);
+      const normalizedSaved = normalizeForm({
+        ...currentForm,
+        ...saved,
+        scholarship_percentage: saved?.scholarship_percentage ?? currentForm.scholarship_percentage
+      });
+      lastSavedSnapshot.current = JSON.stringify(normalizedSaved);
+      setForm(normalizedSaved);
       if (!silent) toast.success('Borrador guardado');
     } catch (e) {
       if (!silent) toast.error('Error guardando');
     } finally {
       setSaving(false);
-    }
-  }, [form]);
+      }
+    }, [form]);
+
+    useEffect(() => {
+      return () => {
+        if (autosaveTimer.current) {
+          clearTimeout(autosaveTimer.current);
+          autosaveTimer.current = null;
+        }
+      };
+    }, []);
 
   // Validate required + RUTs
   useEffect(() => {
@@ -269,6 +325,8 @@ export const GuardianIntakePage = () => {
       await submitIntake();
       setStatus('submitted');
       toast.success('Encuesta enviada');
+      await refreshGuardianData({ force: true });
+      navigate('/apoderado/matricula', { replace: true });
     } catch (e) {
       toast.error('Error al enviar');
     } finally {
