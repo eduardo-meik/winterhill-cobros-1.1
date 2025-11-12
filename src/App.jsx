@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { GuardianProvider } from './contexts/GuardianContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { StaffRoute } from './components/auth/StaffRoute';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { GuardianRegisterPage } from './pages/auth/GuardianRegisterPage';
@@ -44,22 +45,6 @@ export function RootRedirect() {
   return <Navigate to="/dashboard" replace />;
 }
 
-export function DashboardRoute() {
-  const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
-      </div>
-    );
-  }
-  const role = (user?.role ?? 'guardian').toLowerCase();
-  if (role === 'guardian') {
-    return <Navigate to="/apoderado/bienvenido" replace />;
-  }
-  return <Dashboard />;
-}
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -90,12 +75,54 @@ export default function App() {
             <Route index element={<RootRedirect />} />
 
             {/* Main application routes */}
-            <Route path="dashboard" element={<DashboardRoute />} />
-            <Route path="students" element={<StudentsPage />} />
-            <Route path="guardians" element={<GuardiansPage />} />
-            <Route path="payments" element={<PaymentsPage />} />
-            <Route path="reporting" element={<ReportingPage />} />
-            <Route path="assistant" element={<AssistantPage />} />
+            <Route
+              path="dashboard"
+              element={(
+                <StaffRoute>
+                  <Dashboard />
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="students"
+              element={(
+                <StaffRoute>
+                  <StudentsPage />
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="guardians"
+              element={(
+                <StaffRoute>
+                  <GuardiansPage />
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="payments"
+              element={(
+                <StaffRoute>
+                  <PaymentsPage />
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="reporting"
+              element={(
+                <StaffRoute>
+                  <ReportingPage />
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="assistant"
+              element={(
+                <StaffRoute>
+                  <AssistantPage />
+                </StaffRoute>
+              )}
+            />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="matricula" element={<MatriculaWizard />} />

@@ -9,7 +9,7 @@ import clsx from 'clsx';
  * Each item defines an id, icon component, and display text
  */
 const baseMenuItems = [
-  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'asist', 'guardian', undefined] },
+  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'asist', 'guardian'] },
   { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: ['admin', 'asist'] },
   { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin', 'asist'] },
   { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'asist', 'guardian'] },
@@ -32,7 +32,7 @@ const baseMenuItems = [
  */
 export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick, isCollapsed, onToggleCollapse }) {
   const { user } = useAuth();
-  const role = user?.role;
+  const role = (user?.role ?? 'guardian').toLowerCase();
   const { data: guardianData } = useGuardianData();
   const guardianReady = role === 'guardian' && guardianData && guardianData.needsIntake === false;
   // Handle escape key to close mobile sidebar
