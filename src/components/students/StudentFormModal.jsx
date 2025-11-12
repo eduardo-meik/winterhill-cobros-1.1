@@ -259,14 +259,41 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       setSelectedGuardiansInfo([]); // Clear selection after submit
       onClose();
     } catch (error) {
-      console.error('Error:', error);
-      // Mostrar un mensaje de error más específico si es posible
-      const errorMessage = error.message?.includes("violates foreign key constraint")
-        ? "Error: El curso seleccionado no es válido."
-        : error.message?.includes("violates not-null constraint")
-        ? "Error: Faltan campos requeridos."
-        : "Error al guardar el estudiante.";
-      toast.error(errorMessage);
+      // Mejora: mostrar información más útil según el código de error de Postgres/Supabase
+      console.error('Error al registrar/actualizar estudiante:', error);
+
+      // Estructura común de errores de Supabase/PostgREST
+      const code = error?.code || error?.status || '';
+      const msg = (error?.message || '').toString();
+      const details = (error?.details || error?.hint || '').toString();
+
+      let humanMessage = 'Error al guardar el estudiante.';
+
+      // Mapeo por códigos de Postgres habituales
+      // 23505 unique_violation, 23503 foreign_key_violation, 23502 not_null_violation
+      // 42501 insufficient_privilege (incluye violación de RLS)
+      if (code === '23503' || msg.includes('foreign key constraint')) {
+        humanMessage = 'Error: El curso seleccionado no es válido (relación no encontrada).';
+      } else if (code === '23502' || msg.includes('not-null constraint')) {
+        humanMessage = 'Error: Faltan campos requeridos o están vacíos.';
+      } else if (code === '23505' || msg.toLowerCase().includes('duplicate key') || msg.toLowerCase().includes('already exists')) {
+        // RUN duplicado u otra restricción única
+        humanMessage = 'Error: Ya existe un registro con estos datos (verifique RUN o campos únicos).';
+      } else if (code === '42501' || msg.toLowerCase().includes('row-level security') || msg.toLowerCase().includes('rls')) {
+        humanMessage = 'Permisos insuficientes (RLS). Contacte a un administrador para habilitar la acción.';
+      } else if (msg.includes('violates foreign key constraint')) {
+        humanMessage = 'Error: El curso seleccionado no es válido.';
+      } else if (msg.includes('violates not-null constraint')) {
+        humanMessage = 'Error: Faltan campos requeridos.';
+      }
+
+      // Añadir detalles si existen y estamos en entorno de desarrollo
+      const isDev = import.meta?.env?.MODE !== 'production';
+      if (isDev && details) {
+        humanMessage += `\n${details}`;
+      }
+
+      toast.error(humanMessage);
     }
   };
 
