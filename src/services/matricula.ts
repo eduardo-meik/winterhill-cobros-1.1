@@ -94,6 +94,7 @@ let _guardianCache: Record<string, GuardianRecord | null | undefined> = {};
 let _guardianFetchInFlight: Record<string, Promise<GuardianRecord | null> | undefined> = {};
 let _missingEnsureGuardianFn = false;
 let _attemptedAutoCreate: Record<string, boolean> = {};
+let _attemptedManualCreate: Record<string, boolean> = {};
 
 // 1. Fetch guardian for current user (assuming one guardian per owner/user)
 export async function fetchCurrentGuardian(userId: string, userEmail?: string | null): Promise<GuardianRecord | null> {
@@ -126,32 +127,31 @@ export async function fetchCurrentGuardian(userId: string, userEmail?: string | 
       let guardian = data?.[0] || null;
       console.log('🔍 fetchCurrentGuardian: Guardian from query:', guardian);
 
-      if (!guardian && userEmail) {
-        const normalizedEmail = userEmail.trim().toLowerCase();
-        if (normalizedEmail) {
-          console.log('🔍 fetchCurrentGuardian: Attempting email lookup for:', normalizedEmail);
-          const { data: emailMatches, error: emailError } = await supabase
-            .from('guardians')
-            .select('*')
-            .ilike('email', normalizedEmail)
-            .limit(1);
-          if (emailError) {
-            console.error('fetchCurrentGuardian email lookup error', emailError);
-          }
-          guardian = emailMatches?.[0] || null;
-          if (guardian) {
-            console.log('🔍 fetchCurrentGuardian: Found guardian by email:', guardian.id);
-            if (!guardian.owner_id) {
-              const { error: updateError } = await supabase
-                .from('guardians')
-                .update({ owner_id: userId })
-                .eq('id', guardian.id)
-                .is('owner_id', null);
-              if (updateError) {
-                console.warn('🔍 fetchCurrentGuardian: Failed to attach owner_id via email lookup', updateError);
-              } else {
-                guardian = { ...guardian, owner_id: userId };
-              }
+      const normalizedEmail = userEmail?.trim().toLowerCase() || '';
+
+      if (!guardian && normalizedEmail) {
+        console.log('🔍 fetchCurrentGuardian: Attempting email lookup for:', normalizedEmail);
+        const { data: emailMatches, error: emailError } = await supabase
+          .from('guardians')
+          .select('*')
+          .ilike('email', normalizedEmail)
+          .limit(1);
+        if (emailError) {
+          console.error('fetchCurrentGuardian email lookup error', emailError);
+        }
+        guardian = emailMatches?.[0] || null;
+        if (guardian) {
+          console.log('🔍 fetchCurrentGuardian: Found guardian by email:', guardian.id);
+          if (!guardian.owner_id) {
+            const { error: updateError } = await supabase
+              .from('guardians')
+              .update({ owner_id: userId })
+              .eq('id', guardian.id)
+              .is('owner_id', null);
+            if (updateError) {
+              console.warn('🔍 fetchCurrentGuardian: Failed to attach owner_id via email lookup', updateError);
+            } else {
+              guardian = { ...guardian, owner_id: userId };
             }
           }
         }
@@ -182,6 +182,34 @@ export async function fetchCurrentGuardian(userId: string, userEmail?: string | 
           }
         } catch (e) {
           // swallow unexpected errors to avoid loop; guardian stays null
+        }
+      }
+
+      if (!guardian && normalizedEmail && !_attemptedManualCreate[userId]) {
+        _attemptedManualCreate[userId] = true;
+        try {
+          const initialNames = normalizedEmail.split('@')[0]?.split('.') || [];
+          const sanitizedFirst = initialNames[0]?.replace(/[^a-zA-ZÀ-ÿ\s'-]/g, ' ')?.trim();
+          const payload: Partial<GuardianRecord> & { owner_id: string | null; email: string } = {
+            owner_id: userId,
+            email: normalizedEmail,
+            first_name: sanitizedFirst || null,
+          } as any;
+
+          const { data: inserted, error: insertError } = await supabase
+            .from('guardians')
+            .insert(payload)
+            .select('*')
+            .maybeSingle();
+
+          if (insertError) {
+            console.warn('🔍 fetchCurrentGuardian: Manual guardian create failed', insertError);
+          } else if (inserted) {
+            guardian = inserted as GuardianRecord;
+            console.log('🔍 fetchCurrentGuardian: Created guardian placeholder for user:', guardian.id);
+          }
+        } catch (creationError) {
+          console.warn('🔍 fetchCurrentGuardian: Exception during manual guardian create', creationError);
         }
       }
       _guardianCache[userId] = guardian;
