@@ -5,8 +5,12 @@ class Logger {
   private static instance: Logger;
   private readonly MAX_RETRIES = 3;
   private readonly RETRY_DELAY = 1000;
+  private readonly remoteLoggingEnabled: boolean;
+  private remoteLoggingDisabled = false;
 
-  private constructor() {}
+  private constructor() {
+    this.remoteLoggingEnabled = Logger.resolveRemoteLoggingFlag();
+  }
 
   public static getInstance(): Logger {
     if (!Logger.instance) {
@@ -15,7 +19,42 @@ class Logger {
     return Logger.instance;
   }
 
+  private static resolveRemoteLoggingFlag(): boolean {
+    // Remote persistence is opt-in via VITE_ENABLE_REMOTE_LOGGING to avoid unauthorized writes on client sessions.
+    try {
+      const flag = (typeof import.meta !== 'undefined' && (import.meta as any)?.env?.VITE_ENABLE_REMOTE_LOGGING) ?? undefined;
+      if (flag !== undefined) {
+        return String(flag).toLowerCase() === 'true';
+      }
+    } catch {/* ignore */}
+
+    try {
+      const flag = typeof process !== 'undefined' ? process.env?.VITE_ENABLE_REMOTE_LOGGING : undefined;
+      if (flag !== undefined) {
+        return String(flag).toLowerCase() === 'true';
+      }
+    } catch {/* ignore */}
+
+    return false;
+  }
+
+  private shouldDisableRemoteLogging(error: unknown): boolean {
+    if (!error) return false;
+    const status = (error as any)?.status ?? (error as any)?.code;
+    const message = typeof (error as any)?.message === 'string' ? (error as any).message.toLowerCase() : '';
+    if (status === 401 || status === '401' || status === 'PGRST401') return true;
+    if (status === '42501') return true;
+    if (message.includes('permission denied') || message.includes('not authorized') || message.includes('unauthorized')) {
+      return true;
+    }
+    return false;
+  }
+
   private async persistLog(entry: LogEntry): Promise<void> {
+    if (!this.remoteLoggingEnabled || this.remoteLoggingDisabled) {
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('auth_logs') 
@@ -27,10 +66,21 @@ class Logger {
           metadata: entry.metadata
         }]);
 
-      if (error) throw error;
+      if (error) {
+        if (this.shouldDisableRemoteLogging(error)) {
+          this.remoteLoggingDisabled = true;
+          return;
+        }
+        throw error;
+      }
     } catch (error) {
+      if (this.shouldDisableRemoteLogging(error)) {
+        this.remoteLoggingDisabled = true;
+        return;
+      }
       console.error('Failed to persist log:', error);
       // En producción, aquí podríamos enviar el error a un servicio de monitoreo
+      throw error;
     }
   }
 
