@@ -39,7 +39,8 @@ export function RootRedirect() {
       </div>
     );
   }
-  if (user?.role && user.role.toLowerCase() === 'guardian') return <Navigate to="/apoderado/bienvenido" replace />;
+  const role = (user?.role ?? 'guardian').toLowerCase();
+  if (role === 'guardian') return <Navigate to="/apoderado/bienvenido" replace />;
   return <Navigate to="/dashboard" replace />;
 }
 
@@ -52,7 +53,8 @@ export function DashboardRoute() {
       </div>
     );
   }
-  if (user?.role && user.role.toLowerCase() === 'guardian') {
+  const role = (user?.role ?? 'guardian').toLowerCase();
+  if (role === 'guardian') {
     return <Navigate to="/apoderado/bienvenido" replace />;
   }
   return <Dashboard />;

@@ -14,18 +14,19 @@ export function MainLayout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { checking } = useGuardianIntakeGate();
+  const normalizedRole = (user?.role ?? 'guardian').toLowerCase();
 
   const restrictedForGuardian = new Set(['students','guardians','reporting','assistant']);
 
   useEffect(() => {
-  if (user?.role && user.role.toLowerCase() === 'guardian' && restrictedForGuardian.has(currentPage)) {
+    if (normalizedRole === 'guardian' && restrictedForGuardian.has(currentPage)) {
       navigate('/apoderado/bienvenido', { replace: true });
       setCurrentPage('dashboard');
     }
-  }, [user?.role, currentPage, navigate]);
+  }, [normalizedRole, currentPage, navigate]);
 
   const handleMenuItemClick = (page: string) => {
-  if (user?.role && user.role.toLowerCase() === 'guardian') {
+    if (normalizedRole === 'guardian') {
       if (restrictedForGuardian.has(page)) {
         page = 'dashboard';
       }

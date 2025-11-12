@@ -26,10 +26,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string, profile?: string): LocalUser | null => {
     if (!supabaseUser) return null;
     // Normalize role to lowercase to avoid casing mismatches (e.g. 'GUARDIAN' vs 'guardian').
-    const normalizedRole = role ? role.toLowerCase() : undefined;
+  const normalizedRole = role ? String(role).toLowerCase() : undefined;
+  const recognizedRole = normalizedRole && ['admin', 'asist', 'guardian'].includes(normalizedRole) ? normalizedRole : undefined;
+  const finalRole = recognizedRole ?? 'guardian';
     // Derive profile from role if not explicitly provided (profile column no longer exists)
     const derivedProfile = (profile || (() => {
-      const r = (role || '').toUpperCase();
+      const r = (normalizedRole ?? finalRole).toUpperCase();
       if (r === 'ADMIN') return 'ADMIN';
       if (r === 'ASIST') return 'ASIST';
       return 'READONLY';
@@ -39,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       email: supabaseUser.email || '',
       created_at: supabaseUser.created_at,
       updated_at: supabaseUser.updated_at || supabaseUser.created_at,
-      role: normalizedRole,
+      role: finalRole,
       profile: derivedProfile,
     };
   };
@@ -58,8 +60,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile data: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
       }
 
-      const roleLower = profileData?.role ? String(profileData.role).toLowerCase() : undefined;
-      const roleUpper = profileData?.role ? String(profileData.role).toUpperCase() : undefined;
+      if (!profileData?.role) {
+        return {
+          role: 'guardian',
+          profile: 'READONLY',
+        };
+      }
+
+      const roleLowerRaw = profileData?.role ? String(profileData.role).toLowerCase() : undefined;
+      const roleLower = roleLowerRaw && ['admin', 'asist', 'guardian'].includes(roleLowerRaw) ? roleLowerRaw : 'guardian';
+      const roleUpper = roleLower.toUpperCase();
       const derivedProfile = roleUpper === 'ADMIN' || roleUpper === 'ASIST' ? roleUpper : 'READONLY';
       return {
         role: roleLower,
