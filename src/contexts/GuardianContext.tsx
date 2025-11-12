@@ -57,7 +57,7 @@ export function GuardianProvider({ children }: GuardianProviderProps) {
     }
     setError(null);
 
-    const request = fetchGuardianBootstrap(user.id)
+  const request = fetchGuardianBootstrap(user.id, user.email)
       .then((result) => {
         setData(result);
         initializedRef.current = true;
@@ -77,7 +77,7 @@ export function GuardianProvider({ children }: GuardianProviderProps) {
 
     inFlightRef.current = request;
     return request;
-  }, [user?.id, user?.role]);
+  }, [user?.id, user?.role, user?.email]);
 
   useEffect(() => {
     initializedRef.current = false;

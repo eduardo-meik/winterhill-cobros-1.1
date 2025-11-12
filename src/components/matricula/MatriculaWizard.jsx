@@ -159,7 +159,7 @@ export function MatriculaWizard() {
           g = assistedGuardian;
         } else {
           console.log('🔍 MatriculaWizard: Loading guardian for user:', user.id);
-          g = await fetchCurrentGuardian(user.id);
+          g = await fetchCurrentGuardian(user.id, user.email);
           console.log('🔍 MatriculaWizard: Guardian fetched:', g);
           if (!g) {
             setError('No se encontró registro de apoderado. Por favor contacte al administrador para crear su perfil.');

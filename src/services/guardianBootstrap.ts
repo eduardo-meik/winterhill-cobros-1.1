@@ -381,7 +381,7 @@ async function fetchGuardianFees(studentIds: string[]): Promise<GuardianFeeRecor
   }
 }
 
-export async function fetchGuardianBootstrap(userId: string): Promise<GuardianBootstrapData | null> {
+export async function fetchGuardianBootstrap(userId: string, userEmail?: string | null): Promise<GuardianBootstrapData | null> {
   if (!userId) return null;
 
   try {
@@ -396,7 +396,7 @@ export async function fetchGuardianBootstrap(userId: string): Promise<GuardianBo
     console.warn('[guardianBootstrap] RPC guardian_portal_bootstrap failed, using fallback', error);
   }
 
-  const guardian = await fetchCurrentGuardian(userId);
+  const guardian = await fetchCurrentGuardian(userId, userEmail ?? undefined);
   if (!guardian?.id) {
     return finalizePayload({ guardian, students: [], enrollmentDocuments: [], enrollmentStudentIds: [], fees: [], enrollment: null, intake: null });
   }

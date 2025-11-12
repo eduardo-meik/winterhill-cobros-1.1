@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 // Types (lightweight to avoid adding global type deps now)
 export interface GuardianRecord {
   id: string;
-  owner_id: string;
+  owner_id: string | null;
   first_name?: string;
   last_name?: string;
   run?: string;
@@ -96,8 +96,8 @@ let _missingEnsureGuardianFn = false;
 let _attemptedAutoCreate: Record<string, boolean> = {};
 
 // 1. Fetch guardian for current user (assuming one guardian per owner/user)
-export async function fetchCurrentGuardian(userId: string): Promise<GuardianRecord | null> {
-  console.log('🔍 fetchCurrentGuardian called with userId:', userId);
+export async function fetchCurrentGuardian(userId: string, userEmail?: string | null): Promise<GuardianRecord | null> {
+  console.log('🔍 fetchCurrentGuardian called with userId:', userId, 'userEmail:', userEmail);
   if (!userId) return null;
   if (_guardianCache[userId] !== undefined) {
     console.log('🔍 fetchCurrentGuardian: Returning from cache:', _guardianCache[userId]);
@@ -125,6 +125,37 @@ export async function fetchCurrentGuardian(userId: string): Promise<GuardianReco
       }
       let guardian = data?.[0] || null;
       console.log('🔍 fetchCurrentGuardian: Guardian from query:', guardian);
+
+      if (!guardian && userEmail) {
+        const normalizedEmail = userEmail.trim().toLowerCase();
+        if (normalizedEmail) {
+          console.log('🔍 fetchCurrentGuardian: Attempting email lookup for:', normalizedEmail);
+          const { data: emailMatches, error: emailError } = await supabase
+            .from('guardians')
+            .select('*')
+            .ilike('email', normalizedEmail)
+            .limit(1);
+          if (emailError) {
+            console.error('fetchCurrentGuardian email lookup error', emailError);
+          }
+          guardian = emailMatches?.[0] || null;
+          if (guardian) {
+            console.log('🔍 fetchCurrentGuardian: Found guardian by email:', guardian.id);
+            if (!guardian.owner_id) {
+              const { error: updateError } = await supabase
+                .from('guardians')
+                .update({ owner_id: userId })
+                .eq('id', guardian.id)
+                .is('owner_id', null);
+              if (updateError) {
+                console.warn('🔍 fetchCurrentGuardian: Failed to attach owner_id via email lookup', updateError);
+              } else {
+                guardian = { ...guardian, owner_id: userId };
+              }
+            }
+          }
+        }
+      }
 
       // Auto-create attempt only if function exists (skip if previously flagged missing)
       if (!guardian && !_missingEnsureGuardianFn && !_attemptedAutoCreate[userId]) {

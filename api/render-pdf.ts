@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import chromium from '@sparticuz/chromium';
 import puppeteerCore, { type Browser } from 'puppeteer-core';
 
-chromium.setHeadlessMode = true;
 chromium.setGraphicsMode = false;
 
 const isDev = process.env.NODE_ENV !== 'production' && !process.env.AWS_REGION;
@@ -58,15 +57,16 @@ async function getBrowser(): Promise<Browser> {
         args: ['--font-render-hinting=none'],
       });
     } else {
+      const executablePath = await chromium.executablePath();
       browserPromise = puppeteerCore.launch({
         args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
+        defaultViewport: null,
+        executablePath,
+        headless: 'shell',
       });
     }
   }
-  return browserPromise;
+  return browserPromise!;
 }
 
 function readRequestBody(req: VercelRequest): Promise<string> {
