@@ -120,6 +120,7 @@ export function MatriculaWizard() {
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [finalizePreview, setFinalizePreview] = useState(null);
   const [skipDocChecks, setSkipDocChecks] = useState(false);
+  const [finalizeAlert, setFinalizeAlert] = useState(null);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -633,6 +634,7 @@ export function MatriculaWizard() {
     if (!enrollment) return;
     try {
       setFinalizing(true);
+      setFinalizeAlert(null);
       const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
       const preview = await finalizeEnrollmentPreview(enrollment.id, opts);
       setFinalizePreview(preview);
@@ -652,10 +654,13 @@ export function MatriculaWizard() {
       const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
       await finalizeEnrollmentConfirm(enrollment.id, opts);
       toast.success('Matrícula confirmada');
+      setFinalizeAlert({ type: 'success', message: 'Matrícula confirmada. Los estudiantes quedan en estado MATRICULADO hasta activar el contrato firmado.' });
       setFinalizeOpen(false);
       setFinalizePreview(null);
     } catch (e) {
       // toast handled in service
+      const message = e?.message || 'No se pudo confirmar la matrícula. Revisa documentos o plan de pago.';
+      setFinalizeAlert({ type: 'warning', message });
     } finally {
       setFinalizing(false);
     }
@@ -1262,6 +1267,18 @@ export function MatriculaWizard() {
                   </div>
                 </div>
 
+                {finalizeAlert && (
+                  <div
+                    className={`p-3 rounded border text-sm ${
+                      finalizeAlert.type === 'success'
+                        ? 'border-green-300 bg-green-50 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-100'
+                        : 'border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-100'
+                    }`}
+                  >
+                    {finalizeAlert.message}
+                  </div>
+                )}
+
                 {/* Action Buttons */}
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <h3 className="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-100">
@@ -1296,7 +1313,7 @@ export function MatriculaWizard() {
                     </Button>
                     <Button 
                       variant="outline" 
-                      onClick={() => { setStep(1); setPreviewHtml(''); setDocumentRecord(null); }}
+                      onClick={() => { setStep(1); setPreviewHtml(''); setDocumentRecord(null); setFinalizeAlert(null); }}
                       disabled={loading}
                     >
                       ✏️ Editar Datos

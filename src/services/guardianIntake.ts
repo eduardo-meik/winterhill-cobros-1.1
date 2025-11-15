@@ -151,3 +151,36 @@ export async function needsIntakeCheck(force = false): Promise<boolean> {
     return true;
   }
 }
+
+// --------------------------------------------------
+// STAFF HELPERS
+// --------------------------------------------------
+
+export async function adminUpsertGuardianIntake(
+  guardianId: string,
+  payload: Record<string, any>,
+  year?: number
+) {
+  if (!guardianId) throw new Error('guardianId required');
+  const processedPayload = { ...payload };
+  if (Array.isArray(processedPayload.student_lives_with)) {
+    processedPayload.student_lives_with = processedPayload.student_lives_with.join('|');
+  }
+  const args: Record<string, any> = {
+    p_guardian_id: guardianId,
+    p_payload: processedPayload,
+  };
+  if (year) args.p_year = year;
+  const { data, error } = await supabase.rpc('admin_upsert_guardian_intake', args);
+  if (error) throw error;
+  return data;
+}
+
+export async function adminSubmitGuardianIntake(guardianId: string, year?: number) {
+  if (!guardianId) throw new Error('guardianId required');
+  const args: Record<string, any> = { p_guardian_id: guardianId };
+  if (year) args.p_year = year;
+  const { data, error } = await supabase.rpc('admin_submit_guardian_intake', args);
+  if (error) throw error;
+  return data;
+}

@@ -5,6 +5,8 @@ import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../../contexts/AuthContext';
+import { adminUpsertGuardianIntake } from '../../services/guardianIntake';
 
 // Default values for a new guardian
 const initialDefaultValues = {
@@ -22,6 +24,9 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
+  const { user } = useAuth();
+  const isStaff = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
+  const [extendToIntake, setExtendToIntake] = useState(isStaff);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: guardian ? guardian : initialDefaultValues // Use guardian data if editing
@@ -34,6 +39,10 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
       reset(initialDefaultValues);
     }
   }, [guardian, reset]);
+
+  useEffect(() => {
+    setExtendToIntake(isStaff);
+  }, [isStaff, guardian]);
 
   const onSubmit = async (data) => {
     try {
@@ -77,11 +86,13 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
         toast.success('Apoderado actualizado exitosamente');
 
       } else { // Otherwise, create a new guardian
+        const { data: authUser } = await supabase.auth.getUser();
+        const ownerId = isStaff ? null : authUser?.user?.id || null;
         const { data: newGuardian, error: insertError } = await supabase
           .from('guardians')
           .insert([{
             ...data,
-            owner_id: (await supabase.auth.getUser()).data.user.id,
+            owner_id: ownerId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }])
@@ -108,6 +119,31 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
             console.error('Error creating student associations:', associationError);
             toast.error('Apoderado creado pero hubo un error al asociar estudiantes');
             // Do not return early, allow success callback and modal close
+          }
+        }
+
+        if (isStaff && extendToIntake && newGuardian) {
+          try {
+            const lastNameRaw = data.last_name?.trim() || '';
+            const lastParts = lastNameRaw.split(/\s+/).filter(Boolean);
+            const paterno = lastParts[0] || lastNameRaw || null;
+            const materno = lastParts.slice(1).join(' ') || null;
+            await adminUpsertGuardianIntake(newGuardian.id, {
+              guardian_first_name: data.first_name,
+              guardian_last_name_paterno: paterno,
+              guardian_last_name_materno: materno,
+              guardian_relationship: data.relationship_type,
+              guardian_rut: data.run,
+              guardian_address: data.address,
+              guardian_commune: data.comuna,
+              guardian_email: data.email,
+              guardian_phone: data.phone,
+              status: 'draft'
+            });
+            toast.success('Encuesta de matrícula inicializada');
+          } catch (intakeError) {
+            console.warn('No se pudo crear la encuesta de matrícula', intakeError);
+            toast.error('Apoderado creado, pero no se pudo preparar la encuesta de matrícula');
           }
         }
         toast.success('Apoderado registrado exitosamente');
@@ -303,6 +339,21 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                       />
                     </div>
                   </div>
+
+                  {!guardian && isStaff && (
+                    <div className="col-span-2 flex items-center gap-3 p-3 border rounded-lg bg-gray-50 dark:bg-dark-hover">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={extendToIntake}
+                          onChange={(e) => setExtendToIntake(e.target.checked)}
+                        />
+                        Extender registro a la encuesta de matrícula
+                      </label>
+                      <p className="text-xs text-gray-500">Creará o actualizará la encuesta anual para este apoderado.</p>
+                    </div>
+                  )}
             </form>
 
             {/* Footer */}

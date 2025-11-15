@@ -12,12 +12,12 @@ BEGIN
     LANGUAGE sql
     STABLE
     SET search_path = public
-    AS $$
+    AS $is_staff$
       SELECT EXISTS (
         SELECT 1 FROM public.profiles p
         WHERE p.id = auth.uid() AND p.role IN ('ADMIN','ASIST')
       );
-    $$;
+    $is_staff$;
     COMMENT ON FUNCTION public.is_staff() IS 'Returns true if auth.uid() has role ADMIN or ASIST in public.profiles.';
   END IF;
 END$$;
@@ -55,6 +55,23 @@ BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_indexes WHERE schemaname='public' AND tablename='fee' AND indexname='ux_fee_student_year_cuota'
   ) THEN
+    -- Clean up any legacy duplicates before enforcing the unique index
+    WITH dup_fee AS (
+      SELECT id,
+             ROW_NUMBER() OVER (
+               PARTITION BY student_id, year_academico, numero_cuota
+               ORDER BY COALESCE(created_at, updated_at, now()) ASC, id ASC
+             ) AS rn
+        FROM public.fee
+       WHERE student_id IS NOT NULL
+         AND year_academico IS NOT NULL
+         AND numero_cuota IS NOT NULL
+    )
+    DELETE FROM public.fee f
+    USING dup_fee d
+     WHERE f.id = d.id
+       AND d.rn > 1;
+
     CREATE UNIQUE INDEX ux_fee_student_year_cuota
       ON public.fee(student_id, year_academico, numero_cuota)
       WHERE student_id IS NOT NULL AND year_academico IS NOT NULL AND numero_cuota IS NOT NULL;
@@ -255,6 +272,16 @@ BEGIN
   IF NOT v_dry_run THEN
     UPDATE public.enrollments SET status = 'CONFIRMED', updated_at = now()
      WHERE id = p_enrollment_id;
+
+    -- Mark students as MATRICULADO until contracts are fully activated
+    UPDATE public.students
+       SET estado_std = 'MATRICULADO'
+     WHERE id IN (
+       SELECT es.student_id
+         FROM public.enrollment_students es
+        WHERE es.enrollment_id = p_enrollment_id
+     )
+       AND COALESCE(estado_std, '') <> 'MATRICULADO';
   END IF;
 
   RETURN jsonb_build_object(
