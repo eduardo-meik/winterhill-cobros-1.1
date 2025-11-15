@@ -131,7 +131,7 @@ BEGIN
     SELECT EXISTS (
       SELECT 1
         FROM public.enrollment_documents d
-        JOIN public.signatures s ON s.document_id = d.id AND s.signer_role IN ('GUARDIAN','APODERADO') AND s.signed_at IS NOT NULL
+  JOIN public.signatures s ON s.enrollment_document_id = d.id AND s.signer_type IN ('GUARDIAN','APODERADO') AND s.signed_at IS NOT NULL
        WHERE d.enrollment_id = p_enrollment_id AND d.type = 'PRESTACION')
     INTO v_has_prestacion;
 
@@ -139,7 +139,7 @@ BEGIN
     SELECT EXISTS (
       SELECT 1
         FROM public.enrollment_documents d
-        JOIN public.signatures s ON s.document_id = d.id AND s.signer_role IN ('GUARDIAN','APODERADO') AND s.signed_at IS NOT NULL
+  JOIN public.signatures s ON s.enrollment_document_id = d.id AND s.signer_type IN ('GUARDIAN','APODERADO') AND s.signed_at IS NOT NULL
        WHERE d.enrollment_id = p_enrollment_id AND (d.type LIKE 'PAGARE%'))
     INTO v_has_pagare;
 
