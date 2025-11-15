@@ -23,6 +23,8 @@ import {
   signEnrollmentDocument,
   sha256
 } from '../../services/matricula';
+import { finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
+import FinalizeEnrollmentModal from './FinalizeEnrollmentModal';
 import { buildPrestacionPayload, renderPrestacionWithAnnex, createPrestacionDocument, ensureEnrollmentDocuments } from '../../services/matricula';
 import { saveChequesForEnrollment } from '../../services/matricula';
 import { 
@@ -113,6 +115,11 @@ export function MatriculaWizard() {
   const [hasRegularized, setHasRegularized] = useState(false); // true si hay documento de regularización (generated o signed)
   const [regularizationSigned, setRegularizationSigned] = useState(false); // true sólo si está firmado
   const [refreshingState, setRefreshingState] = useState(false);
+  // Finalize (staff) state
+  const [finalizing, setFinalizing] = useState(false);
+  const [finalizeOpen, setFinalizeOpen] = useState(false);
+  const [finalizePreview, setFinalizePreview] = useState(null);
+  const [skipDocChecks, setSkipDocChecks] = useState(false);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -618,6 +625,39 @@ export function MatriculaWizard() {
       printWindow.document.close();
       printWindow.focus();
       setTimeout(() => printWindow.print(), 250);
+    }
+  };
+
+  // Staff finalize: dry-run preview
+  const handleFinalizePreview = async () => {
+    if (!enrollment) return;
+    try {
+      setFinalizing(true);
+      const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
+      const preview = await finalizeEnrollmentPreview(enrollment.id, opts);
+      setFinalizePreview(preview);
+      setFinalizeOpen(true);
+    } catch (e) {
+      // toast handled in service
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
+  // Staff finalize: confirm apply
+  const handleFinalizeConfirm = async () => {
+    if (!enrollment) return;
+    try {
+      setFinalizing(true);
+      const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
+      await finalizeEnrollmentConfirm(enrollment.id, opts);
+      toast.success('Matrícula confirmada');
+      setFinalizeOpen(false);
+      setFinalizePreview(null);
+    } catch (e) {
+      // toast handled in service
+    } finally {
+      setFinalizing(false);
     }
   };
 
@@ -1261,6 +1301,23 @@ export function MatriculaWizard() {
                     >
                       ✏️ Editar Datos
                     </Button>
+                    {assistedMode && (
+                      <>
+                        <div className="flex items-center gap-2 ml-auto mr-2 text-xs">
+                          <label className="flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" className="w-4 h-4" checked={skipDocChecks} onChange={e => setSkipDocChecks(e.target.checked)} />
+                            <span>Omitir verificación de documentos</span>
+                          </label>
+                        </div>
+                        <Button
+                          onClick={handleFinalizePreview}
+                          disabled={finalizing || students.length === 0}
+                          className="bg-primary text-white"
+                        >
+                          {finalizing ? 'Preparando…' : 'Confirmar matrícula'}
+                        </Button>
+                      </>
+                    )}
                   </div>
                   <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
                     <p className="text-xs text-blue-600 dark:text-blue-400">
@@ -1308,6 +1365,15 @@ export function MatriculaWizard() {
         initialData={cheques}
         cantidadCuotas={Number(economic.cantidad_cuotas) || 1}
         montoCuota={Number(economic.monto_cuota) || 0}
+      />
+
+      {/* Finalize Enrollment Modal (staff) */}
+      <FinalizeEnrollmentModal
+        isOpen={finalizeOpen}
+        onClose={() => { if (!finalizing) setFinalizeOpen(false); }}
+        onConfirm={handleFinalizeConfirm}
+        preview={finalizePreview}
+        confirming={finalizing}
       />
     </main>
   );
