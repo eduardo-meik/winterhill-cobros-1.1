@@ -2103,3 +2103,54 @@ export async function deleteDocumentPDF(storagePath: string): Promise<boolean> {
     return false;
   }
 }
+
+// =====================================================
+// FINALIZE ENROLLMENT (RPC)
+// =====================================================
+
+/**
+ * Ejecuta un dry-run de la finalización de matrícula para obtener un resumen sin aplicar cambios.
+ * Llama al RPC finalize_enrollment con p_options.dry_run=true
+ */
+export async function finalizeEnrollmentPreview(
+  enrollmentId: string,
+  options: Record<string, any> = {}
+): Promise<any> {
+  try {
+    const payload = { ...options, dry_run: true };
+    const { data, error } = await supabase.rpc('finalize_enrollment', {
+      p_enrollment_id: enrollmentId,
+      p_options: payload
+    });
+    if (error) throw error;
+    return data;
+  } catch (e: any) {
+    console.error('finalizeEnrollmentPreview error', e);
+    const message = e?.message || 'No se pudo preparar la confirmación de matrícula';
+    toast.error(message);
+    throw e;
+  }
+}
+
+/**
+ * Confirma la matrícula (aplica cambios). Llama al RPC finalize_enrollment con dry_run=false
+ */
+export async function finalizeEnrollmentConfirm(
+  enrollmentId: string,
+  options: Record<string, any> = {}
+): Promise<any> {
+  try {
+    const payload = { ...options, dry_run: false };
+    const { data, error } = await supabase.rpc('finalize_enrollment', {
+      p_enrollment_id: enrollmentId,
+      p_options: payload
+    });
+    if (error) throw error;
+    return data;
+  } catch (e: any) {
+    console.error('finalizeEnrollmentConfirm error', e);
+    const message = e?.message || 'No se pudo confirmar la matrícula';
+    toast.error(message);
+    throw e;
+  }
+}

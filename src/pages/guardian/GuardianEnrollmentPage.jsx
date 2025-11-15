@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useGuardianData } from '../../contexts/GuardianContext';
 import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
-import { addStudentToEnrollment, removeStudentFromEnrollment, updateEnrollmentMeta, ensureEnrollmentDocuments } from '../../services/matricula';
+import { addStudentToEnrollment, removeStudentFromEnrollment, updateEnrollmentMeta, ensureEnrollmentDocuments, finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
 import GuardianCompletionNotice from '../../components/guardian/GuardianCompletionNotice';
 import { sendGuardianCompletionEmail } from '../../services/guardianNotifications';
+import FinalizeEnrollmentModal from '../../components/matricula/FinalizeEnrollmentModal';
 
 const STEP_LABELS = [
   'Seleccionar estudiantes',
@@ -57,6 +58,9 @@ export function GuardianEnrollmentPage() {
   const [savingMeta, setSavingMeta] = useState(false);
   const [generatingDocs, setGeneratingDocs] = useState(false);
   const [sendingCompletionEmail, setSendingCompletionEmail] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+  const [finalizeOpen, setFinalizeOpen] = useState(false);
+  const [finalizePreview, setFinalizePreview] = useState(null);
 
   const availableYears = useMemo(() => {
     const uniqueYears = new Set();
@@ -308,6 +312,36 @@ export function GuardianEnrollmentPage() {
       toast.error(message);
     } finally {
       setSendingCompletionEmail(false);
+    }
+  };
+
+  const handleOpenFinalize = async () => {
+    if (!activeEnrollment) return;
+    try {
+      setFinalizing(true);
+      const preview = await finalizeEnrollmentPreview(activeEnrollment.id, {});
+      setFinalizePreview(preview);
+      setFinalizeOpen(true);
+    } catch (e) {
+      // toast handled in service
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
+  const handleConfirmFinalize = async () => {
+    if (!activeEnrollment) return;
+    try {
+      setFinalizing(true);
+      await finalizeEnrollmentConfirm(activeEnrollment.id, {});
+      setFinalizeOpen(false);
+      setFinalizePreview(null);
+      toast.success('Matrícula confirmada');
+      await refresh({ force: true });
+    } catch (e) {
+      // toast handled in service
+    } finally {
+      setFinalizing(false);
     }
   };
 
@@ -585,14 +619,32 @@ export function GuardianEnrollmentPage() {
             )}
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <button onClick={goBack} className="px-4 py-2 rounded border">Volver</button>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              Estado de matrícula: {statusBadge(activeEnrollment.status)}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                Estado de matrícula: {statusBadge(activeEnrollment.status)}
+              </div>
+              <button
+                onClick={handleOpenFinalize}
+                className="px-4 py-2 bg-primary text-white rounded disabled:opacity-50"
+                disabled={finalizing || !selectedStudentIds.size}
+                title={!selectedStudentIds.size ? 'Selecciona al menos un estudiante' : ''}
+              >
+                {finalizing ? 'Preparando…' : 'Confirmar matrícula'}
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      <FinalizeEnrollmentModal
+        isOpen={finalizeOpen}
+        onClose={() => { if (!finalizing) { setFinalizeOpen(false); } }}
+        onConfirm={handleConfirmFinalize}
+        preview={finalizePreview}
+        confirming={finalizing}
+      />
     </div>
   );
 }
