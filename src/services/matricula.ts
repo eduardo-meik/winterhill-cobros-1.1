@@ -245,6 +245,28 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
     .select()
     .single();
   if (error) {
+    const code = `${(error as any)?.code || ''}`;
+    const message = `${(error as any)?.message || ''}`;
+    const details = `${(error as any)?.details || ''}`;
+    const isDuplicate = code === '23505' || /duplicate/i.test(message) || /duplicate/i.test(details) || /enrollments_guardian_id_year_key/i.test(message + details);
+
+    if (isDuplicate) {
+      console.warn('getOrCreateEnrollment detected duplicate, fetching existing row instead');
+      const { data: dupeExisting, error: dupeError } = await supabase
+        .from('enrollments')
+        .select('*')
+        .eq('guardian_id', guardianId)
+        .eq('year', year)
+        .limit(1)
+        .single();
+      if (!dupeError && dupeExisting) {
+        return dupeExisting;
+      }
+      if (dupeError) {
+        console.error('getOrCreateEnrollment duplicate fallback failed', dupeError);
+      }
+    }
+
     console.error('getOrCreateEnrollment insert error', error);
     toast.error('No se pudo crear matrícula');
     return null;

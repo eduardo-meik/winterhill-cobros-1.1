@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { Card } from '../ui/Card';
 import { supabase } from '../../services/supabase';
@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
-import { adminUpsertGuardianIntake } from '../../services/guardianIntake';
+import { useNavigate } from 'react-router-dom';
+import { adminUpsertGuardianIntake, adminSubmitGuardianIntake } from '../../services/guardianIntake';
 
 // Default values for a new guardian
 const initialDefaultValues = {
@@ -27,6 +28,8 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
   const { user } = useAuth();
   const isStaff = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
   const [extendToIntake, setExtendToIntake] = useState(isStaff);
+  const [autoLaunchWizard, setAutoLaunchWizard] = useState(isStaff);
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: guardian ? guardian : initialDefaultValues // Use guardian data if editing
@@ -41,8 +44,41 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
   }, [guardian, reset]);
 
   useEffect(() => {
-    setExtendToIntake(isStaff);
+    if (!guardian && isStaff) {
+      setExtendToIntake(true);
+      setAutoLaunchWizard(true);
+    } else {
+      setExtendToIntake(false);
+      setAutoLaunchWizard(false);
+    }
   }, [isStaff, guardian]);
+
+  const buildIntakePayload = (formValues) => {
+    const lastNameRaw = formValues.last_name?.trim() || '';
+    const lastParts = lastNameRaw.split(/\s+/).filter(Boolean);
+    const paterno = lastParts[0] || lastNameRaw || null;
+    const materno = lastParts.slice(1).join(' ') || null;
+
+    // Guardian ↔ intake column mapping for staff-created surveys
+    return {
+      guardian_first_name: formValues.first_name,
+      guardian_last_name_paterno: paterno,
+      guardian_last_name_materno: materno,
+      guardian_relationship: formValues.relationship_type,
+      guardian_rut: formValues.run,
+      guardian_address: formValues.address || null,
+      guardian_commune: formValues.comuna || null,
+      guardian_email: formValues.email || null,
+      guardian_phone: formValues.phone || null,
+      // Student placeholders to keep the survey in draft until MatriculaWizard completes it
+      student_first_names: 'Pendiente',
+      student_last_name_paterno: null,
+      student_last_name_materno: null,
+      student_run: 'PENDIENTE',
+      student_course: null,
+      status: 'draft'
+    };
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -86,8 +122,15 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
         toast.success('Apoderado actualizado exitosamente');
 
       } else { // Otherwise, create a new guardian
-        const { data: authUser } = await supabase.auth.getUser();
-        const ownerId = isStaff ? null : authUser?.user?.id || null;
+        const { data: authUser, error: authError } = await supabase.auth.getUser();
+        if (authError) {
+          console.error('Error fetching auth user:', authError);
+          throw authError;
+        }
+        const ownerId = authUser?.user?.id || user?.id || null;
+        if (!ownerId) {
+          throw new Error('No se pudo determinar el usuario autenticado para guardar al apoderado.');
+        }
         const { data: newGuardian, error: insertError } = await supabase
           .from('guardians')
           .insert([{
@@ -123,34 +166,48 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
         }
 
         if (isStaff && extendToIntake && newGuardian) {
+          const intakePayload = buildIntakePayload(data);
           try {
-            const lastNameRaw = data.last_name?.trim() || '';
-            const lastParts = lastNameRaw.split(/\s+/).filter(Boolean);
-            const paterno = lastParts[0] || lastNameRaw || null;
-            const materno = lastParts.slice(1).join(' ') || null;
-            await adminUpsertGuardianIntake(newGuardian.id, {
-              guardian_first_name: data.first_name,
-              guardian_last_name_paterno: paterno,
-              guardian_last_name_materno: materno,
-              guardian_relationship: data.relationship_type,
-              guardian_rut: data.run,
-              guardian_address: data.address,
-              guardian_commune: data.comuna,
-              guardian_email: data.email,
-              guardian_phone: data.phone,
-              status: 'draft'
-            });
-            toast.success('Encuesta de matrícula inicializada');
+            await adminUpsertGuardianIntake(newGuardian.id, intakePayload);
+            try {
+              await adminSubmitGuardianIntake(newGuardian.id);
+              await adminUpsertGuardianIntake(newGuardian.id, intakePayload);
+              toast.success('Encuesta de matrícula preparada');
+            } catch (submitError) {
+              console.warn('No se pudo finalizar la encuesta de matrícula', submitError);
+              toast('Encuesta creada, pero deberás completarla manualmente.', { icon: '⚠️' });
+            }
           } catch (intakeError) {
-            console.warn('No se pudo crear la encuesta de matrícula', intakeError);
-            toast.error('Apoderado creado, pero no se pudo preparar la encuesta de matrícula');
+            console.warn('No se pudo preparar la encuesta de matrícula', intakeError);
+            toast('Apoderado creado, pero no se pudo preparar la encuesta de matrícula.', { icon: '⚠️' });
           }
         }
         toast.success('Apoderado registrado exitosamente');
+
+        if (autoLaunchWizard && isStaff && !guardian && newGuardian) {
+          const snapshot = {
+            id: newGuardian.id,
+            first_name: newGuardian.first_name,
+            last_name: newGuardian.last_name,
+            run: newGuardian.run,
+            email: newGuardian.email,
+            phone: newGuardian.phone,
+            address: newGuardian.address,
+            comuna: newGuardian.comuna
+          };
+          navigate('/matricula', {
+            state: {
+              guardianId: newGuardian.id,
+              guardianSnapshot: snapshot,
+              from: 'guardian-form'
+            }
+          });
+        }
       }
 
       onSuccess?.();
       reset(); // Reset form after successful submission
+      setSelectedStudentIds([]);
       onClose();
     } catch (error) {
       console.error('Error:', error);
@@ -340,8 +397,8 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                     </div>
                   </div>
 
-                  {!guardian && isStaff && (
-                    <div className="col-span-2 flex items-center gap-3 p-3 border rounded-lg bg-gray-50 dark:bg-dark-hover">
+                  {isStaff && (
+                    <div className="col-span-2 space-y-2 p-3 border rounded-lg bg-gray-50 dark:bg-dark-hover">
                       <label className="flex items-center gap-2 text-sm">
                         <input
                           type="checkbox"
@@ -349,9 +406,21 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                           checked={extendToIntake}
                           onChange={(e) => setExtendToIntake(e.target.checked)}
                         />
-                        Extender registro a la encuesta de matrícula
+                        Completar encuesta de matrícula al guardar
                       </label>
-                      <p className="text-xs text-gray-500">Creará o actualizará la encuesta anual para este apoderado.</p>
+                      <p className="text-xs text-gray-500">
+                        Crea un borrador en <strong>guardian_intake_surveys</strong> usando los datos ingresados. La encuesta permanece en estado MATRICULADO hasta que el equipo termine el proceso.
+                      </p>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={autoLaunchWizard}
+                          onChange={(e) => setAutoLaunchWizard(e.target.checked)}
+                        />
+                        Abrir asistente de matrícula al cerrar
+                      </label>
+                      <p className="text-xs text-gray-500">Redirige al MatriculaWizard en modo asistido con este apoderado preseleccionado.</p>
                     </div>
                   )}
             </form>

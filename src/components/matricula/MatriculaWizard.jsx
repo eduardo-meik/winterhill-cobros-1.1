@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader } from '../ui/Card';
@@ -67,6 +67,10 @@ const STEPS = [
 export function MatriculaWizard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navigationState = location.state ?? {};
+  const navigationGuardianId = navigationState.guardianId ?? null;
+  const navigationGuardianSnapshot = navigationState.guardianSnapshot ?? null;
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
   const [guardian, setGuardian] = useState(null);
@@ -125,6 +129,44 @@ export function MatriculaWizard() {
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
   const [assistedGuardian, setAssistedGuardian] = useState(null);
+    useEffect(() => {
+      if (!assistedMode) return;
+      const targetId = navigationGuardianSnapshot?.id || navigationGuardianId;
+      if (!targetId || assistedGuardian?.id === targetId) return;
+
+      if (navigationGuardianSnapshot) {
+        setAssistedGuardian(prev => (prev?.id === navigationGuardianSnapshot.id ? prev : navigationGuardianSnapshot));
+        return;
+      }
+
+      let cancelled = false;
+      (async () => {
+        try {
+          const { data, error } = await supabase
+            .from('guardians')
+            .select('id, first_name, last_name, run, email, address, phone, profesion, estado_civil, comuna')
+            .eq('id', targetId)
+            .maybeSingle();
+          if (error) throw error;
+          if (!cancelled && data) {
+            setAssistedGuardian(prev => (prev?.id === data.id ? prev : data));
+          }
+        } catch (e) {
+          console.error('Prefetch guardian for MatriculaWizard', e);
+        }
+      })();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [assistedMode, navigationGuardianId, navigationGuardianSnapshot, assistedGuardian?.id]);
+
+    useEffect(() => {
+      if (!guardian) {
+        setFinalizeAlert(null);
+      }
+    }, [guardian?.id]);
+
   const [guardianSearch, setGuardianSearch] = useState('');
   const [guardianResults, setGuardianResults] = useState([]);
   const [guardianSearchLoading, setGuardianSearchLoading] = useState(false);
@@ -652,11 +694,30 @@ export function MatriculaWizard() {
     try {
       setFinalizing(true);
       const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
-      await finalizeEnrollmentConfirm(enrollment.id, opts);
-      toast.success('Matrícula confirmada');
-      setFinalizeAlert({ type: 'success', message: 'Matrícula confirmada. Los estudiantes quedan en estado MATRICULADO hasta activar el contrato firmado.' });
+      const result = await finalizeEnrollmentConfirm(enrollment.id, opts);
+      const studentsCount = Number(result?.students_count ?? students.length ?? 0);
+      const createdCharges = Number(result?.created_charges ?? 0);
+      const skippedDuplicates = Number(result?.skipped_duplicates ?? 0);
+      const alertType = skippedDuplicates > 0 ? 'warning' : 'success';
+      const baseMessage = `Matrícula confirmada para ${studentsCount} estudiante${studentsCount === 1 ? '' : 's'}.`;
+      const detailMessage = ` Se generaron ${createdCharges} cargo${createdCharges === 1 ? '' : 's'}${skippedDuplicates ? `; ${skippedDuplicates} ya existían y no se duplicaron.` : '.'}`;
+      const followUp = ' Recuerda actualizar el estado a ACTIVO o RETIRADO en el módulo de Estudiantes una vez recibida la documentación física.';
+      setFinalizeAlert({ type: alertType, message: `${baseMessage}${detailMessage}${followUp}` });
+      toast.success(`Matrícula confirmada (${createdCharges} cargo${createdCharges === 1 ? '' : 's'} nuevos${skippedDuplicates ? `, ${skippedDuplicates} duplicado${skippedDuplicates === 1 ? '' : 's'} omitido${skippedDuplicates === 1 ? '' : 's'}` : ''}).`);
       setFinalizeOpen(false);
       setFinalizePreview(null);
+      await reloadEnrollmentStudents();
+      await refreshDebtAndRegularization();
+      if (guardian) {
+        const latest = await getOrCreateEnrollment(guardian.id, year);
+        if (latest) {
+          setEnrollment(latest);
+        } else {
+          setEnrollment(prev => (prev ? { ...prev, status: 'CONFIRMED' } : prev));
+        }
+      } else {
+        setEnrollment(prev => (prev ? { ...prev, status: 'CONFIRMED' } : prev));
+      }
     } catch (e) {
       // toast handled in service
       const message = e?.message || 'No se pudo confirmar la matrícula. Revisa documentos o plan de pago.';
@@ -1336,6 +1397,9 @@ export function MatriculaWizard() {
                       </>
                     )}
                   </div>
+                  {assistedMode && (
+                    <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-2">Este paso deja a los estudiantes en estado MATRICULADO hasta que el equipo marque ACTIVO desde el módulo de Estudiantes.</p>
+                  )}
                   <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
                     <p className="text-xs text-blue-600 dark:text-blue-400">
                       💡 <strong>Importante:</strong> El PDF se genera con formato profesional incluyendo:
