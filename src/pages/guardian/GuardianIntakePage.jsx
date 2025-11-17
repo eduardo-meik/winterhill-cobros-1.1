@@ -1,10 +1,19 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { fetchCurrentIntake, saveIntakeDraft, submitIntake } from '../../services/guardianIntake';
+import {
+  fetchCurrentIntake,
+  saveIntakeDraft,
+  submitIntake,
+  adminUpsertGuardianIntake,
+  adminSubmitGuardianIntake,
+  adminFetchGuardianIntake
+} from '../../services/guardianIntake';
+import { ensureStudentFromIntake } from '../../services/matricula';
 import { normalizeRun, validateRun, formatRunDisplay } from '../../utils/rut';
 import { useGuardianData } from '../../contexts/GuardianContext';
+import { fetchGuardianBootstrapForStaff } from '../../services/guardianBootstrap';
 
 // Basic required fields for validation before submit
 const REQUIRED_FIELDS = [
@@ -68,6 +77,25 @@ const BOOLEAN_FIELDS = [
   'payment_form_planilla'
 ];
 const NUMERIC_STRING_FIELDS = ['scholarship_percentage'];
+const STAFF_DATE_FIELDS = ['student_birth_date', 'student_enrollment_date', 'student_withdrawal_date'];
+const AUTO_STUDENT_REASON_MESSAGES = {
+  missing_fields: 'Faltan nombres, RUN, curso o fecha de nacimiento para crear el alumno automáticamente.',
+  invalid_run: 'El RUN del estudiante es inválido; crea el alumno manualmente en Matrícula.',
+  course_not_found: 'No se pudo identificar el curso ingresado. Verifica el catálogo de cursos antes de continuar.',
+  missing_owner: 'No fue posible asignar un propietario al alumno. Crea el registro manualmente.',
+  link_failed: 'El alumno existe pero no se pudo vincular con este apoderado. Revisa el módulo de alumnos.',
+  error: 'No se pudo crear el alumno automáticamente. Inténtalo nuevamente en el módulo de alumnos.'
+};
+
+const sanitizeStaffPayload = (payload) => {
+  const next = { ...payload };
+  STAFF_DATE_FIELDS.forEach((field) => {
+    if (!next[field]) {
+      next[field] = null;
+    }
+  });
+  return next;
+};
 
 const normalizeForm = (raw = {}) => {
   const normalized = { ...EMPTY_FORM };
@@ -114,7 +142,8 @@ function Field({ label, children, required }) {
 export const GuardianIntakePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: bootstrapData, loading: bootstrapLoading, refresh: refreshGuardianData } = useGuardianData();
+  const guardianContext = useGuardianData();
+  const { refresh: refreshGuardianData } = guardianContext;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -124,6 +153,51 @@ export const GuardianIntakePage = () => {
   const lastSavedSnapshot = useRef(null);
   const [form, setForm] = useState(() => normalizeForm());
   const initializedRef = useRef(false);
+  const [searchParams] = useSearchParams();
+  const targetGuardianId = searchParams.get('guardianId');
+  const isStaffUser = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
+  const actingAsStaff = Boolean(targetGuardianId && isStaffUser);
+  const [staffBootstrap, setStaffBootstrap] = useState(null);
+  const [staffBootstrapLoading, setStaffBootstrapLoading] = useState(false);
+  const refreshStaffBootstrap = useCallback(async () => {
+    if (!actingAsStaff || !targetGuardianId) return null;
+    const data = await fetchGuardianBootstrapForStaff(targetGuardianId);
+    setStaffBootstrap(data);
+    return data;
+  }, [actingAsStaff, targetGuardianId]);
+
+  useEffect(() => {
+    if (!actingAsStaff) {
+      setStaffBootstrap(null);
+      setStaffBootstrapLoading(false);
+      return;
+    }
+    let ignore = false;
+    setStaffBootstrapLoading(true);
+    fetchGuardianBootstrapForStaff(targetGuardianId)
+      .then((data) => {
+        if (ignore) return;
+        if (!data) {
+          toast.error('No se encontró la información del apoderado.');
+        }
+        setStaffBootstrap(data);
+      })
+      .catch(() => {
+        if (ignore) return;
+        toast.error('No se pudo cargar la ficha del apoderado.');
+        setStaffBootstrap(null);
+      })
+      .finally(() => {
+        if (!ignore) setStaffBootstrapLoading(false);
+      });
+    return () => { ignore = true; };
+  }, [actingAsStaff, targetGuardianId]);
+
+  const bootstrapData = actingAsStaff ? staffBootstrap : guardianContext.data;
+  const bootstrapLoading = actingAsStaff ? staffBootstrapLoading : guardianContext.loading;
+  const guardianName = bootstrapData?.guardian
+    ? [bootstrapData.guardian.first_name, bootstrapData.guardian.last_name].filter(Boolean).join(' ').trim() || bootstrapData.guardian.run || ''
+    : '';
 
   const applyPrefillFallbacks = useCallback((baseForm) => {
     let updated = normalizeForm(baseForm);
@@ -193,10 +267,17 @@ export const GuardianIntakePage = () => {
   useEffect(() => {
     let ignore = false;
     const load = async () => {
-      if (!user || bootstrapLoading || initializedRef.current) return;
+      if (initializedRef.current) return;
+      if (actingAsStaff) {
+        if (!targetGuardianId || staffBootstrapLoading) return;
+      } else if (!user || bootstrapLoading) {
+        return;
+      }
       setLoading(true);
       try {
-        const existing = await fetchCurrentIntake();
+        const existing = actingAsStaff
+          ? await adminFetchGuardianIntake(targetGuardianId)
+          : await fetchCurrentIntake();
         if (ignore) return;
         const intakeSource = existing || bootstrapData?.intake || null;
         if (intakeSource) {
@@ -219,7 +300,7 @@ export const GuardianIntakePage = () => {
     };
     load();
     return () => { ignore = true; };
-  }, [user, bootstrapLoading, bootstrapData, applyPrefillFallbacks]);
+  }, [actingAsStaff, targetGuardianId, staffBootstrapLoading, user, bootstrapLoading, bootstrapData, applyPrefillFallbacks]);
 
   const updateField = (name, value) => {
     setForm((prev) => {
@@ -265,7 +346,10 @@ export const GuardianIntakePage = () => {
           ? null
           : Number(currentForm.scholarship_percentage)
       };
-      const saved = await saveIntakeDraft(payload);
+      const staffReadyPayload = actingAsStaff ? sanitizeStaffPayload(payload) : payload;
+      const saved = actingAsStaff && targetGuardianId
+        ? await adminUpsertGuardianIntake(targetGuardianId, staffReadyPayload)
+        : await saveIntakeDraft(payload);
       setStatus(saved.status);
       const normalizedSaved = normalizeForm({
         ...currentForm,
@@ -280,7 +364,7 @@ export const GuardianIntakePage = () => {
     } finally {
       setSaving(false);
       }
-    }, [form]);
+    }, [form, actingAsStaff, targetGuardianId]);
 
     useEffect(() => {
       return () => {
@@ -322,11 +406,47 @@ export const GuardianIntakePage = () => {
     try {
       // ensure latest draft persisted before submit
       await doSave();
-      await submitIntake();
+      if (actingAsStaff && targetGuardianId) {
+        await adminSubmitGuardianIntake(targetGuardianId);
+        toast.success('Encuesta enviada para el apoderado');
+        const hasStudents = Array.isArray(bootstrapData?.students) && bootstrapData.students.length > 0;
+        if (!hasStudents && bootstrapData) {
+          const intakeSeed = bootstrapData.intake || {};
+          const autoCreateIntake = {
+            ...intakeSeed,
+            ...form,
+            guardian_id: targetGuardianId,
+            guardian_relationship: form.guardian_relationship || intakeSeed.guardian_relationship || '',
+            student_lives_with: Array.isArray(form.student_lives_with) ? [...form.student_lives_with] : []
+          };
+          const autoResult = await ensureStudentFromIntake({
+            guardianId: targetGuardianId,
+            intake: autoCreateIntake,
+            guardianOwnerId: bootstrapData.guardian?.owner_id ?? null,
+            guardianRelationship:
+              form.guardian_relationship ||
+              bootstrapData.guardian?.family_tie ||
+              bootstrapData.guardian?.relationship_type ||
+              null,
+            staffUserId: user?.id ?? null
+          });
+          if (autoResult.created) {
+            toast.success('Se creó un alumno utilizando los datos de la encuesta.');
+          } else if (autoResult.linked && autoResult.studentId) {
+            toast.success('Se vinculó el alumno existente con el apoderado.');
+          } else if (autoResult.reason) {
+            const reasonMessage = AUTO_STUDENT_REASON_MESSAGES[autoResult.reason] || AUTO_STUDENT_REASON_MESSAGES.error;
+            toast(reasonMessage);
+          }
+        }
+        await refreshStaffBootstrap();
+      } else {
+        await submitIntake();
+        toast.success('Encuesta enviada');
+        await refreshGuardianData({ force: true });
+        navigate('/apoderado/matricula', { replace: true });
+      }
       setStatus('submitted');
-      toast.success('Encuesta enviada');
-      await refreshGuardianData({ force: true });
-      navigate('/apoderado/matricula', { replace: true });
     } catch (e) {
       toast.error('Error al enviar');
     } finally {
@@ -344,6 +464,11 @@ export const GuardianIntakePage = () => {
           <p className="text-sm text-gray-600">Año {new Date().getFullYear()} · Estado: <span className="font-medium capitalize">{status}</span></p>
           {status !== 'submitted' && missingRequired.length > 0 && (
             <p className="text-xs text-red-600 mt-1">Faltan {missingRequired.length} campos obligatorios</p>
+          )}
+          {actingAsStaff && guardianName && (
+            <p className="text-xs text-amber-600 mt-1">
+              Modo staff: completando la encuesta de <span className="font-semibold">{guardianName}</span>
+            </p>
           )}
         </div>
         <div className="flex gap-2">

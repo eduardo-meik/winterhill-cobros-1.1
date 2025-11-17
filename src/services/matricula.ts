@@ -2,6 +2,8 @@ import { supabase } from './supabase';
 import { computeEnrollmentDocumentPlan } from './autodoc';
 import { templates } from '../contracts/templates';
 import toast from 'react-hot-toast';
+import type { GuardianIntakeRecord } from './guardianIntake';
+import { normalizeRun, validateRun } from '../utils/rut';
 
 // Types (lightweight to avoid adding global type deps now)
 export interface GuardianRecord {
@@ -2020,6 +2022,311 @@ export async function sha256(text: string): Promise<string> {
   const enc = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest('SHA-256', enc);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// =====================================================
+// INTAKE → STUDENT AUTO-CREATION HELPERS
+// =====================================================
+
+type CourseLite = {
+  id: string;
+  nom_curso: string | null;
+  nivel: string | null;
+  letra_curso: string | null;
+};
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+let _courseCatalog: CourseLite[] | null = null;
+let _courseCatalogPromise: Promise<CourseLite[]> | null = null;
+
+function normalizeCourseLabel(value: string): string {
+  const base = typeof value.normalize === 'function' ? value.normalize('NFD') : value;
+  return base
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u00b0\u00ba]/g, '')
+    .replace(/[^a-zA-Z0-9 ]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+}
+
+async function getCourseCatalog(): Promise<CourseLite[]> {
+  if (_courseCatalog) return _courseCatalog;
+  if (_courseCatalogPromise) return _courseCatalogPromise;
+  _courseCatalogPromise = (async () => {
+    try {
+      const { data, error } = await supabase
+        .from('cursos')
+        .select('id, nom_curso, nivel, letra_curso')
+        .order('nom_curso', { ascending: true });
+      if (error) throw error;
+      _courseCatalog = data || [];
+      return _courseCatalog;
+    } catch (e) {
+      console.error('getCourseCatalog error', e);
+      _courseCatalog = [];
+      return _courseCatalog;
+    } finally {
+      _courseCatalogPromise = null;
+    }
+  })();
+  return _courseCatalogPromise;
+}
+
+function findCourseByNormalizedLabel(catalog: CourseLite[], normalized: string): CourseLite | null {
+  if (!normalized) return null;
+  for (const course of catalog) {
+    const courseLabel = course?.nom_curso ? normalizeCourseLabel(course.nom_curso) : '';
+    if (!courseLabel) continue;
+    if (courseLabel === normalized) return course;
+  }
+  for (const course of catalog) {
+    const courseLabel = course?.nom_curso ? normalizeCourseLabel(course.nom_curso) : '';
+    if (!courseLabel) continue;
+    if (courseLabel.includes(normalized) || normalized.includes(courseLabel)) {
+      return course;
+    }
+  }
+  return null;
+}
+
+async function resolveCourseFromInput(raw: string | null | undefined): Promise<{ courseId: string | null; course: CourseLite | null }> {
+  if (!raw) return { courseId: null, course: null };
+  const value = raw.trim();
+  if (!value) return { courseId: null, course: null };
+  const catalog = await getCourseCatalog();
+  const direct = catalog.find(course => course.id === value);
+  if (direct) return { courseId: direct.id, course: direct };
+  if (UUID_REGEX.test(value)) {
+    const { data, error } = await supabase
+      .from('cursos')
+      .select('id, nom_curso, nivel, letra_curso')
+      .eq('id', value)
+      .maybeSingle();
+    if (!error && data) {
+      return { courseId: data.id, course: data as CourseLite };
+    }
+  }
+  const normalized = normalizeCourseLabel(value);
+  if (!normalized) return { courseId: null, course: null };
+  const match = findCourseByNormalizedLabel(catalog, normalized);
+  return match ? { courseId: match.id, course: match } : { courseId: null, course: null };
+}
+
+async function ensureGuardianStudentLink(
+  studentId: string,
+  guardianId: string,
+  guardianRole?: string | null
+): Promise<boolean> {
+  try {
+    const payload = {
+      student_id: studentId,
+      guardian_id: guardianId,
+      is_primary: true,
+      guardian_role: guardianRole || null
+    };
+    const { error } = await supabase
+      .from('student_guardian')
+      .upsert(payload, { onConflict: 'student_id,guardian_id' });
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    console.error('ensureGuardianStudentLink error', e);
+    return false;
+  }
+}
+
+export interface AutoCreateStudentFromIntakeOptions {
+  guardianId: string;
+  intake: Partial<GuardianIntakeRecord> | null | undefined;
+  guardianOwnerId?: string | null;
+  guardianRelationship?: string | null;
+  staffUserId?: string | null;
+}
+
+export interface AutoCreateStudentFromIntakeResult {
+  created: boolean;
+  linked: boolean;
+  studentId: string | null;
+  reason?:
+    | 'missing_guardian'
+    | 'missing_intake'
+    | 'missing_fields'
+    | 'invalid_run'
+    | 'course_not_found'
+    | 'missing_owner'
+    | 'link_failed'
+    | 'error';
+  courseId?: string | null;
+  details?: string;
+}
+
+export async function ensureStudentFromIntake(
+  options: AutoCreateStudentFromIntakeOptions
+): Promise<AutoCreateStudentFromIntakeResult> {
+  const base: AutoCreateStudentFromIntakeResult = {
+    created: false,
+    linked: false,
+    studentId: null
+  };
+
+  try {
+    if (!options?.guardianId) {
+      return { ...base, reason: 'missing_guardian' };
+    }
+    const intake = options?.intake;
+    if (!intake) {
+      return { ...base, reason: 'missing_intake' };
+    }
+
+    const firstNames = (intake.student_first_names || '').trim();
+    const lastNameP = (intake.student_last_name_paterno || '').trim();
+    const lastNameM = (intake.student_last_name_materno || '').trim();
+    const runRaw = (intake.student_run || '').trim();
+    const birthDate = (intake.student_birth_date || '').trim();
+    const courseRaw = (intake.student_course || '').trim();
+
+    if (!firstNames || !lastNameP || !runRaw || !birthDate || !courseRaw) {
+      return { ...base, reason: 'missing_fields' };
+    }
+
+    const normalizedRun = normalizeRun(runRaw);
+    const runInfo = validateRun(normalizedRun);
+    if (!runInfo.valid || !runInfo.body) {
+      return { ...base, reason: 'invalid_run' };
+    }
+
+    const formattedRun = `${runInfo.body}-${runInfo.dv}`;
+    const normalizedComparable = formattedRun.replace('-', '');
+    const runNumber = Number(runInfo.body);
+    const runFilters: string[] = [`run.eq.${formattedRun}`];
+    if (normalizedComparable !== normalizedRun) {
+      runFilters.push(`run.eq.${normalizedRun}`);
+    }
+    if (Number.isFinite(runNumber)) {
+      runFilters.push(`run_numero.eq.${runNumber}`);
+    }
+
+    const { data: existing, error: existingError } = await supabase
+      .from('students')
+      .select('id')
+      .or(runFilters.join(','))
+      .maybeSingle();
+    if (existingError && existingError.code !== 'PGRST116') {
+      console.error('ensureStudentFromIntake lookup error', existingError);
+    }
+    if (existing?.id) {
+      const linked = await ensureGuardianStudentLink(
+        existing.id,
+        options.guardianId,
+        options.guardianRelationship || (intake.guardian_relationship ?? null)
+      );
+      return {
+        ...base,
+        studentId: existing.id,
+        linked,
+        reason: linked ? undefined : 'link_failed'
+      };
+    }
+
+    const courseResolution = await resolveCourseFromInput(courseRaw);
+    if (!courseResolution.courseId) {
+      return { ...base, reason: 'course_not_found' };
+    }
+
+    const ownerId = options.guardianOwnerId || options.staffUserId || null;
+    if (!ownerId) {
+      return { ...base, reason: 'missing_owner' };
+    }
+
+    const wholeName = [firstNames, [lastNameP, lastNameM].filter(Boolean).join(' ')].filter(Boolean).join(' ').trim();
+    const enrollmentDate = (intake.student_enrollment_date || '').trim();
+    const nowDate = new Date().toISOString().slice(0, 10);
+    const livesWith = Array.isArray(intake.student_lives_with)
+      ? intake.student_lives_with.filter(Boolean).join(', ')
+      : '';
+
+    const payload = {
+      first_name: firstNames,
+      apellido_paterno: lastNameP,
+      apellido_materno: lastNameM || null,
+      whole_name: wholeName || null,
+      run: formattedRun,
+      run_numero: Number.isFinite(runNumber) ? runNumber : null,
+      run_verificador: runInfo.dv || null,
+      date_of_birth: birthDate,
+      owner_id: ownerId,
+      curso: courseResolution.courseId,
+      nivel: courseResolution.course?.nivel || null,
+      nombre_social: intake.student_social_name || null,
+      genero: intake.student_gender || null,
+      nacionalidad: intake.student_nationality || null,
+      fecha_matricula: enrollmentDate || nowDate,
+      fecha_incorporacion: enrollmentDate || null,
+      fecha_retiro: (intake.student_withdrawal_date || '').trim() || null,
+      motivo_retiro: (intake.student_withdrawal_reason || '').trim() || null,
+      repite_curso_actual:
+        typeof intake.student_repeat_current === 'boolean'
+          ? intake.student_repeat_current ? 'SI' : 'NO'
+          : null,
+      institucion_procedencia: intake.student_previous_institution || null,
+      direccion: intake.student_address || null,
+      comuna: intake.student_commune || null,
+      con_quien_vive: livesWith || null,
+      estado_std: 'MATRICULADO'
+    } as Record<string, any>;
+
+    const { data: created, error: createError } = await supabase
+      .from('students')
+      .insert(payload)
+      .select('id')
+      .single();
+    if (createError) {
+      console.error('ensureStudentFromIntake insert error', createError);
+      if ((createError as any)?.code === '23505') {
+        // Unique violation fallback: fetch and link
+        const { data: dupe } = await supabase
+          .from('students')
+          .select('id')
+          .or(runFilters.join(','))
+          .maybeSingle();
+        if (dupe?.id) {
+          const linked = await ensureGuardianStudentLink(
+            dupe.id,
+            options.guardianId,
+            options.guardianRelationship || (intake.guardian_relationship ?? null)
+          );
+          return {
+            ...base,
+            studentId: dupe.id,
+            linked,
+            reason: linked ? undefined : 'link_failed'
+          };
+        }
+      }
+      return { ...base, reason: 'error', details: createError.message };
+    }
+
+    const studentId = created?.id || null;
+    const linked = studentId
+      ? await ensureGuardianStudentLink(
+          studentId,
+          options.guardianId,
+          options.guardianRelationship || (intake.guardian_relationship ?? null)
+        )
+      : false;
+    return {
+      created: Boolean(studentId),
+      linked,
+      studentId,
+      courseId: courseResolution.courseId,
+      reason: linked ? undefined : 'link_failed'
+    };
+  } catch (e: any) {
+    console.error('ensureStudentFromIntake unexpected error', e);
+    return { ...base, reason: 'error', details: e?.message || String(e) };
+  }
 }
 
 // =====================================================

@@ -29,6 +29,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
   const isStaff = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
   const [extendToIntake, setExtendToIntake] = useState(isStaff);
   const [autoLaunchWizard, setAutoLaunchWizard] = useState(isStaff);
+  const [autoOpenIntakeEditor, setAutoOpenIntakeEditor] = useState(isStaff);
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -47,9 +48,11 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
     if (!guardian && isStaff) {
       setExtendToIntake(true);
       setAutoLaunchWizard(true);
+      setAutoOpenIntakeEditor(true);
     } else {
       setExtendToIntake(false);
       setAutoLaunchWizard(false);
+      setAutoOpenIntakeEditor(false);
     }
   }, [isStaff, guardian]);
 
@@ -78,6 +81,15 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
       student_course: null,
       status: 'draft'
     };
+  };
+
+  const handleOpenIntakeEditor = () => {
+    if (!guardian?.id) {
+      toast.error('Guarda el apoderado antes de abrir la encuesta completa.');
+      return;
+    }
+    onClose?.();
+    navigate(`/apoderado/encuesta?guardianId=${guardian.id}`);
   };
 
   const onSubmit = async (data) => {
@@ -184,7 +196,11 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
         }
         toast.success('Apoderado registrado exitosamente');
 
-        if (autoLaunchWizard && isStaff && !guardian && newGuardian) {
+        if (isStaff && autoOpenIntakeEditor && !guardian && newGuardian) {
+          navigate(`/apoderado/encuesta?guardianId=${newGuardian.id}`, {
+            state: { from: 'guardian-form', staffMode: true }
+          });
+        } else if (autoLaunchWizard && isStaff && !guardian && newGuardian) {
           const snapshot = {
             id: newGuardian.id,
             first_name: newGuardian.first_name,
@@ -421,6 +437,29 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                         Abrir asistente de matrícula al cerrar
                       </label>
                       <p className="text-xs text-gray-500">Redirige al MatriculaWizard en modo asistido con este apoderado preseleccionado.</p>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={autoOpenIntakeEditor}
+                          onChange={(e) => setAutoOpenIntakeEditor(e.target.checked)}
+                        />
+                        Abrir encuesta completa al guardar
+                      </label>
+                      <p className="text-xs text-gray-500">Lleva al formulario integral para completar todos los campos inmediatamente.</p>
+                      <div className="pt-1">
+                        <button
+                          type="button"
+                          onClick={handleOpenIntakeEditor}
+                          disabled={!guardian?.id}
+                          className="text-sm font-medium text-primary hover:underline disabled:text-gray-400"
+                        >
+                          Abrir encuesta completa ahora
+                        </button>
+                        {!guardian?.id && (
+                          <p className="text-xs text-gray-500">Guarda el apoderado para habilitar esta acción.</p>
+                        )}
+                      </div>
                     </div>
                   )}
             </form>

@@ -14,6 +14,20 @@ export function clearGuardianIntakeCache() {
   _intakeFetchPromise = null;
 }
 
+function normalizeIntakeRecord(row: any): GuardianIntakeRecord | null {
+  if (!row) return null;
+  const record = { ...row } as GuardianIntakeRecord;
+  if (typeof record.student_lives_with === 'string') {
+    record.student_lives_with = record.student_lives_with
+      ? record.student_lives_with.split('|').filter((s: string) => s.trim())
+      : [];
+  }
+  if (typeof record.status === 'string') {
+    record.status = record.status.toLowerCase() as GuardianIntakeRecord['status'];
+  }
+  return record;
+}
+
 export interface GuardianIntakeRecord {
   id: string;
   guardian_id: string;
@@ -80,24 +94,7 @@ export async function fetchCurrentIntake(force = false): Promise<GuardianIntakeR
         .maybeSingle();
       if (error && error.code !== 'PGRST116') throw error;
 
-      let record = data || null;
-      
-      // Convert student_lives_with from pipe-delimited string to array
-      if (record && typeof record.student_lives_with === 'string') {
-        record = {
-          ...record,
-          student_lives_with: record.student_lives_with
-            ? record.student_lives_with.split('|').filter((s: string) => s.trim())
-            : []
-        };
-      }
-
-      if (record && typeof record.status === 'string') {
-        record = {
-          ...record,
-          status: record.status.toLowerCase() as GuardianIntakeRecord['status']
-        };
-      }
+      let record = normalizeIntakeRecord(data || null);
       
       // If not found (404 / PGRST116) try auto-create a minimal draft once.
       if (!record && !_intakeAutoCreateAttempted) {
@@ -105,8 +102,8 @@ export async function fetchCurrentIntake(force = false): Promise<GuardianIntakeR
         try {
           const minimalPayload = { year: CURRENT_YEAR, status: 'draft' } as any;
           const { data: created, error: createErr } = await supabase.rpc('upsert_guardian_intake_survey', { payload: minimalPayload });
-          if (!createErr) {
-            record = created as GuardianIntakeRecord;
+          if (!createErr && created) {
+            record = normalizeIntakeRecord(created);
           }
         } catch { /* ignore auto-create failure */ }
       }
@@ -139,6 +136,21 @@ export async function submitIntake() {
   if (error) throw error;
   clearGuardianIntakeCache();
   return data;
+}
+
+export async function adminFetchGuardianIntake(guardianId: string, year?: number): Promise<GuardianIntakeRecord | null> {
+  if (!guardianId) throw new Error('guardianId required');
+  const targetYear = year ?? CURRENT_YEAR;
+  const { data, error } = await supabase
+    .from('guardian_intake_surveys')
+    .select('*')
+    .eq('guardian_id', guardianId)
+    .eq('year', targetYear)
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return normalizeIntakeRecord(data || null);
 }
 
 export async function needsIntakeCheck(force = false): Promise<boolean> {

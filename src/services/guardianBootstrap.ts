@@ -441,3 +441,61 @@ export async function fetchGuardianBootstrap(userId: string, userEmail?: string 
     upcomingEnrollmentYear: null,
   });
 }
+
+export async function fetchGuardianBootstrapForStaff(guardianId: string): Promise<GuardianBootstrapData | null> {
+  if (!guardianId) return null;
+  try {
+    const { data: guardian, error } = await supabase
+      .from('guardians')
+      .select('*')
+      .eq('id', guardianId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!guardian) {
+      return null;
+    }
+
+    const [intake, students] = await Promise.all([
+      fetchGuardianIntake(guardianId),
+      fetchGuardianStudentsList(guardianId)
+    ]);
+
+    const enrollment = await fetchGuardianEnrollment(guardianId);
+    const enrollmentStudentIds = enrollment ? await fetchEnrollmentStudentIds(enrollment.id) : [];
+    const enrollmentDocuments = enrollment ? await fetchEnrollmentDocuments(enrollment.id) : [];
+    const fees = await fetchGuardianFees(students.map((s) => s.id).filter(Boolean));
+
+    const enrollmentsByYear: Record<string, GuardianEnrollmentBundle> = {};
+    const availableEnrollmentYears: number[] = [];
+    if (enrollment) {
+      const yearValue = enrollment.year ?? CURRENT_YEAR;
+      const yearKey = String(yearValue);
+      enrollmentsByYear[yearKey] = {
+        enrollment,
+        studentIds: enrollmentStudentIds,
+        documents: enrollmentDocuments,
+        fees,
+      };
+      if (Number.isInteger(enrollment.year)) {
+        availableEnrollmentYears.push(enrollment.year as number);
+      }
+    }
+
+    return finalizePayload({
+      guardian,
+      intake,
+      students,
+      enrollment,
+      enrollmentStudentIds,
+      enrollmentDocuments,
+      fees,
+      enrollmentsByYear,
+      availableEnrollmentYears,
+      currentEnrollmentYear: enrollment?.year ?? null,
+      upcomingEnrollmentYear: null,
+    });
+  } catch (error) {
+    console.warn('[guardianBootstrap] staff fetch failed', error);
+    return null;
+  }
+}
