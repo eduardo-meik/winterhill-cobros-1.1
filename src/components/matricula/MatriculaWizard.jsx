@@ -420,13 +420,40 @@ export function MatriculaWizard() {
     if (!guardian) return;
     const { data, error } = await supabase
       .from('student_guardian')
-      .select(`student_id, students:student_id(id, whole_name, run)`) // adjust as needed
+      .select(`
+        student_id,
+        students:student_id (
+          id,
+          whole_name,
+          run,
+          curso,
+          cursos:curso (
+            nom_curso,
+            nivel,
+            letra_curso
+          )
+        )
+      `)
       .eq('guardian_id', guardian.id);
     if (error) {
       console.error('loadAssociatedStudents error', error);
       return;
     }
-    const list = (data || []).map(r => ({ id: r.students?.id, whole_name: r.students?.whole_name, run: r.students?.run }));
+    const list = (data || []).map(r => {
+      const s = r.students || {};
+      const c = s.cursos || null;
+      const cursoLabel = c?.nom_curso
+        || (c ? `${c.nivel ?? ''}${c.letra_curso ? ` ${c.letra_curso}` : ''}`.trim() : null)
+        || s.curso
+        || null;
+      return {
+        id: s.id,
+        whole_name: s.whole_name,
+        run: s.run,
+        curso: s.curso || undefined,
+        curso_nombre: cursoLabel || undefined
+      };
+    }).filter(st => Boolean(st.id));
     setAllMyStudents(list);
   }, [guardian]);
 
@@ -1076,24 +1103,50 @@ export function MatriculaWizard() {
               <div>
                 <h3 className="font-medium mb-2 text-sm">Mis Alumnos Asociados</h3>
                 <ul className="space-y-1 max-h-72 overflow-auto text-sm">
-                  {allMyStudents.map(st => (
-                    <li key={st.id} className="flex items-center justify-between gap-2 bg-gray-50 dark:bg-dark/40 px-2 py-1 rounded">
-                      <span>{st.whole_name || st.run}</span>
-                      <Button variant="outline" size="xs" onClick={() => handleAddStudent(st.id)}>Agregar</Button>
-                    </li>
-                  ))}
+                  {allMyStudents.map(st => {
+                    const cursoLabel = st.curso_nombre || st.curso || null;
+                    const subtitleParts = [];
+                    if (st.run && st.whole_name !== st.run) subtitleParts.push(st.run);
+                    if (cursoLabel) subtitleParts.push(cursoLabel);
+                    return (
+                      <li key={st.id} className="flex items-center justify-between gap-2 bg-gray-50 dark:bg-dark/40 px-2 py-1 rounded">
+                        <div className="flex flex-col flex-1 min-w-0">
+                          <span className="font-medium truncate">{st.whole_name || st.run}</span>
+                          {subtitleParts.length > 0 && (
+                            <span className="text-[11px] text-gray-500 truncate">
+                              {subtitleParts.join(' | ')}
+                            </span>
+                          )}
+                        </div>
+                        <Button variant="outline" size="xs" onClick={() => handleAddStudent(st.id)}>Agregar</Button>
+                      </li>
+                    );
+                  })}
                   {allMyStudents.length === 0 && <li className="text-gray-500">No hay alumnos asociados</li>}
                 </ul>
               </div>
               <div>
                 <h3 className="font-medium mb-2 text-sm">Alumnos en la Matrícula</h3>
                 <ul className="space-y-1 max-h-72 overflow-auto text-sm">
-                  {students.map(st => (
-                    <li key={st.id} className="flex items-center justify-between gap-2 bg-primary/5 dark:bg-primary/10 px-2 py-1 rounded">
-                      <span>{st.whole_name || st.run}</span>
-                      <Button variant="destructive" size="xs" onClick={() => handleRemoveStudent(st.id)}>Quitar</Button>
-                    </li>
-                  ))}
+                  {students.map(st => {
+                    const cursoLabel = st.curso_nombre || st.curso || null;
+                    const subtitleParts = [];
+                    if (st.run && st.whole_name !== st.run) subtitleParts.push(st.run);
+                    if (cursoLabel) subtitleParts.push(cursoLabel);
+                    return (
+                      <li key={st.id} className="flex items-center justify-between gap-2 bg-primary/5 dark:bg-primary/10 px-2 py-1 rounded">
+                        <div className="flex flex-col flex-1 min-w-0">
+                          <span className="font-medium truncate">{st.whole_name || st.run}</span>
+                          {subtitleParts.length > 0 && (
+                            <span className="text-[11px] text-gray-600 dark:text-gray-300 truncate">
+                              {subtitleParts.join(' | ')}
+                            </span>
+                          )}
+                        </div>
+                        <Button variant="destructive" size="xs" onClick={() => handleRemoveStudent(st.id)}>Quitar</Button>
+                      </li>
+                    );
+                  })}
                   {students.length === 0 && <li className="text-gray-500">Aún no agregas alumnos</li>}
                 </ul>
               </div>
