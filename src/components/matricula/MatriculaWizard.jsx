@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
@@ -21,7 +21,8 @@ import {
     createDebtPagareDocument,
     hasSignedRegularization,
   signEnrollmentDocument,
-  sha256
+  sha256,
+  buildEnrollmentPaymentPlan
 } from '../../services/matricula';
 import { finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
 import FinalizeEnrollmentModal from './FinalizeEnrollmentModal';
@@ -91,6 +92,16 @@ export function MatriculaWizard() {
     tarjeta: false,
     pagare: false
   });
+  const paymentPlan = useMemo(() => buildEnrollmentPaymentPlan({
+    enrollmentYear: year,
+    economic: {
+      colegiatura_anual: economic.colegiatura_anual,
+      cantidad_cuotas: economic.cantidad_cuotas,
+      monto_cuota: economic.monto_cuota,
+      dia_vencimiento: economic.dia_vencimiento
+    },
+    paymentMethodFlags: paymentMethod
+  }), [economic, paymentMethod, year]);
   const [descuentoPlanilla, setDescuentoPlanilla] = useState(false);
   const [descuentoInfo, setDescuentoInfo] = useState({
     porcentaje_descuento: 0,
@@ -123,7 +134,6 @@ export function MatriculaWizard() {
   const [finalizing, setFinalizing] = useState(false);
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [finalizePreview, setFinalizePreview] = useState(null);
-  const [skipDocChecks, setSkipDocChecks] = useState(false);
   const [finalizeAlert, setFinalizeAlert] = useState(null);
 
   // Assisted mode (ADMIN/ASIST)
@@ -475,9 +485,15 @@ export function MatriculaWizard() {
       porcentaje_descuento: descuentoInfo.porcentaje_descuento || 0,
       monto_total_descuento: descuentoInfo.monto_total_descuento || 0
     };
+    if (paymentPlan) {
+      patch.payment_plan = paymentPlan;
+    }
     
     console.log('💾 Guardando datos económicos y formas de pago:', patch);
-    await updateEnrollmentMeta(enrollment.id, patch);
+    const updated = await updateEnrollmentMeta(enrollment.id, patch);
+    if (updated) {
+      setEnrollment(prev => prev ? { ...prev, meta: { ...(prev.meta || {}), ...patch } } : prev);
+    }
     
     // Auto-calculate monto_cuota if not provided
     if (!economic.monto_cuota && patch.colegiatura_anual && patch.cantidad_cuotas) {
@@ -671,14 +687,29 @@ export function MatriculaWizard() {
     }
   };
 
+  const computeFinalizeOptions = () => {
+    if (!paymentPlan) {
+      toast.error('Completa los datos económicos (monto anual, cuotas y día de vencimiento) antes de confirmar.');
+      return null;
+    }
+    return {
+      ...(assistedMode ? { skip_doc_checks: true } : {}),
+      payment_plan: paymentPlan
+    };
+  };
+
   // Staff finalize: dry-run preview
   const handleFinalizePreview = async () => {
     if (!enrollment) return;
+    const finalizeOptions = computeFinalizeOptions();
+    if (!finalizeOptions) return;
     try {
       setFinalizing(true);
       setFinalizeAlert(null);
-      const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
-      const preview = await finalizeEnrollmentPreview(enrollment.id, opts);
+      const preview = await finalizeEnrollmentPreview(enrollment.id, finalizeOptions);
+      if (preview && !preview.year) {
+        preview.year = enrollment.year ?? year;
+      }
       setFinalizePreview(preview);
       setFinalizeOpen(true);
     } catch (e) {
@@ -691,10 +722,17 @@ export function MatriculaWizard() {
   // Staff finalize: confirm apply
   const handleFinalizeConfirm = async () => {
     if (!enrollment) return;
+    const finalizeOptions = computeFinalizeOptions();
+    if (!finalizeOptions) {
+      setFinalizeAlert({ type: 'warning', message: 'Falta configurar el plan de pagos antes de confirmar.' });
+      return;
+    }
     try {
       setFinalizing(true);
-      const opts = assistedMode ? { skip_doc_checks: skipDocChecks } : {};
-      const result = await finalizeEnrollmentConfirm(enrollment.id, opts);
+      const result = await finalizeEnrollmentConfirm(enrollment.id, finalizeOptions);
+      if (result && !result.year) {
+        result.year = enrollment.year ?? year;
+      }
       const studentsCount = Number(result?.students_count ?? students.length ?? 0);
       const createdCharges = Number(result?.created_charges ?? 0);
       const skippedDuplicates = Number(result?.skipped_duplicates ?? 0);
@@ -713,10 +751,10 @@ export function MatriculaWizard() {
         if (latest) {
           setEnrollment(latest);
         } else {
-          setEnrollment(prev => (prev ? { ...prev, status: 'CONFIRMED' } : prev));
+          setEnrollment(prev => (prev ? { ...prev, status: 'completed' } : prev));
         }
       } else {
-        setEnrollment(prev => (prev ? { ...prev, status: 'CONFIRMED' } : prev));
+        setEnrollment(prev => (prev ? { ...prev, status: 'completed' } : prev));
       }
     } catch (e) {
       // toast handled in service
@@ -1380,21 +1418,13 @@ export function MatriculaWizard() {
                       ✏️ Editar Datos
                     </Button>
                     {assistedMode && (
-                      <>
-                        <div className="flex items-center gap-2 ml-auto mr-2 text-xs">
-                          <label className="flex items-center gap-1 cursor-pointer">
-                            <input type="checkbox" className="w-4 h-4" checked={skipDocChecks} onChange={e => setSkipDocChecks(e.target.checked)} />
-                            <span>Omitir verificación de documentos</span>
-                          </label>
-                        </div>
-                        <Button
-                          onClick={handleFinalizePreview}
-                          disabled={finalizing || students.length === 0}
-                          className="bg-primary text-white"
-                        >
-                          {finalizing ? 'Preparando…' : 'Confirmar matrícula'}
-                        </Button>
-                      </>
+                      <Button
+                        onClick={handleFinalizePreview}
+                        disabled={finalizing || students.length === 0}
+                        className="ml-auto bg-primary text-white"
+                      >
+                        {finalizing ? 'Preparando…' : 'Confirmar matrícula'}
+                      </Button>
                     )}
                   </div>
                   {assistedMode && (
@@ -1455,6 +1485,8 @@ export function MatriculaWizard() {
         onConfirm={handleFinalizeConfirm}
         preview={finalizePreview}
         confirming={finalizing}
+        students={students}
+        enrollmentYear={enrollment?.year ?? year}
       />
     </main>
   );

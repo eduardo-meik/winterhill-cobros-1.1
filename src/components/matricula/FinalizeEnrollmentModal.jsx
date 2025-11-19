@@ -10,12 +10,68 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
  * - onConfirm: () => Promise<void> | void
  * - preview: any | null (resultado del dry-run)
  * - confirming?: boolean
+ * - students?: array (lista actual de estudiantes seleccionados)
+ * - enrollmentYear?: number
  */
-export function FinalizeEnrollmentModal({ isOpen, onClose, onConfirm, preview, confirming = false }) {
+export function FinalizeEnrollmentModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  preview,
+  confirming = false,
+  students = [],
+  enrollmentYear
+}) {
   if (!isOpen) return null;
 
-  const summary = preview?.summary || {};
-  const items = Array.isArray(preview?.items) ? preview.items : [];
+  const studentMap = Array.isArray(students)
+    ? students.reduce((acc, student) => {
+        acc[student.id] = student;
+        return acc;
+      }, {})
+    : {};
+
+  const getStudentDisplay = (studentId, fallbackName) => {
+    const student = studentMap[studentId];
+    if (!student) return fallbackName || studentId || '-';
+    return student.run || fallbackName || student.whole_name || studentId || '-';
+  };
+
+  const normalizeCuotas = (list) => {
+    if (!Array.isArray(list)) return [];
+    return list.map((c) => ({
+      numero_cuota: c.numero_cuota ?? c.numero ?? c.n ?? null,
+      amount: Number(c.amount ?? c.monto ?? 0) || 0,
+      due_date: c.due_date ?? c.fecha ?? c.date ?? null,
+      created: c.created ?? (c.existed === false),
+      existed: c.existed ?? !(c.created ?? false)
+    }));
+  };
+
+  const details = Array.isArray(preview?.details) ? preview.details : [];
+  const normalizedDetails = details.map((detail) => ({
+    student_id: detail.student_id,
+    student_name: getStudentDisplay(detail.student_id, detail.student_name),
+    cuotas: normalizeCuotas(detail.items)
+  }));
+
+  const explicitItems = Array.isArray(preview?.items) ? preview.items : [];
+  const items = explicitItems.length
+    ? explicitItems.map((entry) => ({
+        ...entry,
+        cuotas: Array.isArray(entry.cuotas) ? entry.cuotas : normalizeCuotas(entry.items),
+        student_name: getStudentDisplay(entry.student_id, entry.student_name)
+      }))
+    : normalizedDetails;
+
+  const baseSummary = preview?.summary || {};
+  const summary = {
+    ...baseSummary,
+    year: baseSummary.year ?? preview?.year ?? enrollmentYear ?? '-',
+    students_count: baseSummary.students_count ?? preview?.students_count ?? items.length ?? 0,
+    total_cuotas:
+      baseSummary.total_cuotas ?? items.reduce((acc, it) => acc + (Array.isArray(it.cuotas) ? it.cuotas.length : 0), 0)
+  };
   const messages = Array.isArray(preview?.messages) ? preview.messages : [];
 
   return (

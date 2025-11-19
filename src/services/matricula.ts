@@ -40,6 +40,14 @@ export interface StudentRecord {
   date_of_birth?: string;
 }
 
+export interface PaymentMethodFlags {
+  cheques?: boolean;
+  transferencia?: boolean;
+  efectivo?: boolean;
+  tarjeta?: boolean;
+  pagare?: boolean;
+}
+
 export interface GuardianLinkedStudent {
   id: string;
   first_name: string | null;
@@ -90,6 +98,7 @@ export interface EnrollmentDocumentRecord {
   content_hash?: string | null;
   pdf_hash?: string | null;
 }
+
 
 // Caching & safe single-attempt RPC creation flags (avoid spamming console when function missing)
 let _guardianCache: Record<string, GuardianRecord | null | undefined> = {};
@@ -879,13 +888,7 @@ export function buildPrestacionPayload(opts: {
     monto_cuota?: number;
     dia_vencimiento?: number;
   };
-  paymentMethod?: {
-    cheques?: boolean;
-    transferencia?: boolean;
-    efectivo?: boolean;
-    tarjeta?: boolean;
-    pagare?: boolean;
-  };
+  paymentMethod?: PaymentMethodFlags;
   cheques?: Array<{ numero_cuota?: number; numero_serie?: string; banco?: string; fecha_emision?: string; monto?: number; notas?: string; }>;
   descuento?: {
     porcentaje?: number;
@@ -1106,6 +1109,135 @@ export function renderPrestacionWithAnnex(payload: PrestacionPayload, options: {
   const bodyTag = baseParts.bodyTag || '<body>';
 
   return `${doctype}\n${htmlTag}\n<head>\n${mergedHead}\n</head>\n${bodyTag}\n${mergedBody}\n</body>\n</html>`;
+}
+
+export interface EnrollmentPaymentPlan {
+  n_cuotas: number;
+  monto_total: number;
+  monto_por_cuota: number;
+  primer_vencimiento: string;
+  dia_vencimiento: number;
+  payment_method: string | null;
+  cuotas: Array<{ numero: number; amount: number; due_date: string }>;
+}
+
+interface BuildPaymentPlanOptions {
+  enrollmentYear: number;
+  economic?: {
+    monto_matricula?: number | string;
+    colegiatura_anual?: number | string;
+    cantidad_cuotas?: number | string;
+    monto_cuota?: number | string;
+    dia_vencimiento?: number | string;
+    primer_vencimiento?: string | null;
+  };
+  paymentMethodFlags?: PaymentMethodFlags;
+  firstDueMonth?: number; // 0-indexed month; defaults to March
+  firstDueDate?: string | null; // overrides everything if provided
+}
+
+export function buildEnrollmentPaymentPlan(options: BuildPaymentPlanOptions): EnrollmentPaymentPlan | null {
+  const { enrollmentYear, economic, paymentMethodFlags } = options;
+  if (!enrollmentYear) return null;
+  const econ = economic || {};
+  const cuotasCount = toPositiveInt(econ.cantidad_cuotas);
+  if (!cuotasCount) return null;
+  const dayOfMonth = clampDayOfMonth(econ.dia_vencimiento);
+  if (!dayOfMonth) return null;
+
+  const montoTotal = Math.max(0, toNumberOrZero(econ.colegiatura_anual));
+  let montoCuota = toNumberOrZero(econ.monto_cuota);
+  if (!montoCuota && montoTotal && cuotasCount) {
+    montoCuota = Math.round(montoTotal / cuotasCount);
+  }
+
+  const explicitDate = options.firstDueDate || econ.primer_vencimiento || null;
+  const normalizedExplicitDate = normalizeIsoDate(explicitDate);
+  const baseMonth = typeof options.firstDueMonth === 'number' ? options.firstDueMonth : 2; // March by default
+  const baseDate = normalizedExplicitDate
+    ? isoToUTCDate(normalizedExplicitDate)
+    : new Date(Date.UTC(enrollmentYear, baseMonth, dayOfMonth));
+  if (!baseDate) return null;
+
+  const cuotas: Array<{ numero: number; amount: number; due_date: string }> = [];
+  for (let i = 0; i < cuotasCount; i += 1) {
+    const due = addMonthsUTC(baseDate, i);
+    cuotas.push({
+      numero: i + 1,
+      amount: montoCuota,
+      due_date: formatIsoDate(due)
+    });
+  }
+
+  return {
+    n_cuotas: cuotasCount,
+    monto_total: montoTotal,
+    monto_por_cuota: montoCuota,
+    primer_vencimiento: formatIsoDate(baseDate),
+    dia_vencimiento: dayOfMonth,
+    payment_method: derivePrimaryPaymentMethod(paymentMethodFlags),
+    cuotas
+  };
+}
+
+function derivePrimaryPaymentMethod(flags?: PaymentMethodFlags): string | null {
+  if (!flags) return null;
+  const ordered: Array<{ key: keyof PaymentMethodFlags; label: string }> = [
+    { key: 'pagare', label: 'PAGARE' },
+    { key: 'transferencia', label: 'TRANSFERENCIA' },
+    { key: 'cheques', label: 'CHEQUE' },
+    { key: 'tarjeta', label: 'TARJETA' },
+    { key: 'efectivo', label: 'EFECTIVO' },
+  ];
+  const enabled = ordered.filter(item => flags[item.key]);
+  if (enabled.length === 0) {
+    const anyTrue = Object.values(flags).some(Boolean);
+    return anyTrue ? 'MIXTO' : null;
+  }
+  return enabled[0].label;
+}
+
+function clampDayOfMonth(value: unknown): number {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 0;
+  const day = Math.floor(num);
+  if (day <= 0) return 0;
+  return Math.max(1, Math.min(28, day));
+}
+
+function toPositiveInt(value: unknown): number {
+  const num = Number(value);
+  if (!Number.isFinite(num) || num <= 0) return 0;
+  return Math.floor(num);
+}
+
+function toNumberOrZero(value: unknown): number {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function formatIsoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function normalizeIsoDate(value?: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+function isoToUTCDate(value: string): Date | null {
+  const [y, m, d] = value.split('-').map(part => Number(part));
+  if (!y || !m || !d) return null;
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function addMonthsUTC(date: Date, months: number): Date {
+  const clone = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  clone.setUTCMonth(clone.getUTCMonth() + months);
+  return clone;
 }
 
 // Decision engine: compute needed documents and generate/update them idempotently
@@ -2483,3 +2615,4 @@ export async function finalizeEnrollmentConfirm(
     throw e;
   }
 }
+

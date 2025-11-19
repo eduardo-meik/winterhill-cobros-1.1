@@ -249,7 +249,7 @@ BEGIN
             student_id, guardian_id, amount, due_date, status, payment_method,
             owner_id, year_academico, numero_cuota, enrollment_id, meta
           ) VALUES (
-            r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'PENDING', v_method,
+            r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'pending', v_method,
             v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment')
           )
           ON CONFLICT (student_id, year_academico, numero_cuota) DO NOTHING;
@@ -270,7 +270,7 @@ BEGIN
 
   -- Update enrollment status
   IF NOT v_dry_run THEN
-    UPDATE public.enrollments SET status = 'CONFIRMED', updated_at = now()
+    UPDATE public.enrollments SET status = 'completed', updated_at = now()
      WHERE id = p_enrollment_id;
 
     -- Mark students as MATRICULADO until contracts are fully activated
