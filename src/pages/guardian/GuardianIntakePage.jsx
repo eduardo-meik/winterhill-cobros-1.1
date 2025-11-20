@@ -10,7 +10,7 @@ import {
   adminSubmitGuardianIntake,
   adminFetchGuardianIntake
 } from '../../services/guardianIntake';
-import { ensureStudentFromIntake } from '../../services/matricula';
+import { ensureStudentFromIntake, fetchCourseCatalogLite } from '../../services/matricula';
 import { normalizeRun, validateRun, formatRunDisplay } from '../../utils/rut';
 import { useGuardianData } from '../../contexts/GuardianContext';
 import { fetchGuardianBootstrapForStaff } from '../../services/guardianBootstrap';
@@ -26,7 +26,7 @@ const REQUIRED_FIELDS = [
   'student_first_names',
   'student_last_name_paterno',
   'student_run',
-  'student_course',
+  'student_course_id',
   'student_birth_date'
 ];
 
@@ -46,6 +46,7 @@ const EMPTY_FORM = {
   student_last_name_materno: '',
   student_run: '',
   student_course: '',
+  student_course_id: '',
   student_birth_date: '',
   student_nationality: '',
   student_gender: '',
@@ -94,6 +95,9 @@ const sanitizeStaffPayload = (payload) => {
       next[field] = null;
     }
   });
+  if (!next.student_course_id) {
+    next.student_course_id = null;
+  }
   return next;
 };
 
@@ -159,6 +163,8 @@ export const GuardianIntakePage = () => {
   const actingAsStaff = Boolean(targetGuardianId && isStaffUser);
   const [staffBootstrap, setStaffBootstrap] = useState(null);
   const [staffBootstrapLoading, setStaffBootstrapLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
   const refreshStaffBootstrap = useCallback(async () => {
     if (!actingAsStaff || !targetGuardianId) return null;
     const data = await fetchGuardianBootstrapForStaff(targetGuardianId);
@@ -198,6 +204,28 @@ export const GuardianIntakePage = () => {
   const guardianName = bootstrapData?.guardian
     ? [bootstrapData.guardian.first_name, bootstrapData.guardian.last_name].filter(Boolean).join(' ').trim() || bootstrapData.guardian.run || ''
     : '';
+
+  useEffect(() => {
+    let ignore = false;
+    const loadCourses = async () => {
+      setCoursesLoading(true);
+      try {
+        const catalog = await fetchCourseCatalogLite();
+        if (!ignore) {
+          setCourses(Array.isArray(catalog) ? catalog : []);
+        }
+      } catch (e) {
+        if (!ignore) {
+          toast.error('No se pudo cargar la lista de cursos');
+          setCourses([]);
+        }
+      } finally {
+        if (!ignore) setCoursesLoading(false);
+      }
+    };
+    loadCourses();
+    return () => { ignore = true; };
+  }, []);
 
   const applyPrefillFallbacks = useCallback((baseForm) => {
     let updated = normalizeForm(baseForm);
@@ -240,6 +268,9 @@ export const GuardianIntakePage = () => {
       }
       if (!updated.student_course && student.curso_label) {
         updated.student_course = student.curso_label;
+      }
+      if (!updated.student_course_id && student.curso_id) {
+        updated.student_course_id = student.curso_id;
       }
       if (!updated.student_birth_date && student.date_of_birth) {
         updated.student_birth_date = student.date_of_birth;
@@ -318,6 +349,27 @@ export const GuardianIntakePage = () => {
     });
   };
 
+  const updateCourseSelection = (courseId) => {
+    setForm((prev) => {
+      const selectedCourse = courses.find((course) => course.id === courseId) || null;
+      const next = normalizeForm({
+        ...prev,
+        student_course_id: courseId,
+        student_course: selectedCourse?.nom_curso || ''
+      });
+      if (status !== 'submitted') {
+        if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+        autosaveTimer.current = setTimeout(() => {
+          autosaveTimer.current = null;
+          const snapshot = JSON.stringify(next);
+          if (snapshot === lastSavedSnapshot.current) return;
+          doSave(true, next);
+        }, 1200);
+      }
+      return next;
+    });
+  };
+
   const toggleLivesWith = (option) => {
     setForm((prev) => {
       const current = new Set(prev.student_lives_with || []);
@@ -366,6 +418,47 @@ export const GuardianIntakePage = () => {
       }
     }, [form, actingAsStaff, targetGuardianId]);
 
+  const attemptAutoStudentCreation = useCallback(async ({
+    guardianId,
+    bootstrapSnapshot,
+    formSnapshot,
+    staffUserId,
+    showFeedback,
+  }) => {
+    if (!guardianId || !bootstrapSnapshot) return;
+    const intakeSeed = bootstrapSnapshot.intake || {};
+    const payload = {
+      ...intakeSeed,
+      ...formSnapshot,
+      guardian_id: guardianId,
+      guardian_relationship: formSnapshot.guardian_relationship || intakeSeed.guardian_relationship || '',
+      student_lives_with: Array.isArray(formSnapshot.student_lives_with)
+        ? [...formSnapshot.student_lives_with]
+        : [],
+      student_course_id: formSnapshot.student_course_id || intakeSeed.student_course_id || null,
+    };
+    const result = await ensureStudentFromIntake({
+      guardianId,
+      intake: payload,
+      guardianOwnerId: bootstrapSnapshot.guardian?.owner_id ?? null,
+      guardianRelationship:
+        formSnapshot.guardian_relationship ||
+        bootstrapSnapshot.guardian?.family_tie ||
+        bootstrapSnapshot.guardian?.relationship_type ||
+        null,
+      staffUserId: staffUserId || null,
+    });
+    if (!showFeedback || !result) return;
+    if (result.created) {
+      toast.success('Se creó un alumno utilizando los datos de la encuesta.');
+    } else if (result.linked && result.studentId) {
+      toast.success('Se vinculó el alumno existente con el apoderado.');
+    } else if (result.reason) {
+      const reasonMessage = AUTO_STUDENT_REASON_MESSAGES[result.reason] || AUTO_STUDENT_REASON_MESSAGES.error;
+      toast(reasonMessage);
+    }
+  }, [ensureStudentFromIntake]);
+
     useEffect(() => {
       return () => {
         if (autosaveTimer.current) {
@@ -409,40 +502,24 @@ export const GuardianIntakePage = () => {
       if (actingAsStaff && targetGuardianId) {
         await adminSubmitGuardianIntake(targetGuardianId);
         toast.success('Encuesta enviada para el apoderado');
-        const hasStudents = Array.isArray(bootstrapData?.students) && bootstrapData.students.length > 0;
-        if (!hasStudents && bootstrapData) {
-          const intakeSeed = bootstrapData.intake || {};
-          const autoCreateIntake = {
-            ...intakeSeed,
-            ...form,
-            guardian_id: targetGuardianId,
-            guardian_relationship: form.guardian_relationship || intakeSeed.guardian_relationship || '',
-            student_lives_with: Array.isArray(form.student_lives_with) ? [...form.student_lives_with] : []
-          };
-          const autoResult = await ensureStudentFromIntake({
-            guardianId: targetGuardianId,
-            intake: autoCreateIntake,
-            guardianOwnerId: bootstrapData.guardian?.owner_id ?? null,
-            guardianRelationship:
-              form.guardian_relationship ||
-              bootstrapData.guardian?.family_tie ||
-              bootstrapData.guardian?.relationship_type ||
-              null,
-            staffUserId: user?.id ?? null
-          });
-          if (autoResult.created) {
-            toast.success('Se creó un alumno utilizando los datos de la encuesta.');
-          } else if (autoResult.linked && autoResult.studentId) {
-            toast.success('Se vinculó el alumno existente con el apoderado.');
-          } else if (autoResult.reason) {
-            const reasonMessage = AUTO_STUDENT_REASON_MESSAGES[autoResult.reason] || AUTO_STUDENT_REASON_MESSAGES.error;
-            toast(reasonMessage);
-          }
-        }
+        await attemptAutoStudentCreation({
+          guardianId: targetGuardianId,
+          bootstrapSnapshot: bootstrapData,
+          formSnapshot: form,
+          staffUserId: user?.id ?? null,
+          showFeedback: true,
+        });
         await refreshStaffBootstrap();
       } else {
         await submitIntake();
         toast.success('Encuesta enviada');
+        await attemptAutoStudentCreation({
+          guardianId: bootstrapData?.guardian?.id ?? null,
+          bootstrapSnapshot: bootstrapData,
+          formSnapshot: form,
+          staffUserId: user?.id ?? null,
+          showFeedback: false,
+        });
         await refreshGuardianData({ force: true });
         navigate('/apoderado/matricula', { replace: true });
       }
@@ -543,7 +620,25 @@ export const GuardianIntakePage = () => {
           />
           {errors.student_run && <span className="text-xs text-red-600">{errors.student_run}</span>}
         </Field>
-        <Field label="Curso" required><input value={form.student_course} onChange={e=>updateField('student_course', e.target.value)} className="input" placeholder="Ej: 3° Básico" /></Field>
+        <Field label="Curso" required>
+          <select
+            value={form.student_course_id}
+            onChange={(e) => updateCourseSelection(e.target.value)}
+            className={`input ${errors.student_course_id ? 'border-red-400' : ''}`}
+            disabled={coursesLoading}
+          >
+            <option value="">Seleccione...</option>
+            {form.student_course_id && !courses.find((course) => course.id === form.student_course_id) && (
+              <option value={form.student_course_id}>{form.student_course || 'Curso seleccionado'}</option>
+            )}
+            {courses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.nom_curso || 'Sin nombre'}
+              </option>
+            ))}
+          </select>
+          {errors.student_course_id && <span className="text-xs text-red-600">Requerido</span>}
+        </Field>
         <Field label="Fecha Nacimiento" required><input type="date" value={form.student_birth_date || ''} onChange={e=>updateField('student_birth_date', e.target.value)} className="input" /></Field>
         <Field label="Nacionalidad"><input value={form.student_nationality} onChange={e=>updateField('student_nationality', e.target.value)} className="input" /></Field>
         <Field label="Género"><input value={form.student_gender} onChange={e=>updateField('student_gender', e.target.value)} className="input" /></Field>

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS public.guardian_intake_surveys (
   student_last_name_materno text,
   student_run text,
   student_course text,
+  student_course_id uuid REFERENCES public.cursos(id),
   student_birth_date date,
   student_nationality text,
   student_gender text,
@@ -58,11 +59,12 @@ BEGIN
     SELECT 1 FROM pg_proc WHERE proname = 'set_updated_at'
   ) THEN
     CREATE OR REPLACE FUNCTION public.set_updated_at()
-    RETURNS trigger LANGUAGE plpgsql AS $$
+    RETURNS trigger LANGUAGE plpgsql AS $fn$
     BEGIN
       NEW.updated_at = now();
       RETURN NEW;
-    END; $$;
+    END;
+    $fn$;
   END IF;
 END;$$;
 
@@ -144,7 +146,7 @@ BEGIN
       guardian_id, year,
       guardian_first_name, guardian_last_name_paterno, guardian_last_name_materno, guardian_relationship,
       guardian_rut, guardian_education_level, guardian_address, guardian_commune, guardian_email, guardian_phone,
-      student_first_names, student_last_name_paterno, student_last_name_materno, student_run, student_course,
+      student_first_names, student_last_name_paterno, student_last_name_materno, student_run, student_course, student_course_id,
       student_birth_date, student_nationality, student_gender, student_social_name, student_enrollment_date,
       student_withdrawal_date, student_withdrawal_reason, student_repeat_current, student_previous_institution,
       student_address, student_commune, student_lives_with, alt_contact_name, alt_contact_phone,
@@ -155,6 +157,7 @@ BEGIN
       payload->>'guardian_first_name', payload->>'guardian_last_name_paterno', payload->>'guardian_last_name_materno', payload->>'guardian_relationship',
       payload->>'guardian_rut', payload->>'guardian_education_level', payload->>'guardian_address', payload->>'guardian_commune', payload->>'guardian_email', payload->>'guardian_phone',
       payload->>'student_first_names', payload->>'student_last_name_paterno', payload->>'student_last_name_materno', payload->>'student_run', payload->>'student_course',
+      NULLIF(payload->>'student_course_id','')::uuid,
       (payload->>'student_birth_date')::date, payload->>'student_nationality', payload->>'student_gender', payload->>'student_social_name', (payload->>'student_enrollment_date')::date,
       (payload->>'student_withdrawal_date')::date, payload->>'student_withdrawal_reason', (payload->>'student_repeat_current')::boolean, payload->>'student_previous_institution',
       payload->>'student_address', payload->>'student_commune', string_to_array(COALESCE(payload->>'student_lives_with',''), '|')::text[], payload->>'alt_contact_name', payload->>'alt_contact_phone',
@@ -178,6 +181,7 @@ BEGIN
       student_last_name_materno = payload->>'student_last_name_materno',
       student_run = payload->>'student_run',
       student_course = payload->>'student_course',
+      student_course_id = NULLIF(payload->>'student_course_id','')::uuid,
       student_birth_date = (payload->>'student_birth_date')::date,
       student_nationality = payload->>'student_nationality',
       student_gender = payload->>'student_gender',

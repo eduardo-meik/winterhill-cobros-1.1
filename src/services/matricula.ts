@@ -2160,7 +2160,7 @@ export async function sha256(text: string): Promise<string> {
 // INTAKE → STUDENT AUTO-CREATION HELPERS
 // =====================================================
 
-type CourseLite = {
+export type CourseLite = {
   id: string;
   nom_curso: string | null;
   nivel: string | null;
@@ -2204,6 +2204,13 @@ async function getCourseCatalog(): Promise<CourseLite[]> {
     }
   })();
   return _courseCatalogPromise;
+}
+
+export async function fetchCourseCatalogLite(options?: { force?: boolean }): Promise<CourseLite[]> {
+  if (options?.force) {
+    _courseCatalog = null;
+  }
+  return getCourseCatalog();
 }
 
 function findCourseByNormalizedLabel(catalog: CourseLite[], normalized: string): CourseLite | null {
@@ -2318,8 +2325,13 @@ export async function ensureStudentFromIntake(
     const runRaw = (intake.student_run || '').trim();
     const birthDate = (intake.student_birth_date || '').trim();
     const courseRaw = (intake.student_course || '').trim();
+    const courseIdFromIntake = (() => {
+      const rawValue = (intake as any).student_course_id;
+      if (rawValue === null || rawValue === undefined) return '';
+      return String(rawValue).trim();
+    })();
 
-    if (!firstNames || !lastNameP || !runRaw || !birthDate || !courseRaw) {
+    if (!firstNames || !lastNameP || !runRaw || !birthDate || (!courseRaw && !courseIdFromIntake)) {
       return { ...base, reason: 'missing_fields' };
     }
 
@@ -2362,7 +2374,13 @@ export async function ensureStudentFromIntake(
       };
     }
 
-    const courseResolution = await resolveCourseFromInput(courseRaw);
+    let courseResolution = { courseId: null as string | null, course: null as CourseLite | null };
+    if (courseIdFromIntake) {
+      courseResolution = await resolveCourseFromInput(courseIdFromIntake);
+    }
+    if (!courseResolution.courseId) {
+      courseResolution = await resolveCourseFromInput(courseRaw);
+    }
     if (!courseResolution.courseId) {
       return { ...base, reason: 'course_not_found' };
     }

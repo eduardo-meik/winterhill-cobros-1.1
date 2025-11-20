@@ -48,6 +48,7 @@ export interface GuardianIntakeRecord {
   student_last_name_materno?: string;
   student_run?: string;
   student_course?: string;
+  student_course_id?: string | null;
   student_birth_date?: string;
   student_nationality?: string;
   student_gender?: string;
@@ -124,6 +125,9 @@ export async function saveIntakeDraft(payload: Record<string, any>) {
   if (Array.isArray(processedPayload.student_lives_with)) {
     processedPayload.student_lives_with = processedPayload.student_lives_with.join('|');
   }
+  if (!processedPayload.student_course_id) {
+    processedPayload.student_course_id = null;
+  }
   
   const full = { ...processedPayload, year: CURRENT_YEAR, status: 'draft' };
   const { data, error } = await supabase.rpc('upsert_guardian_intake_survey', { payload: full });
@@ -177,6 +181,9 @@ export async function adminUpsertGuardianIntake(
   const processedPayload = { ...payload };
   if (Array.isArray(processedPayload.student_lives_with)) {
     processedPayload.student_lives_with = processedPayload.student_lives_with.join('|');
+  }
+  if (!processedPayload.student_course_id) {
+    processedPayload.student_course_id = null;
   }
   const args: Record<string, any> = {
     p_guardian_id: guardianId,
