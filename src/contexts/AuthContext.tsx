@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Idle session timeout (30 min) implementation
   const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutos
   const [lastActivity, setLastActivity] = useState<number>(Date.now());
-  const [idleTimerId, setIdleTimerId] = useState<number | null>(null);
 
   const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string, profile?: string): LocalUser | null => {
     if (!supabaseUser) return null;
@@ -134,10 +133,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Limpia timer anterior
-    if (idleTimerId) {
-      window.clearTimeout(idleTimerId);
-    }
     // Programa nuevo timeout solo si usuario autenticado
     if (state.session && state.user) {
       const remaining = IDLE_TIMEOUT_MS - (Date.now() - lastActivity);
@@ -151,9 +146,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           } catch {/* ya se maneja en signOut */}
         }
       }, timeoutMs);
-      setIdleTimerId(tid);
+
+      // Limpieza del timer al desmontar o re-ejecutar
+      return () => {
+        window.clearTimeout(tid);
+      };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastActivity, state.session, state.user]);
 
 
