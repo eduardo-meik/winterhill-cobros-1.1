@@ -36,6 +36,8 @@ import { generatePDFFromHTML, downloadPDFBlob } from '../../services/pdfGenerato
 import { sendEmailViaFunction, blobToBase64 } from '../../services/email';
 import { supabase } from '../../services/supabase';
 import { ChequesDataModal } from './ChequesDataModal';
+import { GuardianFormModal } from '../guardians/GuardianFormModal';
+import { StudentFormModal } from '../students/StudentFormModal';
 
 // Renders full HTML (including <style> in <head>) inside an iframe for accurate preview
 function HtmlIframePreview({ html, height = 600 }) {
@@ -135,6 +137,8 @@ export function MatriculaWizard() {
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [finalizePreview, setFinalizePreview] = useState(null);
   const [finalizeAlert, setFinalizeAlert] = useState(null);
+  const [guardianModalOpen, setGuardianModalOpen] = useState(false);
+  const [studentModalOpen, setStudentModalOpen] = useState(false);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -199,6 +203,13 @@ export function MatriculaWizard() {
       setGuardianSearchLoading(false);
     }
   }, []);
+
+  const handleGuardianModalSuccess = useCallback(() => {
+    setGuardianModalOpen(false);
+    if (guardianSearch.trim().length >= 2) {
+      searchGuardians(guardianSearch);
+    }
+  }, [guardianSearch, searchGuardians]);
 
   // Load guardian & enrollment baseline
   useEffect(() => {
@@ -458,6 +469,12 @@ export function MatriculaWizard() {
   }, [guardian]);
 
   useEffect(() => { loadAssociatedStudents(); }, [loadAssociatedStudents]);
+
+  const handleStudentModalSuccess = useCallback(() => {
+    setStudentModalOpen(false);
+    loadAssociatedStudents();
+    reloadEnrollmentStudents();
+  }, [loadAssociatedStudents, reloadEnrollmentStudents]);
 
   // Step navigation guards
   const canProceed = () => {
@@ -905,6 +922,12 @@ export function MatriculaWizard() {
                     <div className="px-4 py-6 text-sm text-gray-500">Sin resultados. Ingresa al menos 2 caracteres.</div>
                   )}
                 </div>
+                <div className="p-4 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-dark/40">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">¿No encuentras al apoderado? Regístralo y abre la Encuesta de Ingreso para iniciar la matrícula.</p>
+                  <Button size="sm" variant="outline" onClick={() => setGuardianModalOpen(true)}>
+                    ➕ Nuevo apoderado
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="flex items-center justify-between">
@@ -1102,6 +1125,19 @@ export function MatriculaWizard() {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-medium mb-2 text-sm">Mis Alumnos Asociados</h3>
+                {assistedMode && allMyStudents.length === 0 && (
+                  <div className="mb-3 rounded-lg border border-yellow-200 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 p-3 text-xs text-yellow-800 dark:text-yellow-200">
+                    <p className="mb-2">Aún no existen estudiantes vinculados a este apoderado. Regístralos para continuar con la matrícula asistida.</p>
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      onClick={() => setStudentModalOpen(true)}
+                      disabled={!guardian?.id}
+                    >
+                      Registrar estudiante
+                    </Button>
+                  </div>
+                )}
                 <ul className="space-y-1 max-h-72 overflow-auto text-sm">
                   {allMyStudents.map(st => {
                     const cursoLabel = st.curso_nombre || st.curso || null;
@@ -1540,6 +1576,20 @@ export function MatriculaWizard() {
         confirming={finalizing}
         students={students}
         enrollmentYear={enrollment?.year ?? year}
+      />
+
+      <GuardianFormModal
+        isOpen={guardianModalOpen}
+        onClose={() => setGuardianModalOpen(false)}
+        onSuccess={handleGuardianModalSuccess}
+        guardian={null}
+      />
+
+      <StudentFormModal
+        isOpen={studentModalOpen}
+        onClose={() => setStudentModalOpen(false)}
+        student={null}
+        onSuccess={handleStudentModalSuccess}
       />
     </main>
   );
