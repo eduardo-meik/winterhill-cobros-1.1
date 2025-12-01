@@ -7,6 +7,7 @@ import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { StudentDetailsModal } from '../students/StudentDetailsModal';
+import { validateRut, formatRut } from '../../utils/rut';
 
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [associatedStudents, setAssociatedStudents] = useState([]);
@@ -218,11 +219,11 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !/^(\\d{1,3}(?:\\.\\d{3})*)-?([\\dkK])$/.test(fieldEditValue)) {
-      toast.error('Formato de RUT inválido');
+    if (fieldKey === 'run' && !validateRut(fieldEditValue)) {
+      toast.error('RUT inválido');
       return;
     }
-    if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i.test(fieldEditValue)) {
+    if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(fieldEditValue)) {
       toast.error('Email inválido');
       return;
     }
@@ -282,7 +283,10 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 id={fieldKey}
                 type={inputType}
                 value={fieldEditValue}
-                onChange={(e) => setFieldEditValue(e.target.value)}
+                onChange={(e) => {
+                  const newValue = fieldKey === 'run' ? formatRut(e.target.value) : e.target.value;
+                  setFieldEditValue(newValue);
+                }}
                 className="w-full px-3 py-1.5 rounded-md border border-primary dark:border-primary bg-white dark:bg-dark-input text-gray-900 dark:text-white focus:ring-1 focus:ring-primary"
                 autoFocus
               />
@@ -424,17 +428,25 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         RUT *
                       </label>
-                      <input
-                        type="text"
-                        {...register('run', { 
+                      {(() => {
+                        const { onChange, ...rest } = register('run', { 
                           required: 'Este campo es requerido',
-                          pattern: {
-                            value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
-                            message: 'Formato de RUT inválido'
-                          }
-                        })}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      />
+                          validate: {
+                            validRut: value => validateRut(value) || 'RUT inválido',
+                          },
+                        });
+                        return (
+                          <input
+                            type="text"
+                            {...rest}
+                            onChange={(e) => {
+                              e.target.value = formatRut(e.target.value);
+                              onChange(e);
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          />
+                        );
+                      })()}
                       {errors.run && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
                       )}

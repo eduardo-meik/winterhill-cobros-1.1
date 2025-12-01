@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { adminUpsertGuardianIntake, adminSubmitGuardianIntake } from '../../services/guardianIntake';
+import { validateRut, formatRut } from '../../utils/rut';
 
 // Default values for a new guardian
 const initialDefaultValues = {
@@ -305,18 +306,24 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         RUT *
                       </label>
-                      <input
-                        type="text"
-                        {...register('run', { 
-                          required: !guardian ? 'Este campo es requerido' : false, // RUT is required only for new guardians
-                          pattern: !guardian ? { // Apply pattern only for new guardians
-                            value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
-                            message: 'Formato de RUT inválido'
-                          } : undefined
-                        })}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        disabled={!!guardian} // Disable RUN field if editing an existing guardian
-                      />
+                      {(() => {
+                        const { onChange, ...rest } = register('run', { 
+                          required: !guardian ? 'Este campo es requerido' : false,
+                          validate: !guardian ? (value) => validateRut(value) || 'RUT inválido' : undefined
+                        });
+                        return (
+                          <input
+                            type="text"
+                            {...rest}
+                            onChange={(e) => {
+                              e.target.value = formatRut(e.target.value);
+                              onChange(e);
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            disabled={!!guardian} // Disable RUN field if editing an existing guardian
+                          />
+                        );
+                      })()}
                       {errors.run && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
                       )}

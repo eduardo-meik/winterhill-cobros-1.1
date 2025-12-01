@@ -6,6 +6,7 @@ import { StudentFormModal } from './StudentFormModal';
 import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { validateRut, formatRut } from '../../utils/rut';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'No especificada';
@@ -105,8 +106,8 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !/^(\\d{1,3}(?:\\.\\d{3})*)-?([\\dkK])$/.test(fieldEditValue)) {
-      toast.error('Formato de RUT inválido');
+    if (fieldKey === 'run' && !validateRut(fieldEditValue)) {
+      toast.error('RUN inválido');
       return;
     }
     // Add more specific validations if needed for other fields like dates
@@ -182,7 +183,10 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                 id={fieldKey}
                 type={inputType}
                 value={currentEditValue}
-                onChange={(e) => setFieldEditValue(e.target.value)}
+                onChange={(e) => {
+                  const newValue = fieldKey === 'run' ? formatRut(e.target.value) : e.target.value;
+                  setFieldEditValue(newValue);
+                }}
                 className="w-full px-3 py-1.5 rounded-md border border-primary dark:border-primary bg-white dark:bg-dark-input text-gray-900 dark:text-white focus:ring-1 focus:ring-primary"
                 autoFocus
               />

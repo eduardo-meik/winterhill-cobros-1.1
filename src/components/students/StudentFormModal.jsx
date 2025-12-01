@@ -6,6 +6,7 @@ import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
+import { validateRut, formatRut } from '../../utils/rut';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -352,18 +353,24 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     RUN *
                   </label>
-                  <input
-                    type="text"
-                    {...register('run', { 
+                  {(() => {
+                    const { onChange, ...rest } = register('run', { 
                       required: !student ? 'Este campo es requerido' : false,
-                      pattern: !student ? {
-                        value: /^\d{7,8}-[\dkK]$/,
-                        message: 'RUN inválido (ej: 12345678-9)'
-                      } : undefined
-                    })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    disabled={!!student} // Ensures field is disabled if student exists
-                  />
+                      validate: !student ? (value) => validateRut(value) || 'RUN inválido' : undefined
+                    });
+                    return (
+                      <input
+                        type="text"
+                        {...rest}
+                        onChange={(e) => {
+                          e.target.value = formatRut(e.target.value);
+                          onChange(e);
+                        }}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        disabled={!!student} // Ensures field is disabled if student exists
+                      />
+                    );
+                  })()}
                   {errors.run && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
                   )}
