@@ -8,6 +8,8 @@ import { LogCode } from '../types/logging';
 import { AuthContextType, AuthState, User as LocalUser } from '../types/auth';
 import { useIdleSessionTimeout } from '../hooks/useIdleSessionTimeout';
 
+const ENABLE_IDLE_TIMEOUT = false;
+
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const initialAuthState: AuthState = {
@@ -290,6 +292,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useIdleSessionTimeout({
+    enabled: ENABLE_IDLE_TIMEOUT,
     isActive: Boolean(state.session && state.user),
     timeoutMs: IDLE_TIMEOUT_MS,
     onTimeout: async () => {
