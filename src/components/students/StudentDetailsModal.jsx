@@ -6,7 +6,7 @@ import { StudentFormModal } from './StudentFormModal';
 import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
-import { validateRut, formatRut } from '../../utils/rut';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'No especificada';
@@ -106,8 +106,8 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !validateRut(fieldEditValue)) {
-      toast.error('RUN inválido');
+    if (fieldKey === 'run' && !isRutFormatValid(fieldEditValue)) {
+      toast.error('Formato de RUN inválido');
       return;
     }
     // Add more specific validations if needed for other fields like dates

@@ -7,7 +7,7 @@ import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { StudentDetailsModal } from '../students/StudentDetailsModal';
-import { validateRut, formatRut } from '../../utils/rut';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
 
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [associatedStudents, setAssociatedStudents] = useState([]);
@@ -219,8 +219,8 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !validateRut(fieldEditValue)) {
-      toast.error('RUT inválido');
+    if (fieldKey === 'run' && !isRutFormatValid(fieldEditValue)) {
+      toast.error('Formato de RUT inválido');
       return;
     }
     if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(fieldEditValue)) {
@@ -432,7 +432,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                         const { onChange, ...rest } = register('run', { 
                           required: 'Este campo es requerido',
                           validate: {
-                            validRut: value => validateRut(value) || 'RUT inválido',
+                            validRut: value => isRutFormatValid(value) || 'Formato de RUT inválido',
                           },
                         });
                         return (

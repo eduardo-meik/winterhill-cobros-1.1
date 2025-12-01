@@ -6,7 +6,7 @@ import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
-import { validateRut, formatRut } from '../../utils/rut';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -356,7 +356,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                   {(() => {
                     const { onChange, ...rest } = register('run', { 
                       required: !student ? 'Este campo es requerido' : false,
-                      validate: !student ? (value) => validateRut(value) || 'RUN inválido' : undefined
+                      validate: !student ? (value) => isRutFormatValid(value) || 'Formato de RUN inválido' : undefined
                     });
                     return (
                       <input

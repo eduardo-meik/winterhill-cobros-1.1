@@ -11,7 +11,7 @@ import {
   adminFetchGuardianIntake
 } from '../../services/guardianIntake';
 import { ensureStudentFromIntake, fetchCourseCatalogLite } from '../../services/matricula';
-import { normalizeRun, validateRun, formatRunDisplay } from '../../utils/rut';
+import { normalizeRun, formatRunDisplay, isRutFormatValid } from '../../utils/rut';
 import { useGuardianData } from '../../contexts/GuardianContext';
 import { fetchGuardianBootstrapForStaff } from '../../services/guardianBootstrap';
 
@@ -476,12 +476,10 @@ export const GuardianIntakePage = () => {
       if (v === undefined || v === null || (typeof v === 'string' && v.trim() === '')) newErrors[f] = 'Requerido';
     });
     if (form.guardian_rut) {
-      const { valid } = validateRun(form.guardian_rut);
-      if (!valid) newErrors.guardian_rut = 'RUT inválido';
+      if (!isRutFormatValid(form.guardian_rut)) newErrors.guardian_rut = 'Formato de RUT inválido';
     }
     if (form.student_run) {
-      const { valid } = validateRun(form.student_run);
-      if (!valid) newErrors.student_run = 'RUN inválido';
+      if (!isRutFormatValid(form.student_run)) newErrors.student_run = 'Formato de RUN inválido';
     }
     setErrors(newErrors);
   }, [form]);
@@ -587,8 +585,11 @@ export const GuardianIntakePage = () => {
             onBlur={e=>{
               if (!e.target.value) return;
               const norm = normalizeRun(e.target.value);
-              const vr = validateRun(norm);
-              updateField('guardian_rut', vr.valid ? formatRunDisplay(norm) : e.target.value);
+              if (isRutFormatValid(e.target.value)) {
+                updateField('guardian_rut', formatRunDisplay(norm));
+              } else {
+                updateField('guardian_rut', e.target.value);
+              }
             }}
             className={`input ${errors.guardian_rut ? 'border-red-400' : ''}`}
             placeholder="12.345.678-9"
@@ -613,8 +614,11 @@ export const GuardianIntakePage = () => {
             onBlur={e=>{
               if (!e.target.value) return;
               const norm = normalizeRun(e.target.value);
-              const vr = validateRun(norm);
-              updateField('student_run', vr.valid ? formatRunDisplay(norm) : e.target.value);
+              if (isRutFormatValid(e.target.value)) {
+                updateField('student_run', formatRunDisplay(norm));
+              } else {
+                updateField('student_run', e.target.value);
+              }
             }}
             className={`input ${errors.student_run ? 'border-red-400' : ''}`}
           />

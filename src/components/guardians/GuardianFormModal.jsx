@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { adminUpsertGuardianIntake, adminSubmitGuardianIntake } from '../../services/guardianIntake';
-import { validateRut, formatRut } from '../../utils/rut';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
 
 // Default values for a new guardian
 const initialDefaultValues = {
@@ -309,7 +309,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                       {(() => {
                         const { onChange, ...rest } = register('run', { 
                           required: !guardian ? 'Este campo es requerido' : false,
-                          validate: !guardian ? (value) => validateRut(value) || 'RUT inválido' : undefined
+                          validate: !guardian ? (value) => isRutFormatValid(value) || 'Formato de RUT inválido' : undefined
                         });
                         return (
                           <input

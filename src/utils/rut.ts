@@ -28,6 +28,15 @@ export const validateRut = (rut: string) => {
     return validateRun(rut).valid;
 };
 
+export const isRutFormatValid = (rut: string) => {
+  if (!rut) return false;
+  const clean = cleanRut(rut);
+  if (clean.length < 2) return false;
+  const body = clean.slice(0, -1);
+  const dv = clean.slice(-1).toUpperCase();
+  return /^\d+$/.test(body) && /^[0-9K]$/.test(dv);
+};
+
 export const formatRunDisplay = (raw: string) => {
   const clean = cleanRut(raw);
   if (clean.length < 2) return clean;

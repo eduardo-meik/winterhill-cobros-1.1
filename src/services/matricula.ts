@@ -3,7 +3,7 @@ import { computeEnrollmentDocumentPlan } from './autodoc';
 import { templates } from '../contracts/templates';
 import toast from 'react-hot-toast';
 import type { GuardianIntakeRecord } from './guardianIntake';
-import { normalizeRun, validateRun } from '../utils/rut';
+import { normalizeRun, validateRun, isRutFormatValid, formatRunDisplay } from '../utils/rut';
 
 // Types (lightweight to avoid adding global type deps now)
 export interface GuardianRecord {
@@ -2336,18 +2336,18 @@ export async function ensureStudentFromIntake(
     }
 
     const normalizedRun = normalizeRun(runRaw);
-    const runInfo = validateRun(normalizedRun);
-    if (!runInfo.valid || !runInfo.body) {
+    if (!isRutFormatValid(normalizedRun)) {
       return { ...base, reason: 'invalid_run' };
     }
 
-    const formattedRun = `${runInfo.body}-${runInfo.dv}`;
-    const normalizedComparable = formattedRun.replace('-', '');
-    const runNumber = Number(runInfo.body);
-    const runFilters: string[] = [`run.eq.${formattedRun}`];
-    if (normalizedComparable !== normalizedRun) {
-      runFilters.push(`run.eq.${normalizedRun}`);
-    }
+    const runInfo = validateRun(normalizedRun);
+    const runBody = runInfo.body ?? normalizedRun.slice(0, -1);
+    const dvInput = runInfo.dv ?? normalizedRun.slice(-1);
+    const formattedRun = formatRunDisplay(normalizedRun);
+    const plainRun = `${runBody}-${dvInput}`;
+    const compactRun = `${runBody}${dvInput}`;
+    const runNumber = Number(runBody);
+    const runFilters: string[] = [`run.eq.${formattedRun}`, `run.eq.${plainRun}`, `run.eq.${compactRun}`];
     if (Number.isFinite(runNumber)) {
       runFilters.push(`run_numero.eq.${runNumber}`);
     }
@@ -2404,7 +2404,7 @@ export async function ensureStudentFromIntake(
       whole_name: wholeName || null,
       run: formattedRun,
       run_numero: Number.isFinite(runNumber) ? runNumber : null,
-      run_verificador: runInfo.dv || null,
+      run_verificador: dvInput || null,
       date_of_birth: birthDate,
       owner_id: ownerId,
       curso: courseResolution.courseId,

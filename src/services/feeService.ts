@@ -24,7 +24,8 @@ export interface Fee {
   fee_curso: string | null;
   numero_cuota: number | null;
   institucion_financiera: string | null;
-  year: number;
+  year: number | null;
+  year_academico: number | null;
   
   // Joined fields
   student?: {
@@ -84,7 +85,7 @@ export async function fetchGuardianFees(
       )
     `)
     .eq('guardian_id', guardianId)
-    .eq('year', currentYear)
+    .eq('year_academico', currentYear)
     .order('due_date', { ascending: true })
     .order('numero_cuota', { ascending: true });
 
@@ -127,7 +128,7 @@ export async function fetchStudentFees(
       )
     `)
     .eq('student_id', studentId)
-    .eq('year', currentYear)
+    .eq('year_academico', currentYear)
     .order('due_date', { ascending: true })
     .order('numero_cuota', { ascending: true });
 
@@ -164,7 +165,7 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
       )
     `)
     .eq('guardian_id', guardianId)
-    .order('year', { ascending: false })
+    .order('year_academico', { ascending: false })
     .order('due_date', { ascending: true });
 
   if (error) {
@@ -215,9 +216,14 @@ function processFeesWithStatus(fees: any[]): Fee[] {
       nom_curso: fee.students.cursos.nom_curso
     } : undefined;
 
+    const normalizedYear = fee.year ?? fee.year_academico ?? (fee.due_date ? new Date(fee.due_date).getFullYear() : null);
+    const normalizedYearAcademico = fee.year_academico ?? fee.year ?? normalizedYear;
+
     return {
       ...fee,
       status: computedStatus,
+      year: normalizedYear,
+      year_academico: normalizedYearAcademico,
       student,
       curso,
     };
@@ -310,10 +316,12 @@ export function groupFeesByYear(fees: Fee[]): Map<number, Fee[]> {
   const grouped = new Map<number, Fee[]>();
   
   fees.forEach(fee => {
-    if (!grouped.has(fee.year)) {
-      grouped.set(fee.year, []);
+    const key = fee.year ?? fee.year_academico ?? (fee.due_date ? new Date(fee.due_date).getFullYear() : undefined);
+    if (key === undefined || key === null) return;
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
     }
-    grouped.get(fee.year)!.push(fee);
+    grouped.get(key)!.push(fee);
   });
 
   return grouped;

@@ -360,7 +360,7 @@ async function fetchGuardianFees(studentIds: string[]): Promise<GuardianFeeRecor
   try {
     const { data, error } = await supabase
       .from('fee')
-      .select('id, student_id, amount, due_date, status, payment_method, year, year_academico, numero_cuota')
+      .select('id, student_id, amount, due_date, status, payment_method, year_academico, numero_cuota')
       .in('student_id', studentIds)
       .order('due_date', { ascending: true });
     if (error) throw error;
@@ -371,8 +371,8 @@ async function fetchGuardianFees(studentIds: string[]): Promise<GuardianFeeRecor
       due_date: row.due_date ?? null,
       status: row.status ?? null,
       payment_method: row.payment_method ?? null,
-      year: row.year ?? null,
-      year_academico: row.year_academico ?? null,
+      year: row.year_academico ?? (row.due_date ? new Date(row.due_date).getFullYear() : null),
+      year_academico: row.year_academico ?? (row.due_date ? new Date(row.due_date).getFullYear() : null),
       numero_cuota: row.numero_cuota ?? null,
     }));
   } catch (error) {
