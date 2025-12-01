@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { adminUpsertGuardianIntake, adminSubmitGuardianIntake } from '../../services/guardianIntake';
+import { isValidRut, normalizeRut } from '../../utils/rut';
 
 // Default values for a new guardian
 const initialDefaultValues = {
@@ -96,6 +97,14 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
     try {
       setIsSaving(true);
       
+      const normalizedRun = normalizeRut(data.run);
+      if (!normalizedRun) {
+        toast.error('RUT inválido');
+        setIsSaving(false);
+        return;
+      }
+      data.run = normalizedRun;
+
       // Check if RUN already exists only if it's a new guardian or if the RUN has changed
       if (!guardian || (guardian && guardian.run !== data.run)) {
         const { data: existingGuardian, error: checkError } = await supabase
@@ -309,10 +318,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                         type="text"
                         {...register('run', { 
                           required: !guardian ? 'Este campo es requerido' : false, // RUT is required only for new guardians
-                          pattern: !guardian ? { // Apply pattern only for new guardians
-                            value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
-                            message: 'Formato de RUT inválido'
-                          } : undefined
+                          validate: !guardian ? (value) => isValidRut(value) || 'Formato de RUT inválido (ej: 12.345.678-9)' : undefined
                         })}
                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                         disabled={!!guardian} // Disable RUN field if editing an existing guardian

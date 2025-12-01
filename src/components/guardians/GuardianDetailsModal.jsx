@@ -7,6 +7,7 @@ import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { StudentDetailsModal } from '../students/StudentDetailsModal';
+import { isValidRut, normalizeRut } from '../../utils/rut';
 
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [associatedStudents, setAssociatedStudents] = useState([]);
@@ -39,6 +40,14 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const onSubmit = async (data) => {
     try {
       setIsSaving(true);
+      const normalizedRun = normalizeRut(data.run);
+      if (!normalizedRun) {
+        toast.error('RUT inválido');
+        setIsSaving(false);
+        return;
+      }
+      data.run = normalizedRun;
+
       const { error } = await supabase
         .from('guardians')
         .update({
@@ -218,8 +227,8 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !/^(\\d{1,3}(?:\\.\\d{3})*)-?([\\dkK])$/.test(fieldEditValue)) {
-      toast.error('Formato de RUT inválido');
+    if (fieldKey === 'run' && !isValidRut(fieldEditValue)) {
+      toast.error('Formato de RUT inválido (ej: 12.345.678-9)');
       return;
     }
     if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i.test(fieldEditValue)) {
@@ -240,7 +249,11 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
     setIsSavingField(true);
     try {
-      const updateData = { [fieldKey]: fieldEditValue };
+      let valueToSave = fieldEditValue;
+      if (fieldKey === 'run') {
+        valueToSave = normalizeRut(fieldEditValue);
+      }
+      const updateData = { [fieldKey]: valueToSave };
       
       const { error } = await supabase
         .from('guardians')
@@ -428,10 +441,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                         type="text"
                         {...register('run', { 
                           required: 'Este campo es requerido',
-                          pattern: {
-                            value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
-                            message: 'Formato de RUT inválido'
-                          }
+                          validate: (value) => isValidRut(value) || 'Formato de RUT inválido (ej: 12.345.678-9)'
                         })}
                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       />

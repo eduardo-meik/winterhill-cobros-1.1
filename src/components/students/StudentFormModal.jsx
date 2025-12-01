@@ -6,6 +6,7 @@ import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
+import { isValidRut, normalizeRut } from '../../utils/rut';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -130,6 +131,14 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       // --- Inicio de la corrección ---
       // Crear una copia de los datos para modificarla
       const dataToSend = { ...formData };
+
+      const normalizedRun = normalizeRut(dataToSend.run);
+      if (!normalizedRun) {
+         toast.error('RUN inválido');
+         return;
+      }
+      dataToSend.run = normalizedRun;
+
       // Eliminar explícitamente la clave 'cursos' si existe.
       // Esta clave viene de la consulta con relación y no debe enviarse al guardar/actualizar.
       delete dataToSend.cursos;
@@ -356,10 +365,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     type="text"
                     {...register('run', { 
                       required: !student ? 'Este campo es requerido' : false,
-                      pattern: !student ? {
-                        value: /^\d{7,8}-[\dkK]$/,
-                        message: 'RUN inválido (ej: 12345678-9)'
-                      } : undefined
+                      validate: !student ? (value) => isValidRut(value) || 'RUN inválido (ej: 12.345.678-9)' : undefined
                     })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     disabled={!!student} // Ensures field is disabled if student exists
