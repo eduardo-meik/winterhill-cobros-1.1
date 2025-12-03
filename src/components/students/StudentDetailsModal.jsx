@@ -7,6 +7,7 @@ import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
+import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'No especificada';
@@ -21,6 +22,9 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
   if (!student) return null;
 
   const [isEditing, setIsEditing] = useState(false);
+    const studentStatus = deriveStudentStatusFromRecord(student);
+    const friendlyStatus = getStudentStatusLabel(studentStatus);
+
   const [guardians, setGuardians] = useState([]);
   const [loadingGuardians, setLoadingGuardians] = useState(true);
   const [viewingGuardian, setViewingGuardian] = useState(null); // NEW
@@ -299,9 +303,9 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {renderDetailItem('Curso', 'curso', student.cursos?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
                 {renderDetailItem('Nombre Social', 'nombre_social', student.nombre_social, 'text')}
-                {renderDetailItem('Estado', 'fecha_retiro', student.fecha_retiro ? 'Retirado' : 'Activo', 'select', [
-                  { value: '', label: 'Activo' }, // Empty value for active
-                  { value: new Date().toISOString().split('T')[0], label: 'Retirado' } // Current date for retired, or handle differently
+                {renderDetailItem('Estado', 'fecha_retiro', friendlyStatus, 'select', [
+                  { value: '', label: 'Matriculado' },
+                  { value: new Date().toISOString().split('T')[0], label: 'Retirado' }
                 ])} {/* This needs careful handling for 'active' vs 'retired' state based on fecha_retiro */}
                 {renderDetailItem('Fecha de Matrícula', 'fecha_matricula', student.fecha_matricula, 'date')}
                 {renderDetailItem('Fecha de Incorporación', 'fecha_incorporacion', student.fecha_incorporacion, 'date')}

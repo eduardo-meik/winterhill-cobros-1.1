@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
+import { getStudentStatusOptions } from '../../utils/studentStatus';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -40,6 +41,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
 
   const [cursos, setCursos] = useState([]);
   const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
+  const statusOptions = getStudentStatusOptions();
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -421,11 +423,11 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                       {...register('estado_std', { required: 'Este campo es requerido' })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     >
-                      <option value="MATRICULADO">MATRICULADO (pre-contrato)</option>
-                      <option value="ACTIVO">ACTIVO</option>
-                      <option value="RETIRADO">RETIRADO</option>
+                      {statusOptions.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
                     </select>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén MATRICULADO hasta que se firmen los contratos físicos; luego cambia a ACTIVO o RETIRADO.</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pendiente (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Matriculado (valor ACTIVO) o Retirado cuando corresponda.</p>
                     {errors.estado_std && (
                       <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.estado_std.message}</p>
                     )}

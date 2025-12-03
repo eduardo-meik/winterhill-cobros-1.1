@@ -3,6 +3,11 @@ import { format } from 'date-fns';
 import clsx from 'clsx';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import {
+  deriveStudentStatusFromRecord,
+  getStudentStatusBadgeClass,
+  getStudentStatusLabel
+} from '../../utils/studentStatus';
 
 export function StudentsTable({ students, onViewDetails, onSuccess }) {
   const handleDelete = async (student) => {
@@ -77,15 +82,16 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
                 </p>
               </td>
               <td className="py-3 px-4">
-                <span className={clsx(
-                  'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-                  {
-                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': !student.fecha_retiro,
-                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': student.fecha_retiro
-                  }
-                )}>
-                  {student.fecha_retiro ? 'Retirado' : 'Activo'}
-                </span>
+                {(() => {
+                  const canonicalStatus = deriveStudentStatusFromRecord(student);
+                  const badgeClass = getStudentStatusBadgeClass(canonicalStatus);
+                  const label = getStudentStatusLabel(canonicalStatus);
+                  return (
+                    <span className={clsx('inline-flex items-center px-2 py-1 rounded-full text-xs font-medium', badgeClass)}>
+                      {label}
+                    </span>
+                  );
+                })()}
               </td>
               <td className="py-3 px-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">

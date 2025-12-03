@@ -80,6 +80,8 @@ export function MatriculaWizard() {
   const [enrollment, setEnrollment] = useState(null);
   const [students, setStudents] = useState([]);
   const [allMyStudents, setAllMyStudents] = useState([]); // potential associated students via student_guardian
+  const [availableYearCourses, setAvailableYearCourses] = useState([]); // cursos del año seleccionado
+  const [studentEconomicMap, setStudentEconomicMap] = useState({}); // economic data per student in enrollment
   const [economic, setEconomic] = useState({
     monto_matricula: '',
     colegiatura_anual: '',
@@ -427,6 +429,119 @@ export function MatriculaWizard() {
     }
   }, [economic.colegiatura_anual, economic.cantidad_cuotas]);
 
+  // Auto-calculate per-student monto_cuota and descuento when their fields change
+  useEffect(() => {
+    if (!studentEconomicMap || Object.keys(studentEconomicMap).length === 0) return;
+    setStudentEconomicMap(prev => {
+      const next = { ...prev };
+      Object.entries(prev).forEach(([studentId, econ]) => {
+        const colegiatura = parseFloat(econ.colegiatura_anual || '');
+        const cuotas = parseInt(econ.cantidad_cuotas || '');
+        let updated = { ...econ };
+
+        if (!isNaN(colegiatura) && !isNaN(cuotas) && cuotas > 0 && colegiatura > 0) {
+          const montoPorCuota = Math.round(colegiatura / cuotas);
+          updated.monto_cuota = montoPorCuota.toString();
+        }
+
+        if (typeof updated.porcentaje_descuento === 'number') {
+          const totalDesc = (Number(updated.colegiatura_anual) || 0) * (updated.porcentaje_descuento / 100);
+          updated.monto_total_descuento = Math.round(totalDesc);
+        }
+
+        next[studentId] = updated;
+      });
+      return next;
+    });
+  }, [studentEconomicMap]);
+
+  // Keep per-student economic defaults in sync when students in enrollment change
+  useEffect(() => {
+    if (!Array.isArray(students) || students.length === 0) return;
+    setStudentEconomicMap(prev => {
+      const next = { ...prev };
+      students.forEach(st => {
+        if (!st.id) return;
+        if (!next[st.id]) {
+          next[st.id] = {
+            monto_matricula: economic.monto_matricula,
+            colegiatura_anual: economic.colegiatura_anual,
+            cantidad_cuotas: economic.cantidad_cuotas,
+            monto_cuota: economic.monto_cuota,
+            dia_vencimiento: economic.dia_vencimiento,
+            porcentaje_descuento: descuentoInfo.porcentaje_descuento,
+            monto_total_descuento: descuentoInfo.monto_total_descuento,
+            curso_sugerido: null,
+            year_academico: year
+          };
+        }
+      });
+      return next;
+    });
+  }, [students, economic, descuentoInfo]);
+
+  // Auto-suggest course for matrícula per student using backend promotion logic
+  useEffect(() => {
+    if (!Array.isArray(students) || students.length === 0) return;
+    if (!Array.isArray(availableYearCourses) || availableYearCourses.length === 0) return;
+
+    const fetchPromotionSuggestions = async () => {
+      const updates = {};
+
+      for (const st of students) {
+        if (!st?.id) continue;
+
+        // Do not override if a course was already selected manually or from meta
+        if (studentEconomicMap[st.id]?.curso_sugerido) continue;
+
+        try {
+          // Call backend RPC for promotion suggestion
+          const { data, error } = await supabase
+            .rpc('get_student_promotion_suggestion', { p_student_id: st.id });
+
+          if (error) {
+            console.warn(`Promotion suggestion error for student ${st.id}:`, error);
+            continue;
+          }
+
+          if (data && data.length > 0) {
+            const suggestion = data[0];
+            let suggestedId = suggestion.suggested_course_id || null;
+            const suggestedYear = suggestion.suggested_year || year;
+
+            // If backend didn't provide a specific course, try to match current course in available list
+            if (!suggestedId && suggestion.current_course_id) {
+              const sameCourse = availableYearCourses.find(c => c.id === suggestion.current_course_id);
+              if (sameCourse) {
+                suggestedId = sameCourse.id;
+              }
+            }
+
+            // Store suggestion with year
+            if (suggestedId || suggestedYear) {
+              updates[st.id] = {
+                ...(studentEconomicMap[st.id] || {}),
+                curso_sugerido: suggestedId || '',
+                year_academico: suggestedYear
+              };
+            }
+          }
+        } catch (e) {
+          console.error(`Error fetching promotion for student ${st.id}:`, e);
+        }
+      }
+
+      if (Object.keys(updates).length > 0) {
+        setStudentEconomicMap(prev => ({
+          ...prev,
+          ...updates
+        }));
+      }
+    };
+
+    fetchPromotionSuggestions();
+  }, [students, availableYearCourses, year]);
+
   const loadAssociatedStudents = useCallback(async () => {
     if (!guardian) return;
     const { data, error } = await supabase
@@ -470,6 +585,28 @@ export function MatriculaWizard() {
 
   useEffect(() => { loadAssociatedStudents(); }, [loadAssociatedStudents]);
 
+  // Load courses for the selected year to populate "Curso para matricula" options
+  useEffect(() => {
+    const fetchCoursesForYear = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('cursos')
+          .select('id, nom_curso, nivel, letra_curso, year_academico')
+          .eq('year_academico', year)
+          .order('nivel', { ascending: true });
+        if (error) throw error;
+        setAvailableYearCourses(data || []);
+      } catch (e) {
+        console.error('Error loading year courses for MatriculaWizard', e);
+        setAvailableYearCourses([]);
+      }
+    };
+
+    if (year) {
+      fetchCoursesForYear();
+    }
+  }, [year]);
+
   const handleStudentModalSuccess = useCallback(() => {
     setStudentModalOpen(false);
     loadAssociatedStudents();
@@ -507,6 +644,36 @@ export function MatriculaWizard() {
     reloadEnrollmentStudents();
   };
 
+  const updateStudentEconomicField = (studentId, field, value) => {
+    setStudentEconomicMap(prev => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || {}),
+        [field]: value
+      }
+    }));
+  };
+
+  const updateStudentCourseForYear = (studentId, value) => {
+    setStudentEconomicMap(prev => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || {}),
+        curso_sugerido: value
+      }
+    }));
+  };
+
+  const updateStudentYearForMatricula = (studentId, value) => {
+    setStudentEconomicMap(prev => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || {}),
+        year_academico: Number(value) || year
+      }
+    }));
+  };
+
   // Save economic info
   const handleSaveEconomic = async () => {
     if (!enrollment) return;
@@ -529,6 +696,9 @@ export function MatriculaWizard() {
       porcentaje_descuento: descuentoInfo.porcentaje_descuento || 0,
       monto_total_descuento: descuentoInfo.monto_total_descuento || 0
     };
+    if (studentEconomicMap && Object.keys(studentEconomicMap).length > 0) {
+      patch.per_student_economic = studentEconomicMap;
+    }
     if (paymentPlan) {
       patch.payment_plan = paymentPlan;
     }
@@ -783,7 +953,7 @@ export function MatriculaWizard() {
       const alertType = skippedDuplicates > 0 ? 'warning' : 'success';
       const baseMessage = `Matrícula confirmada para ${studentsCount} estudiante${studentsCount === 1 ? '' : 's'}.`;
       const detailMessage = ` Se generaron ${createdCharges} cargo${createdCharges === 1 ? '' : 's'}${skippedDuplicates ? `; ${skippedDuplicates} ya existían y no se duplicaron.` : '.'}`;
-      const followUp = ' Recuerda actualizar el estado a ACTIVO o RETIRADO en el módulo de Estudiantes una vez recibida la documentación física.';
+      const followUp = ' Recuerda actualizar el estado a Matriculado (valor ACTIVO) o Retirado en el módulo de Estudiantes una vez recibida la documentación física.';
       setFinalizeAlert({ type: alertType, message: `${baseMessage}${detailMessage}${followUp}` });
       toast.success(`Matrícula confirmada (${createdCharges} cargo${createdCharges === 1 ? '' : 's'} nuevos${skippedDuplicates ? `, ${skippedDuplicates} duplicado${skippedDuplicates === 1 ? '' : 's'} omitido${skippedDuplicates === 1 ? '' : 's'}` : ''}).`);
       setFinalizeOpen(false);
@@ -1114,9 +1284,9 @@ export function MatriculaWizard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold">Seleccionar Año y Alumnos</h2>
+              <h2 className="font-semibold">Seleccionar Alumno y  </h2>
               <div className="flex items-center gap-2">
-                <label className="text-sm">Año:</label>
+                <label className="text-sm"> Año:</label>
                 <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="w-28 px-2 py-1 border rounded" />
               </div>
             </div>
@@ -1198,6 +1368,130 @@ export function MatriculaWizard() {
             <h2 className="font-semibold">Datos Económicos y Forma de Pago</h2>
           </CardHeader>
           <CardContent className="space-y-6 text-sm">
+            {/* Per-student Economic Data */}
+            {students.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="font-medium text-sm text-gray-700 dark:text-gray-300">💰 Información por Estudiante</h3>
+                <div className="space-y-3 max-h-96 overflow-auto pr-1">
+                  {students.map(st => {
+                    const econ = studentEconomicMap[st.id] || {};
+                    const baseCursoLabel = st.curso_nombre || st.curso || '';
+                    return (
+                      <div key={st.id} className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-900/30 space-y-2">
+                        <div className="flex justify-between items-center gap-2">
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm truncate">{st.whole_name || st.run}</p>
+                            {baseCursoLabel && (
+                              <p className="text-[11px] text-gray-500 truncate">Curso actual: {baseCursoLabel}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-3 text-xs">
+                          <div>
+                            <label className="block mb-1 font-medium">Monto Matrícula (CLP)</label>
+                            <input
+                              type="number"
+                              className="w-full border rounded px-2 py-1"
+                              value={econ.monto_matricula || ''}
+                              onChange={e => updateStudentEconomicField(st.id, 'monto_matricula', e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Colegiatura Anual (CLP)</label>
+                            <input
+                              type="number"
+                              className="w-full border rounded px-2 py-1"
+                              value={econ.colegiatura_anual || ''}
+                              onChange={e => updateStudentEconomicField(st.id, 'colegiatura_anual', e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Cantidad Cuotas</label>
+                            <input
+                              type="number"
+                              className="w-full border rounded px-2 py-1"
+                              value={econ.cantidad_cuotas || ''}
+                              onChange={e => updateStudentEconomicField(st.id, 'cantidad_cuotas', e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Monto por Cuota (CLP)</label>
+                            <input
+                              type="number"
+                              className="w-full border rounded px-2 py-1 bg-gray-100"
+                              value={econ.monto_cuota || ''}
+                              readOnly
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Día Vencimiento (1-28)</label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="28"
+                              className="w-full border rounded px-2 py-1"
+                              value={econ.dia_vencimiento || ''}
+                              onChange={e => updateStudentEconomicField(st.id, 'dia_vencimiento', e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Porcentaje de Descuento (%)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              className="w-full border rounded px-2 py-1"
+                              value={econ.porcentaje_descuento ?? 0}
+                              onChange={e => updateStudentEconomicField(st.id, 'porcentaje_descuento', Number(e.target.value))}
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Monto Total Descuento (CLP)</label>
+                            <input
+                              type="number"
+                              className="w-full border rounded px-2 py-1 bg-gray-100"
+                              value={econ.monto_total_descuento ?? 0}
+                              readOnly
+                            />
+                          </div>
+                          <div>
+                            <label className="block mb-1 font-medium">Año Académico</label>
+                            <input
+                              type="number"
+                              className="w-full border rounded px-2 py-1"
+                              value={econ.year_academico || year}
+                              onChange={e => updateStudentYearForMatricula(st.id, e.target.value)}
+                              min={year - 1}
+                              max={year + 1}
+                              placeholder={`Año: ${year}`}
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block mb-1 font-medium">Curso para matrícula (año {econ.year_academico || year})</label>
+                            <select
+                              className="w-full border rounded px-2 py-1 bg-white dark:bg-dark-hover"
+                              value={econ.curso_sugerido || ''}
+                              onChange={e => updateStudentCourseForYear(st.id, e.target.value)}
+                            >
+                              <option value="">Seleccionar curso para este año</option>
+                              {availableYearCourses.map(curso => {
+                                const label = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
+                                return (
+                                  <option key={curso.id} value={curso.id}>
+                                    {label}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Economic Data Section */}
             <div>
               <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300 flex items-center justify-between">💰 Información Económica
@@ -1517,7 +1811,7 @@ export function MatriculaWizard() {
                     )}
                   </div>
                   {assistedMode && (
-                    <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-2">Este paso deja a los estudiantes en estado MATRICULADO hasta que el equipo marque ACTIVO desde el módulo de Estudiantes.</p>
+                    <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-2">Este paso deja a los estudiantes en estado Pendiente (valor MATRICULADO) hasta que el equipo marque Matriculado (valor ACTIVO) o Retirado desde el módulo de Estudiantes.</p>
                   )}
                   <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
                     <p className="text-xs text-blue-600 dark:text-blue-400">

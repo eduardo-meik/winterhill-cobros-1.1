@@ -9,6 +9,7 @@ import { SearchBar } from './SearchBar';
 import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
+import { deriveStudentStatusFromRecord } from '../../utils/studentStatus';
 
 export function StudentsPage() {
   const [students, setStudents] = useState([]);
@@ -85,9 +86,8 @@ export function StudentsPage() {
     return students.filter(student => {
       const cursoMatch = filters.curso === 'all' ||
         student.cursos?.nom_curso === filters.curso;
-      const statusMatch = filters.status === 'all' ||
-        (filters.status === 'active' && !student.fecha_retiro) ||
-        (filters.status === 'inactive' && student.fecha_retiro);
+      const studentStatus = deriveStudentStatusFromRecord(student);
+      const statusMatch = filters.status === 'all' || studentStatus === filters.status;
       const searchMatch = !debouncedSearchTerm ||
         normalizeText(student.whole_name)?.includes(searchNormalized) ||
         normalizeText(student.run)?.includes(searchNormalized);
@@ -188,8 +188,9 @@ export function StudentsPage() {
                   className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="all">Todos los Estados</option>
-                  <option value="active">Activos</option>
-                  <option value="inactive">Retirados</option>
+                  <option value="PENDIENTE">Pendientes</option>
+                  <option value="ACTIVO">Matriculados</option>
+                  <option value="RETIRADO">Retirados</option>
                 </select>
                 <select
                   value={filters.convenio}
