@@ -973,7 +973,12 @@ export function buildPrestacionPayload(opts: {
 
   const paymentSummary = joinWithConjunction(paymentSummaryParts);
 
-  const colegAnual = economic?.colegiatura_anual || 0;
+  // Si hay datos económicos por alumno en opts (monto_neto_anual_por_alumno), se suma para contratos multi-estudiante.
+  const perStudentNetTotals: number[] = (opts as any)?.perStudentEconomic?.map((e: any) => Number(e?.monto_neto_anual) || 0) || [];
+  const sumPerStudentNet = perStudentNetTotals.reduce((acc, v) => acc + (Number.isFinite(v) ? v : 0), 0);
+
+  const colegAnualBase = economic?.colegiatura_anual || 0;
+  const colegAnual = sumPerStudentNet > 0 ? sumPerStudentNet : colegAnualBase;
   const cuotasNum = Number(economic?.cantidad_cuotas) || 0;
   const montoCuotaCalc = (() => {
     if (economic?.colegiatura_anual && economic?.cantidad_cuotas) {

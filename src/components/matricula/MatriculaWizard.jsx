@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
@@ -96,16 +96,7 @@ export function MatriculaWizard() {
     tarjeta: false,
     pagare: false
   });
-  const paymentPlan = useMemo(() => buildEnrollmentPaymentPlan({
-    enrollmentYear: year,
-    economic: {
-      colegiatura_anual: economic.colegiatura_anual,
-      cantidad_cuotas: economic.cantidad_cuotas,
-      monto_cuota: economic.monto_cuota,
-      dia_vencimiento: economic.dia_vencimiento
-    },
-    paymentMethodFlags: paymentMethod
-  }), [economic, paymentMethod, year]);
+  const [paymentPlan, setPaymentPlan] = useState(null); // backend-aligned payment plan
   const [descuentoPlanilla, setDescuentoPlanilla] = useState(false);
   const [descuentoInfo, setDescuentoInfo] = useState({
     porcentaje_descuento: 0,
@@ -390,15 +381,17 @@ export function MatriculaWizard() {
     if (typeof enrollment.meta.prioritario === 'boolean') {
       setPrioritario(enrollment.meta.prioritario);
     }
-    // Descuento (persistir porcentaje si se guardó antes en meta)
+    // Descuento (hidratar porcentaje y monto total desde meta si se guardó antes)
     if (typeof enrollment.meta.porcentaje_descuento === 'number') {
       setDescuentoInfo(d => ({
         ...d,
         porcentaje_descuento: enrollment.meta.porcentaje_descuento,
-        monto_total_descuento: (() => {
-          const total = (Number(enrollment.meta.colegiatura_anual)||0) * (enrollment.meta.porcentaje_descuento/100);
-          return Math.round(total);
-        })()
+        monto_total_descuento: typeof enrollment.meta.monto_total_descuento === 'number'
+          ? enrollment.meta.monto_total_descuento
+          : (() => {
+              const total = (Number(enrollment.meta.colegiatura_anual) || 0) * (enrollment.meta.porcentaje_descuento / 100);
+              return Math.round(total);
+            })()
       }));
     }
     
@@ -706,6 +699,21 @@ export function MatriculaWizard() {
     console.log('💾 Guardando datos económicos y formas de pago:', patch);
     const updated = await updateEnrollmentMeta(enrollment.id, patch);
     if (updated) {
+      // Rebuild payment plan locally to keep frontend and meta in sync
+      const localPlan = buildEnrollmentPaymentPlan({
+        enrollmentYear: year,
+        economic: {
+          colegiatura_anual: patch.colegiatura_anual,
+          cantidad_cuotas: patch.cantidad_cuotas,
+          monto_cuota: patch.monto_cuota,
+          dia_vencimiento: patch.dia_vencimiento,
+        },
+        paymentMethodFlags: paymentMethod,
+      });
+
+      setPaymentPlan(localPlan);
+      patch.payment_plan = localPlan;
+
       setEnrollment(prev => prev ? { ...prev, meta: { ...(prev.meta || {}), ...patch } } : prev);
     }
     
@@ -735,29 +743,87 @@ export function MatriculaWizard() {
     console.log('💳 Payment method COMPLETO:', JSON.stringify(paymentMethod, null, 2));
     console.log('🎁 Descuento planilla:', descuentoPlanilla);
     
+    // Usar siempre los valores persistidos en meta como fuente de verdad
+    const meta = enrollment.meta || {};
     const econNumbers = {
-      monto_matricula: Number(economic.monto_matricula) || undefined,
-      colegiatura_anual: Number(economic.colegiatura_anual) || undefined,
-      cantidad_cuotas: Number(economic.cantidad_cuotas) || undefined,
-      monto_cuota: Number(economic.monto_cuota) || undefined,
-      dia_vencimiento: Number(economic.dia_vencimiento) || undefined,
+      monto_matricula: Number(meta.monto_matricula ?? economic.monto_matricula) || undefined,
+      colegiatura_anual: Number(meta.colegiatura_anual ?? economic.colegiatura_anual) || undefined,
+      cantidad_cuotas: Number(meta.cantidad_cuotas ?? economic.cantidad_cuotas) || undefined,
+      // IMPORTANTE: monto_cuota debe ser coherente con el total neto y el número de cuotas.
+      // Pero el cálculo "oficial" lo hace buildPrestacionPayload a partir de colegiatura_anual y porcentaje_descuento,
+      // así que aquí sólo pasamos el valor base guardado (sin re-aplicar descuentos manualmente).
+      monto_cuota: Number(meta.monto_cuota ?? economic.monto_cuota) || undefined,
+      dia_vencimiento: Number(meta.dia_vencimiento ?? economic.dia_vencimiento) || undefined,
     };
-    
+
     console.log('💵 Economic numbers parsed:', JSON.stringify(econNumbers, null, 2));
-    
-    // Always generate Contrato de Prestación + anexos según método de pago
+
+    // Map students to include the matriculated course name (curso_sugerido del mapa económico)
+    const studentsWithMatriculaCourse = students.map(s => {
+      const econ = studentEconomicMap?.[s.id];
+      const cursoId = econ?.curso_sugerido;
+      if (!cursoId || !Array.isArray(availableYearCourses) || availableYearCourses.length === 0) {
+        return {
+          ...s,
+          // Asegura que siempre haya curso_nombre para todos los estudiantes
+          curso_nombre: s.curso_nombre || s.curso || s.grade || s.nivel || 'Sin curso asignado',
+        };
+      }
+      const curso = availableYearCourses.find(c => c.id === cursoId);
+      if (!curso) {
+        return {
+          ...s,
+          curso_nombre: s.curso_nombre || s.curso || s.grade || s.nivel || 'Sin curso asignado',
+        };
+      }
+      const baseLabel = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
+      return {
+        ...s,
+        curso_nombre: baseLabel,
+      };
+    });
+
+    // Always generate Contrato de Prestación + anexos según método de pago.
+    // El porcentaje de descuento siempre sale de meta para que coincida con lo guardado.
+    const descuentoMetaPorcentaje = Number(meta.porcentaje_descuento ?? descuentoInfo.porcentaje_descuento) || 0;
+
+    // Para contratos con 2+ estudiantes, calculamos el monto neto anual por alumno
+    // y lo pasamos explícitamente al servicio para que pueda sumar correctamente.
+    const perStudentEconomic = students.map(s => {
+      const econ = studentEconomicMap?.[s.id] || {};
+      const colegAnual = Number(econ.colegiatura_anual ?? economic.colegiatura_anual) || 0;
+      const porcentajeDescAlumno = typeof econ.porcentaje_descuento === 'number'
+        ? econ.porcentaje_descuento
+        : descuentoMetaPorcentaje;
+      const montoTotalDescAlumno = (colegAnual > 0 && porcentajeDescAlumno > 0)
+        ? Math.round(colegAnual * (porcentajeDescAlumno / 100))
+        : 0;
+      const montoNetoAnualAlumno = Math.max(0, colegAnual - montoTotalDescAlumno);
+      return {
+        student_id: s.id,
+        colegiatura_anual: colegAnual,
+        porcentaje_descuento: porcentajeDescAlumno,
+        monto_total_descuento: montoTotalDescAlumno,
+        monto_neto_anual: montoNetoAnualAlumno,
+      };
+    });
     const prestacionPayload = buildPrestacionPayload({
       guardian,
       year,
-      students,
+      students: studentsWithMatriculaCourse,
       economic: econNumbers,
       paymentMethod,
       cheques,
-      descuento: descuentoPlanilla ? {
-        porcentaje: Number(descuentoInfo.porcentaje_descuento) || 0,
+      perStudentEconomic,
+      // Descuento: se aplica siempre que haya porcentaje > 0, independiente de si la forma de pago es planilla,
+      // porque "Monto Total Descuento (CLP)" debe reflejarse en todos los contratos/pagarés.
+      descuento: descuentoMetaPorcentaje > 0 ? {
+        porcentaje: descuentoMetaPorcentaje,
         motivo: descuentoInfo.motivo || '',
         condiciones: descuentoInfo.condiciones || ''
-      } : null
+      } : null,
+      // Hint: front-end payment plan (already saved in meta) can be used by templates
+      paymentPlan: paymentPlan || null,
     });
 
     // Provide a provisional folio number for templates that display it (e.g., Anexo Pagaré)
@@ -1454,20 +1520,10 @@ export function MatriculaWizard() {
                               readOnly
                             />
                           </div>
-                          <div>
-                            <label className="block mb-1 font-medium">Año Académico</label>
-                            <input
-                              type="number"
-                              className="w-full border rounded px-2 py-1"
-                              value={econ.year_academico || year}
-                              onChange={e => updateStudentYearForMatricula(st.id, e.target.value)}
-                              min={year - 1}
-                              max={year + 1}
-                              placeholder={`Año: ${year}`}
-                            />
-                          </div>
+                          {/* Campo de Año Académico removido de la UI para evitar confusión;
+                              el año efectivo se toma del paso 1 (estado global `year`). */}
                           <div className="md:col-span-2">
-                            <label className="block mb-1 font-medium">Curso para matrícula (año {econ.year_academico || year})</label>
+                            <label className="block mb-1 font-medium">Curso para matrícula (año {year})</label>
                             <select
                               className="w-full border rounded px-2 py-1 bg-white dark:bg-dark-hover"
                               value={econ.curso_sugerido || ''}
@@ -1475,10 +1531,11 @@ export function MatriculaWizard() {
                             >
                               <option value="">Seleccionar curso para este año</option>
                               {availableYearCourses.map(curso => {
-                                const label = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
+                                const baseLabel = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
+                                const yearLabel = curso.year_academico ? ` (${curso.year_academico})` : '';
                                 return (
                                   <option key={curso.id} value={curso.id}>
-                                    {label}
+                                    {baseLabel}{yearLabel}
                                   </option>
                                 );
                               })}

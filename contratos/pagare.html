@@ -155,7 +155,7 @@
     <h1>Anexo - Pagaré</h1>
     <p class="muted">Viña del Mar, a {{fecha_actual}}</p>
 
-    <p><strong>Monto:</strong> ${{colegiatura_anual}} ({{colegiatura_anual_texto}} pesos)</p>
+    <p><strong>Monto:</strong> ${{monto_neto_anual}} (colegiatura anual con descuento aplicado sobre ${{colegiatura_anual}})</p>
     <p><strong>N° de Pagaré:</strong> {{folio_number}}</p>
 
     <p class="clause">
@@ -173,7 +173,7 @@
     <p class="clause"><strong>Estudiantes.</strong> El presente pagaré respalda los servicios educacionales prestados a el/los estudiante(s) individualizados a continuación:</p>
     {{students_list}}
 
-    <p class="clause"><strong>Forma de pago.</strong> El monto total de ${{colegiatura_anual}} será pagado en {{cantidad_cuotas}} cuotas mensuales, iguales y sucesivas de ${{monto_cuota}} ({{monto_cuota_texto}} pesos) cada una. La primera cuota vencerá el día {{dia_vencimiento}} de marzo de {{year}}, y las restantes el mismo día de cada mes calendario subsiguiente hasta diciembre de {{year}}. El pago se efectuará mediante transferencia bancaria a la cuenta informada por LA CORPORACIÓN.</p>
+    <p class="clause"><strong>Forma de pago.</strong> El monto total de ${{monto_neto_anual}} será pagado en {{cantidad_cuotas}} cuotas mensuales, iguales y sucesivas de ${{monto_cuota_neta}} cada una. La primera cuota vencerá el día {{dia_vencimiento}} de marzo de {{year}}, y las restantes el mismo día de cada mes calendario subsiguiente hasta diciembre de {{year}}. El pago se efectuará mediante transferencia bancaria a la cuenta informada por LA CORPORACIÓN.</p>
 
     <p class="clause"><strong>Cláusula de aceleración.</strong> El simple retardo o mora en el pago íntegro y oportuno de cualquier cuota faculta al acreedor para exigir de inmediato el pago del saldo total adeudado.</p>
 
