@@ -423,28 +423,39 @@ export function MatriculaWizard() {
   }, [economic.colegiatura_anual, economic.cantidad_cuotas]);
 
   // Auto-calculate per-student monto_cuota and descuento when their fields change
+  // Evita bucles infinitos: sólo recalcula si los valores derivados realmente cambian.
   useEffect(() => {
     if (!studentEconomicMap || Object.keys(studentEconomicMap).length === 0) return;
     setStudentEconomicMap(prev => {
+      let changed = false;
       const next = { ...prev };
       Object.entries(prev).forEach(([studentId, econ]) => {
         const colegiatura = parseFloat(econ.colegiatura_anual || '');
         const cuotas = parseInt(econ.cantidad_cuotas || '');
+        const porcentaje = typeof econ.porcentaje_descuento === 'number' ? econ.porcentaje_descuento : undefined;
+
         let updated = { ...econ };
 
         if (!isNaN(colegiatura) && !isNaN(cuotas) && cuotas > 0 && colegiatura > 0) {
-          const montoPorCuota = Math.round(colegiatura / cuotas);
-          updated.monto_cuota = montoPorCuota.toString();
+          const montoPorCuota = Math.round(colegiatura / cuotas).toString();
+          if (updated.monto_cuota !== montoPorCuota) {
+            updated.monto_cuota = montoPorCuota;
+            changed = true;
+          }
         }
 
-        if (typeof updated.porcentaje_descuento === 'number') {
-          const totalDesc = (Number(updated.colegiatura_anual) || 0) * (updated.porcentaje_descuento / 100);
-          updated.monto_total_descuento = Math.round(totalDesc);
+        if (typeof porcentaje === 'number') {
+          const totalDesc = Math.round(((Number(updated.colegiatura_anual) || 0) * porcentaje) / 100);
+          if (updated.monto_total_descuento !== totalDesc) {
+            updated.monto_total_descuento = totalDesc;
+            changed = true;
+          }
         }
 
         next[studentId] = updated;
       });
-      return next;
+
+      return changed ? next : prev;
     });
   }, [studentEconomicMap]);
 
