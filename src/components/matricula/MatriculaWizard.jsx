@@ -39,6 +39,8 @@ import { supabase } from '../../services/supabase';
 import { ChequesDataModal } from './ChequesDataModal';
 import { GuardianFormModal } from '../guardians/GuardianFormModal';
 import { StudentFormModal } from '../students/StudentFormModal';
+import { EnrollmentDashboard } from './EnrollmentDashboard';
+import { GlobalEnrollmentsTable } from './GlobalEnrollmentsTable';
 
 // Renders full HTML (including <style> in <head>) inside an iframe for accurate preview
 function HtmlIframePreview({ html, height = 600 }) {
@@ -136,9 +138,10 @@ export function MatriculaWizard() {
   const [guardianModalOpen, setGuardianModalOpen] = useState(false);
   const [studentModalOpen, setStudentModalOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
+  const [viewMode, setViewMode] = useState('dashboard'); // Siempre mostrar historial debajo del encabezado
 
   // Assisted mode (ADMIN/ASIST)
-  const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
   const [assistedGuardian, setAssistedGuardian] = useState(null);
     useEffect(() => {
       if (!assistedMode) return;
@@ -237,51 +240,58 @@ export function MatriculaWizard() {
           }
         }
         setGuardian(g);
-        console.log('🔍 MatriculaWizard: Creating enrollment for guardian:', g.id, 'year:', year);
-        const enr = await getOrCreateEnrollment(g.id, year);
-        console.log('🔍 MatriculaWizard: Enrollment created/fetched:', enr);
-        if (!enr) {
-          setError('No se pudo crear la matrícula. Intente nuevamente.');
-          toast.error('Error creando matrícula');
-        } else {
-          setEnrollment(enr);
-          // Load outstanding debt once we have guardian & enrollment
-          try {
-            setDebtLoading(true);
-            const debt = await getGuardianOutstandingDebt(g.id);
-            if (debt) {
-              setDebtInfo({ total: debt.total || 0, items: debt.items || [] });
-            }
-            // Check regularization docs (signed OR generated) para gating y estado
+        
+        // Only create/fetch enrollment if in wizard mode
+        if (viewMode === 'wizard') {
+          console.log('🔍 MatriculaWizard: Creating enrollment for guardian:', g.id, 'year:', year);
+          const enr = await getOrCreateEnrollment(g.id, year);
+          console.log('🔍 MatriculaWizard: Enrollment created/fetched:', enr);
+          if (!enr) {
+            setError('No se pudo crear la matrícula. Intente nuevamente.');
+            toast.error('Error creando matrícula');
+          } else {
+            setEnrollment(enr);
+            // Load outstanding debt once we have guardian & enrollment
             try {
-              const signed = await hasSignedRegularization(enr.id);
-              if (signed) {
-                setHasRegularized(true);
-                setRegularizationSigned(true);
-              } else {
-                const { data: docsAny } = await supabase
-                  .from('enrollment_documents')
-                  .select('id, status')
-                  .eq('enrollment_id', enr.id)
-                  .in('type', ['PAGARE_DEUDA','PAGARE_REPACTACION'])
-                  .in('status', ['generated']);
-                const hasGen = Array.isArray(docsAny) && docsAny.length > 0;
-                setHasRegularized(hasGen);
-                setRegularizationSigned(false);
+              setDebtLoading(true);
+              const debt = await getGuardianOutstandingDebt(g.id);
+              if (debt) {
+                setDebtInfo({ total: debt.total || 0, items: debt.items || [] });
               }
-            } catch {}
-          } catch (e) {
-            console.warn('Debt load error', e);
-          } finally {
-            setDebtLoading(false);
+              // Check regularization docs (signed OR generated) para gating y estado
+              try {
+                const signed = await hasSignedRegularization(enr.id);
+                if (signed) {
+                  setHasRegularized(true);
+                  setRegularizationSigned(true);
+                } else {
+                  const { data: docsAny } = await supabase
+                    .from('enrollment_documents')
+                    .select('id, status')
+                    .eq('enrollment_id', enr.id)
+                    .in('type', ['PAGARE_DEUDA','PAGARE_REPACTACION'])
+                    .in('status', ['generated']);
+                  const hasGen = Array.isArray(docsAny) && docsAny.length > 0;
+                  setHasRegularized(hasGen);
+                  setRegularizationSigned(false);
+                }
+              } catch {}
+            } catch (e) {
+              console.warn('Debt load error', e);
+            } finally {
+              setDebtLoading(false);
+            }
           }
+        } else {
+          // In dashboard mode, we don't set enrollment yet
+          setEnrollment(null);
         }
       } finally {
         setLoading(false);
         console.log('🔍 MatriculaWizard: Loading complete');
       }
     })();
-  }, [user, year, assistedMode, assistedGuardian]);
+  }, [user, year, assistedMode, assistedGuardian, viewMode]);
 
   // Load enrolled students & potential students (simplified: all students joined to guardian via student_guardian)
   const reloadEnrollmentStudents = useCallback(async () => {
@@ -1286,6 +1296,22 @@ export function MatriculaWizard() {
         </Card>
       )}
 
+      {/* Global Dashboard for ADMIN/ASIST when no guardian selected */}
+      {assistedMode && !assistedGuardian && (
+        <GlobalEnrollmentsTable
+          onSelectEnrollment={(enr, g) => {
+            setAssistedGuardian(g);
+            setEnrollment(enr);
+            setYear(enr.year);
+            // We want to go to the wizard/dashboard for this specific enrollment
+            // Since we set enrollment, the effect will load students.
+            // We can default to 'wizard' to start working, or 'dashboard' to see that guardian's history.
+            // Let's go to wizard to be direct.
+            setViewMode('wizard');
+          }}
+        />
+      )}
+
       {/* Error State */}
       {error && !assistedMode && (
         <Card className="border-red-500 bg-red-50 dark:bg-red-900/20">
@@ -1321,6 +1347,20 @@ export function MatriculaWizard() {
 
       {/* Show wizard only if no error and guardian exists */}
       {!error && guardian && (
+        viewMode === 'dashboard' ? (
+          <EnrollmentDashboard
+            guardian={guardian}
+            onContinue={(enr) => {
+              setYear(enr.year);
+              setEnrollment(enr);
+              setViewMode('wizard');
+            }}
+            onNewEnrollment={() => {
+              setEnrollment(null);
+              setViewMode('wizard');
+            }}
+          />
+        ) : (
         <>
           <div className="flex gap-2 flex-wrap">
             {STEPS.map((s, idx) => (
@@ -1341,7 +1381,7 @@ export function MatriculaWizard() {
                     <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
                     <Button
                       size="sm"
-                      variant="secondary",
+                      variant="secondary"
                       onClick={() => {
                         if (!guardian) return;
                         const snapshot = {
@@ -2012,6 +2052,7 @@ export function MatriculaWizard() {
         </div>
       )}
         </>
+        )
       )}
 
       {/* Cheques Data Modal */}

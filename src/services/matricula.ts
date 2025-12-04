@@ -896,7 +896,7 @@ export function buildPrestacionPayload(opts: {
     condiciones?: string;
   } | null;
 }): PrestacionPayload {
-  const { guardian, year, students, economic, paymentMethod, cheques } = opts;
+  const { guardian, year, students, economic, paymentMethod, cheques, descuento } = opts;
 
   const now = new Date();
   const day = now.getDate();
@@ -2636,6 +2636,90 @@ export async function finalizeEnrollmentConfirm(
     const message = e?.message || 'No se pudo confirmar la matrícula';
     toast.error(message);
     throw e;
+  }
+}
+
+// List all enrollments for a guardian
+export async function listGuardianEnrollments(guardianId: string): Promise<any[]> {
+  try {
+    // Solo matrículas de los últimos 6 meses
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select(`
+        id,
+        year,
+        status,
+        created_at,
+        updated_at,
+        meta,
+        enrollment_students (
+          student_id,
+          students (
+            id,
+            whole_name,
+            run
+          )
+        )
+      `)
+      .eq('guardian_id', guardianId)
+      .gte('created_at', sixMonthsAgo.toISOString())
+      .order('year', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (e) {
+    console.error('listGuardianEnrollments error', e);
+    return [];
+  }
+}
+
+// List ALL enrollments from the last 6 months (for ADMIN/ASIST dashboard)
+export async function listAllRecentEnrollments(): Promise<any[]> {
+  try {
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select(`
+        id,
+        year,
+        status,
+        created_at,
+        updated_at,
+        meta,
+        guardian_id,
+        guardians (
+          id,
+          first_name,
+          last_name,
+          run,
+          email,
+          phone
+        ),
+        enrollment_students (
+          student_id,
+          students (
+            id,
+            whole_name,
+            run,
+            curso_nombre
+          )
+        )
+      `)
+      .gte('created_at', sixMonthsAgo.toISOString())
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return data || [];
+  } catch (e) {
+    console.error('listAllRecentEnrollments error', e);
+    return [];
   }
 }
 
