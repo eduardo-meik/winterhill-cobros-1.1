@@ -34,6 +34,7 @@ import {
 } from '../../services/autorizacionDescuento';
 import { generatePDFFromHTML, downloadPDFBlob } from '../../services/pdfGenerator';
 import { sendEmailViaFunction, blobToBase64 } from '../../services/email';
+import { buildEnrollmentFolio, buildEnrollmentReceiptHtml, generateEnrollmentReceiptPdf } from '../../services/enrollmentReceipt';
 import { supabase } from '../../services/supabase';
 import { ChequesDataModal } from './ChequesDataModal';
 import { GuardianFormModal } from '../guardians/GuardianFormModal';
@@ -125,6 +126,8 @@ export function MatriculaWizard() {
   const [hasRegularized, setHasRegularized] = useState(false); // true si hay documento de regularización (generated o signed)
   const [regularizationSigned, setRegularizationSigned] = useState(false); // true sólo si está firmado
   const [refreshingState, setRefreshingState] = useState(false);
+  const [enrollmentFolio, setEnrollmentFolio] = useState('');
+  const [sendingEnrollmentReceipt, setSendingEnrollmentReceipt] = useState(false);
   // Finalize (staff) state
   const [finalizing, setFinalizing] = useState(false);
   const [finalizeOpen, setFinalizeOpen] = useState(false);
@@ -1001,6 +1004,15 @@ export function MatriculaWizard() {
       if (preview && !preview.year) {
         preview.year = enrollment.year ?? year;
       }
+      if (students && students.length > 0) {
+        const first = students[0];
+        const nivel = first.nivel || first.level || null;
+        const cursoLabel = first.curso_label || first.grade || first.curso || first.curso_nombre || null;
+        const folio = buildEnrollmentFolio({ nivel, curso: cursoLabel });
+        setEnrollmentFolio(folio);
+      } else {
+        setEnrollmentFolio('');
+      }
       setFinalizePreview(preview);
       setFinalizeOpen(true);
     } catch (e) {
@@ -1033,8 +1045,6 @@ export function MatriculaWizard() {
       const followUp = ' Recuerda actualizar el estado a Matriculado (valor ACTIVO) o Retirado en el módulo de Estudiantes una vez recibida la documentación física.';
       setFinalizeAlert({ type: alertType, message: `${baseMessage}${detailMessage}${followUp}` });
       toast.success(`Matrícula confirmada (${createdCharges} cargo${createdCharges === 1 ? '' : 's'} nuevos${skippedDuplicates ? `, ${skippedDuplicates} duplicado${skippedDuplicates === 1 ? '' : 's'} omitido${skippedDuplicates === 1 ? '' : 's'}` : ''}).`);
-      setFinalizeOpen(false);
-      setFinalizePreview(null);
       await reloadEnrollmentStudents();
       await refreshDebtAndRegularization();
       if (guardian) {
@@ -1053,6 +1063,89 @@ export function MatriculaWizard() {
       setFinalizeAlert({ type: 'warning', message });
     } finally {
       setFinalizing(false);
+    }
+  };
+
+  const buildEnrollmentReceiptPayload = () => {
+    if (!guardian || !enrollment || !students.length || !enrollmentFolio) return null;
+    const guardianName = guardian.whole_name || [guardian.first_name, guardian.last_name].filter(Boolean).join(' ').trim() || guardian.run || 'Apoderado';
+    const createdAt = new Date().toISOString();
+    const mappedStudents = students.map((s) => ({
+      name: s.whole_name || [s.first_name, s.last_name].filter(Boolean).join(' ').trim() || 'Estudiante',
+      nivel: s.nivel || null,
+      course: s.curso_nombre || s.curso_label || s.grade || s.curso || null,
+    }));
+    return {
+      folio: enrollmentFolio,
+      guardianName,
+      guardianRun: guardian.run || null,
+      guardianEmail: guardian.email || null,
+      year: enrollment.year ?? year,
+      createdAt,
+      students: mappedStudents,
+    };
+  };
+
+  const handleDownloadEnrollmentReceipt = async () => {
+    const payload = buildEnrollmentReceiptPayload();
+    if (!payload) {
+      toast.error('No se pudo generar el comprobante de matrícula');
+      return;
+    }
+    try {
+      await generateEnrollmentReceiptPdf(payload, 'download');
+    } catch (err) {
+      console.error('Error generando comprobante de matrícula', err);
+      toast.error('No se pudo generar el comprobante de matrícula');
+    }
+  };
+
+  const handleEmailEnrollmentReceipt = async () => {
+    const payload = buildEnrollmentReceiptPayload();
+    if (!payload) {
+      toast.error('No se pudo generar el comprobante de matrícula');
+      return;
+    }
+    if (!payload.guardianEmail) {
+      toast.error('El apoderado no tiene email registrado');
+      return;
+    }
+    try {
+      setSendingEnrollmentReceipt(true);
+      const htmlContent = buildEnrollmentReceiptHtml(payload);
+      const blob = await generatePDFFromHTML({
+        htmlContent,
+        orientation: 'portrait',
+        format: 'a4',
+        includeHeader: true,
+        includeSignatureSection: false,
+        metadata: {
+          title: 'Comprobante de Matrícula',
+          subject: 'Comprobante de Matrícula - Winterhill',
+          keywords: 'comprobante, matrícula, winterhill',
+        },
+      });
+      const base64 = await blobToBase64(blob);
+      const filename = `comprobante-matricula-${payload.folio}.pdf`;
+      const subject = `Comprobante de Matrícula - Colegio Winterhill - ${new Date().toLocaleDateString('es-CL')}`;
+      const html = `<p>Estimado(a) ${payload.guardianName},</p>
+        <p>Adjuntamos el comprobante de matrícula para el año ${payload.year}. Por favor, conserve este documento para sus registros.</p>
+        <p>Saludos cordiales,<br/>Corporación Educacional Winterhill</p>`;
+      await sendEmailViaFunction({
+        to: payload.guardianEmail,
+        subject,
+        html,
+        type: 'enrollment_receipt',
+        related_id: enrollment.id,
+        attachments: [{ filename, content: base64, type: 'application/pdf' }],
+      });
+      toast.success('Comprobante de matrícula enviado por correo');
+    } catch (err) {
+      console.error('Error enviando comprobante de matrícula', err);
+      const msg = err?.message || 'No se pudo enviar el comprobante de matrícula';
+      toast.error(msg);
+    } finally {
+      setSendingEnrollmentReceipt(false);
     }
   };
 
@@ -1940,6 +2033,10 @@ export function MatriculaWizard() {
         confirming={finalizing}
         students={students}
         enrollmentYear={enrollment?.year ?? year}
+        folio={enrollmentFolio}
+        onDownloadReceipt={handleDownloadEnrollmentReceipt}
+        onEmailReceipt={handleEmailEnrollmentReceipt}
+        sendingReceipt={sendingEnrollmentReceipt}
       />
 
       <GuardianFormModal

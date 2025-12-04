@@ -12,6 +12,10 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
  * - confirming?: boolean
  * - students?: array (lista actual de estudiantes seleccionados)
  * - enrollmentYear?: number
+ * - folio?: string | null
+ * - onDownloadReceipt?: () => void
+ * - onEmailReceipt?: () => void
+ * - sendingReceipt?: boolean
  */
 export function FinalizeEnrollmentModal({
   isOpen,
@@ -20,7 +24,11 @@ export function FinalizeEnrollmentModal({
   preview,
   confirming = false,
   students = [],
-  enrollmentYear
+  enrollmentYear,
+  folio,
+  onDownloadReceipt,
+  onEmailReceipt,
+  sendingReceipt = false
 }) {
   if (!isOpen) return null;
 
@@ -79,7 +87,12 @@ export function FinalizeEnrollmentModal({
       <Card className="w-full max-w-3xl max-h-[90vh] overflow-auto">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Confirmar matrícula</h2>
+            <div>
+              <h2 className="text-lg font-semibold">Confirmar matrícula</h2>
+              {folio && (
+                <p className="text-[11px] text-gray-500 mt-0.5">Folio preliminar comprobante: <span className="font-mono">{folio}</span></p>
+              )}
+            </div>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
           </div>
           <p className="text-xs text-gray-600 mt-1">Revisa el resumen antes de confirmar. No se aplicarán cambios hasta que presiones "Confirmar".</p>
@@ -156,11 +169,40 @@ export function FinalizeEnrollmentModal({
               <pre className="mt-2 p-2 bg-gray-50 border rounded overflow-auto max-h-64">{JSON.stringify(preview, null, 2)}</pre>
             </details>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col gap-2 pt-2">
+              {folio && (onDownloadReceipt || onEmailReceipt) && (
+                <div className="flex gap-2 justify-between flex-wrap">
+                  {onDownloadReceipt && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onDownloadReceipt}
+                      disabled={confirming || sendingReceipt}
+                      className="flex-1 min-w-[140px]"
+                    >
+                      Descargar comprobante
+                    </Button>
+                  )}
+                  {onEmailReceipt && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onEmailReceipt}
+                      disabled={confirming || sendingReceipt}
+                      className="flex-1 min-w-[140px]"
+                    >
+                      {sendingReceipt ? 'Enviando…' : 'Enviar por email'}
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-3">
               <Button variant="outline" onClick={onClose} className="flex-1">Cancelar</Button>
               <Button onClick={onConfirm} disabled={confirming} className="flex-1">
                 {confirming ? 'Confirmando…' : 'Confirmar matrícula'}
               </Button>
+              </div>
             </div>
           </div>
         </CardContent>
