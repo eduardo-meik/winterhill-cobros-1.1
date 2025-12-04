@@ -296,7 +296,7 @@ export function GuardianEnrollmentPage() {
     }
     try {
       setSendingCompletionEmail(true);
-      const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/apoderado/matricula` : undefined;
+      const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/matricula` : undefined;
       await sendGuardianCompletionEmail({
         guardian: data.guardian,
         students: data.students || [],

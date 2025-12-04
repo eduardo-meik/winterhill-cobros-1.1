@@ -123,6 +123,25 @@
     }
 
     .table, .table tr, .table td, .table th { break-inside: avoid; }
+
+    /* NUEVO: Estilos para borde y folio */
+    .document-border {
+      border: 1px solid var(--border);
+      padding: 10mm;
+      min-height: 240mm;
+      position: relative;
+    }
+    .folio-box {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 11px;
+      background: #fff;
+    }
   </style>
 </head>
 <body>
@@ -143,55 +162,58 @@
     <div class="page-number"></div>
   </div>
   <section class="page">
-    <h1>Contrato Anexo sobre Beca y Autorización de Descuento por Planilla</h1>
-    <p class="muted">Complementario al Contrato de Prestación de Servicios Educacionales {{year}} — Viña del Mar, a {{fecha_actual}}</p>
+    <div class="document-border">
+      <div class="folio-box">FOLIO: {{folio_number}}</div>
+      <h1>Contrato Anexo sobre Beca y Autorización de Descuento por Planilla</h1>
+      <p class="muted">Complementario al Contrato de Prestación de Servicios Educacionales {{year}} — Viña del Mar, a {{fecha_actual}}</p>
 
-    <p>Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, <strong>"LA CORPORACIÓN"</strong>; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, <strong>"EL/LA APODERADO/A"</strong>, trabajador(a) de la Corporación, se acuerda lo siguiente:</p>
+      <p>Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, <strong>"LA CORPORACIÓN"</strong>; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, <strong>"EL/LA APODERADO/A"</strong>, trabajador(a) de la Corporación, se acuerda lo siguiente:</p>
 
-    <p class="clause"><strong>Antecedentes.</strong> Las partes han suscrito el Contrato de Prestación de Servicios Educacionales (en adelante, "CPE") para el año {{year}}, en virtud del cual LA CORPORACIÓN presta servicios educativos a el/los alumno(s) individualizados a continuación:</p>
-    {{students_list}}
-    <p>La Cláusula Séptima del CPE fija una colegiatura anual de ${{colegiatura_anual}}, pagadera en {{cantidad_cuotas}} cuotas mensuales de ${{monto_cuota}} cada una. EL/LA APODERADO/A solicita acogerse al beneficio de descuento regulado en este instrumento.</p>
+      <p class="clause"><strong>Antecedentes.</strong> Las partes han suscrito el Contrato de Prestación de Servicios Educacionales (en adelante, "CPE") para el año {{year}}, en virtud del cual LA CORPORACIÓN presta servicios educativos a el/los alumno(s) individualizados a continuación:</p>
+      {{students_list}}
+      <p>La Cláusula Séptima del CPE fija una colegiatura anual de ${{colegiatura_anual}}, pagadera en {{cantidad_cuotas}} cuotas mensuales de ${{monto_cuota}} cada una. EL/LA APODERADO/A solicita acogerse al beneficio de descuento regulado en este instrumento.</p>
 
-    <p class="clause"><strong>Primero.</strong> LA CORPORACIÓN otorga a EL/LA APODERADO/A un beneficio especial consistente en un <strong>{{descuento_porcentaje}}%</strong> de descuento sobre la colegiatura anual, motivado por <em>{{descuento_motivo}}</em>.</p>
-    <table class="table">
-      <thead>
-        <tr><th>Concepto</th><th>Monto</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Colegiatura Anual (Referencia)</td><td>${{colegiatura_anual}}</td></tr>
-        <tr><td>Monto Total Descuento ({{descuento_porcentaje}}%)</td><td>${{monto_total_descuento}}</td></tr>
-        <tr><td>Monto Neto Anual a Pagar</td><td><strong>${{monto_neto_anual}}</strong></td></tr>
-      </tbody>
-    </table>
+      <p class="clause"><strong>Primero.</strong> LA CORPORACIÓN otorga a EL/LA APODERADO/A un beneficio especial consistente en un <strong>{{descuento_porcentaje}}%</strong> de descuento sobre la colegiatura anual, motivado por <em>{{descuento_motivo}}</em>.</p>
+      <table class="table">
+        <thead>
+          <tr><th>Concepto</th><th>Monto</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Colegiatura Anual (Referencia)</td><td>${{colegiatura_anual}}</td></tr>
+          <tr><td>Monto Total Descuento ({{descuento_porcentaje}}%)</td><td>${{monto_total_descuento}}</td></tr>
+          <tr><td>Monto Neto Anual a Pagar</td><td><strong>${{monto_neto_anual}}</strong></td></tr>
+        </tbody>
+      </table>
 
-    <p class="clause"><strong>Segundo.</strong> EL/LA APODERADO/A pagará el monto neto anual en <strong>{{cantidad_cuotas}}</strong> cuotas mensuales, iguales y sucesivas de <strong>${{monto_cuota_neta}}</strong>, mediante el mecanismo de descuento por planilla que se autoriza a continuación.</p>
+      <p class="clause"><strong>Segundo.</strong> EL/LA APODERADO/A pagará el monto neto anual en <strong>{{cantidad_cuotas}}</strong> cuotas mensuales, iguales y sucesivas de <strong>${{monto_cuota_neta}}</strong>, mediante el mecanismo de descuento por planilla que se autoriza a continuación.</p>
 
-    <p class="clause"><strong>Tercero.</strong> EL/LA APODERADO/A autoriza expresa e irrevocablemente a LA CORPORACIÓN, de conformidad con el artículo 58 del Código del Trabajo, a descontar de sus remuneraciones mensuales la suma de ${{monto_cuota_neta}} correspondiente a la cuota mensual de colegiatura neta, desde marzo a diciembre de {{year}}.</p>
+      <p class="clause"><strong>Tercero.</strong> EL/LA APODERADO/A autoriza expresa e irrevocablemente a LA CORPORACIÓN, de conformidad con el artículo 58 del Código del Trabajo, a descontar de sus remuneraciones mensuales la suma de ${{monto_cuota_neta}} correspondiente a la cuota mensual de colegiatura neta, desde marzo a diciembre de {{year}}.</p>
 
-    <p class="clause"><strong>Cuarto.</strong> El presente beneficio rige durante el año académico {{year}}, entre el 1 de marzo y el 31 de diciembre, mientras se mantengan las condiciones que le dieron origen.</p>
+      <p class="clause"><strong>Cuarto.</strong> El presente beneficio rige durante el año académico {{year}}, entre el 1 de marzo y el 31 de diciembre, mientras se mantengan las condiciones que le dieron origen.</p>
 
-    <p class="clause"><strong>Quinto.</strong> La mantención del beneficio está sujeta a las siguientes condiciones especiales: <em>{{condicion_especial_beca}}</em>.</p>
+      <p class="clause"><strong>Quinto.</strong> La mantención del beneficio está sujeta a las siguientes condiciones especiales: <em>{{condicion_especial_beca}}</em>.</p>
 
-    <p class="clause"><strong>Sexto.</strong> El beneficio y el sistema de descuento por planilla terminarán automáticamente si: (a) finaliza la relación laboral entre EL/LA APODERADO/A y LA CORPORACIÓN, (b) se produce el retiro del estudiante, o (c) se incurre en incumplimientos graves establecidos en el CPE o reglamentos internos.</p>
+      <p class="clause"><strong>Sexto.</strong> El beneficio y el sistema de descuento por planilla terminarán automáticamente si: (a) finaliza la relación laboral entre EL/LA APODERADO/A y LA CORPORACIÓN, (b) se produce el retiro del estudiante, o (c) se incurre en incumplimientos graves establecidos en el CPE o reglamentos internos.</p>
 
-    <p class="clause"><strong>Séptimo.</strong> Producido el término del beneficio, EL/LA APODERADO/A deberá regularizar y pagar directamente a LA CORPORACIÓN el saldo insoluto de la colegiatura, calculado sobre el valor original sin descuento, dentro de los 10 días hábiles siguientes a la fecha de término. LA CORPORACIÓN emitirá la liquidación correspondiente.</p>
+      <p class="clause"><strong>Séptimo.</strong> Producido el término del beneficio, EL/LA APODERADO/A deberá regularizar y pagar directamente a LA CORPORACIÓN el saldo insoluto de la colegiatura, calculado sobre el valor original sin descuento, dentro de los 10 días hábiles siguientes a la fecha de término. LA CORPORACIÓN emitirá la liquidación correspondiente.</p>
 
-    <p class="clause"><strong>Octavo.</strong> Este anexo modifica la Cláusula Séptima del CPE únicamente en cuanto al monto y modalidad de pago. En lo no modificado, rigen íntegramente las cláusulas del CPE {{year}}.</p>
+      <p class="clause"><strong>Octavo.</strong> Este anexo modifica la Cláusula Séptima del CPE únicamente en cuanto al monto y modalidad de pago. En lo no modificado, rigen íntegramente las cláusulas del CPE {{year}}.</p>
 
-    <p class="clause"><strong>Noveno.</strong> Las partes fijan su domicilio en Viña del Mar y se someten a sus Tribunales Ordinarios de Justicia. El presente contrato se firma en dos ejemplares de igual tenor y fecha.</p>
+      <p class="clause"><strong>Noveno.</strong> Las partes fijan su domicilio en Viña del Mar y se someten a sus Tribunales Ordinarios de Justicia. El presente contrato se firma en dos ejemplares de igual tenor y fecha.</p>
 
-    <div class="signatures">
-      <div class="sigbox">
-        <div><strong>{{guardian_full_name}}</strong></div>
-        <div>RUT: {{guardian_run}}</div>
-        <div class="muted">EL/LA APODERADO/A Y TRABAJADOR(A)</div>
+      <div class="signatures">
+        <div class="sigbox">
+          <div><strong>{{guardian_full_name}}</strong></div>
+          <div>RUT: {{guardian_run}}</div>
+          <div class="muted">EL/LA APODERADO/A Y TRABAJADOR(A)</div>
+        </div>
+        <div class="sigbox">
+          <div><strong>Orlando Bórquez Domingo</strong></div>
+          <div>RUT: 7.269.437-6</div>
+          <div class="muted">p.p. CORPORACIÓN EDUCACIONAL WINTERHILL (RUT: 65.152.884-4)</div>
+        </div>
       </div>
-      <div class="sigbox">
-        <div><strong>Orlando Bórquez Domingo</strong></div>
-        <div>RUT: 7.269.437-6</div>
-        <div class="muted">p.p. CORPORACIÓN EDUCACIONAL WINTERHILL (RUT: 65.152.884-4)</div>
-      </div>
-    </div>
+    </div> <!-- End document-border -->
   </section>
 </body>
 </html>

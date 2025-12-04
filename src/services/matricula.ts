@@ -1116,6 +1116,14 @@ export function renderPrestacionWithAnnex(payload: PrestacionPayload, options: {
   return `${doctype}\n${htmlTag}\n<head>\n${mergedHead}\n</head>\n${bodyTag}\n${mergedBody}\n</body>\n</html>`;
 }
 
+export function renderSingleDocument(payload: PrestacionPayload, type: 'contract' | 'pagare' | 'descuento'): string {
+  let template = templates.prestacion;
+  if (type === 'pagare') template = templates.pagare;
+  if (type === 'descuento') template = templates.descuento;
+  
+  return renderTemplate(template, payload);
+}
+
 export interface EnrollmentPaymentPlan {
   n_cuotas: number;
   monto_total: number;

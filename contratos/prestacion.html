@@ -99,7 +99,7 @@
     }
     
     .table thead th { 
-      background: transparent; /* ELIMINADO: Fondo gris */
+      background: transparent; /* AHORRO TINTA */
       text-align: left; 
       font-weight: 600; 
     }
@@ -152,6 +152,25 @@
 
     .page-break { page-break-before: always; }
     .table, .table tr, .table td, .table th { break-inside: avoid; }
+
+    /* NUEVO: Estilos para borde y folio */
+    .document-border {
+      border: 1px solid var(--border);
+      padding: 10mm;
+      min-height: 240mm;
+      position: relative;
+    }
+    .folio-box {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 11px;
+      background: #fff;
+    }
     
     /* --- FIN DE CAMBIOS --- */
   </style>
@@ -175,29 +194,31 @@
     <div class="page-number"></div>
   </div>
   <section class="page">
-    <h1>Contrato de Prestación de Servicios Educacionales</h1>
-    <p class="muted mb-10">Viña del Mar, a {{fecha_actual}}</p>
+    <div class="document-border">
+      <div class="folio-box">FOLIO: {{folio_number}}</div>
+      <h1>Contrato de Prestación de Servicios Educacionales</h1>
+      <p class="muted mb-10">Viña del Mar, a {{fecha_actual}}</p>
 
-  <p class="lead">Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada legalmente por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, "LA CORPORACIÓN"; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, "EL/LA APODERADO/A", se celebra el siguiente Contrato de Prestación de Servicios Educacionales:</p>
+      <p class="lead">Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada legalmente por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, "LA CORPORACIÓN"; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, "EL/LA APODERADO/A", se celebra el siguiente Contrato de Prestación de Servicios Educacionales:</p>
 
-  <p class="clause"><strong>Primero.</strong> La Corporación Educacional Winterhill se encuentra reconocida oficialmente como tal y es sostenedora del Establecimiento Educacional denominado <strong>"Colegio Winterhill"</strong>, en adelante, "EL ESTABLECIMIENTO", ubicado en Pasaje Anwandter N° 31, Comuna de Viña del Mar.</p>
+      <p class="clause"><strong>Primero.</strong> La Corporación Educacional Winterhill se encuentra reconocida oficialmente como tal y es sostenedora del Establecimiento Educacional denominado <strong>"Colegio Winterhill"</strong>, en adelante, "EL ESTABLECIMIENTO", ubicado en Pasaje Anwandter N° 31, Comuna de Viña del Mar.</p>
 
-  <p class="clause"><strong>Segundo.</strong> Para todos los efectos de este contrato, se entiende por <strong>APODERADO/A</strong> la persona que, como responsable de el/los hijo(s), suscribe el presente instrumento, asumiendo la totalidad de las obligaciones, deberes y compromisos que en éste se consignan.</p>
-    <p>EL/LA APODERADO/A ha solicitado a LA CORPORACIÓN —quien lo ha aceptado— matricular y prestar servicios educacionales en el Establecimiento Educacional Colegio Winterhill para el año académico <strong>{{year}}</strong>, en calidad de alumno(s) a su(s) pupilo(s) que se individualizan a continuación, en adelante, indistintamente "EL/LA ESTUDIANTE":</p>
+      <p class="clause"><strong>Segundo.</strong> Para todos los efectos de este contrato, se entiende por <strong>APODERADO/A</strong> la persona que, como responsable de el/los hijo(s), suscribe el presente instrumento, asumiendo la totalidad de las obligaciones, deberes y compromisos que en éste se consignan.</p>
+      <p>EL/LA APODERADO/A ha solicitado a LA CORPORACIÓN —quien lo ha aceptado— matricular y prestar servicios educacionales en el Establecimiento Educacional Colegio Winterhill para el año académico <strong>{{year}}</strong>, en calidad de alumno(s) a su(s) pupilo(s) que se individualizan a continuación, en adelante, indistintamente "EL/LA ESTUDIANTE":</p>
 
-    {{students_table}}
+      {{students_table}}
 
-  <p class="clause"><strong>Tercero.</strong> LA CORPORACIÓN, en su calidad de sostenedora del ESTABLECIMIENTO, se compromete a:</p>
-    <ul class="small">
-      <li>Entregar, durante la vigencia del presente contrato, la atención necesaria para que EL/LA ESTUDIANTE desarrolle el proceso educativo dentro del nivel académico establecido por el colegio, con énfasis en su formación integral.</li>
-      <li>Desarrollar el proceso de enseñanza-aprendizaje de conformidad con el PEI y planes y programas aprobados por el Ministerio de Educación de Chile.</li>
-      <li>Velar por el proceso formativo acorde a las normas reglamentarias del ESTABLECIMIENTO.</li>
-      <li>Difundir el contenido del Proyecto Educativo Institucional, Manual de Convivencia Escolar y Reglamento de Evaluación y Promoción.</li>
-      <li>Proporcionar la infraestructura necesaria para el desarrollo del programa curricular y extracurricular.</li>
-    </ul>
+      <p class="clause"><strong>Tercero.</strong> LA CORPORACIÓN, en su calidad de sostenedora del ESTABLECIMIENTO, se compromete a:</p>
+      <ul class="small">
+        <li>Entregar, durante la vigencia del presente contrato, la atención necesaria para que EL/LA ESTUDIANTE desarrolle el proceso educativo dentro del nivel académico establecido por el colegio, con énfasis en su formación integral.</li>
+        <li>Desarrollar el proceso de enseñanza-aprendizaje de conformidad con el PEI y planes y programas aprobados por el Ministerio de Educación de Chile.</li>
+        <li>Velar por el proceso formativo acorde a las normas reglamentarias del ESTABLECIMIENTO.</li>
+        <li>Difundir el contenido del Proyecto Educativo Institucional, Manual de Convivencia Escolar y Reglamento de Evaluación y Promoción.</li>
+        <li>Proporcionar la infraestructura necesaria para el desarrollo del programa curricular y extracurricular.</li>
+      </ul>
 
-  <p class="clause"><strong>Cuarto.</strong> EL/LA APODERADO/A se compromete a:</p>
-    <ul class="small">
+      <p class="clause"><strong>Cuarto.</strong> EL/LA APODERADO/A se compromete a:</p>
+      <ul class="small">
       <li>Aceptar y respetar el PEI, Manual de Convivencia Escolar y Reglamento de Evaluación y Promoción.</li>
       <li>Favorecer las tareas educativas y formativas que, en beneficio del ESTUDIANTE, conciba y desarrolle EL ESTABLECIMIENTO.</li>
       <li>Pagar oportunamente la colegiatura según lo establecido en este contrato.</li>
@@ -253,6 +274,7 @@
         <div class="muted">p.p. CORPORACIÓN EDUCACIONAL WINTERHILL (RUT: 65.152.884-4)</div>
       </div>
     </div>
+    </div> <!-- End document-border -->
   </section>
 </body>
 </html>

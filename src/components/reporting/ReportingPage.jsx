@@ -14,6 +14,7 @@ import { PaymentsOverview } from './graphs/PaymentsOverview';
 import { PaymentStatusChart } from './graphs/PaymentStatusChart';
 import { PaymentMethodsChart } from './graphs/PaymentMethodsChart';
 import { PaymentsTable } from './tables/PaymentsTable'; // Import from the correct location
+import { generateLibroMatriculaReport, generateFiconReport } from '../../services/reporting';
 
 export function ReportingPage() {
   const [filters, setFilters] = useState({
@@ -647,6 +648,46 @@ export function ReportingPage() {
     }
   };
 
+  const handleExportLibroMatricula = async () => {
+    try {
+      setExporting(true);
+      toast.loading('Generando Libro de Matrícula...', { id: 'export-libro' });
+      const blob = await generateLibroMatriculaReport();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Libro_Matricula_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Libro de Matrícula descargado', { id: 'export-libro' });
+    } catch (error) {
+      console.error('Error exporting Libro Matricula:', error);
+      toast.error('Error al generar reporte', { id: 'export-libro' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleExportFicon = async () => {
+    try {
+      setExporting(true);
+      toast.loading('Generando Reporte FICON...', { id: 'export-ficon' });
+      const blob = await generateFiconReport();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Reporte_FICON_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Reporte FICON descargado', { id: 'export-ficon' });
+    } catch (error) {
+      console.error('Error exporting FICON:', error);
+      toast.error('Error al generar reporte FICON', { id: 'export-ficon' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleApplyFilters = async (newFilters) => {
     // Log the current and new filters for debugging
     console.log("Current filters:", filters);
@@ -788,6 +829,20 @@ export function ReportingPage() {
           <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Reportes</h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                onClick={handleExportLibroMatricula}
+                disabled={exporting || loading}
+              >
+                Libro Matrícula
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleExportFicon}
+                disabled={exporting || loading}
+              >
+                FICON
+              </Button>
               <Button
                 onClick={() => handleExport('pdf')}
                 disabled={exporting || data.length === 0 || loading}

@@ -25,6 +25,8 @@ export function GlobalEnrollmentsTable({ onSelectEnrollment }) {
       case 'completed':
       case 'matriculado':
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">Matriculado</span>;
+      case 'pre_matriculado':
+        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">Pre Matrícula</span>;
       case 'pending':
       case 'in_progress':
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">Borrador</span>;

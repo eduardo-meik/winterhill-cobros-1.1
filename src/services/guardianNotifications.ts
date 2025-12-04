@@ -29,7 +29,7 @@ export async function sendGuardianCompletionEmail(options: SendGuardianCompletio
 
   const yearLabel = year ?? enrollment?.year ?? new Date().getFullYear();
   const documentCount = documents?.length ?? 0;
-  const portalLink = portalUrl || (typeof window !== 'undefined' ? `${window.location.origin}/apoderado/matricula` : undefined);
+  const portalLink = portalUrl || (typeof window !== 'undefined' ? `${window.location.origin}/matricula` : undefined);
 
   const summary = [
     listItems ? `<p>Quedaron registrados los siguientes estudiantes:</p><ul>${listItems}</ul>` : '',

@@ -45,7 +45,7 @@ export function MainLayout() {
       if (page === 'matricula') {
         setCurrentPage('matricula');
         setIsSidebarOpen(false);
-        navigate('/apoderado/matricula');
+        navigate('/matricula');
         return;
       }
     }

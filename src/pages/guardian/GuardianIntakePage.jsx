@@ -519,7 +519,7 @@ export const GuardianIntakePage = () => {
           showFeedback: false,
         });
         await refreshGuardianData({ force: true });
-        navigate('/apoderado/matricula', { replace: true });
+        navigate('/matricula', { replace: true });
       }
       setStatus('submitted');
     } catch (e) {

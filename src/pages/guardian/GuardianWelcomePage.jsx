@@ -96,7 +96,7 @@ export const GuardianWelcomePage = () => {
     }
     try {
       setSendingCompletionEmail(true);
-      const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/apoderado/matricula` : undefined;
+      const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/matricula` : undefined;
       await sendGuardianCompletionEmail({
         guardian: data.guardian,
         students: data.students || [],
@@ -116,7 +116,7 @@ export const GuardianWelcomePage = () => {
   };
 
   const handleViewDocuments = () => {
-    navigate('/apoderado/matricula');
+    navigate('/matricula');
   };
 
   const welcomeName = guardianSummary.firstName || data?.guardian?.first_name || '';
@@ -220,7 +220,7 @@ export const GuardianWelcomePage = () => {
             <div className="text-sm text-gray-500">Aún no hay estudiantes vinculados.</div>
           )}
           <div className="mt-4">
-            <Link to="/apoderado/matricula" className="text-primary text-sm hover:underline">Gestionar matrícula</Link>
+            <Link to="/matricula" className="text-primary text-sm hover:underline">Gestionar matrícula</Link>
           </div>
         </div>
 
@@ -231,7 +231,7 @@ export const GuardianWelcomePage = () => {
             <Chip color={showCompletionNotice ? 'bg-green-200 text-green-800' : 'bg-blue-200 text-blue-800'}>{rawEnrollmentStatus}</Chip>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Revisa y completa los pasos necesarios para finalizar la matrícula.</p>
-          <Link to="/apoderado/matricula" className="inline-block px-4 py-2 bg-primary text-white rounded text-sm hover:opacity-90">Continuar matrícula</Link>
+          <Link to="/matricula" className="inline-block px-4 py-2 bg-primary text-white rounded text-sm hover:opacity-90">Continuar matrícula</Link>
         </div>
       </div>
 
@@ -239,7 +239,7 @@ export const GuardianWelcomePage = () => {
         <h3 className="font-medium mb-3 text-sm text-gray-500 uppercase tracking-wide">Acciones Rápidas</h3>
         <div className="flex flex-wrap gap-3 text-sm">
           <Link to="/apoderado/encuesta" className="px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Actualizar datos</Link>
-          <Link to="/apoderado/matricula" className="px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Gestionar matrícula</Link>
+          <Link to="/matricula" className="px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Gestionar matrícula</Link>
           <Link to="/profile" className="px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Mi perfil</Link>
           <Link to="/settings" className="px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">Configuración</Link>
           <Link to="/apoderado/portal" className="px-3 py-2 rounded bg-primary/10 text-primary hover:bg-primary/20">Ver estado de pagos</Link>

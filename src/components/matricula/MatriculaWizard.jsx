@@ -26,7 +26,7 @@ import {
 } from '../../services/matricula';
 import { finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
 import FinalizeEnrollmentModal from './FinalizeEnrollmentModal';
-import { buildPrestacionPayload, renderPrestacionWithAnnex, createPrestacionDocument, ensureEnrollmentDocuments } from '../../services/matricula';
+import { buildPrestacionPayload, renderPrestacionWithAnnex, renderSingleDocument, createPrestacionDocument, ensureEnrollmentDocuments } from '../../services/matricula';
 import { saveChequesForEnrollment } from '../../services/matricula';
 import { 
   buildAutorizacionPayload, 
@@ -128,7 +128,7 @@ export function MatriculaWizard() {
   const [hasRegularized, setHasRegularized] = useState(false); // true si hay documento de regularización (generated o signed)
   const [regularizationSigned, setRegularizationSigned] = useState(false); // true sólo si está firmado
   const [refreshingState, setRefreshingState] = useState(false);
-  const [enrollmentFolio, setEnrollmentFolio] = useState('');
+  const [enrollmentFolio, setEnrollmentFolio] = useState(null);
   const [sendingEnrollmentReceipt, setSendingEnrollmentReceipt] = useState(false);
   // Finalize (staff) state
   const [finalizing, setFinalizing] = useState(false);
@@ -692,6 +692,28 @@ export function MatriculaWizard() {
     }));
   };
 
+  // Apply global economic settings to all students
+  const applyGlobalToAll = () => {
+    if (!students.length) return;
+    setStudentEconomicMap(prev => {
+      const next = { ...prev };
+      students.forEach(st => {
+        next[st.id] = {
+          ...(next[st.id] || {}),
+          monto_matricula: economic.monto_matricula,
+          colegiatura_anual: economic.colegiatura_anual,
+          cantidad_cuotas: economic.cantidad_cuotas,
+          dia_vencimiento: economic.dia_vencimiento,
+          // Porcentaje descuento is separate in global state (descuentoInfo)
+          porcentaje_descuento: descuentoInfo.porcentaje_descuento,
+          // Let the useEffect recalculate derived fields (monto_cuota, total_descuento)
+        };
+      });
+      return next;
+    });
+    toast.success('Valores aplicados a todos los estudiantes');
+  };
+
   // Save economic info
   const handleSaveEconomic = async () => {
     if (!enrollment) return;
@@ -751,6 +773,51 @@ export function MatriculaWizard() {
     toast.success('Datos económicos guardados correctamente');
   };
 
+  const handleFinalizePreview = async () => {
+    if (!enrollment?.id) return;
+    try {
+      setFinalizing(true);
+      setFinalizeAlert(null);
+      const preview = await finalizeEnrollmentPreview(enrollment.id);
+      setFinalizePreview(preview);
+      setFinalizeOpen(true);
+    } catch (error) {
+      console.error('Error previewing finalization:', error);
+      toast.error('Error al preparar finalización');
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
+  const handleFinalizeConfirm = async () => {
+    if (!enrollment?.id) return;
+    try {
+      setFinalizing(true);
+      const result = await finalizeEnrollmentConfirm(enrollment.id);
+      
+      setFinalizeAlert({
+        type: 'success',
+        message: `Matrícula finalizada correctamente. Folio: ${result.folio || 'N/A'}`
+      });
+      setEnrollmentFolio(result.folio || null);
+      setFinalizeOpen(false);
+      
+      // Refresh enrollment data
+      setEnrollment(prev => ({ ...prev, status: 'completed' }));
+      if (reloadEnrollmentStudents) await reloadEnrollmentStudents();
+      
+      toast.success('Matrícula finalizada exitosamente');
+    } catch (error) {
+      console.error('Error finalizing enrollment:', error);
+      setFinalizeAlert({
+        type: 'error',
+        message: error.message || 'Error al finalizar matrícula'
+      });
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
   // Generate pagaré HTML preview OR Autorización de Descuento (depending on descuentoPlanilla flag)
   const handleGeneratePagare = async () => {
     if (!guardian || !enrollment) {
@@ -787,25 +854,15 @@ export function MatriculaWizard() {
     const studentsWithMatriculaCourse = students.map(s => {
       const econ = studentEconomicMap?.[s.id];
       const cursoId = econ?.curso_sugerido;
-      if (!cursoId || !Array.isArray(availableYearCourses) || availableYearCourses.length === 0) {
-        return {
-          ...s,
-          // Asegura que siempre haya curso_nombre para todos los estudiantes
-          curso_nombre: s.curso_nombre || s.curso || s.grade || s.nivel || 'Sin curso asignado',
-        };
+      let curso_nombre = s.curso_nombre || s.curso || s.grade || s.nivel || 'Sin curso asignado';
+      
+      if (cursoId && Array.isArray(availableYearCourses)) {
+        const curso = availableYearCourses.find(c => c.id === cursoId);
+        if (curso) {
+          curso_nombre = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
+        }
       }
-      const curso = availableYearCourses.find(c => c.id === cursoId);
-      if (!curso) {
-        return {
-          ...s,
-          curso_nombre: s.curso_nombre || s.curso || s.grade || s.nivel || 'Sin curso asignado',
-        };
-      }
-      const baseLabel = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
-      return {
-        ...s,
-        curso_nombre: baseLabel,
-      };
+      return { ...s, curso_nombre };
     });
 
     // Always generate Contrato de Prestación + anexos según método de pago.
@@ -932,7 +989,7 @@ export function MatriculaWizard() {
       });
       
       // Download directly
-  downloadPDFBlob(pdfBlob, `Contrato_Prestacion_${year}_${guardian?.run || 'documento'}.pdf`);
+      downloadPDFBlob(pdfBlob, `Contrato_Prestacion_${year}_${guardian?.run || 'documento'}.pdf`);
       
       toast.success('PDF descargado exitosamente', { id: 'pdf-download' });
     } catch (err) {
@@ -941,206 +998,97 @@ export function MatriculaWizard() {
     }
   };
 
-  // Print HTML preview
-  const handlePrint = () => {
-    if (!previewHtml) {
-      toast.error('No hay documento para imprimir');
-      return;
-    }
+  // Download Individual Document (Contract, Pagare, Descuento)
+  const handleDownloadIndividualPDF = async (type) => {
+    if (!guardian || !enrollment) return;
     
-    // Open print dialog with the HTML content
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Pagaré ${year}</title>
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              padding: 40px; 
-              line-height: 1.6;
-              max-width: 800px;
-              margin: 0 auto;
-            }
-            h1, h2 { color: #333; }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin: 20px 0;
-            }
-            th, td { 
-              border: 1px solid #ddd; 
-              padding: 8px; 
-              text-align: left;
-            }
-            th { background-color: #f2f2f2; }
-            @media print {
-              body { padding: 20px; }
-            }
-          </style>
-        </head>
-        <body>
-          ${previewHtml}
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => printWindow.print(), 250);
-    }
-  };
-
-  const computeFinalizeOptions = () => {
-    if (!paymentPlan) {
-      toast.error('Completa los datos económicos (monto anual, cuotas y día de vencimiento) antes de confirmar.');
-      return null;
-    }
-    return {
-      ...(assistedMode ? { skip_doc_checks: true } : {}),
-      payment_plan: paymentPlan
-    };
-  };
-
-  // Staff finalize: dry-run preview
-  const handleFinalizePreview = async () => {
-    if (!enrollment) return;
-    const finalizeOptions = computeFinalizeOptions();
-    if (!finalizeOptions) return;
     try {
-      setFinalizing(true);
-      setFinalizeAlert(null);
-      const preview = await finalizeEnrollmentPreview(enrollment.id, finalizeOptions);
-      if (preview && !preview.year) {
-        preview.year = enrollment.year ?? year;
-      }
-      if (students && students.length > 0) {
-        const first = students[0];
-        const nivel = first.nivel || first.level || null;
-        const cursoLabel = first.curso_label || first.grade || first.curso || null;
-        const folio = buildEnrollmentFolio({ nivel, curso: cursoLabel });
-        setEnrollmentFolio(folio);
-      } else {
-        setEnrollmentFolio('');
-      }
-      setFinalizePreview(preview);
-      setFinalizeOpen(true);
-    } catch (e) {
-      // toast handled in service
-    } finally {
-      setFinalizing(false);
-    }
-  };
+      toast.loading(`Generando ${type}...`, { id: 'pdf-download-single' });
 
-  // Staff finalize: confirm apply
-  const handleFinalizeConfirm = async () => {
-    if (!enrollment) return;
-    const finalizeOptions = computeFinalizeOptions();
-    if (!finalizeOptions) {
-      setFinalizeAlert({ type: 'warning', message: 'Falta configurar el plan de pagos antes de confirmar.' });
-      return;
-    }
-    try {
-      setFinalizing(true);
-      const result = await finalizeEnrollmentConfirm(enrollment.id, finalizeOptions);
-      if (result) {
-        setFinalizeOpen(false);
-        setShowSuccessModal(true);
-      }
-    } catch (e) {
-      // toast handled in service
-      const message = e?.message || 'No se pudo confirmar la matrícula. Revisa documentos o plan de pago.';
-      setFinalizeAlert({ type: 'warning', message });
-    } finally {
-      setFinalizing(false);
-    }
-  };
+      // Re-build payload (same logic as handleGeneratePagare)
+      const meta = enrollment.meta || {};
+      const econNumbers = {
+        monto_matricula: Number(meta.monto_matricula ?? economic.monto_matricula) || undefined,
+        colegiatura_anual: Number(meta.colegiatura_anual ?? economic.colegiatura_anual) || undefined,
+        cantidad_cuotas: Number(meta.cantidad_cuotas ?? economic.cantidad_cuotas) || undefined,
+        monto_cuota: Number(meta.monto_cuota ?? economic.monto_cuota) || undefined,
+        dia_vencimiento: Number(meta.dia_vencimiento ?? economic.dia_vencimiento) || undefined,
+      };
 
-  const buildEnrollmentReceiptPayload = () => {
-    if (!guardian || !enrollment || !students.length || !enrollmentFolio) return null;
-    const guardianName = guardian.whole_name || [guardian.first_name, guardian.last_name].filter(Boolean).join(' ').trim() || guardian.run || 'Apoderado';
-    const createdAt = new Date().toISOString();
-    const mappedStudents = students.map((s) => ({
-      name: s.whole_name || [s.first_name, s.last_name].filter(Boolean).join(' ').trim() || 'Estudiante',
-      nivel: s.nivel || null,
-      course: s.curso_nombre || s.curso_label || s.grade || s.curso || null,
-    }));
-    return {
-      folio: enrollmentFolio,
-      guardianName,
-      guardianRun: guardian.run || null,
-      guardianEmail: guardian.email || null,
-      year: enrollment.year ?? year,
-      createdAt,
-      students: mappedStudents,
-    };
-  };
+      const studentsWithMatriculaCourse = students.map(s => {
+        const econ = studentEconomicMap?.[s.id];
+        const cursoId = econ?.curso_sugerido;
+        let curso_nombre = s.curso_nombre || s.curso || s.grade || s.nivel || 'Sin curso asignado';
+        
+        if (cursoId && Array.isArray(availableYearCourses)) {
+          const curso = availableYearCourses.find(c => c.id === cursoId);
+          if (curso) {
+            curso_nombre = curso.nom_curso || `${curso.nivel ?? ''}${curso.letra_curso ? ` ${curso.letra_curso}` : ''}`.trim() || 'Sin nombre';
+          }
+        }
+        return { ...s, curso_nombre };
+      });
 
-  const handleDownloadEnrollmentReceipt = async () => {
-    const payload = buildEnrollmentReceiptPayload();
-    if (!payload) {
-      toast.error('No se pudo generar el comprobante de matrícula');
-      return;
-    }
-    try {
-      await generateEnrollmentReceiptPdf(payload, 'download');
-    } catch (err) {
-      console.error('Error generando comprobante de matrícula', err);
-      toast.error('No se pudo generar el comprobante de matrícula');
-    }
-  };
+      const descuentoMetaPorcentaje = Number(meta.porcentaje_descuento ?? descuentoInfo.porcentaje_descuento) || 0;
+      const perStudentEconomic = students.map(s => {
+        const econ = studentEconomicMap?.[s.id] || {};
+        const colegAnual = Number(econ.colegiatura_anual ?? economic.colegiatura_anual) || 0;
+        const porcentajeDescAlumno = typeof econ.porcentaje_descuento === 'number' ? econ.porcentaje_descuento : descuentoMetaPorcentaje;
+        const montoTotalDescAlumno = (colegAnual > 0 && porcentajeDescAlumno > 0) ? Math.round(colegAnual * (porcentajeDescAlumno / 100)) : 0;
+        const montoNetoAnualAlumno = Math.max(0, colegAnual - montoTotalDescAlumno);
+        return {
+          student_id: s.id,
+          colegiatura_anual: colegAnual,
+          porcentaje_descuento: porcentajeDescAlumno,
+          monto_total_descuento: montoTotalDescAlumno,
+          monto_neto_anual: montoNetoAnualAlumno,
+        };
+      });
 
-  const handleEmailEnrollmentReceipt = async () => {
-    const payload = buildEnrollmentReceiptPayload();
-    if (!payload) {
-      toast.error('No se pudo generar el comprobante de matrícula');
-      return;
-    }
-    if (!payload.guardianEmail) {
-      toast.error('El apoderado no tiene email registrado');
-      return;
-    }
-    try {
-      setSendingEnrollmentReceipt(true);
-      const htmlContent = buildEnrollmentReceiptHtml(payload);
-      const blob = await generatePDFFromHTML({
-        htmlContent,
-        orientation: 'portrait',
-        format: 'a4',
+      const payload = buildPrestacionPayload({
+        guardian,
+        year,
+        students: studentsWithMatriculaCourse,
+        economic: econNumbers,
+        paymentMethod,
+        cheques,
+        perStudentEconomic,
+        descuento: descuentoMetaPorcentaje > 0 ? {
+          porcentaje: descuentoMetaPorcentaje,
+          motivo: descuentoInfo.motivo || '',
+          condiciones: descuentoInfo.condiciones || ''
+        } : null,
+        paymentPlan: paymentPlan || null,
+      });
+
+      // Folio
+      const folioNumber = documentRecord?.id 
+        ? documentRecord.id.substring(0, 8).toUpperCase() 
+        : (enrollment?.id ? String(enrollment.id).slice(0, 8) : Date.now().toString().slice(-8)).toUpperCase();
+      payload.folio_number = folioNumber;
+
+      // Render specific template
+      const html = renderSingleDocument(payload, type);
+
+      // Generate PDF
+      const pdfBlob = await generatePDFFromHTML({
+        htmlContent: html,
         includeHeader: true,
-        includeSignatureSection: false,
-        metadata: {
-          title: 'Comprobante de Matrícula',
-          subject: 'Comprobante de Matrícula - Winterhill',
-          keywords: 'comprobante, matrícula, winterhill',
-        },
+        includeSignatureSection: true,
+        folioNumber: folioNumber,
+        guardianRun: guardian.run
       });
-      const base64 = await blobToBase64(blob);
-      const filename = `comprobante-matricula-${payload.folio}.pdf`;
-      const subject = `Comprobante de Matrícula - Colegio Winterhill - ${new Date().toLocaleDateString('es-CL')}`;
-      const html = `<p>Estimado(a) ${payload.guardianName},</p>
-        <p>Adjuntamos el comprobante de matrícula para el año ${payload.year}. Por favor, conserve este documento para sus registros.</p>
-        <p>Saludos cordiales,<br/>Corporación Educacional Winterhill</p>`;
-      await sendEmailViaFunction({
-        to: payload.guardianEmail,
-        subject,
-        html,
-        type: 'enrollment_receipt',
-        related_id: enrollment.id,
-        attachments: [{ filename, content: base64, type: 'application/pdf' }],
-      });
-      toast.success('Comprobante de matrícula enviado por correo');
-    } catch (err) {
-      console.error('Error enviando comprobante de matrícula', err);
-      const msg = err?.message || 'No se pudo enviar el comprobante de matrícula';
-      toast.error(msg);
-    } finally {
-      setSendingEnrollmentReceipt(false);
+
+      const filename = `${type === 'contract' ? 'Contrato' : (type === 'pagare' ? 'Pagare' : 'Anexo_Descuento')}_${year}_${guardian.run}.pdf`;
+      downloadPDFBlob(pdfBlob, filename);
+
+      toast.success('Descarga completada', { id: 'pdf-download-single' });
+    } catch (e) {
+      console.error('Error downloading single PDF', e);
+      toast.error('Error al descargar documento', { id: 'pdf-download-single' });
     }
   };
-
-  // Email pagare as PDF attachment to guardian
+  
   const handleSendPagareEmail = async () => {
     if (!previewHtml || !guardian) {
       toast.error('No hay documento para enviar');
@@ -1224,6 +1172,93 @@ export function MatriculaWizard() {
     
     return total;
   }, [students, studentEconomicMap]);
+
+  const handleDownloadEnrollmentReceipt = async () => {
+    if (!enrollmentFolio || !guardian) return;
+    try {
+      toast.loading('Generando comprobante...', { id: 'receipt-dl' });
+      const receiptData = {
+        folio: enrollmentFolio,
+        guardianName: `${guardian.first_name} ${guardian.last_name}`,
+        guardianRun: guardian.run,
+        guardianEmail: guardian.email,
+        year: enrollment?.year || year,
+        createdAt: new Date().toISOString(),
+        students: students.map(s => ({
+          name: s.whole_name || `${s.first_name} ${s.last_name}`,
+          nivel: s.nivel,
+          course: s.curso_nombre || s.curso
+        }))
+      };
+      
+      const html = buildEnrollmentReceiptHtml(receiptData);
+      const pdfBlob = await generatePDFFromHTML({
+        htmlContent: html,
+        includeHeader: false, // Receipt has its own header
+        includeSignatureSection: false,
+        folioNumber: enrollmentFolio
+      });
+      
+      downloadPDFBlob(pdfBlob, `Comprobante_Matricula_${enrollmentFolio}.pdf`);
+      toast.success('Comprobante descargado', { id: 'receipt-dl' });
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+      toast.error('Error al descargar comprobante', { id: 'receipt-dl' });
+    }
+  };
+
+  const handleEmailEnrollmentReceipt = async () => {
+    if (!enrollmentFolio || !guardian?.email) return;
+    try {
+      setSendingEnrollmentReceipt(true);
+      toast.loading('Enviando comprobante...', { id: 'receipt-email' });
+      
+      const receiptData = {
+        folio: enrollmentFolio,
+        guardianName: `${guardian.first_name} ${guardian.last_name}`,
+        guardianRun: guardian.run,
+        guardianEmail: guardian.email,
+        year: enrollment?.year || year,
+        createdAt: new Date().toISOString(),
+        students: students.map(s => ({
+          name: s.whole_name || `${s.first_name} ${s.last_name}`,
+          nivel: s.nivel,
+          course: s.curso_nombre || s.curso
+        }))
+      };
+      
+      const html = buildEnrollmentReceiptHtml(receiptData);
+      const pdfBlob = await generatePDFFromHTML({
+        htmlContent: html,
+        includeHeader: false,
+        includeSignatureSection: false,
+        folioNumber: enrollmentFolio
+      });
+      
+      const base64 = await blobToBase64(pdfBlob);
+      
+      await sendEmailViaFunction({
+        to: guardian.email,
+        subject: `Comprobante de Matrícula ${year} - Folio ${enrollmentFolio}`,
+        html: `<p>Estimado apoderado,</p><p>Adjunto encontrará su comprobante de matrícula exitosa.</p><p>Atte,<br>Colegio Winterhill</p>`,
+        type: 'comprobante',
+        attachments: [{
+          filename: `Comprobante_Matricula_${enrollmentFolio}.pdf`,
+          content: base64,
+          type: 'application/pdf'
+        }]
+      });
+      
+      toast.success('Comprobante enviado por correo', { id: 'receipt-email' });
+    } catch (error) {
+      console.error('Error emailing receipt:', error);
+      toast.error('Error al enviar comprobante', { id: 'receipt-email' });
+    } finally {
+      setSendingEnrollmentReceipt(false);
+    }
+  };
+
+  // ...existing code...
 
   return (
     <main className="flex-1 min-w-0 p-4 space-y-4 animate-fade-in">
@@ -1699,13 +1734,24 @@ export function MatriculaWizard() {
             )}
 
             {/* Economic Data Section */}
-            <div>
-              <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300 flex items-center justify-between">💰 Información Económica
-                <label className="flex items-center gap-2 text-xs font-normal ml-4 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4" checked={prioritario} onChange={e => setPrioritario(e.target.checked)} />
-                  <span className="font-medium text-red-600">Prioritario</span>
-                </label>
-              </h3>
+            <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-base text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  ⚙️ Configuración General
+                  <span className="text-xs font-normal text-gray-500">(Valores por defecto)</span>
+                </h3>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-xs font-normal cursor-pointer">
+                    <input type="checkbox" className="w-4 h-4" checked={prioritario} onChange={e => setPrioritario(e.target.checked)} />
+                    <span className="font-medium text-red-600">Prioritario</span>
+                  </label>
+                  {students.length > 0 && (
+                    <Button size="sm" variant="outline" onClick={applyGlobalToAll} title="Copiar estos valores a todos los estudiantes">
+                      Aplicar a todos
+                    </Button>
+                  )}
+                </div>
+              </div>
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs mb-1 font-medium">Monto Matrícula (CLP)</label>
@@ -1798,6 +1844,11 @@ export function MatriculaWizard() {
               </div>
               {prioritario && (
                 <p className="text-xs mt-2 text-red-600">⚠️ Prioritario: valores bloqueados; no se aplican métodos de pago ni anexos.</p>
+              )}
+              {!prioritario && students.length > 0 && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Ingrese los valores generales y presione "Aplicar a todos" para actualizar a todos los estudiantes listados arriba.
+                </p>
               )}
             </div>
 
@@ -1975,46 +2026,81 @@ export function MatriculaWizard() {
                   <p className="text-xs text-blue-700 dark:text-blue-300 mb-4">
                     Revise el contenido del documento. Puede descargarlo como PDF o imprimirlo directamente.
                   </p>
-                  <div className="flex gap-3 flex-wrap">
-                    <Button 
-                      variant="default" 
-                      onClick={handleDownloadPDF}
-                      disabled={loading}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      📥 Descargar PDF
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={handlePrint}
-                      disabled={loading}
-                    >
-                      🖨️ Imprimir
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={handleSendPagareEmail}
-                      disabled={loading || sendingPagare || !guardian?.email}
-                      title={!guardian?.email ? 'Apoderado sin email' : ''}
-                    >
-                      {sendingPagare ? 'Enviando…' : 'Enviar por correo'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => { setStep(1); setPreviewHtml(''); setDocumentRecord(null); setFinalizeAlert(null); }}
-                      disabled={loading}
-                    >
-                      ✏️ Editar Datos
-                    </Button>
-                    {assistedMode && (
-                      <Button
-                        onClick={handleFinalizePreview}
-                        disabled={finalizing || students.length === 0}
-                        className="ml-auto bg-primary text-white"
+                  <div className="flex flex-col gap-3 w-full">
+                    <div className="flex gap-3 flex-wrap">
+                      <Button 
+                        variant="default" 
+                        onClick={handleDownloadPDF}
+                        disabled={loading}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
-                        {finalizing ? 'Preparando…' : 'Confirmar matrícula'}
+                        📥 Descargar Todo (Bundle)
                       </Button>
-                    )}
+                      <Button 
+                        variant="outline" 
+                        onClick={handlePrint}
+                        disabled={loading}
+                      >
+                        🖨️ Imprimir
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleSendPagareEmail}
+                        disabled={loading || sendingPagare || !guardian?.email}
+                        title={!guardian?.email ? 'Apoderado sin email' : ''}
+                      >
+                        {sendingPagare ? 'Enviando…' : 'Enviar por correo'}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => { setStep(1); setPreviewHtml(''); setDocumentRecord(null); setFinalizeAlert(null); }}
+                        disabled={loading}
+                      >
+                        ✏️ Editar Datos
+                      </Button>
+                      {assistedMode && (
+                        <Button
+                          onClick={handleFinalizePreview}
+                          disabled={finalizing || students.length === 0}
+                          className="ml-auto bg-primary text-white"
+                        >
+                          {finalizing ? 'Preparando…' : 'Confirmar matrícula'}
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {/* Individual Downloads */}
+                    <div className="flex gap-2 items-center pt-2 border-t border-blue-200 dark:border-blue-700">
+                      <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">Descargas individuales:</span>
+                      <Button 
+                        variant="outline" 
+                        size="xs"
+                        onClick={() => handleDownloadIndividualPDF('contract')}
+                        disabled={loading}
+                      >
+                        📄 Contrato
+                      </Button>
+                      {!prioritario && paymentMethod.pagare && (
+                        <Button 
+                          variant="outline" 
+                          size="xs"
+                          onClick={() => handleDownloadIndividualPDF('pagare')}
+                          disabled={loading}
+                        >
+                          📜 Pagaré
+                        </Button>
+                      )}
+                      {!prioritario && descuentoPlanilla && (
+                        <Button 
+                          variant="outline" 
+                          size="xs"
+                          onClick={() => handleDownloadIndividualPDF('descuento')}
+                          disabled={loading}
+                        >
+                          🎁 Anexo Descuento
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   {assistedMode && (
                     <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-2">Este paso deja a los estudiantes en estado Pendiente (valor MATRICULADO) hasta que el equipo marque Matriculado (valor ACTIVO) o Retirado desde el módulo de Estudiantes.</p>
