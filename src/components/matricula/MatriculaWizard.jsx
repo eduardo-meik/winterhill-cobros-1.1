@@ -1925,8 +1925,10 @@ export function MatriculaWizard() {
           toast.success('Cheques guardados');
         }}
         initialData={cheques}
-        cantidadCuotas={Number(economic.cantidad_cuotas) || 1}
-        montoCuota={Number(economic.monto_cuota) || 0}
+        cantidadCuotas={Number(enrollment?.meta?.cantidad_cuotas ?? economic.cantidad_cuotas) || 1}
+        montoCuota={Number(enrollment?.meta?.monto_cuota ?? economic.monto_cuota) || 0}
+        diaVencimiento={Number(enrollment?.meta?.dia_vencimiento ?? economic.dia_vencimiento) || 5}
+        year={enrollment?.year ?? year}
       />
 
       {/* Finalize Enrollment Modal (staff) */}
