@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/Button';
@@ -135,6 +135,7 @@ export function MatriculaWizard() {
   const [finalizeAlert, setFinalizeAlert] = useState(null);
   const [guardianModalOpen, setGuardianModalOpen] = useState(false);
   const [studentModalOpen, setStudentModalOpen] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Assisted mode (ADMIN/ASIST)
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
@@ -719,7 +720,7 @@ export function MatriculaWizard() {
         economic: {
           colegiatura_anual: patch.colegiatura_anual,
           cantidad_cuotas: patch.cantidad_cuotas,
-          monto_cuota: patch.monto_cuota,
+          monto_cuota: totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : patch.monto_cuota,
           dia_vencimiento: patch.dia_vencimiento,
         },
         paymentMethodFlags: paymentMethod,
@@ -1007,7 +1008,7 @@ export function MatriculaWizard() {
       if (students && students.length > 0) {
         const first = students[0];
         const nivel = first.nivel || first.level || null;
-        const cursoLabel = first.curso_label || first.grade || first.curso || first.curso_nombre || null;
+        const cursoLabel = first.curso_label || first.grade || first.curso || null;
         const folio = buildEnrollmentFolio({ nivel, curso: cursoLabel });
         setEnrollmentFolio(folio);
       } else {
@@ -1033,29 +1034,9 @@ export function MatriculaWizard() {
     try {
       setFinalizing(true);
       const result = await finalizeEnrollmentConfirm(enrollment.id, finalizeOptions);
-      if (result && !result.year) {
-        result.year = enrollment.year ?? year;
-      }
-      const studentsCount = Number(result?.students_count ?? students.length ?? 0);
-      const createdCharges = Number(result?.created_charges ?? 0);
-      const skippedDuplicates = Number(result?.skipped_duplicates ?? 0);
-      const alertType = skippedDuplicates > 0 ? 'warning' : 'success';
-      const baseMessage = `Matrícula confirmada para ${studentsCount} estudiante${studentsCount === 1 ? '' : 's'}.`;
-      const detailMessage = ` Se generaron ${createdCharges} cargo${createdCharges === 1 ? '' : 's'}${skippedDuplicates ? `; ${skippedDuplicates} ya existían y no se duplicaron.` : '.'}`;
-      const followUp = ' Recuerda actualizar el estado a Matriculado (valor ACTIVO) o Retirado en el módulo de Estudiantes una vez recibida la documentación física.';
-      setFinalizeAlert({ type: alertType, message: `${baseMessage}${detailMessage}${followUp}` });
-      toast.success(`Matrícula confirmada (${createdCharges} cargo${createdCharges === 1 ? '' : 's'} nuevos${skippedDuplicates ? `, ${skippedDuplicates} duplicado${skippedDuplicates === 1 ? '' : 's'} omitido${skippedDuplicates === 1 ? '' : 's'}` : ''}).`);
-      await reloadEnrollmentStudents();
-      await refreshDebtAndRegularization();
-      if (guardian) {
-        const latest = await getOrCreateEnrollment(guardian.id, year);
-        if (latest) {
-          setEnrollment(latest);
-        } else {
-          setEnrollment(prev => (prev ? { ...prev, status: 'completed' } : prev));
-        }
-      } else {
-        setEnrollment(prev => (prev ? { ...prev, status: 'completed' } : prev));
+      if (result) {
+        setFinalizeOpen(false);
+        setShowSuccessModal(true);
       }
     } catch (e) {
       // toast handled in service
@@ -1211,6 +1192,29 @@ export function MatriculaWizard() {
     }
   };
 
+  // Calculate total net monthly installment for cheques autofill
+  // Sums up the net monthly installment of all students: (Colegiatura - Descuento) / Cuotas
+  const totalNetMonthlyInstallment = useMemo(() => {
+    if (!students || students.length === 0) return 0;
+    
+    let total = 0;
+    students.forEach(st => {
+      const econ = studentEconomicMap[st.id];
+      if (!econ) return;
+      
+      const colegiatura = Number(econ.colegiatura_anual) || 0;
+      const descuento = Number(econ.monto_total_descuento) || 0;
+      const cuotas = Math.max(1, Number(econ.cantidad_cuotas) || 1);
+      
+      const netAnnual = Math.max(0, colegiatura - descuento);
+      const netMonthly = Math.round(netAnnual / cuotas);
+      
+      total += netMonthly;
+    });
+    
+    return total;
+  }, [students, studentEconomicMap]);
+
   return (
     <main className="flex-1 min-w-0 p-4 space-y-4 animate-fade-in">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Matrícula {year}</h1>
@@ -1337,7 +1341,7 @@ export function MatriculaWizard() {
                     <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant="secondary",
                       onClick={() => {
                         if (!guardian) return;
                         const snapshot = {
@@ -1591,6 +1595,7 @@ export function MatriculaWizard() {
                               className="w-full border rounded px-2 py-1 bg-gray-100"
                               value={econ.monto_cuota || ''}
                               readOnly
+                           
                             />
                           </div>
                           <div>
@@ -2019,7 +2024,7 @@ export function MatriculaWizard() {
         }}
         initialData={cheques}
         cantidadCuotas={Number(enrollment?.meta?.cantidad_cuotas ?? economic.cantidad_cuotas) || 1}
-        montoCuota={Number(enrollment?.meta?.monto_cuota ?? economic.monto_cuota) || 0}
+        montoCuota={totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : (Number(enrollment?.meta?.monto_cuota ?? economic.monto_cuota) || 0)}
         diaVencimiento={Number(enrollment?.meta?.dia_vencimiento ?? economic.dia_vencimiento) || 5}
         year={enrollment?.year ?? year}
       />
@@ -2052,6 +2057,31 @@ export function MatriculaWizard() {
         student={null}
         onSuccess={handleStudentModalSuccess}
       />
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <h2 className="text-lg font-semibold text-green-600">¡Matrícula Exitosa!</h2>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 mb-4">
+                El proceso de matrícula ha sido registrado exitosamente.
+              </p>
+              <Button 
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  window.location.href = '/matricula'; // Force reload/redirect to start
+                }} 
+                className="w-full"
+              >
+                Volver al Inicio
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </main>
   );
 }
