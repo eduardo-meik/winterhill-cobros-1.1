@@ -35,7 +35,9 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting },
-    reset
+    reset,
+    watch,
+    setValue
   } = useForm({
   });
 
@@ -95,6 +97,29 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
 
     fetchCursos();
   }, []);
+
+  // Auto-ajuste de nivel (110 Básica, 310 Media) según curso seleccionado
+  const selectedCursoId = watch('curso');
+  useEffect(() => {
+    if (!selectedCursoId || !Array.isArray(cursos) || cursos.length === 0) return;
+    const curso = cursos.find(c => String(c.id) === String(selectedCursoId));
+    if (!curso) return;
+
+    const nombre = (curso.nom_curso || '').toString().toLowerCase();
+    const nivelTexto = (curso.nivel || '').toString().toLowerCase();
+
+    // Heurística: si el curso es de Media => 310, si es Básica => 110
+    let nivelValue = '';
+    if (nombre.includes('media') || nivelTexto.includes('media')) {
+      nivelValue = '310';
+    } else if (nombre.includes('basica') || nombre.includes('básica') || nivelTexto.includes('basica') || nivelTexto.includes('básica')) {
+      nivelValue = '110';
+    }
+
+    if (nivelValue) {
+      setValue('nivel', nivelValue, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [selectedCursoId, cursos, setValue]);
 
   const onSubmit = async (formData) => { // Renamed data to formData for clarity
     try {
@@ -437,11 +462,14 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Nivel *
                   </label>
-                  <input
-                    type="text"
+                  <select
                     {...register('nivel', { required: 'Este campo es requerido' })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
+                  >
+                    <option value="">Seleccionar nivel</option>
+                    <option value="110">110 - Básica</option>
+                    <option value="310">310 - Media</option>
+                  </select>
                   {errors.nivel && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nivel.message}</p>
                   )}
