@@ -1706,7 +1706,7 @@ export function MatriculaWizard() {
                             />
                           </div>
                           <div>
-                            <label className="block mb-1 font-medium">Día Vencimiento (1-28)</label>
+                            <label className="block mb-1 font-medium">Día Vencimiento (1-10)</label>
                             <input
                               type="number"
                               min="1"
@@ -1829,7 +1829,7 @@ export function MatriculaWizard() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-28)</label>
+                  <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-10)</label>
                   <input 
                     type="number" 
                     min="1" 
