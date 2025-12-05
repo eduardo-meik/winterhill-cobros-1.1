@@ -1205,6 +1205,36 @@ export function MatriculaWizard() {
     return total;
   }, [students, studentEconomicMap]);
 
+  // Aggregated economic totals (derived only from per-student data)
+  const aggregatedEconomicTotals = useMemo(() => {
+    if (!students || students.length === 0) {
+      return {
+        totalColegiatura: 0,
+        totalDescuento: 0,
+        totalNeto: 0,
+      };
+    }
+
+    let totalColegiatura = 0;
+    let totalDescuento = 0;
+
+    students.forEach((st) => {
+      const econ = studentEconomicMap[st.id];
+      if (!econ) return;
+
+      totalColegiatura += Number(econ.colegiatura_anual) || 0;
+      totalDescuento += Number(econ.monto_total_descuento) || 0;
+    });
+
+    const totalNeto = Math.max(0, totalColegiatura - totalDescuento);
+
+    return {
+      totalColegiatura,
+      totalDescuento,
+      totalNeto,
+    };
+  }, [students, studentEconomicMap]);
+
   const handleDownloadEnrollmentReceipt = async () => {
     if (!enrollmentFolio || !guardian) return;
     try {
@@ -1769,8 +1799,8 @@ export function MatriculaWizard() {
             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-base text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                  ⚙️ Configuración General
-                  <span className="text-xs font-normal text-gray-500">(Valores por defecto)</span>
+                  ⚙️ Configuración General del Contrato
+                  <span className="text-xs font-normal text-gray-500">Valores base para todos los estudiantes</span>
                 </h3>
                 <div className="flex items-center gap-4">
                   <label className="flex items-center gap-2 text-xs font-normal cursor-pointer">
@@ -1878,9 +1908,23 @@ export function MatriculaWizard() {
                 <p className="text-xs mt-2 text-red-600">⚠️ Prioritario: valores bloqueados; no se aplican métodos de pago ni anexos.</p>
               )}
               {!prioritario && students.length > 0 && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Ingrese los valores generales y presione "Aplicar a todos" para actualizar a todos los estudiantes listados arriba.
-                </p>
+                <>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Ingrese los valores generales; se usarán como base para todos los estudiantes. Puede ajustar excepciones en la sección superior.
+                  </p>
+                  <div className="mt-3 p-3 rounded-lg bg-white/70 dark:bg-dark/40 border border-dashed border-gray-300 dark:border-gray-600 text-[11px] text-gray-700 dark:text-gray-300 flex flex-wrap gap-4">
+                    <div>
+                      <div className="font-semibold text-xs">Resumen consolidado de colegiatura</div>
+                      <div>Total colegiatura anual: <span className="font-mono">$ {aggregatedEconomicTotals.totalColegiatura.toLocaleString('es-CL')}</span></div>
+                      <div>Total descuento anual: <span className="font-mono">$ {aggregatedEconomicTotals.totalDescuento.toLocaleString('es-CL')}</span></div>
+                      <div>Total neto anual: <span className="font-mono">$ {aggregatedEconomicTotals.totalNeto.toLocaleString('es-CL')}</span></div>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-xs">Cuota mensual combinada estimada</div>
+                      <div>Monto total mensual: <span className="font-mono">$ {totalNetMonthlyInstallment.toLocaleString('es-CL')}</span></div>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
 
