@@ -2714,8 +2714,7 @@ export async function listAllRecentEnrollments(): Promise<any[]> {
           students (
             id,
             whole_name,
-            run,
-            curso_nombre
+            run
           )
         )
       `)
