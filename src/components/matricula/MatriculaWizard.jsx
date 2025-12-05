@@ -1521,7 +1521,7 @@ export function MatriculaWizard() {
                     <input type="number" min={1} max={24} value={debtForm.cuotas} onChange={e => setDebtForm(df => ({ ...df, cuotas: Number(e.target.value) }))} className="w-full border rounded px-2 py-1" />
                   </div>
                   <div>
-                    <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-28)</label>
+                    <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-10)</label>
                     <input type="number" min={1} max={28} value={debtForm.dia_vencimiento} onChange={e => setDebtForm(df => ({ ...df, dia_vencimiento: Number(e.target.value) }))} className="w-full border rounded px-2 py-1" />
                   </div>
                   <div>
