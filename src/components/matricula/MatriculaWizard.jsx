@@ -998,6 +998,38 @@ export function MatriculaWizard() {
     }
   };
 
+  // Print current preview using browser print dialog
+  const handlePrint = async () => {
+    if (!previewHtml) {
+      toast.error('No hay documento para imprimir');
+      return;
+    }
+
+    try {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        toast.error('No se pudo abrir la ventana de impresión');
+        return;
+      }
+
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8" />`);
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(previewHtml);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+
+      // Give the browser a brief moment to render before printing
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    } catch (err) {
+      console.error('Print error:', err);
+      toast.error('Error al enviar a impresión');
+    }
+  };
+
   // Download Individual Document (Contract, Pagare, Descuento)
   const handleDownloadIndividualPDF = async (type) => {
     if (!guardian || !enrollment) return;
