@@ -107,7 +107,8 @@ export function MatriculaWizard() {
     motivo: '',
     condiciones: ''
   });
-  const [prioritario, setPrioritario] = useState(false); // Nuevo flag para alumno prioriotario que bloquea economía y forma de pago
+  // Flag global derivado: verdadero si al menos un estudiante es prioritario (se calcula más abajo)
+  const [prioritario, setPrioritario] = useState(false);
   const [cheques, setCheques] = useState([]);
   const [showChequesModal, setShowChequesModal] = useState(false);
   const [step, setStep] = useState(0);
@@ -1182,6 +1183,15 @@ export function MatriculaWizard() {
     }
   };
 
+  // Actualizar flag global "prioritario" según alumnos marcados como prioritarios
+  useEffect(() => {
+    const anyPrioritario = students.some((st) => {
+      const econ = studentEconomicMap[st.id];
+      return econ?.prioritario === true;
+    });
+    setPrioritario(anyPrioritario);
+  }, [students, studentEconomicMap]);
+
   // Calculate total net monthly installment for cheques autofill
   // Sums up the net monthly installment of all students: (Colegiatura - Descuento) / Cuotas
   const totalNetMonthlyInstallment = useMemo(() => {
@@ -1209,12 +1219,14 @@ export function MatriculaWizard() {
   const aggregatedEconomicTotals = useMemo(() => {
     if (!students || students.length === 0) {
       return {
+        totalMatricula: 0,
         totalColegiatura: 0,
         totalDescuento: 0,
         totalNeto: 0,
       };
     }
 
+    let totalMatricula = 0;
     let totalColegiatura = 0;
     let totalDescuento = 0;
 
@@ -1222,6 +1234,7 @@ export function MatriculaWizard() {
       const econ = studentEconomicMap[st.id];
       if (!econ) return;
 
+      totalMatricula += Number(econ.monto_matricula) || 0;
       totalColegiatura += Number(econ.colegiatura_anual) || 0;
       totalDescuento += Number(econ.monto_total_descuento) || 0;
     });
@@ -1229,6 +1242,7 @@ export function MatriculaWizard() {
     const totalNeto = Math.max(0, totalColegiatura - totalDescuento);
 
     return {
+      totalMatricula,
       totalColegiatura,
       totalDescuento,
       totalNeto,
@@ -1696,6 +1710,15 @@ export function MatriculaWizard() {
                               <p className="text-[11px] text-gray-500 truncate">Curso actual: {baseCursoLabel}</p>
                             )}
                           </div>
+                          <label className="flex items-center gap-2 text-[11px] font-medium text-red-600">
+                            <input
+                              type="checkbox"
+                              className="w-4 h-4"
+                              checked={Boolean(econ.prioritario)}
+                              onChange={e => updateStudentEconomicField(st.id, 'prioritario', e.target.checked)}
+                            />
+                            <span>Prioritario</span>
+                          </label>
                         </div>
                         <div className="grid md:grid-cols-3 gap-3 text-xs">
                           <div>
@@ -1799,132 +1822,45 @@ export function MatriculaWizard() {
             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-base text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                  ⚙️ Configuración General del Contrato
-                  <span className="text-xs font-normal text-gray-500">Valores base para todos los estudiantes</span>
+                  ⚙️ Resumen Económico del Contrato
+                  <span className="text-xs font-normal text-gray-500">Totales consolidados que se traspasarán al contrato</span>
                 </h3>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 text-xs font-normal cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4" checked={prioritario} onChange={e => setPrioritario(e.target.checked)} />
-                    <span className="font-medium text-red-600">Prioritario</span>
-                  </label>
-                  {students.length > 0 && (
-                    <Button size="sm" variant="outline" onClick={applyGlobalToAll} title="Copiar estos valores a todos los estudiantes">
-                      Aplicar a todos
-                    </Button>
-                  )}
-                </div>
               </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Monto Matrícula (CLP)</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded px-2 py-1" 
-                    value={economic.monto_matricula} 
-                    onChange={e => setEconomic({ ...economic, monto_matricula: e.target.value })} 
-                    disabled={prioritario}
-                    placeholder="Ej: 150000"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Colegiatura Anual (CLP)</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded px-2 py-1" 
-                    value={economic.colegiatura_anual} 
-                    onChange={e => setEconomic({ ...economic, colegiatura_anual: e.target.value })} 
-                    disabled={prioritario}
-                    placeholder="Ej: 3600000"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Cantidad Cuotas</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded px-2 py-1" 
-                    value={economic.cantidad_cuotas} 
-                    onChange={e => setEconomic({ ...economic, cantidad_cuotas: e.target.value })} 
-                    disabled={prioritario}
-                    placeholder="Ej: 10"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Monto por Cuota (CLP) - Auto-calculado</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded px-2 py-1 bg-gray-100" 
-                    value={economic.monto_cuota} 
-                    readOnly
-                    placeholder="Se calcula automáticamente"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Día Vencimiento (1-10)</label>
-                  <input 
-                    type="number" 
-                    min="1" 
-                    max="28" 
-                    className="w-full border rounded px-2 py-1" 
-                    value={economic.dia_vencimiento} 
-                    onChange={e => setEconomic({ ...economic, dia_vencimiento: e.target.value })} 
-                    disabled={prioritario}
-                    placeholder="Ej: 5"
-                  />
-                </div>
-                {/* Nuevo: Porcentaje de Descuento movido aquí */}
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Porcentaje de Descuento (%)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    className="w-full border rounded px-2 py-1"
-                    value={descuentoInfo.porcentaje_descuento}
-                    disabled={prioritario}
-                    onChange={e => {
-                      const pct = Number(e.target.value);
-                      const total = (Number(economic.colegiatura_anual) || 0) * (pct / 100);
-                      setDescuentoInfo({
-                        ...descuentoInfo,
-                        porcentaje_descuento: pct,
-                        monto_total_descuento: Math.round(total)
-                      });
-                    }}
-                    placeholder="Ej: 20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs mb-1 font-medium">Monto Total Descuento (CLP)</label>
-                  <input
-                    type="number"
-                    className="w-full border rounded px-2 py-1 bg-gray-100"
-                    value={descuentoInfo.monto_total_descuento}
-                    readOnly
-                    placeholder="Auto"
-                  />
-                </div>
-              </div>
-              {prioritario && (
-                <p className="text-xs mt-2 text-red-600">⚠️ Prioritario: valores bloqueados; no se aplican métodos de pago ni anexos.</p>
-              )}
-              {!prioritario && students.length > 0 && (
-                <>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Ingrese los valores generales; se usarán como base para todos los estudiantes. Puede ajustar excepciones en la sección superior.
-                  </p>
-                  <div className="mt-3 p-3 rounded-lg bg-white/70 dark:bg-dark/40 border border-dashed border-gray-300 dark:border-gray-600 text-[11px] text-gray-700 dark:text-gray-300 flex flex-wrap gap-4">
+              {students.length > 0 ? (
+                <div className="mt-1 p-3 rounded-lg bg-white/70 dark:bg-dark/40 border border-dashed border-gray-300 dark:border-gray-600 text-[11px] text-gray-700 dark:text-gray-300 flex flex-wrap gap-6">
+                  <div>
+                    <div className="font-semibold text-xs">Matrícula total</div>
                     <div>
-                      <div className="font-semibold text-xs">Resumen consolidado de colegiatura</div>
-                      <div>Total colegiatura anual: <span className="font-mono">$ {aggregatedEconomicTotals.totalColegiatura.toLocaleString('es-CL')}</span></div>
-                      <div>Total descuento anual: <span className="font-mono">$ {aggregatedEconomicTotals.totalDescuento.toLocaleString('es-CL')}</span></div>
-                      <div>Total neto anual: <span className="font-mono">$ {aggregatedEconomicTotals.totalNeto.toLocaleString('es-CL')}</span></div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-xs">Cuota mensual combinada estimada</div>
-                      <div>Monto total mensual: <span className="font-mono">$ {totalNetMonthlyInstallment.toLocaleString('es-CL')}</span></div>
+                      $ <span className="font-mono">{aggregatedEconomicTotals.totalMatricula.toLocaleString('es-CL')}</span>
                     </div>
                   </div>
-                </>
+                  <div>
+                    <div className="font-semibold text-xs">Colegiatura anual total</div>
+                    <div>
+                      $ <span className="font-mono">{aggregatedEconomicTotals.totalColegiatura.toLocaleString('es-CL')}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-xs">Descuento anual total</div>
+                    <div>
+                      $ <span className="font-mono">{aggregatedEconomicTotals.totalDescuento.toLocaleString('es-CL')}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-xs">Total neto anual</div>
+                    <div>
+                      $ <span className="font-mono">{aggregatedEconomicTotals.totalNeto.toLocaleString('es-CL')}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-xs">Cuota mensual combinada estimada</div>
+                    <div>
+                      $ <span className="font-mono">{totalNetMonthlyInstallment.toLocaleString('es-CL')}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500">Agregue estudiantes y sus valores económicos para ver el resumen consolidado.</p>
               )}
             </div>
 
