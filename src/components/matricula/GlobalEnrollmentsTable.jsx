@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { listAllRecentEnrollments } from '../../services/matricula';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getStatusLabel } from '../../constants/statusLabels';
 
 export function GlobalEnrollmentsTable({ onSelectEnrollment }) {
   const [enrollments, setEnrollments] = useState([]);
@@ -29,9 +30,14 @@ export function GlobalEnrollmentsTable({ onSelectEnrollment }) {
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">Pre Matrícula</span>;
       case 'pending':
       case 'in_progress':
+      case 'draft':
         return <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">Borrador</span>;
       default:
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">{status}</span>;
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+            {getStatusLabel(status)}
+          </span>
+        );
     }
   };
 
