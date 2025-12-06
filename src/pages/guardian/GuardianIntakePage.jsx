@@ -508,6 +508,25 @@ export const GuardianIntakePage = () => {
           showFeedback: true,
         });
         await refreshStaffBootstrap();
+        // Redirigir al inicio del asistente de matrícula en modo staff
+        navigate('/matricula', {
+          replace: true,
+          state: {
+            guardianId: targetGuardianId,
+            guardianSnapshot: bootstrapData?.guardian ? {
+              id: bootstrapData.guardian.id,
+              first_name: bootstrapData.guardian.first_name,
+              last_name: bootstrapData.guardian.last_name,
+              run: bootstrapData.guardian.run,
+              email: bootstrapData.guardian.email ?? null,
+              address: bootstrapData.guardian.address ?? null,
+              phone: bootstrapData.guardian.phone ?? null,
+              profesion: bootstrapData.guardian.profesion ?? null,
+              estado_civil: bootstrapData.guardian.estado_civil ?? null,
+              comuna: bootstrapData.guardian.comuna ?? null,
+            } : null,
+          },
+        });
       } else {
         await submitIntake();
         toast.success('Encuesta enviada');
