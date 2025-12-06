@@ -1745,7 +1745,7 @@ export function MatriculaWizard() {
             {students.length > 0 && (
               <div className="space-y-4">
                 <h3 className="font-medium text-sm text-gray-700 dark:text-gray-300">💰 Información por Estudiante</h3>
-                <div className="space-y-3 max-h-96 overflow-auto pr-1">
+                <div className="space-y-3 pr-1">
                   {students.map(st => {
                     const econ = studentEconomicMap[st.id] || {};
                     const baseCursoLabel = st.curso_nombre || st.curso || '';
