@@ -118,6 +118,7 @@ export function MatriculaWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sendingPagare, setSendingPagare] = useState(false);
+  const [previewParts, setPreviewParts] = useState(null);
   // Debt gating state
   const [debtInfo, setDebtInfo] = useState({ total: 0, items: [] });
   const [debtDoc, setDebtDoc] = useState(null); // record of PAGARE_DEUDA if generated
@@ -915,13 +916,39 @@ export function MatriculaWizard() {
       prestacionPayload.folio_number = provisionalFolio;
     } catch {}
 
-  // Si es prioritario, no generar anexos aunque existan selecciones previas
-  const annex = prioritario ? null : (descuentoPlanilla ? 'descuento' : (paymentMethod.pagare ? 'pagare' : null));
+    // Si es prioritario, no generar anexos aunque existan selecciones previas
+    const annex = prioritario ? null : (descuentoPlanilla ? 'descuento' : (paymentMethod.pagare ? 'pagare' : null));
     const html = renderPrestacionWithAnnex(prestacionPayload, { annex });
     
     console.log('📄 HTML generated (length):', html.length);
     
     setPreviewHtml(html);
+
+    // Build separate HTML parts for UX-level per-document preview (contrato / pagaré / descuento)
+    try {
+      const contractOnlyHtml = renderSingleDocument(prestacionPayload, 'contract');
+      const pagareHtml = (!prioritario && paymentMethod.pagare)
+        ? renderSingleDocument(prestacionPayload, 'pagare')
+        : null;
+      const descuentoHtml = (!prioritario && descuentoPlanilla)
+        ? renderSingleDocument(prestacionPayload, 'descuento')
+        : null;
+
+      setPreviewParts({
+        contractHtml: contractOnlyHtml,
+        pagareHtml,
+        descuentoHtml,
+        excluded: {
+          contract: false,
+          pagare: false,
+          descuento: false,
+        },
+        selected: 'contract',
+      });
+    } catch (e) {
+      console.error('Error building per-document preview parts', e);
+      setPreviewParts(null);
+    }
     
     // Create document record
     const contentHash = await sha256(html);
@@ -979,9 +1006,30 @@ export function MatriculaWizard() {
         ? documentRecord.id.substring(0, 8).toUpperCase() 
         : Date.now().toString().slice(-8);
       
+      // Elegir HTML a descargar: respetar selección de previewParts si existe
+      let htmlForDownload = previewHtml;
+      if (previewParts) {
+        const parts = [];
+        if (!previewParts.excluded?.contract && previewParts.contractHtml) {
+          parts.push(previewParts.contractHtml);
+        }
+        if (!prioritario && previewParts.pagareHtml && !previewParts.excluded?.pagare) {
+          parts.push(previewParts.pagareHtml);
+        }
+        if (!prioritario && previewParts.descuentoHtml && !previewParts.excluded?.descuento) {
+          parts.push(previewParts.descuentoHtml);
+        }
+        if (parts.length === 0 && previewParts.contractHtml) {
+          parts.push(previewParts.contractHtml);
+        }
+        if (parts.length > 0) {
+          htmlForDownload = parts.join('<div style="page-break-after: always;"></div>');
+        }
+      }
+
       // Generate PDF from HTML (client-side, no server upload)
       const pdfBlob = await generatePDFFromHTML({
-        htmlContent: previewHtml,
+        htmlContent: htmlForDownload,
         includeHeader: true,
         includeSignatureSection: true,
         folioNumber: folioNumber, // Añadido número de folio
@@ -1995,7 +2043,7 @@ export function MatriculaWizard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!previewHtml && !loading && (
+            {!previewParts && !loading && (
               <div className="text-center py-8">
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Haga clic en "Generar Vista Previa" para crear el documento.
@@ -2009,12 +2057,51 @@ export function MatriculaWizard() {
               </div>
             )}
             
-            {previewHtml && (
+            {previewParts && (
               <>
-                {/* HTML Preview */}
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg p-1">
-                  <div className="border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-lg">
-                    <HtmlIframePreview html={previewHtml} height={600} />
+                {/* Document selector + HTML Preview */}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">Documento a visualizar:</span>
+                    <button
+                      type="button"
+                      className={`px-2 py-1 rounded border text-xs ${previewParts.selected === 'contract' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700'}`}
+                      onClick={() => setPreviewParts(p => ({ ...p, selected: 'contract' }))}
+                      disabled={previewParts.excluded?.contract}
+                    >
+                      Contrato de Prestación
+                    </button>
+                    {previewParts.pagareHtml && !prioritario && (
+                      <button
+                        type="button"
+                        className={`px-2 py-1 rounded border text-xs ${previewParts.selected === 'pagare' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700'}`}
+                        onClick={() => setPreviewParts(p => ({ ...p, selected: 'pagare' }))}
+                        disabled={previewParts.excluded?.pagare}
+                      >
+                        Pagaré
+                      </button>
+                    )}
+                    {previewParts.descuentoHtml && !prioritario && (
+                      <button
+                        type="button"
+                        className={`px-2 py-1 rounded border text-xs ${previewParts.selected === 'descuento' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700'}`}
+                        onClick={() => setPreviewParts(p => ({ ...p, selected: 'descuento' }))}
+                        disabled={previewParts.excluded?.descuento}
+                      >
+                        Anexo Descuento
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg p-1">
+                    <div className="border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-lg">
+                      {(() => {
+                        let currentHtml = previewParts.contractHtml;
+                        if (previewParts.selected === 'pagare') currentHtml = previewParts.pagareHtml || previewParts.contractHtml;
+                        if (previewParts.selected === 'descuento') currentHtml = previewParts.descuentoHtml || previewParts.contractHtml;
+                        return <HtmlIframePreview html={currentHtml || previewHtml} height={600} />;
+                      })()}
+                    </div>
                   </div>
                 </div>
 
@@ -2111,6 +2198,71 @@ export function MatriculaWizard() {
                         >
                           🎁 Anexo Descuento
                         </Button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 items-center pt-2 border-t border-blue-200 dark:border-blue-700 mt-2">
+                      <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">Incluir en vista previa:</span>
+                      <label className="flex items-center gap-1 text-[11px]">
+                        <input
+                          type="checkbox"
+                          checked={!previewParts.excluded?.contract}
+                          onChange={e => {
+                            const checked = e.target.checked;
+                            setPreviewParts(p => {
+                              const nextExcluded = { ...(p?.excluded || {}), contract: !checked };
+                              let nextSelected = p?.selected || 'contract';
+                              if (!checked && p?.selected === 'contract') {
+                                if (!nextExcluded.pagare && p?.pagareHtml) nextSelected = 'pagare';
+                                else if (!nextExcluded.descuento && p?.descuentoHtml) nextSelected = 'descuento';
+                              }
+                              return { ...p, excluded: nextExcluded, selected: nextSelected };
+                            });
+                          }}
+                        />
+                        <span>Contrato</span>
+                      </label>
+                      {previewParts.pagareHtml && !prioritario && (
+                        <label className="flex items-center gap-1 text-[11px]">
+                          <input
+                            type="checkbox"
+                            checked={!previewParts.excluded?.pagare}
+                            onChange={e => {
+                              const checked = e.target.checked;
+                              setPreviewParts(p => {
+                                const nextExcluded = { ...(p?.excluded || {}), pagare: !checked };
+                                let nextSelected = p?.selected || 'contract';
+                                if (!checked && p?.selected === 'pagare') {
+                                  if (!nextExcluded.contract) nextSelected = 'contract';
+                                  else if (!nextExcluded.descuento && p?.descuentoHtml) nextSelected = 'descuento';
+                                }
+                                return { ...p, excluded: nextExcluded, selected: nextSelected };
+                              });
+                            }}
+                          />
+                          <span>Pagaré</span>
+                        </label>
+                      )}
+                      {previewParts.descuentoHtml && !prioritario && (
+                        <label className="flex items-center gap-1 text-[11px]">
+                          <input
+                            type="checkbox"
+                            checked={!previewParts.excluded?.descuento}
+                            onChange={e => {
+                              const checked = e.target.checked;
+                              setPreviewParts(p => {
+                                const nextExcluded = { ...(p?.excluded || {}), descuento: !checked };
+                                let nextSelected = p?.selected || 'contract';
+                                if (!checked && p?.selected === 'descuento') {
+                                  if (!nextExcluded.contract) nextSelected = 'contract';
+                                  else if (!nextExcluded.pagare && p?.pagareHtml) nextSelected = 'pagare';
+                                }
+                                return { ...p, excluded: nextExcluded, selected: nextSelected };
+                              });
+                            }}
+                          />
+                          <span>Anexo Descuento</span>
+                        </label>
                       )}
                     </div>
                   </div>
