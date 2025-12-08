@@ -5,201 +5,240 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contrato de Prestación de Servicios Educacionales</title>
   <style>
-    /* --- INICIO DE CAMBIOS --- */
     :root {
       --font: 'Helvetica', Arial, sans-serif;
-      /* CAMBIADO: Todo a negro */
       --text: #000;
-      --muted: #000;
-      --accent: #000;
-      --border: #000;
+      --border-color: #000;
+      /* Alturas reservadas para header y footer */
+      --header-height: 30mm;
+      --footer-height: 25mm;
     }
-    
+
+    /* --- CONFIGURACIÓN DE PÁGINA --- */
+    @page {
+      size: A4;
+      /* Márgenes físicos del papel: Arriba y Abajo deben ser mayores 
+         para alojar los elementos fijos (header/footer) */
+      margin-top: var(--header-height);
+      margin-bottom: var(--footer-height);
+      margin-left: 15mm;
+      margin-right: 15mm;
+    }
+
     html, body { margin: 0; padding: 0; }
-    
+
     body {
       font-family: var(--font);
       color: var(--text);
-      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-      counter-reset: page;
+      font-size: 11px;
+      line-height: 1.3;
+      -webkit-font-smoothing: antialiased;
     }
-    
-    @page { size: A4; margin: 12mm; }
 
-    /* HEADER / FOOTER (solo impresión) */
-    .print-header, .print-footer {
+    /* --- HEADER Y FOOTER FIJOS --- */
+    /* Usamos position fixed para que se repitan en cada página impresa */
+    .print-header {
       position: fixed;
-      left: 0; right: 0;
-      color: var(--text);
-      font-size: 10px;
+      top: calc(var(--header-height) * -1);
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 5px;
+    }
+
+    .print-footer {
+      position: fixed;
+      bottom: calc(var(--footer-height) * -1);
+      left: 0;
+      right: 0;
+      height: var(--footer-height);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 5px;
+    }
+
+    /* Líneas y estilos internos de header/footer */
+    .header-content, .footer-content {
       display: flex;
       justify-content: space-between;
-      padding: 4mm 12mm 2mm;
-      box-sizing: border-box;
-    }
-    .print-header { top: 0; border-bottom: 0.5px solid var(--border); }
-    .print-footer { bottom: 0; border-top: 0.5px solid var(--border); padding: 2mm 12mm 4mm; }
-  .print-header .title { font-weight: 600; }
-  /* Fallback: por defecto solo muestra "Página x" */
-  .page-number::after { content: "Página " counter(page); }
-  /* Si el navegador soporta counter(pages), activamos la variante con total */
-  .has-total-pages .page-number::after { content: "Página " counter(page) " de " counter(pages); }
-
-    /* Ajuste de contenido para no superponerse */
-    .page {
-      width: 210mm; /* A4 */
-      min-height: 297mm;
-      padding: 22mm 12mm 26mm; /* Aumentado top/bottom para evitar overlapping con header/footer */
-      box-sizing: border-box;
-    }
-    @media screen {
-      .print-header, .print-footer { display: none; }
-      .page { padding: 12mm 12mm 16mm; }
-    }
-    @media print {
-      body { counter-reset: page; }
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 4px;
     }
     
-    h1, h2, h3 { 
-      margin: 0 0 5px; /* REDUCIDO: Margen inferior */
-      line-height: 1.2; 
-    }
-    h1 { font-size: 16px; color: var(--accent); }
-    h2 { 
-      font-size: 11px; /* Igual al cuerpo: si queda algún h2 residual */
-      margin: 0; 
-      font-weight: 600;
-    }
-    
-    p { 
-      margin: 3px 0; /* MÁS COMPACTO */
-      line-height: 1.23; /* LIGERAMENTE MÁS DENSO */
-      font-size: 11px; 
-      hyphens: auto;
-      word-break: break-word;
-      orphans: 2; widows: 2;
-    }
-    
-    .muted { color: var(--muted); }
-    .lead { font-size: 13px; }
-    .block { margin: 8px 0; } /* REDUCIDO: Antes 12px */
-    .sep { height: 5px; } /* REDUCIDO: Antes 10px */
-    
-    .table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin: 4px 0 8px; /* REDUCIDO: Antes 6px 0 10px */
-      font-size: 11px; 
-    }
-    
-    .table th, .table td { 
-      border: 0.75px solid var(--border); /* MÁS FINO: ahorro de tinta */
-      padding: 3px 4px; /* AÚN MÁS COMPACTO */
-      vertical-align: top; 
-    }
-    
-    .table thead th { 
-      background: transparent; /* AHORRO TINTA */
-      text-align: left; 
-      font-weight: 600; 
-    }
-    
-    .signatures { 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      gap: 12px; /* MÁS COMPACTO */
-      margin-top: 12px; /* MÁS COMPACTO */
-      break-inside: avoid; 
-    }
-    
-    .sigbox { 
-      border-top: 0.75px solid var(--border); 
-      padding-top: 4px; /* REDUCIDO: Antes 6px */
-      font-size: 11px; 
+    .footer-content {
+      border-bottom: none;
+      border-top: 1px solid var(--border-color);
+      padding-top: 4px;
+      padding-bottom: 0;
+      align-items: flex-start;
     }
 
-    /* Evitar que las cláusulas se corten y dupliquen en saltos de página */
-    .clause {
-      break-inside: avoid;
-      page-break-inside: avoid; /* compat navegadores antiguos */
-    }
-
-    /* REDUCIDOS: Utility classes */
-    .mb-6 { margin-bottom: 3px; } /* Antes 4px */
-    .mb-10 { margin-bottom: 5px; } /* Antes 8px */
-    .mb-14 { margin-bottom: 7px; } /* Antes 10px */
-    .mt-6 { margin-top: 4px; } /* Antes 6px */
-    .mt-10 { margin-top: 5px; } /* Antes 8px */
-    .mt-16 { margin-top: 8px; } /* Antes 12px */
-    
-    .small { font-size: 10.5px; }
-    
-    .checkbox-list { 
-      white-space: pre-wrap; 
-      line-height: 1.25; /* REDUCIDO: Antes 1.3 */
-      font-family: var(--font); 
-      font-size: 11px; 
-    }
-    
-    /* CAMBIADO: Se aplica a ul/li para compactar listas */
-    ul, ol {
-      padding-left: 20px; /* REDUCIDO: Espacio de sangría */
-      margin: 4px 0; /* AÑADIDO: Consistencia con párrafos */
-    }
-    li {
-      margin: 2px 0; /* AÑADIDO: Espacio entre ítems */
-    }
-
-    .page-break { page-break-before: always; }
-    .table, .table tr, .table td, .table th { break-inside: avoid; }
-
-    /* NUEVO: Estilos para borde y folio */
-    .document-border {
-      border: 1px solid var(--border);
-      padding: 10mm;
-      min-height: 240mm;
-      position: relative;
-    }
     .folio-box {
-      position: absolute;
-      top: 0;
-      right: 0;
-      border-bottom: 1px solid var(--border);
-      border-left: 1px solid var(--border);
-      padding: 4px 8px;
+      border: 1px solid var(--border-color);
+      padding: 2px 6px;
       font-weight: bold;
-      font-size: 11px;
+      font-size: 10px;
+      margin-left: 10px;
       background: #fff;
     }
+
+    /* Paginación CSS */
+    .page-number::after { 
+      content: "Pág. " counter(page); 
+      font-size: 10px;
+    }
+    .has-total-pages .page-number::after { 
+      content: "Pág. " counter(page) " de " counter(pages); 
+    }
+
+    /* --- CUERPO DEL DOCUMENTO --- */
+    .main-content {
+      width: 100%;
+      padding-top: 10px;
+    }
+
+    h1 {
+      font-size: 16px;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 10px 0 20px 0;
+    }
+
+    p {
+      margin: 6px 0;
+      text-align: justify;
+    }
+
+    .clause {
+      margin-bottom: 8px;
+      display: block;
+    }
     
-    /* --- FIN DE CAMBIOS --- */
+    .clause strong {
+      margin-right: 4px;
+    }
+
+    /* Listas compactas */
+    ul {
+      margin: 4px 0 8px 0;
+      padding-left: 25px;
+    }
+    li { margin-bottom: 2px; }
+
+    /* Tablas */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 10px;
+      page-break-inside: avoid;
+    }
+    .table th, .table td {
+      border: 1px solid #000;
+      padding: 4px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .table th { background-color: #f0f0f0; -webkit-print-color-adjust: exact; }
+
+    /* Firmas */
+    .signatures {
+      margin-top: 40px;
+      display: table;
+      width: 100%;
+      page-break-inside: avoid;
+    }
+    .sig-row { display: table-row; }
+    .sig-cell {
+      display: table-cell;
+      width: 50%;
+      vertical-align: top;
+      padding: 0 10px;
+    }
+    .sig-line {
+      border-top: 1px solid #000;
+      padding-top: 5px;
+      margin-top: 40px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    /* Utilidades */
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .muted { color: #444; }
+    .bold { font-weight: bold; }
+    .small { font-size: 10px; }
+    
+    .checkbox-list {
+      font-family: monospace;
+      white-space: pre-wrap;
+      margin: 5px 0;
+      font-size: 10px;
+    }
+
+    /* Para ver en pantalla (Screen) simulamos la hoja */
+    @media screen {
+      body { background: #e0e0e0; padding: 20px; display: flex; justify-content: center; }
+      .page-simulation {
+        background: white;
+        width: 210mm;
+        min-height: 297mm;
+        padding: var(--header-height) 15mm var(--footer-height) 15mm;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        position: relative;
+        box-sizing: border-box;
+      }
+      .print-header, .print-footer { position: absolute; left: 15mm; right: 15mm; }
+      .print-header { top: 0; }
+      .print-footer { bottom: 0; }
+    }
+
+    @media print {
+      body { background: white; padding: 0; display: block; }
+      .page-simulation { width: 100%; padding: 0; box-shadow: none; margin: 0; }
+    }
   </style>
 </head>
 <body>
-  <script>
-    // Feature-detect: activar total de páginas sólo si el motor soporta counter(pages)
-    try {
-      if (window.CSS && CSS.supports && CSS.supports('content', 'counter(pages)')) {
-        document.documentElement.classList.add('has-total-pages');
-      }
-    } catch (e) { /* noop */ }
-  </script>
-  <div class="print-header">
-    <div class="title">Contrato de Prestación de Servicios Educacionales</div>
-    <div class="year">Año {{year}}</div>
-  </div>
-  <div class="print-footer">
-    <div class="school">Colegio Winterhill — {{guardian_full_name}} (RUN: {{guardian_run}})</div>
-    <div class="meta">Fecha: {{fecha_actual}} · Folio: {{folio_number?}}</div>
-    <div class="page-number"></div>
-  </div>
-  <section class="page">
-    <div class="document-border">
-      <div class="folio-box">FOLIO: {{folio_number}}</div>
-      <h1>Contrato de Prestación de Servicios Educacionales</h1>
-      <p class="muted mb-10">Viña del Mar, a {{fecha_actual}}</p>
 
-      <p class="lead">Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada legalmente por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, "LA CORPORACIÓN"; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, "EL/LA APODERADO/A", se celebra el siguiente Contrato de Prestación de Servicios Educacionales:</p>
+  <div class="page-simulation">
+
+    <div class="print-header">
+      <div class="header-content">
+        <div>
+          <div style="font-size: 14px; font-weight: bold;">CORPORACIÓN EDUCACIONAL WINTERHILL</div>
+          <div class="small">Contrato de Prestación de Servicios Educacionales - Año {{year}}</div>
+        </div>
+        <div class="folio-box">FOLIO: {{folio_number}}</div>
+      </div>
+    </div>
+
+    <div class="print-footer">
+      <div class="footer-content small">
+        <div>
+          <strong>Colegio Winterhill</strong><br>
+          Apoderado: {{guardian_full_name}} (RUN: {{guardian_run}})
+        </div>
+        <div class="text-right">
+          <div>Fecha: {{fecha_actual}}</div>
+          <div class="page-number"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      
+      <h1>Contrato de Prestación de Servicios Educacionales</h1>
+      
+      <p class="text-right muted">Viña del Mar, a {{fecha_actual}}</p>
+
+      <p>Entre la <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, representada legalmente por don <strong>Orlando Bórquez Domingo</strong>, cédula de identidad N° 7.269.437-6, ambas domiciliadas en Pasaje Anwandter N° 31, Viña del Mar, en adelante, "LA CORPORACIÓN"; y Don(a) <strong>{{guardian_full_name}}</strong>, cédula de identidad N° <strong>{{guardian_run}}</strong>, con domicilio en <strong>{{guardian_address}}</strong>{{guardian_comuna?}}, en adelante, "EL/LA APODERADO/A", se celebra el siguiente Contrato de Prestación de Servicios Educacionales:</p>
 
       <p class="clause"><strong>Primero.</strong> La Corporación Educacional Winterhill se encuentra reconocida oficialmente como tal y es sostenedora del Establecimiento Educacional denominado <strong>"Colegio Winterhill"</strong>, en adelante, "EL ESTABLECIMIENTO", ubicado en Pasaje Anwandter N° 31, Comuna de Viña del Mar.</p>
 
@@ -209,7 +248,7 @@
       {{students_table}}
 
       <p class="clause"><strong>Tercero.</strong> LA CORPORACIÓN, en su calidad de sostenedora del ESTABLECIMIENTO, se compromete a:</p>
-      <ul class="small">
+      <ul>
         <li>Entregar, durante la vigencia del presente contrato, la atención necesaria para que EL/LA ESTUDIANTE desarrolle el proceso educativo dentro del nivel académico establecido por el colegio, con énfasis en su formación integral.</li>
         <li>Desarrollar el proceso de enseñanza-aprendizaje de conformidad con el PEI y planes y programas aprobados por el Ministerio de Educación de Chile.</li>
         <li>Velar por el proceso formativo acorde a las normas reglamentarias del ESTABLECIMIENTO.</li>
@@ -218,63 +257,80 @@
       </ul>
 
       <p class="clause"><strong>Cuarto.</strong> EL/LA APODERADO/A se compromete a:</p>
-      <ul class="small">
-      <li>Aceptar y respetar el PEI, Manual de Convivencia Escolar y Reglamento de Evaluación y Promoción.</li>
-      <li>Favorecer las tareas educativas y formativas que, en beneficio del ESTUDIANTE, conciba y desarrolle EL ESTABLECIMIENTO.</li>
-      <li>Pagar oportunamente la colegiatura según lo establecido en este contrato.</li>
-      <li>Asistir a reuniones y entrevistas cuando sea citado.</li>
-      <li>Mantener una actitud de respeto hacia la comunidad educativa.</li>
-      <li>Informar por escrito el retiro de un estudiante.</li>
-    </ul>
+      <ul>
+        <li>Aceptar y respetar el PEI, Manual de Convivencia Escolar y Reglamento de Evaluación y Promoción.</li>
+        <li>Favorecer las tareas educativas y formativas que, en beneficio del ESTUDIANTE, conciba y desarrolle EL ESTABLECIMIENTO.</li>
+        <li>Pagar oportunamente la colegiatura según lo establecido en este contrato.</li>
+        <li>Asistir a reuniones y entrevistas cuando sea citado.</li>
+        <li>Mantener una actitud de respeto hacia la comunidad educativa.</li>
+        <li>Informar por escrito el retiro de un estudiante.</li>
+      </ul>
 
-  <p class="clause"><strong>Quinto.</strong> EL/LA ESTUDIANTE, en virtud del presente contrato, adquiere los siguientes derechos: participar del proceso de enseñanza-aprendizaje acorde al PEI y programas oficiales; participar en actividades académicas y extra programáticas; y utilizar la infraestructura del Colegio conforme a sus normas internas.</p>
+      <p class="clause"><strong>Quinto.</strong> EL/LA ESTUDIANTE, en virtud del presente contrato, adquiere los siguientes derechos: participar del proceso de enseñanza-aprendizaje acorde al PEI y programas oficiales; participar en actividades académicas y extra programáticas; y utilizar la infraestructura del Colegio conforme a sus normas internas.</p>
 
-  <p class="clause"><strong>Sexto.</strong> Serán obligaciones de EL/LA ALUMNO/A: cumplir con el Manual de Convivencia Escolar, asistir puntual y regularmente, y respetar las normas de evaluación vigentes.</p>
+      <p class="clause"><strong>Sexto.</strong> Serán obligaciones de EL/LA ALUMNO/A: cumplir con el Manual de Convivencia Escolar, asistir puntual y regularmente, y respetar las normas de evaluación vigentes.</p>
 
-  <p class="clause mb-6"><strong>Séptimo.</strong> EL/LA APODERADO/A se obliga a pagar a LA CORPORACIÓN, por los servicios educacionales, los siguientes valores:</p>
-    <ul class="small">
-      <li>Por concepto de <strong>matrícula</strong>, al contado: ${{monto_matricula}}.</li>
-      <li>Por concepto de <strong>colegiatura anual total</strong> correspondiente al/los estudiante(s) individualizado(s) en este contrato: ${{monto_neto_anual}} (monto con descuento aplicado sobre la(s) colegiatura(s) anual(es) base indicada(s), cuyo valor de referencia total es ${{colegiatura_anual}}), dividido en {{cantidad_cuotas}} cuotas mensuales de ${{monto_cuota_neta}} cada una, con vencimiento el día {{dia_vencimiento}} de cada mes.</li>
-    </ul>
-    <p class="mb-6">Forma de pago seleccionada (marcar):</p>
-    <pre class="checkbox-list">{{formas_pago_lista}}</pre>
-    {{cheques_table}}
+      <p class="clause"><strong>Séptimo.</strong> EL/LA APODERADO/A se obliga a pagar a LA CORPORACIÓN, por los servicios educacionales, los siguientes valores:</p>
+      <ul>
+        <li>Por concepto de <strong>matrícula</strong>, al contado: ${{monto_matricula}}.</li>
+        <li>Por concepto de <strong>colegiatura anual total</strong> correspondiente al/los estudiante(s) individualizado(s) en este contrato: ${{monto_neto_anual}} (monto con descuento aplicado sobre la(s) colegiatura(s) anual(es) base indicada(s), cuyo valor de referencia total es ${{colegiatura_anual}}), dividido en {{cantidad_cuotas}} cuotas mensuales de ${{monto_cuota_neta}} cada una, con vencimiento el día {{dia_vencimiento}} de cada mes.</li>
+      </ul>
 
-  <p class="clause"><strong>Octavo.</strong> En caso que el/la estudiante(s) tenga la calidad de "alumno prioritario" durante el año {{year}}, su apoderado/a igualmente deberá suscribir este contrato, comprometiéndose a documentar el arancel si eventualmente pierde dicha calidad para el año siguiente.</p>
+      <p>Forma de pago seleccionada (marcar):</p>
+      <div class="checkbox-list">{{formas_pago_lista}}</div>
+      {{cheques_table}}
 
-  <p class="clause"><strong>Noveno.</strong> Si el/la estudiante interrumpe el año académico, habiendo dado aviso oportuno a la Dirección y al Departamento de Administración, se entregará al APODERADO/A la documentación académica correspondiente.</p>
+      <p class="clause"><strong>Octavo.</strong> En caso que el/la estudiante(s) tenga la calidad de "alumno prioritario" durante el año {{year}}, su apoderado/a igualmente deberá suscribir este contrato, comprometiéndose a documentar el arancel si eventualmente pierde dicha calidad para el año siguiente.</p>
 
-  <p class="clause"><strong>Décimo.</strong> Este contrato rige desde su suscripción hasta el término del año lectivo correspondiente, pudiendo renovarse por acuerdo expreso de las partes mediante la suscripción de un nuevo contrato.</p>
+      <p class="clause"><strong>Noveno.</strong> Si el/la estudiante interrumpe el año académico, habiendo dado aviso oportuno a la Dirección y al Departamento de Administración, se entregará al APODERADO/A la documentación académica correspondiente.</p>
 
-  <p class="clause"><strong>Undécimo.</strong> El cumplimiento de las obligaciones financieras será garantizado mediante {{formas_pago_resumen}}.</p>
+      <p class="clause"><strong>Décimo.</strong> Este contrato rige desde su suscripción hasta el término del año lectivo correspondiente, pudiendo renovarse por acuerdo expreso de las partes mediante la suscripción de un nuevo contrato.</p>
 
-  <p class="clause"><strong>Duodécimo.</strong> LA CORPORACIÓN queda facultada para endosar o transferir los créditos constituidos por los documentos de pago, y para disponer su protesto en caso de falta de pago oportuno. El/la apoderado/a autoriza la comunicación a registros de morosidades en caso de incumplimiento.</p>
+      <p class="clause"><strong>Undécimo.</strong> El cumplimiento de las obligaciones financieras será garantizado mediante {{formas_pago_resumen}}.</p>
 
-  <p class="clause"><strong>Décimo Tercero.</strong> La vigencia del presente contrato es exclusivamente por el período académico señalado. Su renovación estará sujeta al cumplimiento de las normas institucionales y obligaciones pecuniarias.</p>
+      <p class="clause"><strong>Duodécimo.</strong> LA CORPORACIÓN queda facultada para endosar o transferir los créditos constituidos por los documentos de pago, y para disponer su protesto en caso de falta de pago oportuno. El/la apoderado/a autoriza la comunicación a registros de morosidades en caso de incumplimiento.</p>
 
-  <p class="clause"><strong>Décimo Cuarto.</strong> El/la estudiante y el apoderado/a declaran conocer y aceptar los principios, misión y reglamentos del establecimiento.</p>
+      <p class="clause"><strong>Décimo Tercero.</strong> La vigencia del presente contrato es exclusivamente por el período académico señalado. Su renovación estará sujeta al cumplimiento de las normas institucionales y obligaciones pecuniarias.</p>
 
-  <p class="clause"><strong>Décimo Quinto.</strong> En caso de daños materiales al patrimonio del Colegio, el apoderado/a deberá costear la reparación o reposición. El Colegio no se hace responsable por pérdida o deterioro de efectos personales del estudiante.</p>
+      <p class="clause"><strong>Décimo Cuarto.</strong> El/la estudiante y el apoderado/a declaran conocer y aceptar los principios, misión y reglamentos del establecimiento.</p>
 
-  <p class="clause"><strong>Décimo Sexto.</strong> El apoderado/a declara que el/la estudiante tiene salud compatible con el régimen de estudios. En caso de emergencia, el Colegio gestionará el traslado y trámites del Seguro de Accidente Escolar, sin asumir responsabilidad económica.</p>
+      <p class="clause"><strong>Décimo Quinto.</strong> En caso de daños materiales al patrimonio del Colegio, el apoderado/a deberá costear la reparación o reposición. El Colegio no se hace responsable por pérdida o deterioro de efectos personales del estudiante.</p>
 
-  <p class="clause"><strong>Décimo Séptimo.</strong> El Manual de Convivencia, protocolos y reglamentos están disponibles en: http://colegiowinterhill.cl/Website/index.php/protocolos. Las comunicaciones oficiales se enviarán al correo registrado del APODERADO/A: {{guardian_email}}.</p>
+      <p class="clause"><strong>Décimo Sexto.</strong> El apoderado/a declara que el/la estudiante tiene salud compatible con el régimen de estudios. En caso de emergencia, el Colegio gestionará el traslado y trámites del Seguro de Accidente Escolar, sin asumir responsabilidad económica.</p>
 
-  <p class="clause"><strong>Décimo Octavo.</strong> Se firman dos ejemplares de igual tenor y fecha. Uno queda en poder de LA CORPORACIÓN y otro en poder del APODERADO/A.</p>
+      <p class="clause"><strong>Décimo Séptimo.</strong> El Manual de Convivencia, protocolos y reglamentos están disponibles en: http://colegiowinterhill.cl/Website/index.php/protocolos. Las comunicaciones oficiales se enviarán al correo registrado del APODERADO/A: {{guardian_email}}.</p>
 
-    <div class="signatures">
-      <div class="sigbox">
-        <div><strong>{{guardian_full_name}}</strong></div>
-        <div>RUT: {{guardian_run}}</div>
-        <div class="muted">EL/LA APODERADO/A</div>
+      <p class="clause"><strong>Décimo Octavo.</strong> Se firman dos ejemplares de igual tenor y fecha. Uno queda en poder de LA CORPORACIÓN y otro en poder del APODERADO/A.</p>
+
+      <div class="signatures">
+        <div class="sig-row">
+          <div class="sig-cell">
+            <div class="sig-line">
+              <strong>{{guardian_full_name}}</strong><br>
+              RUT: {{guardian_run}}<br>
+              <span class="muted">EL/LA APODERADO/A</span>
+            </div>
+          </div>
+          <div class="sig-cell">
+            <div class="sig-line">
+              <strong>Orlando Bórquez Domingo</strong><br>
+              RUT: 7.269.437-6<br>
+              <span class="muted">p.p. CORPORACIÓN EDUCACIONAL WINTERHILL (RUT: 65.152.884-4)</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="sigbox">
-        <div><strong>Orlando Bórquez Domingo</strong></div>
-        <div>RUT: 7.269.437-6</div>
-        <div class="muted">p.p. CORPORACIÓN EDUCACIONAL WINTERHILL (RUT: 65.152.884-4)</div>
-      </div>
+
     </div>
-    </div> <!-- End document-border -->
-  </section>
+  </div>
+
+  <script>
+    // Detección de soporte para número total de páginas (Chrome modernos lo soportan)
+    try {
+      if (window.CSS && CSS.supports && CSS.supports('content', 'counter(pages)')) {
+        document.documentElement.classList.add('has-total-pages');
+      }
+    } catch (e) { /* noop */ }
+  </script>
 </body>
 </html>
