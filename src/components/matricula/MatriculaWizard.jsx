@@ -827,9 +827,19 @@ export function MatriculaWizard() {
       toast.success('Matrícula finalizada exitosamente');
     } catch (error) {
       console.error('Error finalizing enrollment:', error);
+
+      const rawMessage = (error && error.message) || '';
+      const isDuplicateFeeError = rawMessage.includes('unique_fee_student_guardian_quota') ||
+        rawMessage.includes('duplicate key value') ||
+        rawMessage.includes('ya existen cuotas');
+
+      const userMessage = isDuplicateFeeError
+        ? 'No se pudo finalizar la matrícula porque ya existen cuotas generadas para este estudiante y apoderado. Verifica que no hayas finalizado esta matrícula antes o que no existan cuotas duplicadas para este alumno. Si el problema persiste, contacta al administrador indicando el RUT del alumno y del apoderado.'
+        : (rawMessage || 'Error al finalizar matrícula');
+
       setFinalizeAlert({
         type: 'error',
-        message: error.message || 'Error al finalizar matrícula'
+        message: userMessage
       });
     } finally {
       setFinalizing(false);
