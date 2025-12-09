@@ -88,9 +88,9 @@ export function FinalizeEnrollmentModal({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Confirmar matrícula</h2>
+              <h2 className="text-lg font-semibold">{folio ? 'Matrícula Finalizada' : 'Confirmar matrícula'}</h2>
               {folio && (
-                <p className="text-[11px] text-gray-500 mt-0.5">Folio preliminar comprobante: <span className="font-mono">{folio}</span></p>
+                <p className="text-[11px] text-gray-500 mt-0.5">Folio: <span className="font-mono">{folio}</span></p>
               )}
             </div>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
@@ -198,10 +198,14 @@ export function FinalizeEnrollmentModal({
               )}
 
               <div className="flex gap-3">
-              <Button variant="outline" onClick={onClose} className="flex-1">Cancelar</Button>
-              <Button onClick={onConfirm} disabled={confirming} className="flex-1">
-                {confirming ? 'Confirmando…' : 'Confirmar matrícula'}
-              </Button>
+                <Button variant="outline" onClick={onClose} className="flex-1">
+                  {folio ? 'Cerrar' : 'Cancelar'}
+                </Button>
+                {!folio && (
+                  <Button onClick={onConfirm} disabled={confirming} className="flex-1">
+                    {confirming ? 'Confirmando…' : 'Confirmar matrícula'}
+                  </Button>
+                )}
               </div>
             </div>
           </div>

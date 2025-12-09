@@ -802,7 +802,8 @@ export function MatriculaWizard() {
         message: `Matrícula finalizada correctamente. Folio: ${result.folio || 'N/A'}`
       });
       setEnrollmentFolio(result.folio || null);
-      setFinalizeOpen(false);
+      // Keep modal open to show receipt options
+      // setFinalizeOpen(false);
       
       // Refresh enrollment data
       setEnrollment(prev => ({ ...prev, status: 'completed' }));
