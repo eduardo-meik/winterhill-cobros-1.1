@@ -19,7 +19,7 @@ export interface PDFGenerationOptions {
   assetBaseUrl?: string;
 }
 
-const DEFAULT_PDF_SERVICE_URL = import.meta.env?.VITE_PDF_SERVICE_URL || '/api/render-pdf';
+const DEFAULT_PDF_SERVICE_URL = import.meta.env?.VITE_PDF_SERVICE_URL || 'https://pdf-service-3ypq.onrender.com/api/render-pdf';
 const PDF_SERVICE_TIMEOUT_MS = Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '25000');
 
 type RemoteMarginPayload =
