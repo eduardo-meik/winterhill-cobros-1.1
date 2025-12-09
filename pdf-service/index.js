@@ -23,8 +23,15 @@ app.post('/api/render-pdf', async (req, res) => {
 
   let browser;
   try {
+    // Use puppeteer.executablePath() to dynamically find the installed Chrome
     browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: 'new',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
     });
     const page = await browser.newPage();
 
@@ -59,6 +66,10 @@ app.post('/api/render-pdf', async (req, res) => {
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+app.get('/', (req, res) => {
+  res.send('PDF Service is running. Use POST /api/render-pdf to generate PDFs.');
 });
 
 app.listen(PORT, () => {
