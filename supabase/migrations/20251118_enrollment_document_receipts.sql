@@ -242,6 +242,7 @@ DECLARE
   v_skipped int := 0;
   v_students int := 0;
   v_summary jsonb := '[]'::jsonb;
+  v_folio text;
   r_es RECORD;
   r_cuota RECORD;
 BEGIN
@@ -362,7 +363,7 @@ BEGIN
             r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'pending', v_method,
             v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment')
           )
-          ON CONFLICT (student_id, year_academico, numero_cuota) DO NOTHING;
+          ON CONFLICT (student_id, guardian_id, numero_cuota) DO NOTHING;
 
           IF FOUND THEN
             v_created := v_created + 1;
@@ -379,7 +380,14 @@ BEGIN
   END LOOP;
 
   IF NOT v_dry_run THEN
-    UPDATE public.enrollments SET status = 'completed', updated_at = now()
+    -- Generate folio
+    v_folio := 'ENR-' || v_year || '-' || to_char(now(), 'YYYYMMDDHH24MISS') || '-' || substring(p_enrollment_id::text, 1, 8);
+    
+    -- Update enrollment with folio
+    UPDATE public.enrollments 
+       SET status = 'completed', 
+           updated_at = now(),
+           meta = COALESCE(meta, '{}'::jsonb) || jsonb_build_object('folio', v_folio)
      WHERE id = p_enrollment_id;
 
     UPDATE public.students
@@ -397,7 +405,9 @@ BEGIN
     'created_charges', v_created,
     'skipped_duplicates', v_skipped,
     'students_count', v_students,
-    'details', v_summary
+    'details', v_summary,
+    'folio', v_folio,
+    'year', v_year
   );
 END;
 $$;

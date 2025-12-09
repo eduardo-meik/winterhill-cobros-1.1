@@ -2610,11 +2610,16 @@ export async function finalizeEnrollmentPreview(
 ): Promise<any> {
   try {
     const payload = { ...options, dry_run: true };
+    console.log('[PREVIEW] Request:', { enrollmentId, payload });
     const { data, error } = await supabase.rpc('finalize_enrollment', {
       p_enrollment_id: enrollmentId,
       p_options: payload
     });
-    if (error) throw error;
+    if (error) {
+      console.error('[PREVIEW] Supabase error:', error);
+      throw error;
+    }
+    console.log('[PREVIEW] Response:', data);
     return data;
   } catch (e: any) {
     console.error('finalizeEnrollmentPreview error', e);
@@ -2633,11 +2638,22 @@ export async function finalizeEnrollmentConfirm(
 ): Promise<any> {
   try {
     const payload = { ...options, dry_run: false };
+    console.log('[CONFIRM] Request:', { enrollmentId, payload });
     const { data, error } = await supabase.rpc('finalize_enrollment', {
       p_enrollment_id: enrollmentId,
       p_options: payload
     });
-    if (error) throw error;
+    if (error) {
+      console.error('[CONFIRM] Supabase error:', error);
+      console.error('[CONFIRM] Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      throw error;
+    }
+    console.log('[CONFIRM] Response:', data);
     return data;
   } catch (e: any) {
     console.error('finalizeEnrollmentConfirm error', e);

@@ -235,8 +235,8 @@ export function MatriculaWizard() {
           g = await fetchCurrentGuardian(user.id, user.email);
           console.log('🔍 MatriculaWizard: Guardian fetched:', g);
           if (!g) {
-            setError('No se encontró registro de apoderado. Por favor contacte al administrador para crear su perfil.');
-            toast.error('No se encontró registro de apoderado');
+            setError('No se encontró su registro como apoderado en el sistema. Por favor contacte a la secretaría administrativa al correo secretariaadministrativa@winterhillenlinea.cl o al teléfono del colegio para que creen su perfil.');
+            toast.error('Perfil de apoderado no encontrado. Contacte a secretaría administrativa.');
             setLoading(false);
             return;
           }
@@ -249,8 +249,8 @@ export function MatriculaWizard() {
           const enr = await getOrCreateEnrollment(g.id, year);
           console.log('🔍 MatriculaWizard: Enrollment created/fetched:', enr);
           if (!enr) {
-            setError('No se pudo crear la matrícula. Intente nuevamente.');
-            toast.error('Error creando matrícula');
+            setError('No se pudo iniciar el proceso de matrícula. Por favor, actualice la página e intente nuevamente. Si el problema persiste, contacte a secretaría administrativa.');
+            toast.error('Error al iniciar matrícula. Intente actualizar la página.');
           } else {
             setEnrollment(enr);
             // Load outstanding debt once we have guardian & enrollment
@@ -649,7 +649,7 @@ export function MatriculaWizard() {
     return true;
   };
 
-  const next = () => { if (step < STEPS.length - 1 && canProceed()) setStep(step + 1); else if (!canProceed()) toast.error('Completa los datos antes de continuar'); };
+  const next = () => { if (step < STEPS.length - 1 && canProceed()) setStep(step + 1); else if (!canProceed()) toast.error('Complete todos los datos requeridos antes de continuar. Verifique que haya seleccionado al menos un estudiante y completado los datos económicos.'); };
   const back = () => { if (step > 0) setStep(step - 1); };
 
   // Add/remove student handlers
@@ -800,7 +800,16 @@ export function MatriculaWizard() {
       setFinalizeOpen(true);
     } catch (error) {
       console.error('Error previewing finalization:', error);
-      toast.error('Error al preparar finalización');
+      const errorMsg = error?.message || '';
+      if (errorMsg.includes('PLAN_MISSING')) {
+        toast.error('Falta el plan de pagos. Por favor, complete los datos económicos y genere el contrato antes de finalizar.');
+      } else if (errorMsg.includes('NO_STUDENTS')) {
+        toast.error('Debe agregar al menos un estudiante para finalizar la matrícula.');
+      } else if (errorMsg.includes('MISSING_RELATION')) {
+        toast.error('Falta la relación entre estudiante y apoderado. Contacte a secretaría administrativa.');
+      } else {
+        toast.error('Error al preparar la confirmación de matrícula. Verifique que haya completado todos los pasos.');
+      }
     } finally {
       setFinalizing(false);
     }
@@ -850,7 +859,11 @@ export function MatriculaWizard() {
   const handleGeneratePagare = async () => {
     if (!guardian || !enrollment) {
       console.error('❌ Missing guardian or enrollment:', { guardian, enrollment });
-      toast.error('Faltan datos del apoderado o matrícula');
+      if (!guardian) {
+        toast.error('No se han cargado los datos del apoderado. Por favor, actualice la página.');
+      } else {
+        toast.error('No se ha iniciado el proceso de matrícula. Por favor, seleccione el año académico e inicie nuevamente.');
+      }
       return;
     }
     
@@ -1020,7 +1033,7 @@ export function MatriculaWizard() {
   // Download PDF - Generate on-the-fly from HTML
   const handleDownloadPDF = async () => {
     if (!previewHtml || !guardian) {
-      toast.error('No hay documento para descargar');
+      toast.error('Debe generar el contrato primero usando el botón "Generar Vista Previa" antes de poder descargarlo.');
       return;
     }
     
@@ -1069,14 +1082,19 @@ export function MatriculaWizard() {
       toast.success('PDF descargado exitosamente', { id: 'pdf-download' });
     } catch (err) {
       console.error('Download PDF error:', err);
-      toast.error('Error al generar el PDF', { id: 'pdf-download' });
+      const errMsg = err?.message || '';
+      if (errMsg.includes('ERR_CONNECTION_REFUSED') || errMsg.includes('Failed to fetch')) {
+        toast.error('No se pudo conectar con el servicio de generación de PDF. Por favor, intente nuevamente en unos momentos.', { id: 'pdf-download' });
+      } else {
+        toast.error('Error al generar el PDF. Por favor, intente nuevamente o contacte a soporte técnico si el problema persiste.', { id: 'pdf-download' });
+      }
     }
   };
 
   // Print current preview using browser print dialog
   const handlePrint = async () => {
     if (!previewHtml) {
-      toast.error('No hay documento para imprimir');
+      toast.error('Debe generar el contrato primero usando el botón "Generar Vista Previa" antes de poder imprimirlo.');
       return;
     }
 
@@ -1101,7 +1119,7 @@ export function MatriculaWizard() {
       }, 500);
     } catch (err) {
       console.error('Print error:', err);
-      toast.error('Error al enviar a impresión');
+      toast.error('Error al abrir la ventana de impresión. Verifique que su navegador permita ventanas emergentes.');
     }
   };
 
@@ -1198,11 +1216,15 @@ export function MatriculaWizard() {
   
   const handleSendPagareEmail = async () => {
     if (!previewHtml || !guardian) {
-      toast.error('No hay documento para enviar');
+      if (!previewHtml) {
+        toast.error('Debe generar el contrato primero usando el botón "Generar Vista Previa" antes de enviarlo por correo.');
+      } else {
+        toast.error('No se encontraron los datos del apoderado. Por favor, actualice la página.');
+      }
       return;
     }
     if (!guardian.email) {
-      toast.error('El apoderado no tiene email registrado');
+      toast.error('No tiene un correo electrónico registrado en el sistema. Por favor, contacte a secretaría administrativa para actualizar su información de contacto.');
       return;
     }
     try {
@@ -1346,7 +1368,12 @@ export function MatriculaWizard() {
       toast.success('Comprobante descargado', { id: 'receipt-dl' });
     } catch (error) {
       console.error('Error downloading receipt:', error);
-      toast.error('Error al descargar comprobante', { id: 'receipt-dl' });
+      const errMsg = error?.message || '';
+      if (errMsg.includes('folio')) {
+        toast.error('Falta el número de folio. Por favor, finalice la matrícula primero.', { id: 'receipt-dl' });
+      } else {
+        toast.error('Error al generar el comprobante de matrícula. Por favor, intente nuevamente.', { id: 'receipt-dl' });
+      }
     }
   };
 
@@ -1398,7 +1425,12 @@ export function MatriculaWizard() {
       toast.success('Comprobante enviado por correo', { id: 'receipt-email' });
     } catch (error) {
       console.error('Error emailing receipt:', error);
-      toast.error('Error al enviar comprobante', { id: 'receipt-email' });
+      const errMsg = error?.message || '';
+      if (errMsg.includes('email') || errMsg.includes('mail')) {
+        toast.error('Error al enviar el correo. Verifique que su dirección de correo sea válida o intente nuevamente más tarde.', { id: 'receipt-email' });
+      } else {
+        toast.error('Error al enviar el comprobante por correo. Por favor, descárguelo manualmente.', { id: 'receipt-email' });
+      }
     } finally {
       setSendingEnrollmentReceipt(false);
     }
