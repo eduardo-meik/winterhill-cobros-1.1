@@ -15,13 +15,29 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 
 app.post('/api/render-pdf', async (req, res) => {
-  const {
-    html,
-    format = 'Letter',
-    orientation = 'portrait',
-    margin = { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
-    metadata = {},
-  } = req.body || {};
+  const body = req.body || {};
+  const html = body.html || body.htmlContent;
+  
+  // Extract options from body.options or body root to support both formats
+  const options = body.options || {};
+  
+  const format = options.format || body.format || 'Letter';
+  const landscape = options.landscape || (body.orientation === 'landscape');
+  const printBackground = options.printBackground !== undefined ? options.printBackground : true;
+  
+  let margin = options.margin || body.margin || { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' };
+  
+  // Normalize margin if it's a number (Puppeteer requires an object)
+  if (typeof margin === 'number' || typeof margin === 'string') {
+    margin = {
+      top: margin,
+      right: margin,
+      bottom: margin,
+      left: margin
+    };
+  }
+
+  const metadata = body.metadata || {};
 
   if (!html || typeof html !== 'string') {
     return res.status(400).json({ error: 'html is required and must be a string' });
@@ -31,7 +47,13 @@ app.post('/api/render-pdf', async (req, res) => {
   try {
     // Use puppeteer.executablePath() to dynamically find the installed Chrome
     browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: 'new',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
     });
     const page = await browser.newPage();
 
@@ -45,8 +67,8 @@ app.post('/api/render-pdf', async (req, res) => {
 
     const pdfBuffer = await page.pdf({
       format,
-      landscape: orientation === 'landscape',
-      printBackground: true,
+      landscape,
+      printBackground,
       margin,
     });
 
