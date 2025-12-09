@@ -40,7 +40,7 @@ export function buildEnrollmentReceiptHtml(data: EnrollmentReceiptData): string 
       const courseLabel = s.course || '—';
       return `
         <tr>
-          <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${idx + 1}</td>
+          <td style="padding: 6px 10px; border: 1px solid #e5e7eb; text-align: center;">${idx + 1}</td>
           <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${s.name}</td>
           <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${nivelLabel}</td>
           <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${courseLabel}</td>
@@ -51,55 +51,90 @@ export function buildEnrollmentReceiptHtml(data: EnrollmentReceiptData): string 
   const createdLabel = formatDate(createdAt);
 
   return `
-  <div style="padding: 12mm; font-family: Arial, Helvetica, sans-serif; color: #111827;">
-    <h2 style="text-align:center; margin: 0 0 8px 0; font-size: 18pt;">Comprobante de Matrícula</h2>
-    <p style="text-align:center; margin: 0 0 4px 0; font-size: 10pt; color: #374151;">Corporación Educacional Winterhill</p>
-    <p style="text-align:center; margin: 0 0 12px 0; font-size: 9pt; color: #6b7280;">Este documento certifica la matrícula para el año académico ${year}.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Comprobante de Matrícula</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 2cm;
+    }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111827;
+      margin: 0;
+      padding: 0;
+      font-size: 10pt;
+      line-height: 1.5;
+    }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { margin: 0 0 8px 0; font-size: 18pt; }
+    .header p { margin: 0 0 4px 0; color: #374151; font-size: 10pt; }
+    .header .sub { font-size: 9pt; color: #6b7280; margin-bottom: 12px; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 6mm; font-size: 9pt; }
+    td, th { padding: 6px 10px; border: 1px solid #e5e7eb; }
+    .label-col { background: #f9fafb; font-weight: 600; width: 30%; }
+    .header-row th { background: #f3f4f6; text-align: left; }
+    .center { text-align: center; }
+    
+    .footer-note { margin-top: 10mm; font-size: 9pt; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Comprobante de Matrícula</h2>
+    <p>Corporación Educacional Winterhill</p>
+    <p class="sub">Este documento certifica la matrícula para el año académico ${year}.</p>
+  </div>
 
-    <table style="width: 100%; border-collapse: collapse; margin-top: 6mm; font-size: 9pt;">
-      <tr>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f9fafb; width: 30%; font-weight: 600;">Folio</td>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${folio}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f9fafb; font-weight: 600;">Fecha y hora de emisión</td>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${createdLabel}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f9fafb; font-weight: 600;">Apoderado</td>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${guardianName}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f9fafb; font-weight: 600;">RUN</td>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${guardianRun || '—'}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f9fafb; font-weight: 600;">Correo de contacto</td>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${guardianEmail || '—'}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f9fafb; font-weight: 600;">Año académico</td>
-        <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${year}</td>
-      </tr>
-    </table>
+  <table>
+    <tr>
+      <td class="label-col">Folio</td>
+      <td>${folio}</td>
+    </tr>
+    <tr>
+      <td class="label-col">Fecha y hora de emisión</td>
+      <td>${createdLabel}</td>
+    </tr>
+    <tr>
+      <td class="label-col">Apoderado</td>
+      <td>${guardianName}</td>
+    </tr>
+    <tr>
+      <td class="label-col">RUN</td>
+      <td>${guardianRun || '—'}</td>
+    </tr>
+    <tr>
+      <td class="label-col">Correo de contacto</td>
+      <td>${guardianEmail || '—'}</td>
+    </tr>
+    <tr>
+      <td class="label-col">Año académico</td>
+      <td>${year}</td>
+    </tr>
+  </table>
 
-    <h3 style="margin-top: 10mm; margin-bottom: 4px; font-size: 11pt;">Estudiantes matriculados</h3>
-    <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
-      <thead>
-        <tr>
-          <th style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f3f4f6; text-align:left; width: 8%;">#</th>
-          <th style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f3f4f6; text-align:left;">Nombre</th>
-          <th style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f3f4f6; text-align:left; width: 15%;">Nivel</th>
-          <th style="padding: 6px 10px; border: 1px solid #e5e7eb; background:#f3f4f6; text-align:left; width: 30%;">Curso</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${studentRows || '<tr><td colspan="4" style="padding: 6px 10px; border: 1px solid #e5e7eb; text-align:center; color:#6b7280;">Sin estudiantes asociados</td></tr>'}
-      </tbody>
-    </table>
+  <h3 style="margin-top: 10mm; margin-bottom: 4px; font-size: 11pt;">Estudiantes matriculados</h3>
+  <table>
+    <thead>
+      <tr class="header-row">
+        <th style="width: 8%;">#</th>
+        <th>Nombre</th>
+        <th style="width: 15%;">Nivel</th>
+        <th style="width: 30%;">Curso</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${studentRows || '<tr><td colspan="4" class="center" style="color:#6b7280;">Sin estudiantes asociados</td></tr>'}
+    </tbody>
+  </table>
 
-    <p style="margin-top: 10mm; font-size: 9pt; color:#6b7280;">Este comprobante se genera automáticamente y no requiere firma. Para fines de validación interna, imprima este documento o conserve el archivo PDF. Para cualquier consulta, contáctenos a secretariaadministrativa@winterhillenlinea.cl</p>
-  </div>`;
+  <p class="footer-note">Este comprobante se genera automáticamente y no requiere firma. Para fines de validación interna, imprima este documento o conserve el archivo PDF. Para cualquier consulta, contáctenos a secretariaadministrativa@winterhillenlinea.cl</p>
+</body>
+</html>`;
 }
 
 export async function generateEnrollmentReceiptPdf(data: EnrollmentReceiptData, action: 'download' | 'preview' = 'download') {
@@ -108,7 +143,8 @@ export async function generateEnrollmentReceiptPdf(data: EnrollmentReceiptData, 
     htmlContent,
     orientation: 'portrait',
     format: 'a4',
-    includeHeader: true,
+    margin: 0, // Dejamos que @page controle los márgenes
+    includeHeader: false, // El HTML ya incluye el encabezado
     includeSignatureSection: false,
     metadata: {
       title: 'Comprobante de Matrícula',

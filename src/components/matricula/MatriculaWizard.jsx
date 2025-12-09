@@ -1315,15 +1315,8 @@ export function MatriculaWizard() {
         }))
       };
       
-      const html = buildEnrollmentReceiptHtml(receiptData);
-      const pdfBlob = await generatePDFFromHTML({
-        htmlContent: html,
-        includeHeader: false, // Receipt has its own header
-        includeSignatureSection: false,
-        folioNumber: enrollmentFolio
-      });
+      await generateEnrollmentReceiptPdf(receiptData, 'download');
       
-      downloadPDFBlob(pdfBlob, `Comprobante_Matricula_${enrollmentFolio}.pdf`);
       toast.success('Comprobante descargado', { id: 'receipt-dl' });
     } catch (error) {
       console.error('Error downloading receipt:', error);
