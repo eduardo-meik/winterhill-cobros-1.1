@@ -720,12 +720,25 @@ export function MatriculaWizard() {
   const handleSaveEconomic = async () => {
     if (!enrollment) return;
     
+    // Base economic data
+    let colegiaturaAnual = Number(economic.colegiatura_anual) || 0;
+    let cantidadCuotas = Number(economic.cantidad_cuotas) || 0;
+    let montoCuota = Number(economic.monto_cuota) || 0;
+
+    // Caso especial: estudiante prioritario (beca 100%)
+    // Regla simple: no hay plan de cobro, por lo que no se deben generar cuotas.
+    if (prioritario) {
+      colegiaturaAnual = 0;
+      cantidadCuotas = 0;
+      montoCuota = 0;
+    }
+
     const patch = {
       // Economic data
       monto_matricula: Number(economic.monto_matricula) || 0,
-      colegiatura_anual: Number(economic.colegiatura_anual) || 0,
-      cantidad_cuotas: Number(economic.cantidad_cuotas) || 0,
-      monto_cuota: Number(economic.monto_cuota) || 0,
+      colegiatura_anual: colegiaturaAnual,
+      cantidad_cuotas: cantidadCuotas,
+      monto_cuota: montoCuota,
       dia_vencimiento: Number(economic.dia_vencimiento) || 0,
       // Payment methods
       forma_pago_cheques: paymentMethod.cheques || false,
@@ -754,7 +767,9 @@ export function MatriculaWizard() {
         economic: {
           colegiatura_anual: patch.colegiatura_anual,
           cantidad_cuotas: patch.cantidad_cuotas,
-          monto_cuota: totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : patch.monto_cuota,
+          monto_cuota: prioritario
+            ? 0
+            : (totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : patch.monto_cuota),
           dia_vencimiento: patch.dia_vencimiento,
         },
         paymentMethodFlags: paymentMethod,
@@ -766,8 +781,8 @@ export function MatriculaWizard() {
       setEnrollment(prev => prev ? { ...prev, meta: { ...(prev.meta || {}), ...patch } } : prev);
     }
     
-    // Auto-calculate monto_cuota if not provided
-    if (!economic.monto_cuota && patch.colegiatura_anual && patch.cantidad_cuotas) {
+    // Auto-calculate monto_cuota if not provided (solo si no es prioritario)
+    if (!prioritario && !economic.monto_cuota && patch.colegiatura_anual && patch.cantidad_cuotas) {
       const calc = Math.round(patch.colegiatura_anual / patch.cantidad_cuotas);
       setEconomic(e => ({ ...e, monto_cuota: calc.toString() }));
     }
@@ -1348,6 +1363,9 @@ export function MatriculaWizard() {
       const html = buildEnrollmentReceiptHtml(receiptData);
       const pdfBlob = await generatePDFFromHTML({
         htmlContent: html,
+        orientation: 'portrait',
+        format: 'a4',
+        margin: 0,
         includeHeader: false,
         includeSignatureSection: false,
         folioNumber: enrollmentFolio

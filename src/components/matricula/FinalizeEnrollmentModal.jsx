@@ -49,7 +49,9 @@ export function FinalizeEnrollmentModal({
     if (!Array.isArray(list)) return [];
     return list.map((c) => ({
       numero_cuota: c.numero_cuota ?? c.numero ?? c.n ?? null,
-      amount: Number(c.amount ?? c.monto ?? 0) || 0,
+      // Use final_amount if available (discounted), otherwise fallback to amount/monto
+      amount: Number(c.final_amount ?? c.amount ?? c.monto ?? 0) || 0,
+      original_amount: Number(c.amount ?? c.monto ?? 0) || 0,
       due_date: c.due_date ?? c.fecha ?? c.date ?? null,
       created: c.created ?? (c.existed === false),
       existed: c.existed ?? !(c.created ?? false)
@@ -144,7 +146,7 @@ export function FinalizeEnrollmentModal({
                               <div className="flex flex-wrap gap-1">
                                 {cuotas.map((c, i) => (
                                   <span key={i} className={`px-2 py-0.5 rounded text-xs border ${c.created ? 'bg-green-50 border-green-200 text-green-800' : 'bg-gray-50 border-gray-200 text-gray-700'}`}>
-                                    #{c.numero_cuota ?? c.n} ${(c.amount ?? c.monto ?? 0).toLocaleString('es-CL')} {c.created ? 'nuevo' : 'existe'}
+                                    #{c.numero_cuota ?? c.n} ${(c.amount).toLocaleString('es-CL')} {c.created ? 'nuevo' : 'existe'}
                                   </span>
                                 ))}
                               </div>
