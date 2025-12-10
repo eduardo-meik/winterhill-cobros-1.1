@@ -30,39 +30,68 @@
       counter-reset: page;
     }
 
-    @page { size: A4; margin: 12mm; }
-
-    .print-header, .print-footer {
-      position: fixed;
-      left: 0; right: 0;
-      color: var(--text);
-      font-size: 10px;
-      display: flex;
-      justify-content: space-between;
-      padding: 4mm 12mm 2mm;
-      box-sizing: border-box;
+    @page {
+      size: A4;
+      margin-top: 30mm;
+      margin-bottom: 25mm;
+      margin-left: 15mm;
+      margin-right: 15mm;
     }
 
-    .print-header { top: 0; border-bottom: 0.5px solid var(--border); }
-    .print-footer { bottom: 0; border-top: 0.5px solid var(--border); padding: 2mm 12mm 4mm; }
+    .print-header {
+      position: fixed;
+      top: -30mm;
+      left: 0;
+      right: 0;
+      height: 30mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 5px;
+      border-bottom: 0.5px solid var(--border);
+      font-size: 10px;
+    }
+
+    .print-footer {
+      position: fixed;
+      bottom: -25mm;
+      left: 0;
+      right: 0;
+      height: 25mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-top: 5px;
+      border-top: 0.5px solid var(--border);
+      font-size: 10px;
+    }
+
     .print-header .title { font-weight: 600; }
     .page-number::after { content: "Página " counter(page); }
     .has-total-pages .page-number::after { content: "Página " counter(page) " de " counter(pages); }
 
     .page {
-      width: 210mm;
-      min-height: 297mm;
-      padding: 22mm 12mm 26mm;
+      width: 100%;
       box-sizing: border-box;
     }
 
     @media screen {
-      .print-header, .print-footer { display: none; }
-      .page { padding: 12mm 12mm 16mm; }
+      body { padding: 20px; background: #eee; }
+      .page {
+        background: white;
+        max-width: 210mm;
+        margin: 0 auto;
+        padding: 30mm 15mm 25mm 15mm; /* simulate margins */
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        position: relative;
+      }
+      .print-header { position: absolute; top: 0; left: 15mm; right: 15mm; }
+      .print-footer { position: absolute; bottom: 0; left: 15mm; right: 15mm; }
     }
 
     @media print {
-      body { counter-reset: page; }
+      body { background: white; padding: 0; margin: 0; }
+      .page { padding: 0; margin: 0; box-shadow: none; }
     }
 
     h1 {
