@@ -378,51 +378,69 @@ export function MatriculaWizard() {
     });
   }, [assistedMode, enrollment?.id, assistedGuardian?.id, user?.id]);
 
-  // Load economic data and payment methods from enrollment.meta
+  // Load economic data, per-student data and payment methods from enrollment.meta
   useEffect(() => {
     if (!enrollment || !enrollment.meta) return;
-    
+
     console.log('📊 Loading saved economic data from enrollment.meta:', enrollment.meta);
-    
+
+    const meta = enrollment.meta || {};
+
     // Load economic data
     setEconomic(prev => ({
       ...prev,
-      monto_matricula: enrollment.meta.monto_matricula?.toString() || prev.monto_matricula,
-      colegiatura_anual: enrollment.meta.colegiatura_anual?.toString() || prev.colegiatura_anual,
-      cantidad_cuotas: enrollment.meta.cantidad_cuotas?.toString() || prev.cantidad_cuotas,
-      monto_cuota: enrollment.meta.monto_cuota?.toString() || prev.monto_cuota,
-      dia_vencimiento: enrollment.meta.dia_vencimiento?.toString() || prev.dia_vencimiento
+      monto_matricula: meta.monto_matricula?.toString() || prev.monto_matricula,
+      colegiatura_anual: meta.colegiatura_anual?.toString() || prev.colegiatura_anual,
+      cantidad_cuotas: meta.cantidad_cuotas?.toString() || prev.cantidad_cuotas,
+      monto_cuota: meta.monto_cuota?.toString() || prev.monto_cuota,
+      dia_vencimiento: meta.dia_vencimiento?.toString() || prev.dia_vencimiento
     }));
-    // Prioritario
-    if (typeof enrollment.meta.prioritario === 'boolean') {
-      setPrioritario(enrollment.meta.prioritario);
+
+    // Prioritario (flag global)
+    if (typeof meta.prioritario === 'boolean') {
+      setPrioritario(meta.prioritario);
     }
+
     // Descuento (hidratar porcentaje y monto total desde meta si se guardó antes)
-    if (typeof enrollment.meta.porcentaje_descuento === 'number') {
+    if (typeof meta.porcentaje_descuento === 'number') {
       setDescuentoInfo(d => ({
         ...d,
-        porcentaje_descuento: enrollment.meta.porcentaje_descuento,
-        monto_total_descuento: typeof enrollment.meta.monto_total_descuento === 'number'
-          ? enrollment.meta.monto_total_descuento
+        porcentaje_descuento: meta.porcentaje_descuento,
+        monto_total_descuento: typeof meta.monto_total_descuento === 'number'
+          ? meta.monto_total_descuento
           : (() => {
-              const total = (Number(enrollment.meta.colegiatura_anual) || 0) * (enrollment.meta.porcentaje_descuento / 100);
+              const total = (Number(meta.colegiatura_anual) || 0) * (meta.porcentaje_descuento / 100);
               return Math.round(total);
             })()
       }));
     }
-    
+
     // Load payment methods
     setPaymentMethod(prev => ({
       ...prev,
-      cheques: enrollment.meta.forma_pago_cheques ?? prev.cheques,
-      transferencia: enrollment.meta.forma_pago_transferencia ?? prev.transferencia,
-      efectivo: enrollment.meta.forma_pago_efectivo ?? prev.efectivo,
-      tarjeta: enrollment.meta.forma_pago_tarjeta ?? prev.tarjeta,
-      pagare: enrollment.meta.forma_pago_pagare ?? prev.pagare
+      cheques: meta.forma_pago_cheques ?? prev.cheques,
+      transferencia: meta.forma_pago_transferencia ?? prev.transferencia,
+      efectivo: meta.forma_pago_efectivo ?? prev.efectivo,
+      tarjeta: meta.forma_pago_tarjeta ?? prev.tarjeta,
+      pagare: meta.forma_pago_pagare ?? prev.pagare
     }));
+
     // load descuento por planilla desde meta si existe
-    if (typeof enrollment.meta.forma_pago_descuento_planilla === 'boolean') {
-      setDescuentoPlanilla(enrollment.meta.forma_pago_descuento_planilla);
+    if (typeof meta.forma_pago_descuento_planilla === 'boolean') {
+      setDescuentoPlanilla(meta.forma_pago_descuento_planilla);
+    }
+
+    // Load per-student economic data (including curso/year) if present
+    if (meta.per_student_economic && typeof meta.per_student_economic === 'object') {
+      setStudentEconomicMap(prev => ({
+        ...prev,
+        ...meta.per_student_economic
+      }));
+    }
+
+    // Load payment plan if already computed and saved in meta
+    if (meta.payment_plan) {
+      setPaymentPlan(meta.payment_plan);
     }
   }, [enrollment]);
 
