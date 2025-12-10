@@ -2609,7 +2609,7 @@ export async function finalizeEnrollmentPreview(
   options: Record<string, any> = {}
 ): Promise<any> {
   try {
-    const payload = { ...options, dry_run: true };
+    const payload = { ...options, dry_run: true, skip_doc_checks: true };
     console.log('[PREVIEW] Request:', { enrollmentId, payload });
     const { data, error } = await supabase.rpc('finalize_enrollment', {
       p_enrollment_id: enrollmentId,
@@ -2637,7 +2637,7 @@ export async function finalizeEnrollmentConfirm(
   options: Record<string, any> = {}
 ): Promise<any> {
   try {
-    const payload = { ...options, dry_run: false };
+    const payload = { ...options, dry_run: false, skip_doc_checks: true };
     console.log('[CONFIRM] Request:', { enrollmentId, payload });
     const { data, error } = await supabase.rpc('finalize_enrollment', {
       p_enrollment_id: enrollmentId,
