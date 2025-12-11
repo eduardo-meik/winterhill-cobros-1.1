@@ -1539,7 +1539,7 @@ export function MatriculaWizard() {
         }]
       });
       
-      toast.success('Comprobante enviado por correo', { id: 'receipt-email' });
+      toast.success('Comprobante enviado por correo', { id: 'receipt-email', duration: 8000 });
     } catch (error) {
       console.error('Error emailing receipt:', error);
       const errMsg = error?.message || '';

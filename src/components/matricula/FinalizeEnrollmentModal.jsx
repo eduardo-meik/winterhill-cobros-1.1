@@ -89,15 +89,24 @@ export function FinalizeEnrollmentModal({
       <Card className="w-full max-w-3xl max-h-[90vh] overflow-auto">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">{folio ? 'Matrícula Finalizada' : 'Confirmar matrícula'}</h2>
-              {folio && (
-                <p className="text-[11px] text-gray-500 mt-0.5">Folio: <span className="font-mono">{folio}</span></p>
+            <div className="w-full">
+              {folio ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-2 text-center">
+                  <div className="text-4xl mb-2">🎉</div>
+                  <h2 className="text-xl font-bold text-green-700 mb-1">¡Matrícula Finalizada!</h2>
+                  <p className="text-sm text-green-600 mb-2">El proceso se ha completado exitosamente.</p>
+                  <div className="inline-block bg-white px-3 py-1 rounded border border-green-300 shadow-sm">
+                    <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold mr-2">Folio</span>
+                    <span className="font-mono text-lg font-bold text-gray-800">{folio}</span>
+                  </div>
+                </div>
+              ) : (
+                <h2 className="text-lg font-semibold">Confirmar matrícula</h2>
               )}
             </div>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+            {!folio && <button onClick={onClose} className="text-gray-500 hover:text-gray-700 ml-4">✕</button>}
           </div>
-          <p className="text-xs text-gray-600 mt-1">Revisa el resumen antes de confirmar. No se aplicarán cambios hasta que presiones "Confirmar".</p>
+          {!folio && <p className="text-xs text-gray-600 mt-1">Revisa el resumen antes de confirmar. No se aplicarán cambios hasta que presiones "Confirmar".</p>}
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
