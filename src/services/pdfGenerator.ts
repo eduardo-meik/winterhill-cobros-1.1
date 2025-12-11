@@ -20,7 +20,8 @@ export interface PDFGenerationOptions {
 }
 
 const DEFAULT_PDF_SERVICE_URL = 'https://pdf-service-3ypq.onrender.com/api/render-pdf';
-const PDF_SERVICE_TIMEOUT_MS = Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '60000'); // Increased to 60s
+// Increase timeout to 120s to handle cold starts (Render free tier)
+const PDF_SERVICE_TIMEOUT_MS = Math.max(Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '120000'), 120000);
 
 type RemoteMarginPayload =
   | number

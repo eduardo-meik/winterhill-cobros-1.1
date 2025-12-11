@@ -792,10 +792,15 @@ export function MatriculaWizard() {
     }
 
     // Rebuild payment plan locally BEFORE saving to ensure DB has the latest plan
+    // Use aggregated totals if available (and greater than 0), otherwise fallback to global economic state
+    const useAggregated = aggregatedEconomicTotals.totalColegiatura > 0;
+    const planColegiatura = useAggregated ? aggregatedEconomicTotals.totalColegiatura : patch.colegiatura_anual;
+    // Note: aggregatedEconomicTotals doesn't track cuotas/dia_vencimiento, so we use global for those
+    
     const localPlan = buildEnrollmentPaymentPlan({
       enrollmentYear: year,
       economic: {
-        colegiatura_anual: patch.colegiatura_anual,
+        colegiatura_anual: planColegiatura,
         cantidad_cuotas: patch.cantidad_cuotas,
         monto_cuota: prioritario
           ? 0
@@ -843,6 +848,18 @@ export function MatriculaWizard() {
             cantidad_cuotas: 0,
             monto_cuota: 0,
             dia_vencimiento: 5 // Default for prioritario
+          },
+          paymentMethodFlags: paymentMethod
+        });
+      } else if (!planToSend && aggregatedEconomicTotals.totalColegiatura > 0) {
+        // Fallback: build plan from aggregated totals if missing
+        planToSend = buildEnrollmentPaymentPlan({
+          enrollmentYear: year,
+          economic: {
+            colegiatura_anual: aggregatedEconomicTotals.totalColegiatura,
+            cantidad_cuotas: Number(economic.cantidad_cuotas) || 10,
+            monto_cuota: totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : (Number(economic.monto_cuota) || 0),
+            dia_vencimiento: Number(economic.dia_vencimiento) || 5
           },
           paymentMethodFlags: paymentMethod
         });
@@ -1511,7 +1528,9 @@ export function MatriculaWizard() {
     } catch (error) {
       console.error('Error emailing receipt:', error);
       const errMsg = error?.message || '';
-      if (errMsg.includes('email') || errMsg.includes('mail')) {
+      if (errMsg.includes('tardó demasiado') || errMsg.includes('PDF service error')) {
+        toast.error(errMsg, { id: 'receipt-email', duration: 6000 });
+      } else if (errMsg.includes('email') || errMsg.includes('mail')) {
         toast.error('Error al enviar el correo. Verifique que su dirección de correo sea válida o intente nuevamente más tarde.', { id: 'receipt-email' });
       } else {
         toast.error('Error al enviar el comprobante por correo. Por favor, descárguelo manualmente.', { id: 'receipt-email' });
