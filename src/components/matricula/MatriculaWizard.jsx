@@ -2410,7 +2410,14 @@ export function MatriculaWizard() {
       {/* Finalize Enrollment Modal (staff) */}
       <FinalizeEnrollmentModal
         isOpen={finalizeOpen}
-        onClose={() => { if (!finalizing) setFinalizeOpen(false); }}
+        onClose={() => { 
+          if (finalizing) return; 
+          setFinalizeOpen(false);
+          // If enrollment was successful (folio exists), redirect to start over
+          if (enrollmentFolio) {
+            window.location.href = '/matricula';
+          }
+        }}
         onConfirm={handleFinalizeConfirm}
         preview={finalizePreview}
         confirming={finalizing}
