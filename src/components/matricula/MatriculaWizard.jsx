@@ -27,7 +27,7 @@ import {
 import { finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
 import FinalizeEnrollmentModal from './FinalizeEnrollmentModal';
 import { buildPrestacionPayload, renderPrestacionWithAnnex, renderSingleDocument, createPrestacionDocument, ensureEnrollmentDocuments } from '../../services/matricula';
-import { saveChequesForEnrollment } from '../../services/matricula';
+import { saveChequesForEnrollment, getChequesForEnrollment } from '../../services/matricula';
 import { 
   buildAutorizacionPayload, 
   generateAutorizacionHTML 
@@ -444,6 +444,30 @@ export function MatriculaWizard() {
       setPaymentPlan(meta.payment_plan);
     }
   }, [enrollment]);
+
+  // Load existing cheques from DB
+  useEffect(() => {
+    if (!enrollment?.id) return;
+
+    const fetchCheques = async () => {
+      try {
+        const dbCheques = await getChequesForEnrollment(enrollment.id);
+        if (dbCheques && dbCheques.length > 0) {
+          console.log('📝 Loaded existing cheques:', dbCheques);
+          setCheques(dbCheques);
+          // Ensure the checkbox is checked if we found cheques
+          setPaymentMethod(prev => {
+            if (!prev.cheques) return { ...prev, cheques: true };
+            return prev;
+          });
+        }
+      } catch (e) {
+        console.error('Error loading cheques:', e);
+      }
+    };
+
+    fetchCheques();
+  }, [enrollment?.id]);
 
   // Auto-calculate monto_cuota when colegiatura_anual or cantidad_cuotas change
   useEffect(() => {
@@ -1750,7 +1774,7 @@ export function MatriculaWizard() {
                       const doc = await createDebtPagareDocument({ enrollmentId: enrollment.id, payload, finalContent: html, contentHash: hash });
                        if (doc) {
                          setDebtDoc(doc);
-                         setHasRegularized(true);
+                         setHasRegularizado(true);
                          setRegularizationSigned(false);
                         toast.success('Pagaré de deuda generado');
                         setShowDebtGenerator(false);
@@ -2426,7 +2450,16 @@ export function MatriculaWizard() {
         onClose={() => setShowChequesModal(false)}
         onSave={(rows) => {
           setCheques(rows);
-          toast.success('Cheques guardados');
+          toast.success('Cheques guardados localmente');
+          
+          // Persist immediately to DB to prevent data loss
+          if (enrollment?.id) {
+            saveChequesForEnrollment({
+              enrollmentId: enrollment.id,
+              cheques: rows,
+              createdBy: user?.id
+            }).catch(e => console.error('Background save cheques error:', e));
+          }
         }}
         initialData={cheques}
         cantidadCuotas={Number(enrollment?.meta?.cantidad_cuotas ?? economic.cantidad_cuotas) || 1}

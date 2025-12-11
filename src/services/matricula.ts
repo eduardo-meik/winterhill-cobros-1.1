@@ -2732,6 +2732,15 @@ export async function listGuardianEnrollments(guardianId: string): Promise<any[]
             whole_name,
             run
           )
+        ),
+        guardian_id,
+        guardians (
+          id,
+          first_name,
+          last_name,
+          run,
+          email,
+          phone
         )
       `)
       .eq('guardian_id', guardianId)
@@ -2789,6 +2798,26 @@ export async function listAllRecentEnrollments(): Promise<any[]> {
   } catch (e) {
     console.error('listAllRecentEnrollments error', e);
     return [];
+  }
+}
+
+// Fetch cheques for an enrollment
+export async function getChequesForEnrollment(enrollmentId: string): Promise<Array<ChequeSaveInput & { numero_cuota: number }> | null> {
+  try {
+    const { data, error } = await supabase
+      .from('cheques')
+      .select('*')
+      .eq('enrollment_id', enrollmentId)
+      .order('numero_cuota', { ascending: true });
+    
+    if (error) {
+      console.error('[cheques] fetch error', error);
+      return null;
+    }
+    return data;
+  } catch (e) {
+    console.error('[cheques] unexpected fetch error', e);
+    return null;
   }
 }
 
