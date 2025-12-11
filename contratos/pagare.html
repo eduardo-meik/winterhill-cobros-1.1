@@ -11,8 +11,6 @@
       --muted: #000;
       --accent: #000;
       --border: #000;
-      --header-height: 30mm;
-      --footer-height: 25mm;
     }
 
     html, body { margin: 0; padding: 0; }
@@ -27,21 +25,11 @@
 
     @page { 
       size: A4; 
-      margin-top: var(--header-height);
-      margin-bottom: var(--footer-height);
-      margin-left: 12mm;
-      margin-right: 12mm;
+      margin: 20mm;
     }
 
     .print-header, .print-footer {
-      position: fixed;
-      left: 0; right: 0;
-      color: var(--text);
-      font-size: 10px;
-      display: flex;
-      justify-content: space-between;
-      padding: 4mm 12mm 2mm;
-      box-sizing: border-box;
+      display: none;
     }
 
     .print-header { 
@@ -180,18 +168,17 @@
       }
     } catch (e) { /* noop */ }
   </script>
-  <div class="print-header">
-    <div class="title">Anexo Pagaré</div>
-    <div class="year">Año {{year}}</div>
-  </div>
-  <div class="print-footer">
-    <div class="school">Colegio Winterhill — {{guardian_full_name}} (RUN: {{guardian_run}})</div>
-    <div class="meta">Fecha: {{fecha_actual}} · Folio: {{folio_number?}}</div>
-    <div class="page-number"></div>
-  </div>
+  <!-- Header y Footer eliminados del HTML para evitar duplicidad con el generador PDF -->
   <section class="page">
     <div class="document-border">
+      <!-- Folio en el cuerpo para referencia visual rápida, además del encabezado PDF -->
       <div class="folio-box">FOLIO: {{folio_number}}</div>
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: bold;">CORPORACIÓN EDUCACIONAL WINTERHILL</div>
+        <div class="small">Año {{year}}</div>
+      </div>
+
       <h1>Anexo - Pagaré</h1>
       <p class="muted">Viña del Mar, a {{fecha_actual}}</p>
 

@@ -9,20 +9,12 @@
       --font: 'Helvetica', Arial, sans-serif;
       --text: #000;
       --border-color: #000;
-      /* Alturas reservadas para header y footer */
-      --header-height: 30mm;
-      --footer-height: 25mm;
     }
 
     /* --- CONFIGURACIÓN DE PÁGINA --- */
     @page {
       size: A4;
-      /* Márgenes físicos del papel: Arriba y Abajo deben ser mayores 
-         para alojar los elementos fijos (header/footer) */
-      margin-top: var(--header-height);
-      margin-bottom: var(--footer-height);
-      margin-left: 15mm;
-      margin-right: 15mm;
+      margin: 20mm;
     }
 
     html, body { margin: 0; padding: 0; }
@@ -36,38 +28,11 @@
     }
 
     /* --- HEADER Y FOOTER FIJOS --- */
-    /* Usamos position fixed para que se repitan en cada página impresa */
-    .print-header {
-      position: fixed;
-      top: calc(var(--header-height) * -1);
-      left: 0;
-      right: 0;
-      height: var(--header-height);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding-bottom: 5px;
-    }
-
-    .print-footer {
-      position: fixed;
-      bottom: calc(var(--footer-height) * -1);
-      left: 0;
-      right: 0;
-      height: var(--footer-height);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      padding-top: 5px;
-    }
+    /* Eliminados para usar encabezado nativo del generador PDF */
 
     /* Líneas y estilos internos de header/footer */
     .header-content, .footer-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 4px;
+      display: none;
     }
     
     .footer-content {
@@ -209,31 +174,15 @@
 
   <div class="page-simulation">
 
-    <div class="print-header">
-      <div class="header-content">
-        <div>
-          <div style="font-size: 14px; font-weight: bold;">CORPORACIÓN EDUCACIONAL WINTERHILL</div>
-          <div class="small">Contrato de Prestación de Servicios Educacionales - Año {{year}}</div>
-        </div>
-        <div class="folio-box">FOLIO: {{folio_number}}</div>
-      </div>
-    </div>
-
-    <div class="print-footer">
-      <div class="footer-content small">
-        <div>
-          <strong>Colegio Winterhill</strong><br>
-          Apoderado: {{guardian_full_name}} (RUN: {{guardian_run}})
-        </div>
-        <div class="text-right">
-          <div>Fecha: {{fecha_actual}}</div>
-          <div class="page-number"></div>
-        </div>
-      </div>
-    </div>
+    <!-- Header y Footer eliminados del HTML para evitar duplicidad con el generador PDF -->
 
     <div class="main-content">
       
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: bold;">CORPORACIÓN EDUCACIONAL WINTERHILL</div>
+        <div class="small">Año {{year}}</div>
+      </div>
+
       <h1>Contrato de Prestación de Servicios Educacionales</h1>
       
       <p class="text-right muted">Viña del Mar, a {{fecha_actual}}</p>
