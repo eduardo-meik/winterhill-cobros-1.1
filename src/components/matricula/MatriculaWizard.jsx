@@ -1391,8 +1391,8 @@ export function MatriculaWizard() {
         createdAt: new Date().toISOString(),
         students: students.map(s => ({
           name: s.whole_name || `${s.first_name} ${s.last_name}`,
-          nivel: s.nivel,
-          course: s.curso_nombre || s.curso
+          nivel: s.target_nivel || s.nivel,
+          course: s.target_course || s.curso_nombre || s.curso
         }))
       };
       
@@ -1627,7 +1627,7 @@ export function MatriculaWizard() {
                     <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant="secondary",
                       onClick={() => {
                         if (!guardian) return;
                         const snapshot = {

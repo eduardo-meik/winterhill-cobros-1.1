@@ -33,6 +33,9 @@ export interface StudentRecord {
   curso?: string; // UUID del curso
   curso_nombre?: string; // Nombre del curso (ej: "4° MEDIO A")
   curso_id?: string;
+  target_course?: string; // Nombre del curso al que se matricula
+  target_course_id?: string; // UUID del curso al que se matricula
+  target_nivel?: string; // Nivel del curso al que se matricula
   first_name?: string;
   last_name?: string;
   grade?: string;
@@ -292,6 +295,7 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
       .from('enrollment_students')
       .select(`
         student_id,
+        academic_record_id,
         students (
           id,
           whole_name,
@@ -307,17 +311,44 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
             nivel,
             letra_curso
           )
+        ),
+        academic_record:student_academic_records (
+          curso_id,
+          curso:cursos (
+            id,
+            nom_curso,
+            nivel,
+            letra_curso
+          )
         )
       `)
       .eq('enrollment_id', enrollmentId);
     if (error) throw error;
-    const rows = (data || []) as Array<{ student_id: string; students: any | null }>;
+    const rows = (data || []) as Array<{ 
+      student_id: string; 
+      students: any | null;
+      academic_record: any | null;
+    }>;
     const mapped: StudentRecord[] = rows
-      .map(r => r.students)
-      .filter(Boolean)
-      .map((s: any): StudentRecord => {
+      .map(r => {
+        const s = r.students;
+        if (!s) return null;
+
+        const ar = r.academic_record;
+        let targetCourseLabel: string | undefined;
+        let targetCourseId: string | undefined;
+        let targetNivel: string | undefined;
+
+        if (ar && ar.curso) {
+          const tc = ar.curso;
+          targetCourseId = ar.curso_id;
+          targetCourseLabel = tc.nom_curso
+            || (tc ? `${tc.nivel ?? ''}${tc.letra_curso ? ' ' + tc.letra_curso : ''}`.trim() : undefined);
+          targetNivel = tc.nivel ? String(tc.nivel) : undefined;
+        }
+
         const apellidosStr = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim();
-  const lastName: string | undefined = apellidosStr ? apellidosStr : undefined;
+        const lastName: string | undefined = apellidosStr ? apellidosStr : undefined;
         const full = s.whole_name || [s.first_name, lastName ?? ''].filter(Boolean).join(' ').trim();
         const c = s.cursos || null;
         const cursoLabel = c?.nom_curso
@@ -330,19 +361,23 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
           run: (s.run || undefined) as string | undefined,
           curso: (s.curso || undefined) as string | undefined,
           curso_nombre: (cursoLabel || undefined) as string | undefined,
+          curso_id: (s.curso || undefined) as string | undefined,
+          target_course: targetCourseLabel,
+          target_course_id: targetCourseId,
+          target_nivel: targetNivel,
           first_name: (s.first_name || undefined) as string | undefined,
-          grade: (c?.nivel || undefined) as string | undefined,
-          nivel: (c?.nivel || undefined) as string | undefined,
-          date_of_birth: (s.date_of_birth || undefined) as string | undefined
+          last_name: lastName,
+          grade: (cursoLabel || undefined) as string | undefined,
+          nivel: (c?.nivel ? String(c.nivel) : undefined),
+          date_of_birth: (s.date_of_birth || undefined) as string | undefined,
         };
-        if (lastName) obj.last_name = lastName;
         return obj;
-      });
+      })
+      .filter(Boolean) as StudentRecord[];
     return mapped;
-  } catch (e) {
-    console.error('listEnrollmentStudents error', e);
-    toast.error('No se pudieron cargar los alumnos de la matrícula');
-    return [] as StudentRecord[];
+  } catch (err) {
+    console.error('Error listing enrollment students:', err);
+    return [];
   }
 }
 
