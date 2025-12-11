@@ -1389,11 +1389,25 @@ export function MatriculaWizard() {
         guardianEmail: guardian.email,
         year: enrollment?.year || year,
         createdAt: new Date().toISOString(),
-        students: students.map(s => ({
-          name: s.whole_name || `${s.first_name} ${s.last_name}`,
-          nivel: s.target_nivel || s.nivel,
-          course: s.target_course || s.curso_nombre || s.curso
-        }))
+        students: students.map(s => {
+          // Resolve target course from economic map
+          const econ = studentEconomicMap?.[s.id];
+          const cursoId = econ?.curso_sugerido;
+          let courseName = s.target_course || s.curso_nombre || s.curso;
+          
+          if (cursoId && Array.isArray(availableYearCourses)) {
+            const found = availableYearCourses.find(c => c.id === cursoId);
+            if (found) {
+               courseName = found.nom_curso || `${found.nivel || ''} ${found.letra_curso || ''}`.trim();
+            }
+          }
+
+          return {
+            name: s.whole_name || `${s.first_name} ${s.last_name}`,
+            nivel: s.target_nivel || s.nivel,
+            course: courseName
+          };
+        })
       };
       
       await generateEnrollmentReceiptPdf(receiptData, 'download');
@@ -1423,11 +1437,25 @@ export function MatriculaWizard() {
         guardianEmail: guardian.email,
         year: enrollment?.year || year,
         createdAt: new Date().toISOString(),
-        students: students.map(s => ({
-          name: s.whole_name || `${s.first_name} ${s.last_name}`,
-          nivel: s.nivel,
-          course: s.curso_nombre || s.curso
-        }))
+        students: students.map(s => {
+          // Resolve target course from economic map
+          const econ = studentEconomicMap?.[s.id];
+          const cursoId = econ?.curso_sugerido;
+          let courseName = s.target_course || s.curso_nombre || s.curso;
+          
+          if (cursoId && Array.isArray(availableYearCourses)) {
+            const found = availableYearCourses.find(c => c.id === cursoId);
+            if (found) {
+               courseName = found.nom_curso || `${found.nivel || ''} ${found.letra_curso || ''}`.trim();
+            }
+          }
+
+          return {
+            name: s.whole_name || `${s.first_name} ${s.last_name}`,
+            nivel: s.target_nivel || s.nivel,
+            course: courseName
+          };
+        })
       };
       
       const html = buildEnrollmentReceiptHtml(receiptData);
