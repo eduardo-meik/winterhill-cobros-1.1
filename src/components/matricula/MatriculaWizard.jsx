@@ -1627,7 +1627,7 @@ export function MatriculaWizard() {
                     <Button size="sm" variant="destructive" onClick={() => setShowDebtGenerator(true)}>Generar Pagaré de Deuda</Button>
                     <Button
                       size="sm"
-                      variant="secondary",
+                      variant="secondary"
                       onClick={() => {
                         if (!guardian) return;
                         const snapshot = {
