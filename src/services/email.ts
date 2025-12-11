@@ -10,7 +10,7 @@ export type SendEmailPayload = {
   to: string;
   subject: string;
   html: string;
-  type?: 'receipt' | 'pagare' | 'other';
+  type?: 'receipt' | 'pagare' | 'other' | 'comprobante' | 'prestacion';
   related_id?: string;
   attachments?: EmailAttachment[];
 };

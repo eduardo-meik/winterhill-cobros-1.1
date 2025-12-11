@@ -1,6 +1,7 @@
--- FIX_FINALIZE_ENROLLMENT_NUMERIC_CAST.sql
--- Fixes the "invalid input syntax for type numeric" error when finalizing enrollment
--- by handling formatted currency strings (e.g. "1.028.700") in the payment plan payload.
+-- FIX_FINALIZE_ENROLLMENT_PLAN_INVALID.sql
+-- Fixes "PLAN_INVALID: unable to compute cuotas from plan" error
+-- This occurs when n_cuotas is 0 or missing, but total amount > 0.
+-- Also handles missing first due date by defaulting to current date.
 
 CREATE OR REPLACE FUNCTION public.finalize_enrollment(p_enrollment_id uuid, p_options jsonb DEFAULT '{}'::jsonb)
 RETURNS jsonb
@@ -85,6 +86,35 @@ BEGIN
   END IF;
 
   v_cuotas := v_plan->'cuotas';
+
+  -- VALIDATION: If cuotas exist but seem invalid (all zeros), force regeneration
+  -- This handles cases where the stored document payload has malformed amounts (e.g. 0)
+  IF v_cuotas IS NOT NULL AND jsonb_typeof(v_cuotas) = 'array' THEN
+    DECLARE
+      v_has_nonzero boolean := false;
+      v_chk_amount numeric;
+      v_chk_item jsonb;
+    BEGIN
+      FOR v_chk_item IN SELECT * FROM jsonb_array_elements(v_cuotas) LOOP
+        BEGIN
+          -- Try simple cast first
+          v_chk_amount := (v_chk_item->>'amount')::numeric;
+        EXCEPTION WHEN OTHERS THEN
+          v_chk_amount := 0;
+        END;
+        
+        IF v_chk_amount > 0 THEN
+          v_has_nonzero := true;
+          EXIT;
+        END IF;
+      END LOOP;
+      
+      IF NOT v_has_nonzero THEN
+        v_cuotas := NULL; -- Force regeneration
+      END IF;
+    END;
+  END IF;
+
   IF v_cuotas IS NULL OR jsonb_typeof(v_cuotas) <> 'array' THEN
     DECLARE
       v_n_raw text := COALESCE(v_plan->>'n_cuotas', v_plan->>'cantidad_cuotas');
@@ -107,16 +137,22 @@ BEGIN
       END IF;
 
       -- Safe cast for total amount (handle "1.028.700" format)
-      v_total_raw := COALESCE(v_plan->>'monto_total', v_plan->>'colegiatura_anual');
+      v_total_raw := TRIM(COALESCE(v_plan->>'monto_total', v_plan->>'colegiatura_anual'));
       
-      IF v_total_raw IS NULL THEN
+      IF v_total_raw IS NULL OR v_total_raw = '' THEN
         v_total := 0;
       ELSIF v_total_raw ~ '^[0-9]+(\.[0-9]+)?$' THEN
          v_total := v_total_raw::numeric;
       ELSIF v_total_raw ~ '^[0-9]{1,3}(\.[0-9]{3})*(,[0-9]+)?$' THEN
          v_total := REPLACE(REPLACE(v_total_raw, '.', ''), ',', '.')::numeric;
       ELSE
-         v_total := 0;
+         -- Fallback: try to strip non-numeric chars (except comma/dot)
+         -- This handles cases like "$ 1.000.000" or "1 000 000"
+         BEGIN
+           v_total := REPLACE(REPLACE(REGEXP_REPLACE(v_total_raw, '[^0-9,.]', '', 'g'), '.', ''), ',', '.')::numeric;
+         EXCEPTION WHEN OTHERS THEN
+           v_total := 0;
+         END;
       END IF;
 
       -- Handle zero cost case
@@ -166,6 +202,12 @@ BEGIN
   END IF;
 
   v_summary := '[]'::jsonb;
+  
+  -- Track total amount for summary
+  DECLARE
+    v_total_generated_amount numeric := 0;
+    v_total_items_count int := 0;
+  BEGIN
 
   FOR r_es IN SELECT es.student_id FROM public.enrollment_students es WHERE es.enrollment_id = p_enrollment_id LOOP
     DECLARE
@@ -173,6 +215,7 @@ BEGIN
       v_guardian_id uuid := v_enrollment.guardian_id;
       v_owner uuid := v_enrollment.guardian_owner;
       v_method text := COALESCE(v_plan->>'payment_method', NULL);
+      v_final_amount numeric;
     BEGIN
       FOR r_cuota IN
         SELECT (c->>'numero')::int AS numero,
@@ -181,11 +224,21 @@ BEGIN
           FROM jsonb_array_elements(v_cuotas) AS c
           ORDER BY (c->>'numero')::int
       LOOP
+        -- DIVIDE AMOUNT BY NUMBER OF STUDENTS to avoid duplication
+        -- The plan amount is the Total for the Guardian. We must split it among students.
+        v_final_amount := r_cuota.amount / GREATEST(v_students, 1);
+        
+        -- Round to integer if needed (optional, but good for CLP)
+        v_final_amount := ROUND(v_final_amount);
+
+        v_total_generated_amount := v_total_generated_amount + v_final_amount;
+        v_total_items_count := v_total_items_count + 1;
+
         IF v_dry_run THEN
           v_items := v_items || jsonb_build_object(
             'numero_cuota', r_cuota.numero,
             'due_date', r_cuota.due_date,
-            'amount', r_cuota.amount,
+            'amount', v_final_amount,
             'existed', false
           );
         ELSE
@@ -193,17 +246,17 @@ BEGIN
             student_id, guardian_id, amount, due_date, status, payment_method,
             owner_id, year_academico, numero_cuota, enrollment_id, meta
           ) VALUES (
-            r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'pending', v_method,
+            r_es.student_id, v_guardian_id, v_final_amount, r_cuota.due_date, 'pending', v_method,
             v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment')
           )
           ON CONFLICT (student_id, guardian_id, numero_cuota) DO NOTHING;
 
           IF FOUND THEN
             v_created := v_created + 1;
-            v_items := v_items || jsonb_build_object('numero_cuota', r_cuota.numero, 'due_date', r_cuota.due_date, 'amount', r_cuota.amount, 'existed', false);
+            v_items := v_items || jsonb_build_object('numero_cuota', r_cuota.numero, 'due_date', r_cuota.due_date, 'amount', v_final_amount, 'existed', false);
           ELSE
             v_skipped := v_skipped + 1;
-            v_items := v_items || jsonb_build_object('numero_cuota', r_cuota.numero, 'due_date', r_cuota.due_date, 'amount', r_cuota.amount, 'existed', true);
+            v_items := v_items || jsonb_build_object('numero_cuota', r_cuota.numero, 'due_date', r_cuota.due_date, 'amount', v_final_amount, 'existed', true);
           END IF;
         END IF;
       END LOOP;
@@ -235,13 +288,20 @@ BEGIN
   END IF;
 
   RETURN jsonb_build_object(
-    'confirmed', NOT v_dry_run,
-    'created_charges', v_created,
-    'skipped_duplicates', v_skipped,
-    'students_count', v_students,
-    'details', v_summary,
+    'success', true,
+    'created', v_created,
+    'skipped', v_skipped,
+    'students', v_students,
     'folio', v_folio,
-    'year', v_year
+    'items', v_summary,
+    'summary', jsonb_build_object(
+      'students_count', v_students,
+      'total_cuotas', v_total_items_count, -- Use the counter that works in dry_run too
+      'total_amount', v_total_generated_amount,
+      'year', v_year
+    ),
+    'dry_run', v_dry_run
   );
+  END; -- End block for summary vars
 END;
 $$;

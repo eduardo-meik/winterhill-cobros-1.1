@@ -20,7 +20,7 @@ export interface PDFGenerationOptions {
 }
 
 const DEFAULT_PDF_SERVICE_URL = 'https://pdf-service-3ypq.onrender.com/api/render-pdf';
-const PDF_SERVICE_TIMEOUT_MS = Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '25000');
+const PDF_SERVICE_TIMEOUT_MS = Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '60000'); // Increased to 60s
 
 type RemoteMarginPayload =
   | number
@@ -161,6 +161,11 @@ async function generatePuppeteerPDFFromHTML(options: PDFGenerationOptions): Prom
 
     const arrayBuffer = await response.arrayBuffer();
     return new Blob([arrayBuffer], { type: 'application/pdf' });
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error(`El servicio de PDF tardó demasiado (${Math.round(PDF_SERVICE_TIMEOUT_MS/1000)}s). Puede que esté "despertando", por favor intente nuevamente.`);
+    }
+    throw error;
   } finally {
     if (timeoutId) window.clearTimeout(timeoutId);
   }
