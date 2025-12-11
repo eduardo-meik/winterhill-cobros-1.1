@@ -14,173 +14,75 @@ const formatRutFicon = (rut) => {
 };
 
 export const generateLibroMatriculaReport = async () => {
-  // Fetch all active enrollments with student and course details
-  const { data: enrollments, error } = await supabase
-    .from('enrollment')
+  // Fetch all active enrollments via enrollment_students to get 1 row per student
+  // We join student (with course) and enrollment (with guardian)
+  const { data: records, error } = await supabase
+    .from('enrollment_students')
     .select(`
-      id,
-      created_at,
-      year,
-      status,
       student:student_id (
         id,
         first_name,
-        last_name,
+        apellido_paterno,
+        apellido_materno,
         run,
         date_of_birth,
-        gender,
-        address,
-        commune
+        genero,
+        direccion,
+        comuna,
+        curso_data:curso (
+          id,
+          nivel,
+          nom_curso
+        )
       ),
-      guardian:guardian_id (
+      enrollment:enrollment_id!inner (
         id,
-        first_name,
-        last_name,
-        run,
-        email,
-        phone,
-        address
-      ),
-      meta
+        created_at,
+        year,
+        status,
+        meta,
+        guardian:guardian_id (
+          id,
+          first_name,
+          last_name,
+          run,
+          email,
+          phone,
+          address
+        )
+      )
     `)
-    .eq('status', 'ACTIVO') // Only active enrollments
-    .order('created_at', { ascending: true });
+    .in('enrollment.status', ['completed', 'ACTIVO']) // Support both status just in case
+    .eq('enrollment.year', new Date().getFullYear())
+    .order('enrollment(created_at)', { ascending: true });
 
   if (error) throw error;
 
-  // Fetch course info separately or assume it's in meta/student (student.curso might be ID)
-  // For better accuracy, let's fetch courses to map IDs
-  const { data: courses } = await supabase.from('cursos').select('id, nivel, grado, letra, nom_curso');
-  const courseMap = (courses || []).reduce((acc, c) => {
-    acc[c.id] = c;
-    return acc;
-  }, {});
-
-  // Filter and sort by timestamp (already sorted by query)
-  // Separate by Basic and Media
-  // Logic: Nivel 110 = Basica, 310 = Media. Or use grade/curso name.
-  
   const workbook = new ExcelJS.Workbook();
-  
-  const createSheet = (name, filteredEnrollments) => {
-    const sheet = workbook.addWorksheet(name);
-    sheet.columns = [
-      { header: 'N° Matrícula', key: 'num', width: 10 },
-      { header: 'Fecha Registro', key: 'date', width: 15 },
-      { header: 'RUT Estudiante', key: 'rut', width: 12 },
-      { header: 'Apellido Paterno', key: 'ap_pat', width: 15 },
-      { header: 'Apellido Materno', key: 'ap_mat', width: 15 },
-      { header: 'Nombres', key: 'nombres', width: 20 },
-      { header: 'Curso', key: 'curso', width: 15 },
-      { header: 'Género', key: 'gender', width: 10 },
-      { header: 'Fecha Nacimiento', key: 'dob', width: 15 },
-      { header: 'Dirección', key: 'address', width: 30 },
-      { header: 'Comuna', key: 'commune', width: 15 },
-      { header: 'RUT Apoderado', key: 'g_rut', width: 12 },
-      { header: 'Nombre Apoderado', key: 'g_name', width: 30 },
-      { header: 'Email', key: 'email', width: 25 },
-      { header: 'Teléfono', key: 'phone', width: 15 },
-    ];
-
-    filteredEnrollments.forEach((enr, index) => {
-      const student = enr.student || {};
-      const guardian = enr.guardian || {};
-      
-      // Parse names
-      const lastNames = (student.last_name || '').split(' ');
-      const apPat = lastNames[0] || '';
-      const apMat = lastNames.slice(1).join(' ') || '';
-
-      // Determine course name
-      // Try to find course ID in student record or enrollment meta
-      // Note: In this system, student.curso is often the UUID.
-      // We need to check where the course ID is stored. Usually student.curso or enrollment.meta.curso_id
-      // Let's assume we can get a course label.
-      
-      // Fallback course logic
-      let courseLabel = 'Sin Curso';
-      // If we had course info in student object (need to check schema), we'd use it.
-      // For now, let's try to use what we have.
-      // If student has 'curso' field which is UUID:
-      // const c = courseMap[student.curso];
-      // if (c) courseLabel = c.nom_curso;
-      
-      // Actually, let's look at how `MatriculaWizard` gets course. It uses `student.curso` (uuid) or `student.curso_nombre`.
-      // The query above didn't fetch `curso` from student. Let's assume we might need to fetch it or it's in meta.
-      // In `enrollment.meta`, we often store `curso_id` or similar.
-      
-      // Let's try to use the meta if available, or just generic.
-      // For P7, "Separados por Básica y Media" implies we need to know the level.
-      
-      sheet.addRow({
-        num: index + 1,
-        date: format(new Date(enr.created_at), 'dd/MM/yyyy HH:mm'),
-        rut: student.run,
-        ap_pat: apPat,
-        ap_mat: apMat,
-        nombres: student.first_name,
-        curso: courseLabel, // Placeholder, needs refinement
-        gender: student.gender,
-        dob: student.date_of_birth,
-        address: student.address,
-        commune: student.commune,
-        g_rut: guardian.run,
-        g_name: `${guardian.first_name || ''} ${guardian.last_name || ''}`,
-        email: guardian.email,
-        phone: guardian.phone
-      });
-    });
-  };
-
-  // We need to split by Basic/Media.
-  // Since we don't have perfect course info in this simple query, let's fetch students with course info.
-  // Better approach: Fetch students with inner join on course if possible, or fetch all students and map.
-  
-  // Refined Query for P7
-  const { data: studentsWithCourse } = await supabase
-    .from('students')
-    .select(`
-      *,
-      curso_data:curso (
-        id,
-        nivel,
-        nom_curso
-      ),
-      enrollments:enrollment!inner (
-        id,
-        created_at,
-        status,
-        year,
-        guardian:guardian_id (*)
-      )
-    `)
-    .eq('enrollments.status', 'ACTIVO')
-    .eq('enrollments.year', new Date().getFullYear()); // Current year
 
   // Process data
   const basica = [];
   const media = [];
 
-  (studentsWithCourse || []).forEach(st => {
-    // Get the active enrollment for this year (should be one due to !inner filter, but be safe)
-    const enr = st.enrollments[0]; 
-    if (!enr) return;
+  (records || []).forEach(record => {
+    const st = record.student;
+    const enr = record.enrollment;
+    
+    if (!st || !enr) return;
 
-    const nivel = st.curso_data?.nivel; // 110 or 310
+    const guardian = enr.guardian || {};
+    const nivel = st.curso_data?.nivel; // 110 = Basica, 310 = Media
+
     const rowData = {
       ...st,
       enrollment: enr,
-      guardian: enr.guardian
+      guardian: guardian
     };
 
-    if (nivel === 110) {
-      basica.push(rowData);
-    } else if (nivel === 310) {
+    if (nivel === 310) {
       media.push(rowData);
     } else {
-      // Fallback or Pre-Kinder/Kinder (Nivel 10?) -> Put in Basica or separate?
-      // Usually 10 is Parvularia. Let's put everything else in Basica for now or check requirements.
-      // Requirement says "Básica y Media".
+      // Default to Basica (includes 110 and Pre-K/Kinder if any)
       basica.push(rowData);
     }
   });
@@ -194,21 +96,21 @@ export const generateLibroMatriculaReport = async () => {
   const addRowsToSheet = (sheet, list) => {
     list.forEach((item, idx) => {
       const g = item.guardian || {};
-      const lastNames = (item.last_name || '').split(' ');
+      
       sheet.addRow({
         num: idx + 1,
         date: format(new Date(item.enrollment.created_at), 'dd/MM/yyyy HH:mm'),
         rut: item.run,
-        ap_pat: lastNames[0] || '',
-        ap_mat: lastNames.slice(1).join(' ') || '',
+        ap_pat: item.apellido_paterno || '',
+        ap_mat: item.apellido_materno || '',
         nombres: item.first_name,
         curso: item.curso_data?.nom_curso || 'Sin Curso',
-        gender: item.gender,
+        gender: item.genero,
         dob: item.date_of_birth,
-        address: item.address,
-        commune: item.commune,
+        address: item.direccion,
+        commune: item.comuna,
         g_rut: g.run,
-        g_name: `${g.first_name || ''} ${g.last_name || ''}`,
+        g_name: `${g.first_name || ''} ${g.last_name || ''}`.trim(),
         email: g.email,
         phone: g.phone
       });
@@ -246,29 +148,32 @@ export const generateLibroMatriculaReport = async () => {
 export const generateFiconReport = async () => {
   // P8: FICON Format
   // RUT sin puntos, DV separado.
-  // Usually FICON requires specific columns. Since I don't have the exact spec, I will create a standard financial report with split RUTs.
   
-  const { data: enrollments, error } = await supabase
-    .from('enrollment')
+  const { data: records, error } = await supabase
+    .from('enrollment_students')
     .select(`
-      id,
-      year,
-      status,
       student:student_id (
         id,
         first_name,
-        last_name,
+        apellido_paterno,
+        apellido_materno,
         run
       ),
-      guardian:guardian_id (
+      enrollment:enrollment_id!inner (
         id,
-        first_name,
-        last_name,
-        run
-      ),
-      meta
+        year,
+        status,
+        meta,
+        guardian:guardian_id (
+          id,
+          first_name,
+          last_name,
+          run
+        )
+      )
     `)
-    .eq('status', 'ACTIVO');
+    .in('enrollment.status', ['completed', 'ACTIVO'])
+    .eq('enrollment.year', new Date().getFullYear());
 
   if (error) throw error;
 
@@ -290,25 +195,24 @@ export const generateFiconReport = async () => {
     { header: 'MONTO_CUOTA', key: 'monto_cuota', width: 15 },
   ];
 
-  enrollments.forEach(enr => {
-    const st = enr.student || {};
+  (records || []).forEach(record => {
+    const st = record.student || {};
+    const enr = record.enrollment || {};
     const g = enr.guardian || {};
     const meta = enr.meta || {};
 
     const stRut = formatRutFicon(st.run);
     const gRut = formatRutFicon(g.run);
     
-    const lastNames = (st.last_name || '').split(' ');
-    
     sheet.addRow({
       rut_body: stRut.body,
       rut_dv: stRut.dv,
-      ap_pat: lastNames[0] || '',
-      ap_mat: lastNames.slice(1).join(' ') || '',
+      ap_pat: st.apellido_paterno || '',
+      ap_mat: st.apellido_materno || '',
       nombres: st.first_name,
       g_rut_body: gRut.body,
       g_rut_dv: gRut.dv,
-      g_name: `${g.first_name || ''} ${g.last_name || ''}`,
+      g_name: `${g.first_name || ''} ${g.last_name || ''}`.trim(),
       arancel: meta.colegiatura_anual || 0,
       matricula: meta.monto_matricula || 0,
       cuotas: meta.cantidad_cuotas || 0,
