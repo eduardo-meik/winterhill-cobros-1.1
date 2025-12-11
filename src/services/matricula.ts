@@ -1153,12 +1153,23 @@ export function buildEnrollmentPaymentPlan(options: BuildPaymentPlanOptions): En
   const { enrollmentYear, economic, paymentMethodFlags } = options;
   if (!enrollmentYear) return null;
   const econ = economic || {};
-  const cuotasCount = toPositiveInt(econ.cantidad_cuotas);
-  if (!cuotasCount) return null;
-  const dayOfMonth = clampDayOfMonth(econ.dia_vencimiento);
-  if (!dayOfMonth) return null;
-
   const montoTotal = Math.max(0, toNumberOrZero(econ.colegiatura_anual));
+  const cuotasCount = toPositiveInt(econ.cantidad_cuotas);
+  
+  // Allow 0 installments ONLY if total amount is 0
+  if (!cuotasCount && montoTotal > 0) return null;
+
+  let dayOfMonth = clampDayOfMonth(econ.dia_vencimiento);
+  if (!dayOfMonth) {
+    // If total is 0 (e.g. Prioritario), we don't strictly need a due day, 
+    // but we set a default (e.g. 5th) to satisfy the date logic.
+    if (montoTotal === 0) {
+      dayOfMonth = 5;
+    } else {
+      return null;
+    }
+  }
+
   let montoCuota = toNumberOrZero(econ.monto_cuota);
   if (!montoCuota && montoTotal && cuotasCount) {
     montoCuota = Math.round(montoTotal / cuotasCount);

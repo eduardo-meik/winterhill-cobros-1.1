@@ -41,6 +41,7 @@ import { GuardianFormModal } from '../guardians/GuardianFormModal';
 import { StudentFormModal } from '../students/StudentFormModal';
 import { EnrollmentDashboard } from './EnrollmentDashboard';
 import { GlobalEnrollmentsTable } from './GlobalEnrollmentsTable';
+import { buildEconomicPatch } from '../../utils/matriculaHelpers';
 
 // Renders full HTML (including <style> in <head>) inside an iframe for accurate preview
 function HtmlIframePreview({ html, height = 600 }) {
@@ -751,51 +752,42 @@ export function MatriculaWizard() {
       montoCuota = 0;
     }
 
-    const patch = {
-      // Economic data
-      monto_matricula: Number(economic.monto_matricula) || 0,
-      colegiatura_anual: colegiaturaAnual,
-      cantidad_cuotas: cantidadCuotas,
-      monto_cuota: montoCuota,
-      dia_vencimiento: Number(economic.dia_vencimiento) || 0,
-      // Payment methods
-      forma_pago_cheques: paymentMethod.cheques || false,
-      forma_pago_transferencia: paymentMethod.transferencia || false,
-      forma_pago_efectivo: paymentMethod.efectivo || false,
-      forma_pago_tarjeta: paymentMethod.tarjeta || false,
-      forma_pago_pagare: paymentMethod.pagare || false,
-      forma_pago_descuento_planilla: descuentoPlanilla || false,
+    const patch = buildEconomicPatch({
+      economic,
+      colegiaturaAnual,
+      cantidadCuotas,
+      montoCuota,
+      paymentMethod,
+      descuentoPlanilla,
       prioritario,
-      porcentaje_descuento: descuentoInfo.porcentaje_descuento || 0,
-      monto_total_descuento: descuentoInfo.monto_total_descuento || 0
-    };
+      descuentoInfo
+    });
+
     if (studentEconomicMap && Object.keys(studentEconomicMap).length > 0) {
       patch.per_student_economic = studentEconomicMap;
     }
-    if (paymentPlan) {
-      patch.payment_plan = paymentPlan;
-    }
+
+    // Rebuild payment plan locally BEFORE saving to ensure DB has the latest plan
+    const localPlan = buildEnrollmentPaymentPlan({
+      enrollmentYear: year,
+      economic: {
+        colegiatura_anual: patch.colegiatura_anual,
+        cantidad_cuotas: patch.cantidad_cuotas,
+        monto_cuota: prioritario
+          ? 0
+          : (totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : patch.monto_cuota),
+        dia_vencimiento: patch.dia_vencimiento,
+      },
+      paymentMethodFlags: paymentMethod,
+    });
+
+    // Add the fresh plan to the patch
+    patch.payment_plan = localPlan;
     
     console.log('💾 Guardando datos económicos y formas de pago:', patch);
     const updated = await updateEnrollmentMeta(enrollment.id, patch);
     if (updated) {
-      // Rebuild payment plan locally to keep frontend and meta in sync
-      const localPlan = buildEnrollmentPaymentPlan({
-        enrollmentYear: year,
-        economic: {
-          colegiatura_anual: patch.colegiatura_anual,
-          cantidad_cuotas: patch.cantidad_cuotas,
-          monto_cuota: prioritario
-            ? 0
-            : (totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : patch.monto_cuota),
-          dia_vencimiento: patch.dia_vencimiento,
-        },
-        paymentMethodFlags: paymentMethod,
-      });
-
       setPaymentPlan(localPlan);
-      patch.payment_plan = localPlan;
-
       setEnrollment(prev => prev ? { ...prev, meta: { ...(prev.meta || {}), ...patch } } : prev);
     }
     
@@ -813,7 +805,30 @@ export function MatriculaWizard() {
     try {
       setFinalizing(true);
       setFinalizeAlert(null);
-      const preview = await finalizeEnrollmentPreview(enrollment.id);
+
+      // Ensure we pass the current payment plan to avoid RPC falling back to document placeholders
+      const options = {};
+      let planToSend = paymentPlan || enrollment?.meta?.payment_plan;
+
+      // If plan is missing and student is prioritario, try to build it on the fly
+      if (!planToSend && prioritario) {
+        planToSend = buildEnrollmentPaymentPlan({
+          enrollmentYear: year,
+          economic: {
+            colegiatura_anual: 0,
+            cantidad_cuotas: 0,
+            monto_cuota: 0,
+            dia_vencimiento: 5 // Default for prioritario
+          },
+          paymentMethodFlags: paymentMethod
+        });
+      }
+
+      if (planToSend) {
+        options.payment_plan = planToSend;
+      }
+
+      const preview = await finalizeEnrollmentPreview(enrollment.id, options);
       setFinalizePreview(preview);
       setFinalizeOpen(true);
     } catch (error) {

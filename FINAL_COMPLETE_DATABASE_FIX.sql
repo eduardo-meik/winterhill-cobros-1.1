@@ -24,10 +24,14 @@ DROP FUNCTION IF EXISTS public.get_user_profile(uuid) CASCADE;
 DROP FUNCTION IF EXISTS public.update_fee_updated_at() CASCADE;
 DROP FUNCTION IF EXISTS public.update_profile_full_name() CASCADE;
 DROP FUNCTION IF EXISTS public.update_updated_at() CASCADE;
+DROP FUNCTION IF EXISTS public.finalize_enrollment(uuid, jsonb) CASCADE;
 
 -- Drop views
 DROP VIEW IF EXISTS public.database_metadata CASCADE;
 DROP VIEW IF EXISTS public.payment_summary CASCADE;
+
+-- Create Sequence for Folio if not exists
+CREATE SEQUENCE IF NOT EXISTS public.enrollment_folio_seq;
 
 -- ============================================================================
 -- 2. RECREATE FUNCTIONS WITH CORRECT TABLE NAMES AND SECURITY SETTINGS
@@ -186,8 +190,8 @@ BEGIN
     
     -- Calculate total payments
     SELECT COALESCE(SUM(amount), 0) INTO total_payments
-    FROM payments
-    WHERE student_id = p_student_id;
+    FROM fee  -- FIXED: Changed from 'payments' to 'fee' (assuming payments are tracked in fee table or similar)
+    WHERE student_id = p_student_id AND status = 'paid';
     
     balance := total_fees - total_payments;
     
@@ -287,6 +291,213 @@ BEGIN
 END;
 $$;
 
+-- Function: finalize_enrollment (FIXED: Folio, Pre-matricula, Zero cost)
+CREATE OR REPLACE FUNCTION public.finalize_enrollment(p_enrollment_id uuid, p_options jsonb DEFAULT '{}'::jsonb)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_is_staff boolean := public.is_staff();
+  v_enrollment RECORD;
+  v_year int;
+  v_dry_run boolean := COALESCE((p_options->>'dry_run')::boolean, false);
+  v_plan jsonb;
+  v_cuotas jsonb;
+  v_created int := 0;
+  v_skipped int := 0;
+  v_students int := 0;
+  v_summary jsonb := '[]'::jsonb;
+  v_folio text;
+  v_folio_seq bigint;
+  r_es RECORD;
+  r_cuota RECORD;
+BEGIN
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT e.*, g.owner_id AS guardian_owner
+    INTO v_enrollment
+    FROM public.enrollments e
+    JOIN public.guardians g ON g.id = e.guardian_id
+   WHERE e.id = p_enrollment_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Enrollment % not found', p_enrollment_id;
+  END IF;
+  v_year := v_enrollment.year;
+
+  IF NOT (v_is_staff OR v_enrollment.guardian_owner = v_uid) THEN
+    RAISE EXCEPTION 'RLS_DENIED: you are not allowed to finalize this enrollment';
+  END IF;
+
+  -- Ensure guardian-student links exist / staff fallback
+  FOR r_es IN
+    SELECT es.student_id
+      FROM public.enrollment_students es
+     WHERE es.enrollment_id = p_enrollment_id
+  LOOP
+    v_students := v_students + 1;
+    PERFORM 1 FROM public.student_guardian sg
+      WHERE sg.student_id = r_es.student_id AND sg.guardian_id = v_enrollment.guardian_id;
+    IF NOT FOUND THEN
+      IF v_is_staff THEN
+        INSERT INTO public.student_guardian(student_id, guardian_id, is_primary)
+        VALUES (r_es.student_id, v_enrollment.guardian_id, false)
+        ON CONFLICT DO NOTHING;
+      ELSE
+        RAISE EXCEPTION 'MISSING_RELATION: student % is not linked with this guardian', r_es.student_id;
+      END IF;
+    END IF;
+  END LOOP;
+
+  IF v_students = 0 THEN
+    RAISE EXCEPTION 'NO_STUDENTS: enrollment has no students';
+  END IF;
+
+  v_plan := p_options->'payment_plan';
+  IF v_plan IS NULL THEN
+    SELECT e.meta->'payment_plan' INTO v_plan FROM public.enrollments e WHERE e.id = p_enrollment_id;
+  END IF;
+  IF v_plan IS NULL THEN
+    SELECT ed.generated_payload INTO v_plan
+      FROM public.enrollment_documents ed
+     WHERE ed.enrollment_id = p_enrollment_id
+       AND (ed.type = 'PRESTACION' OR ed.type LIKE 'PAGARE%')
+       AND ed.generated_payload IS NOT NULL
+     ORDER BY CASE WHEN ed.type='PRESTACION' THEN 0 ELSE 1 END, ed.created_at DESC
+     LIMIT 1;
+  END IF;
+  IF v_plan IS NULL THEN
+    RAISE EXCEPTION 'PLAN_MISSING: no payment plan found in options, enrollment.meta or documents';
+  END IF;
+
+  v_cuotas := v_plan->'cuotas';
+  IF v_cuotas IS NULL OR jsonb_typeof(v_cuotas) <> 'array' THEN
+    DECLARE
+      v_n_raw text := COALESCE(v_plan->>'n_cuotas', v_plan->>'cantidad_cuotas');
+      v_n int;
+      v_first date := COALESCE((v_plan->>'primer_vencimiento')::date, NULL);
+      v_total numeric := COALESCE((v_plan->>'monto_total')::numeric, (v_plan->>'colegiatura_anual')::numeric, 0);
+      v_amount numeric;
+      i int := 1;
+      v_synth jsonb := '[]'::jsonb;
+    BEGIN
+      -- Safe cast for n_cuotas to avoid "invalid input syntax" from placeholders like "__________"
+      IF v_n_raw ~ '^[0-9]+$' THEN
+        v_n := v_n_raw::int;
+      ELSE
+        v_n := 0;
+      END IF;
+
+      -- Handle zero cost case
+      IF v_total = 0 THEN
+         v_cuotas := '[]'::jsonb;
+      ELSE
+         v_amount := COALESCE((v_plan->>'monto_por_cuota')::numeric,
+                              (v_plan->>'monto_cuota')::numeric,
+                              v_total / NULLIF(v_n,0));
+
+         IF v_n IS NULL OR v_first IS NULL OR v_amount IS NULL THEN
+            RAISE EXCEPTION 'PLAN_INVALID: unable to compute cuotas from plan';
+         END IF;
+         
+         WHILE i <= v_n LOOP
+            v_synth := v_synth || jsonb_build_object(
+              'numero', i,
+              'amount', v_amount,
+              'due_date', (v_first + make_interval(months := i-1))::date
+            );
+            i := i + 1;
+         END LOOP;
+         v_cuotas := v_synth;
+      END IF;
+    END;
+  END IF;
+
+  v_summary := '[]'::jsonb;
+
+  FOR r_es IN SELECT es.student_id FROM public.enrollment_students es WHERE es.enrollment_id = p_enrollment_id LOOP
+    DECLARE
+      v_items jsonb := '[]'::jsonb;
+      v_guardian_id uuid := v_enrollment.guardian_id;
+      v_owner uuid := v_enrollment.guardian_owner;
+      v_method text := COALESCE(v_plan->>'payment_method', NULL);
+    BEGIN
+      FOR r_cuota IN
+        SELECT (c->>'numero')::int AS numero,
+               (c->>'amount')::numeric AS amount,
+               (c->>'due_date')::date AS due_date
+          FROM jsonb_array_elements(v_cuotas) AS c
+          ORDER BY (c->>'numero')::int
+      LOOP
+        IF v_dry_run THEN
+          v_items := v_items || jsonb_build_object(
+            'numero_cuota', r_cuota.numero,
+            'due_date', r_cuota.due_date,
+            'amount', r_cuota.amount,
+            'existed', false
+          );
+        ELSE
+          INSERT INTO public.fee(
+            student_id, guardian_id, amount, due_date, status, payment_method,
+            owner_id, year_academico, numero_cuota, enrollment_id, meta
+          ) VALUES (
+            r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'pending', v_method,
+            v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment')
+          )
+          ON CONFLICT (student_id, guardian_id, numero_cuota) DO NOTHING;
+
+          IF FOUND THEN
+            v_created := v_created + 1;
+            v_items := v_items || jsonb_build_object('numero_cuota', r_cuota.numero, 'due_date', r_cuota.due_date, 'amount', r_cuota.amount, 'existed', false);
+          ELSE
+            v_skipped := v_skipped + 1;
+            v_items := v_items || jsonb_build_object('numero_cuota', r_cuota.numero, 'due_date', r_cuota.due_date, 'amount', r_cuota.amount, 'existed', true);
+          END IF;
+        END IF;
+      END LOOP;
+
+      v_summary := v_summary || jsonb_build_object('student_id', r_es.student_id, 'items', v_items);
+    END;
+  END LOOP;
+
+  IF NOT v_dry_run THEN
+    -- Generate sequential folio
+    v_folio_seq := nextval('public.enrollment_folio_seq');
+    v_folio := 'ENR-' || v_year || '-' || to_char(v_folio_seq, 'FM000000');
+    
+    -- Update enrollment with folio
+    UPDATE public.enrollments 
+       SET status = 'completed', 
+           updated_at = now(),
+           meta = COALESCE(meta, '{}'::jsonb) || jsonb_build_object('folio', v_folio)
+     WHERE id = p_enrollment_id;
+
+    -- Update student status to PRE_MATRICULADO
+    UPDATE public.students
+       SET estado_std = 'PRE_MATRICULADO'
+     WHERE id IN (
+       SELECT es.student_id
+         FROM public.enrollment_students es
+        WHERE es.enrollment_id = p_enrollment_id
+     );
+  END IF;
+
+  RETURN jsonb_build_object(
+    'confirmed', NOT v_dry_run,
+    'created_charges', v_created,
+    'skipped_duplicates', v_skipped,
+    'students_count', v_students,
+    'details', v_summary,
+    'folio', v_folio,
+    'year', v_year
+  );
+END;
+$$;
+
 -- Trigger Functions
 CREATE OR REPLACE FUNCTION public.update_updated_at()
 RETURNS trigger
@@ -346,12 +557,11 @@ ORDER BY t.table_name;
 -- Payment summary view (NO SECURITY DEFINER, FIXED: table name)
 CREATE VIEW public.payment_summary AS
 SELECT 
-    p.id,
-    p.amount,
-    p.payment_date,
-    p.invoice_id,
-    p.created_at,
-    i.student_id,
+    f.id,
+    f.amount,
+    f.payment_date,
+    f.created_at,
+    f.student_id,
     f.amount as fee_amount,
     f.due_date,
     s.first_name,
@@ -360,11 +570,10 @@ SELECT
     CONCAT(s.apellido_paterno, ' ', COALESCE(s.apellido_materno, '')) as full_last_name,
     s.curso,
     c.nom_curso
-FROM payments p
-LEFT JOIN invoices i ON p.invoice_id = i.id
-LEFT JOIN fee f ON f.student_id = i.student_id  -- FIXED: Changed from 'fees' to 'fee'
-LEFT JOIN students s ON i.student_id = s.id
-LEFT JOIN cursos c ON s.curso = c.id;
+FROM fee f
+LEFT JOIN students s ON f.student_id = s.id
+LEFT JOIN cursos c ON s.curso = c.id
+WHERE f.status = 'paid';
 
 -- ============================================================================
 -- 4. RECREATE TRIGGERS FOR CORRECT TABLES
@@ -375,7 +584,7 @@ DROP TRIGGER IF EXISTS update_fee_updated_at_trigger ON fee;
 DROP TRIGGER IF EXISTS update_profiles_full_name_trigger ON profiles;
 DROP TRIGGER IF EXISTS update_students_updated_at_trigger ON students;
 DROP TRIGGER IF EXISTS update_guardians_updated_at_trigger ON guardians;
-DROP TRIGGER IF EXISTS update_payments_updated_at_trigger ON payments;
+-- DROP TRIGGER IF EXISTS update_payments_updated_at_trigger ON payments; -- Removed as table does not exist
 DROP TRIGGER IF EXISTS update_invoices_updated_at_trigger ON invoices;
 
 -- Create triggers (only for tables that exist and have updated_at column)
@@ -418,14 +627,7 @@ BEGIN
         END IF;
     END IF;
 
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'payments' AND table_schema = 'public') THEN
-        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'payments' AND column_name = 'updated_at' AND table_schema = 'public') THEN
-            CREATE TRIGGER update_payments_updated_at_trigger
-                BEFORE UPDATE ON payments
-                FOR EACH ROW
-                EXECUTE FUNCTION update_updated_at();
-        END IF;
-    END IF;
+    -- Payments trigger removed as table does not exist
 
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'invoices' AND table_schema = 'public') THEN
         IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'invoices' AND column_name = 'updated_at' AND table_schema = 'public') THEN
@@ -445,7 +647,7 @@ END $$;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE guardians ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fee ENABLE ROW LEVEL SECURITY;
-ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE payments ENABLE ROW LEVEL SECURITY; -- Table does not exist
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE student_guardian ENABLE ROW LEVEL SECURITY;
@@ -462,10 +664,12 @@ BEGIN
                 WITH CHECK (owner_id = auth.uid());
         ELSE
             -- Fallback policy if no owner_id column
-            CREATE POLICY students_authenticated_policy ON students
-                FOR ALL
-                TO authenticated
-                USING (true);
+            IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'students' AND policyname = 'students_authenticated_policy') THEN
+                CREATE POLICY students_authenticated_policy ON students
+                    FOR ALL
+                    TO authenticated
+                    USING (true);
+            END IF;
         END IF;
     END IF;
 
@@ -478,10 +682,12 @@ BEGIN
                 WITH CHECK (owner_id = auth.uid());
         ELSE
             -- Fallback policy if no owner_id column
-            CREATE POLICY guardians_authenticated_policy ON guardians
-                FOR ALL
-                TO authenticated
-                USING (true);
+            IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'guardians' AND policyname = 'guardians_authenticated_policy') THEN
+                CREATE POLICY guardians_authenticated_policy ON guardians
+                    FOR ALL
+                    TO authenticated
+                    USING (true);
+            END IF;
         END IF;
     END IF;
 
@@ -494,28 +700,30 @@ BEGIN
                 WITH CHECK (owner_id = auth.uid());
         ELSE
             -- Fallback policy if no owner_id column
-            CREATE POLICY fee_authenticated_policy ON fee
-                FOR ALL
-                TO authenticated
-                USING (true);
+            IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'fee' AND policyname = 'fee_authenticated_policy') THEN
+                CREATE POLICY fee_authenticated_policy ON fee
+                    FOR ALL
+                    TO authenticated
+                    USING (true);
+            END IF;
         END IF;
     END IF;
 
-    -- Payments table policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'payments' AND policyname = 'payments_owner_policy') THEN
-        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'payments' AND column_name = 'owner_id') THEN
-            CREATE POLICY payments_owner_policy ON payments
-                FOR ALL
-                USING (owner_id = auth.uid())
-                WITH CHECK (owner_id = auth.uid());
-        ELSE
-            -- Fallback policy if no owner_id column
-            CREATE POLICY payments_authenticated_policy ON payments
-                FOR ALL
-                TO authenticated
-                USING (true);
-        END IF;
-    END IF;
+    -- Payments table policies (Removed as table does not exist)
+    -- IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'payments' AND policyname = 'payments_owner_policy') THEN
+    --    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'payments' AND column_name = 'owner_id') THEN
+    --        CREATE POLICY payments_owner_policy ON payments
+    --            FOR ALL
+    --            USING (owner_id = auth.uid())
+    --            WITH CHECK (owner_id = auth.uid());
+    --    ELSE
+    --        -- Fallback policy if no owner_id column
+    --        CREATE POLICY payments_authenticated_policy ON payments
+    --            FOR ALL
+    --            TO authenticated
+    --            USING (true);
+    --    END IF;
+    -- END IF;
 
     -- Invoices table policies
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'invoices' AND policyname = 'invoices_owner_policy') THEN
@@ -526,10 +734,12 @@ BEGIN
                 WITH CHECK (owner_id = auth.uid());
         ELSE
             -- Fallback policy if no owner_id column
-            CREATE POLICY invoices_authenticated_policy ON invoices
-                FOR ALL
-                TO authenticated
-                USING (true);
+            IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'invoices' AND policyname = 'invoices_authenticated_policy') THEN
+                CREATE POLICY invoices_authenticated_policy ON invoices
+                    FOR ALL
+                    TO authenticated
+                    USING (true);
+            END IF;
         END IF;
     END IF;
 
@@ -564,6 +774,7 @@ GRANT EXECUTE ON FUNCTION public.get_student_balance(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_students_by_guardian_ids(uuid[]) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_table_metadata(text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_user_profile(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.finalize_enrollment(uuid, jsonb) TO authenticated;
 
 -- Grant permissions on views
 GRANT SELECT ON public.database_metadata TO authenticated;
