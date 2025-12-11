@@ -1500,15 +1500,30 @@ export function MatriculaWizard() {
       };
       
       const html = buildEnrollmentReceiptHtml(receiptData);
-      const pdfBlob = await generatePDFFromHTML({
-        htmlContent: html,
-        orientation: 'portrait',
-        format: 'a4',
-        margin: 0,
-        includeHeader: false,
-        includeSignatureSection: false,
-        folioNumber: enrollmentFolio
-      });
+      
+      let pdfBlob;
+      try {
+        pdfBlob = await generatePDFFromHTML({
+          htmlContent: html,
+          orientation: 'portrait',
+          format: 'a4',
+          margin: 0,
+          includeHeader: false,
+          includeSignatureSection: false,
+          folioNumber: enrollmentFolio
+        });
+      } catch (pdfError) {
+        console.warn('PDF generation failed, falling back to HTML email', pdfError);
+        // Fallback: Send HTML email without attachment
+        await sendEmailViaFunction({
+          to: guardian.email,
+          subject: `Comprobante de Matrícula ${year} - Folio ${enrollmentFolio}`,
+          html: html, // Send the receipt HTML directly as body
+          type: 'comprobante'
+        });
+        toast.success('Comprobante enviado como correo HTML (PDF no disponible)', { id: 'receipt-email' });
+        return;
+      }
       
       const base64 = await blobToBase64(pdfBlob);
       
