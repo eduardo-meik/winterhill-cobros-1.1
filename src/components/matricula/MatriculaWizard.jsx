@@ -24,7 +24,7 @@ import {
   sha256,
   buildEnrollmentPaymentPlan
 } from '../../services/matricula';
-import { finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
+import { finalizeEnrollmentPreview, finalizeEnrollmentConfirm, getEffectiveEconomicFromPlan } from '../../services/matricula';
 import FinalizeEnrollmentModal from './FinalizeEnrollmentModal';
 import { buildPrestacionPayload, renderPrestacionWithAnnex, renderSingleDocument, createPrestacionDocument, ensureEnrollmentDocuments } from '../../services/matricula';
 import { saveChequesForEnrollment, getChequesForEnrollment } from '../../services/matricula';
@@ -42,6 +42,7 @@ import { StudentFormModal } from '../students/StudentFormModal';
 import { EnrollmentDashboard } from './EnrollmentDashboard';
 import { GlobalEnrollmentsTable } from './GlobalEnrollmentsTable';
 import { buildEconomicPatch } from '../../utils/matriculaHelpers';
+import { BoxArrowInUpRight } from '../Icons';
 
 // Renders full HTML (including <style> in <head>) inside an iframe for accurate preview
 function HtmlIframePreview({ html, height = 600 }) {
@@ -111,6 +112,7 @@ export function MatriculaWizard() {
   // Flag global derivado: verdadero si al menos un estudiante es prioritario (se calcula más abajo)
   const [prioritario, setPrioritario] = useState(false);
   const [cheques, setCheques] = useState([]);
+  const [hydratedMetaForEnrollmentId, setHydratedMetaForEnrollmentId] = useState(null);
   const [showChequesModal, setShowChequesModal] = useState(false);
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState(null);
@@ -143,6 +145,12 @@ export function MatriculaWizard() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const assistedMode = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
   const [viewMode, setViewMode] = useState('dashboard'); // Siempre mostrar historial debajo del encabezado
+  const chequesButtonLabel = useMemo(() => {
+    const count = cheques?.length || 0;
+    if (!paymentMethod?.cheques) return '🧾 Cheques';
+    if (count > 0) return `🧾 Cheques (${count})`;
+    return '🧾 Cheques';
+  }, [cheques, paymentMethod?.cheques]);
 
   // Assisted mode (ADMIN/ASIST)
   const [assistedGuardian, setAssistedGuardian] = useState(null);
@@ -383,6 +391,9 @@ export function MatriculaWizard() {
   useEffect(() => {
     if (!enrollment || !enrollment.meta) return;
 
+    if (hydratedMetaForEnrollmentId === enrollment.id) return;
+    setHydratedMetaForEnrollmentId(enrollment.id);
+
     console.log('📊 Loading saved economic data from enrollment.meta:', enrollment.meta);
 
     const meta = enrollment.meta || {};
@@ -443,7 +454,7 @@ export function MatriculaWizard() {
     if (meta.payment_plan) {
       setPaymentPlan(meta.payment_plan);
     }
-  }, [enrollment]);
+  }, [enrollment?.id]);
 
   // Load existing cheques from DB
   useEffect(() => {
@@ -791,20 +802,35 @@ export function MatriculaWizard() {
       patch.per_student_economic = studentEconomicMap;
     }
 
-    // Rebuild payment plan locally BEFORE saving to ensure DB has the latest plan
-    // Use aggregated totals if available (and greater than 0), otherwise fallback to global economic state
+    // Rebuild payment plan locally BEFORE saving to ensure DB has the latest plan.
+    // IMPORTANT: This plan must represent the TOTAL contractual amount for the enrollment.
+    // If there are multiple students, the RPC will split the total across them.
+    // Therefore: use aggregated total when available, otherwise multiply global values
+    // by studentsCount as a safe fallback.
+    const studentsCount = Array.isArray(students) ? students.length : 0;
     const useAggregated = aggregatedEconomicTotals.totalColegiatura > 0;
-    const planColegiatura = useAggregated ? aggregatedEconomicTotals.totalColegiatura : patch.colegiatura_anual;
-    // Note: aggregatedEconomicTotals doesn't track cuotas/dia_vencimiento, so we use global for those
-    
+    const fallbackTotal = studentsCount > 1
+      ? (Number(patch.colegiatura_anual) || 0) * studentsCount
+      : (Number(patch.colegiatura_anual) || 0);
+    const planColegiatura = useAggregated ? aggregatedEconomicTotals.totalColegiatura : fallbackTotal;
+
+    // Calculate monto_cuota for plan:
+    // 1) If user provided monto_cuota explicitly, use it (aggregated for all students)
+    // 2) Otherwise derive from planColegiatura / cantidad_cuotas
+    const userMontoCuota = totalNetMonthlyInstallment > 0 
+      ? totalNetMonthlyInstallment 
+      : (Number(patch.monto_cuota) || 0);
+    const derivedMontoCuota = patch.cantidad_cuotas 
+      ? Math.round(Number(planColegiatura) / Number(patch.cantidad_cuotas)) 
+      : 0;
+    const planMontoCuota = prioritario ? 0 : (userMontoCuota > 0 ? userMontoCuota : derivedMontoCuota);
+
     const localPlan = buildEnrollmentPaymentPlan({
       enrollmentYear: year,
       economic: {
         colegiatura_anual: planColegiatura,
         cantidad_cuotas: patch.cantidad_cuotas,
-        monto_cuota: prioritario
-          ? 0
-          : (totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : patch.monto_cuota),
+        monto_cuota: planMontoCuota,
         dia_vencimiento: patch.dia_vencimiento,
       },
       paymentMethodFlags: paymentMethod,
@@ -835,31 +861,57 @@ export function MatriculaWizard() {
       setFinalizing(true);
       setFinalizeAlert(null);
 
-      // Ensure we pass the current payment plan to avoid RPC falling back to document placeholders
+      // ALWAYS rebuild the payment plan from current UI state to ensure consistency.
+      // Previously we used cached `paymentPlan || enrollment?.meta?.payment_plan` which
+      // could be stale if the user changed economic data without re-saving.
       const options = {};
-      let planToSend = paymentPlan || enrollment?.meta?.payment_plan;
+      
+      // Determine colegiatura: prefer aggregated totals, fallback to single-student value
+      const studentsCount = Array.isArray(students) ? students.length : 0;
+      const useAggregated = aggregatedEconomicTotals.totalColegiatura > 0;
+      const fallbackTotal = studentsCount > 1
+        ? (Number(economic.colegiatura_anual) || 0) * studentsCount
+        : (Number(economic.colegiatura_anual) || 0);
+      const planColegiatura = useAggregated ? aggregatedEconomicTotals.totalColegiatura : fallbackTotal;
+      
+      // Determine monto_cuota: prefer aggregated net installment, fallback to UI value
+      const userMontoCuota = totalNetMonthlyInstallment > 0 
+        ? totalNetMonthlyInstallment 
+        : (Number(economic.monto_cuota) || 0);
+      // Prefer aggregated cuotas from per-student data, fallback to global
+      const cuotasCount = aggregatedEconomicTotals.cantidadCuotas > 0 
+        ? aggregatedEconomicTotals.cantidadCuotas 
+        : (Number(economic.cantidad_cuotas) || 10);
+      const derivedMontoCuota = cuotasCount > 0 ? Math.round(planColegiatura / cuotasCount) : 0;
+      const planMontoCuota = prioritario ? 0 : (userMontoCuota > 0 ? userMontoCuota : derivedMontoCuota);
+      // Prefer aggregated dia_vencimiento, fallback to global
+      const diaVencimiento = aggregatedEconomicTotals.diaVencimiento > 0
+        ? aggregatedEconomicTotals.diaVencimiento
+        : (Number(economic.dia_vencimiento) || 5);
 
-      // If plan is missing and student is prioritario, try to build it on the fly
-      if (!planToSend && prioritario) {
+      let planToSend = null;
+      
+      if (prioritario) {
+        // Prioritario: no payment plan needed
         planToSend = buildEnrollmentPaymentPlan({
           enrollmentYear: year,
           economic: {
             colegiatura_anual: 0,
             cantidad_cuotas: 0,
             monto_cuota: 0,
-            dia_vencimiento: 5 // Default for prioritario
+            dia_vencimiento: 5
           },
           paymentMethodFlags: paymentMethod
         });
-      } else if (!planToSend && aggregatedEconomicTotals.totalColegiatura > 0) {
-        // Fallback: build plan from aggregated totals if missing
+      } else if (planColegiatura > 0 || userMontoCuota > 0) {
+        // Normal case: build fresh plan from current data
         planToSend = buildEnrollmentPaymentPlan({
           enrollmentYear: year,
           economic: {
-            colegiatura_anual: aggregatedEconomicTotals.totalColegiatura,
-            cantidad_cuotas: Number(economic.cantidad_cuotas) || 10,
-            monto_cuota: totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : (Number(economic.monto_cuota) || 0),
-            dia_vencimiento: Number(economic.dia_vencimiento) || 5
+            colegiatura_anual: planColegiatura,
+            cantidad_cuotas: cuotasCount,
+            monto_cuota: planMontoCuota,
+            dia_vencimiento: diaVencimiento
           },
           paymentMethodFlags: paymentMethod
         });
@@ -867,7 +919,13 @@ export function MatriculaWizard() {
 
       if (planToSend) {
         options.payment_plan = planToSend;
+        options.plan_pago = planToSend;
+        options.paymentPlan = planToSend;
       }
+
+      // Helpful while diagnosing plan mismatches between UI and RPC preview
+      console.log('[FINALIZE_PREVIEW] economic:', economic);
+      console.log('[FINALIZE_PREVIEW] planToSend:', planToSend);
 
       const preview = await finalizeEnrollmentPreview(enrollment.id, options);
       setFinalizePreview(preview);
@@ -946,21 +1004,19 @@ export function MatriculaWizard() {
     console.log('🎯 handleGeneratePagare started');
     console.log('👤 Guardian COMPLETO:', JSON.stringify(guardian, null, 2));
     console.log('👥 Students COMPLETO:', JSON.stringify(students, null, 2));
-    console.log('💰 Economic data COMPLETO:', JSON.stringify(economic, null, 2));
+    console.log('💰 Aggregated Economic COMPLETO:', JSON.stringify(aggregatedEconomicTotals, null, 2));
     console.log('💳 Payment method COMPLETO:', JSON.stringify(paymentMethod, null, 2));
     console.log('🎁 Descuento planilla:', descuentoPlanilla);
     
-    // Usar siempre los valores persistidos en meta como fuente de verdad
-    const meta = enrollment.meta || {};
+    // Usar aggregatedEconomicTotals (calculado desde studentEconomicMap) como fuente de verdad
     const econNumbers = {
-      monto_matricula: Number(meta.monto_matricula ?? economic.monto_matricula) || undefined,
-      colegiatura_anual: Number(meta.colegiatura_anual ?? economic.colegiatura_anual) || undefined,
-      cantidad_cuotas: Number(meta.cantidad_cuotas ?? economic.cantidad_cuotas) || undefined,
-      // IMPORTANTE: monto_cuota debe ser coherente con el total neto y el número de cuotas.
-      // Pero el cálculo "oficial" lo hace buildPrestacionPayload a partir de colegiatura_anual y porcentaje_descuento,
-      // así que aquí sólo pasamos el valor base guardado (sin re-aplicar descuentos manualmente).
-      monto_cuota: Number(meta.monto_cuota ?? economic.monto_cuota) || undefined,
-      dia_vencimiento: Number(meta.dia_vencimiento ?? economic.dia_vencimiento) || undefined,
+      monto_matricula: aggregatedEconomicTotals.totalMatricula || undefined,
+      colegiatura_anual: aggregatedEconomicTotals.totalColegiatura || undefined,
+      cantidad_cuotas: aggregatedEconomicTotals.cantidadCuotas || undefined,
+      monto_cuota: aggregatedEconomicTotals.cantidadCuotas > 0
+        ? Math.round(aggregatedEconomicTotals.totalNeto / aggregatedEconomicTotals.cantidadCuotas)
+        : undefined,
+      dia_vencimiento: aggregatedEconomicTotals.diaVencimiento || undefined,
     };
 
     console.log('💵 Economic numbers parsed:', JSON.stringify(econNumbers, null, 2));
@@ -981,8 +1037,7 @@ export function MatriculaWizard() {
     });
 
     // Always generate Contrato de Prestación + anexos según método de pago.
-    // El porcentaje de descuento siempre sale de meta para que coincida con lo guardado.
-    const descuentoMetaPorcentaje = Number(meta.porcentaje_descuento ?? descuentoInfo.porcentaje_descuento) || 0;
+    const descuentoMetaPorcentaje = Number(descuentoInfo.porcentaje_descuento) || 0;
 
     // Para contratos con 2+ estudiantes, calculamos el monto neto anual por alumno
     // y lo pasamos explícitamente al servicio para que pueda sumar correctamente.
@@ -1073,8 +1128,9 @@ export function MatriculaWizard() {
     });
     
     setDocumentRecord(doc);
-    // If cheques were selected and we have cheques data, persist them linked to document/folio
-  if (paymentMethod?.cheques && Array.isArray(cheques) && cheques.length && doc?.id) {
+    
+    // Persist cheques ONLY when document is created (with document_id)
+    if (paymentMethod?.cheques && Array.isArray(cheques) && cheques.length && doc?.id) {
       try {
         const folioNumber = doc.id.substring(0, 8).toUpperCase();
         await saveChequesForEnrollment({
@@ -1091,8 +1147,10 @@ export function MatriculaWizard() {
           folioNumber,
           createdBy: user?.id || null
         });
+        console.log('✅ Cheques persisted with document_id:', doc.id);
       } catch (e) {
-        console.error('saveChequesForEnrollment error', e);
+        console.error('❌ Error saving cheques:', e);
+        toast.error('Error al guardar cheques. Verifique en la base de datos.');
       }
     }
 
@@ -1385,6 +1443,19 @@ export function MatriculaWizard() {
     return total;
   }, [students, studentEconomicMap]);
 
+  // effectiveEconomic: usar economic (estado local) como ÚNICA fuente de verdad activa
+  // enrollment.meta solo se usa como fallback inicial al cargar
+  const effectiveEconomic = useMemo(() => {
+    return {
+      monto_matricula: Number(economic.monto_matricula) || 0,
+      colegiatura_anual: Number(economic.colegiatura_anual) || 0,
+      cantidad_cuotas: Number(economic.cantidad_cuotas) || 0,
+      monto_cuota: Number(economic.monto_cuota) || 0,
+      dia_vencimiento: Number(economic.dia_vencimiento) || 0,
+      primer_vencimiento: economic.primer_vencimiento || null,
+    };
+  }, [economic]);
+
   // Aggregated economic totals (derived only from per-student data)
   const aggregatedEconomicTotals = useMemo(() => {
     if (!students || students.length === 0) {
@@ -1393,12 +1464,17 @@ export function MatriculaWizard() {
         totalColegiatura: 0,
         totalDescuento: 0,
         totalNeto: 0,
+        cantidadCuotas: 0,
+        diaVencimiento: 5,
       };
     }
 
     let totalMatricula = 0;
     let totalColegiatura = 0;
     let totalDescuento = 0;
+    let maxCuotas = 0; // Use max cuotas from any student
+    let firstDiaVencimiento = 5;
+    let foundFirstDia = false;
 
     students.forEach((st) => {
       const econ = studentEconomicMap[st.id];
@@ -1407,6 +1483,14 @@ export function MatriculaWizard() {
       totalMatricula += Number(econ.monto_matricula) || 0;
       totalColegiatura += Number(econ.colegiatura_anual) || 0;
       totalDescuento += Number(econ.monto_total_descuento) || 0;
+      
+      const cuotas = Number(econ.cantidad_cuotas) || 0;
+      if (cuotas > maxCuotas) maxCuotas = cuotas;
+      
+      if (!foundFirstDia && econ.dia_vencimiento) {
+        firstDiaVencimiento = Number(econ.dia_vencimiento) || 5;
+        foundFirstDia = true;
+      }
     });
 
     const totalNeto = Math.max(0, totalColegiatura - totalDescuento);
@@ -1416,8 +1500,31 @@ export function MatriculaWizard() {
       totalColegiatura,
       totalDescuento,
       totalNeto,
+      cantidadCuotas: maxCuotas,
+      diaVencimiento: firstDiaVencimiento,
     };
   }, [students, studentEconomicMap]);
+
+  // Regenerar paymentPlan reactivamente usando aggregatedEconomicTotals (fuente única de verdad)
+  useEffect(() => {
+    if (!enrollment?.year || !aggregatedEconomicTotals) return;
+    
+    const plan = buildEnrollmentPaymentPlan({
+      enrollmentYear: enrollment.year,
+      economic: {
+        monto_matricula: aggregatedEconomicTotals.totalMatricula,
+        colegiatura_anual: aggregatedEconomicTotals.totalNeto, // usar neto (ya con descuentos)
+        cantidad_cuotas: aggregatedEconomicTotals.cantidadCuotas,
+        monto_cuota: aggregatedEconomicTotals.cantidadCuotas > 0
+          ? Math.round(aggregatedEconomicTotals.totalNeto / aggregatedEconomicTotals.cantidadCuotas)
+          : 0,
+        dia_vencimiento: aggregatedEconomicTotals.diaVencimiento,
+      },
+      paymentMethodFlags: paymentMethod,
+    });
+    
+    setPaymentPlan(plan);
+  }, [aggregatedEconomicTotals, paymentMethod, enrollment?.year]);
 
   const handleDownloadEnrollmentReceipt = async () => {
     if (!enrollmentFolio || !guardian) return;
@@ -1470,10 +1577,26 @@ export function MatriculaWizard() {
     try {
       setSendingEnrollmentReceipt(true);
       toast.loading('Enviando comprobante...', { id: 'receipt-email' });
+
+      const guardianFullName = `${guardian.first_name} ${guardian.last_name}`.trim();
+      const studentNames = (Array.isArray(students) ? students : [])
+        .map(s => (s?.whole_name || `${s?.first_name || ''} ${s?.last_name || ''}`.trim()).trim())
+        .filter(Boolean);
+      const studentsLabel = studentNames.length
+        ? studentNames.join(', ')
+        : 'estudiante(s)';
+
+      const emailSubject = `Comprobante de Matrícula ${year} — Folio ${enrollmentFolio}`;
+      const emailBodyHtml = [
+        `<p>Hola ${guardianFullName || 'Apoderado(a)'},</p>`,
+        `<p>Adjuntamos el comprobante de matrícula del/los estudiante(s) <strong>${studentsLabel}</strong> correspondiente al año <strong>${enrollment?.year || year}</strong>.</p>`,
+        `<p>Folio: <strong>${enrollmentFolio}</strong></p>`,
+        `<p>Saludos,<br/>Colegio Winterhill</p>`
+      ].join('');
       
       const receiptData = {
         folio: enrollmentFolio,
-        guardianName: `${guardian.first_name} ${guardian.last_name}`,
+        guardianName: guardianFullName,
         guardianRun: guardian.run,
         guardianEmail: guardian.email,
         year: enrollment?.year || year,
@@ -1517,7 +1640,7 @@ export function MatriculaWizard() {
         // Fallback: Send HTML email without attachment
         await sendEmailViaFunction({
           to: guardian.email,
-          subject: `Comprobante de Matrícula ${year} - Folio ${enrollmentFolio}`,
+          subject: emailSubject,
           html: html, // Send the receipt HTML directly as body
           type: 'comprobante'
         });
@@ -1529,8 +1652,8 @@ export function MatriculaWizard() {
       
       await sendEmailViaFunction({
         to: guardian.email,
-        subject: `Comprobante de Matrícula ${year} - Folio ${enrollmentFolio}`,
-        html: `<p>Estimado apoderado,</p><p>Adjunto encontrará su comprobante de matrícula exitosa.</p><p>Atte,<br>Colegio Winterhill</p>`,
+        subject: emailSubject,
+        html: emailBodyHtml,
         type: 'comprobante',
         attachments: [{
           filename: `Comprobante_Matricula_${enrollmentFolio}.pdf`,
@@ -2090,7 +2213,8 @@ export function MatriculaWizard() {
               <h3 className="font-medium text-base mb-3 text-gray-700 dark:text-gray-300">💳 Forma de Pago</h3>
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Seleccione uno o más métodos de pago:</p>
               <div className="grid md:grid-cols-2 gap-3">
-                <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                <label className="flex items-center justify-between gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <div className="flex items-center gap-2">
                   <input 
                     type="checkbox" 
                     checked={paymentMethod.cheques} 
@@ -2104,16 +2228,33 @@ export function MatriculaWizard() {
                     className="w-4 h-4"
                   />
                   <span>📝 Cheques</span>
+                  </div>
+                  <button
+                    type="button"
+                    title="Abrir cheques"
+                    aria-label="Abrir cheques"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (prioritario) return;
+                      setPaymentMethod({ ...paymentMethod, cheques: true });
+                      setShowChequesModal(true);
+                    }}
+                    disabled={prioritario}
+                    className="inline-flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-dark-hover px-2 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  >
+                    <BoxArrowInUpRight />
+                  </button>
                 </label>
                 {paymentMethod.cheques && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setShowChequesModal(true)}
                     className="col-span-2"
                     disabled={prioritario}
                   >
-                    {cheques && cheques.length ? '✏️ Editar Cheques' : '➕ Agregar Cheques'}
+                    {cheques && cheques.length ? `✏️ Editar ${chequesButtonLabel}` : `➕ Agregar ${chequesButtonLabel}`}
                   </Button>
                 )}
                 <label className="flex items-center gap-2 p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -2478,27 +2619,36 @@ export function MatriculaWizard() {
         )
       )}
 
+      {/* Ver detalle de cheques (sólo si hay cheques cargados o guardados) */}
+      {enrollment?.id && (cheques?.length || 0) > 0 && (
+        <div className="mt-2 flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowChequesModal(true)}
+          >
+            🧾 Ver cheques
+          </Button>
+        </div>
+      )}
+
       {/* Cheques Data Modal */}
       <ChequesDataModal
         isOpen={showChequesModal}
         onClose={() => setShowChequesModal(false)}
         onSave={(rows) => {
           setCheques(rows);
-          toast.success('Cheques guardados localmente');
-          
-          // Persist immediately to DB to prevent data loss
-          if (enrollment?.id) {
-            saveChequesForEnrollment({
-              enrollmentId: enrollment.id,
-              cheques: rows,
-              createdBy: user?.id
-            }).catch(e => console.error('Background save cheques error:', e));
-          }
+          toast.success('Datos de cheques guardados. Se persistirán al generar el documento.');
+          // NO persistir aquí - se guardará al generar PRESTACION con document_id
         }}
         initialData={cheques}
-        cantidadCuotas={Number(enrollment?.meta?.cantidad_cuotas ?? economic.cantidad_cuotas) || 1}
-        montoCuota={totalNetMonthlyInstallment > 0 ? totalNetMonthlyInstallment : (Number(enrollment?.meta?.monto_cuota ?? economic.monto_cuota) || 0)}
-        diaVencimiento={Number(enrollment?.meta?.dia_vencimiento ?? economic.dia_vencimiento) || 5}
+        cantidadCuotas={Math.max(1, aggregatedEconomicTotals.cantidadCuotas || 1)}
+        montoCuota={
+          totalNetMonthlyInstallment > 0
+            ? totalNetMonthlyInstallment
+            : (Number(aggregatedEconomicTotals.totalNeto) / Math.max(1, aggregatedEconomicTotals.cantidadCuotas) || 0)
+        }
+        diaVencimiento={aggregatedEconomicTotals.diaVencimiento || 5}
         year={enrollment?.year ?? year}
       />
 

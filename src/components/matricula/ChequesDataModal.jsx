@@ -30,11 +30,21 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
       monto: montoCuotaBase,
       notas: ''
     }));
-    // Apply initialData if provided
+    // Apply initialData if provided (sanitize null/undefined to avoid warnings)
     if (Array.isArray(initialData) && initialData.length) {
       initialData.forEach((r) => {
         const idx = (r.numero_cuota ? r.numero_cuota - 1 : -1);
-        if (idx >= 0 && idx < base.length) base[idx] = { ...base[idx], ...r };
+        if (idx >= 0 && idx < base.length) {
+          base[idx] = {
+            ...base[idx],
+            numero_cuota: r.numero_cuota ?? base[idx].numero_cuota,
+            numero_serie: r.numero_serie ?? '',
+            banco: r.banco ?? '',
+            fecha_emision: r.fecha_emision ?? today,
+            monto: r.monto ?? montoCuotaBase,
+            notas: r.notas ?? ''
+          };
+        }
       });
     }
     return base;
@@ -42,22 +52,41 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
 
   const [errors, setErrors] = useState({});
 
-  // Adjust rows when cantidadCuotas changes
+  // Sincronizar filas con cantidadCuotas e initialData reactivamente
+  // Se ejecuta cuando cambian cantidadCuotas, initialData o montoCuotaBase (no depende de isOpen)
   useEffect(() => {
     const N = Math.max(1, Number(cantidadCuotas) || 1);
-    setRows((prev) => {
-      const next = [...prev];
-      if (next.length < N) {
-        for (let i = next.length; i < N; i++) {
-          next.push({ numero_cuota: i + 1, numero_serie: '', banco: '', fecha_emision: today, monto: montoCuotaBase, notas: '' });
+    const base = Array.from({ length: N }, (_, i) => ({
+      numero_cuota: i + 1,
+      numero_serie: '',
+      banco: '',
+      fecha_emision: today,
+      monto: montoCuotaBase,
+      notas: ''
+    }));
+
+    // Aplicar initialData si existe (preservar datos existentes)
+    if (Array.isArray(initialData) && initialData.length) {
+      initialData.forEach((r) => {
+        const idx = (r.numero_cuota ? r.numero_cuota - 1 : -1);
+        if (idx >= 0 && idx < base.length) {
+          // Sanitize null/undefined values to avoid controlled→uncontrolled warnings
+          base[idx] = {
+            ...base[idx],
+            numero_cuota: r.numero_cuota ?? base[idx].numero_cuota,
+            numero_serie: r.numero_serie ?? '',
+            banco: r.banco ?? '',
+            fecha_emision: r.fecha_emision ?? today,
+            monto: r.monto ?? montoCuotaBase,
+            notas: r.notas ?? ''
+          };
         }
-      } else if (next.length > N) {
-        next.length = N; // truncate
-      }
-      // re-number cuotas to ensure 1..N
-      return next.map((r, i) => ({ ...r, numero_cuota: i + 1 }));
-    });
-  }, [cantidadCuotas, montoCuotaBase, today]);
+      });
+    }
+
+    setRows(base);
+    setErrors({});
+  }, [cantidadCuotas, initialData, montoCuotaBase, today]);
 
   const setField = (idx, field, value) => {
     setRows((prev) => prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r)));

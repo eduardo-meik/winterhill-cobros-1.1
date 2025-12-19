@@ -174,7 +174,15 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       }
 
       // Manejar el campo genero para cumplir con la restricción en la base de datos
-      const genero = dataToSend.genero || null;
+      // La BD tiene un CHECK (students_genero_check): normalizamos para evitar valores no permitidos.
+      const genero = (() => {
+        const raw = (dataToSend.genero || '').toString().trim();
+        if (!raw) return null;
+        const up = raw.toUpperCase();
+        if (up === 'MASCULINO' || up === 'FEMENINO' || up === 'NO BINARIO') return up;
+        if (up === 'NO_BINARIO') return 'NO BINARIO';
+        return null;
+      })();
 
       // Crea un nuevo objeto con solo los campos necesarios para la BD usando dataToSend
       const formattedStudentData = {

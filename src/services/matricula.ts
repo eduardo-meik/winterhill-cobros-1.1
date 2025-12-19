@@ -923,6 +923,7 @@ export function buildPrestacionPayload(opts: {
     monto_cuota?: number;
     dia_vencimiento?: number;
   };
+  paymentPlan?: EnrollmentPaymentPlan | null;
   paymentMethod?: PaymentMethodFlags;
   cheques?: Array<{ numero_cuota?: number; numero_serie?: string; banco?: string; fecha_emision?: string; monto?: number; notas?: string; }>;
   descuento?: {
@@ -931,7 +932,7 @@ export function buildPrestacionPayload(opts: {
     condiciones?: string;
   } | null;
 }): PrestacionPayload {
-  const { guardian, year, students, economic, paymentMethod, cheques, descuento } = opts;
+  const { guardian, year, students, economic, paymentPlan, paymentMethod, cheques } = opts;
 
   const now = new Date();
   const day = now.getDate();
@@ -1012,16 +1013,19 @@ export function buildPrestacionPayload(opts: {
   const perStudentNetTotals: number[] = (opts as any)?.perStudentEconomic?.map((e: any) => Number(e?.monto_neto_anual) || 0) || [];
   const sumPerStudentNet = perStudentNetTotals.reduce((acc, v) => acc + (Number.isFinite(v) ? v : 0), 0);
 
-  const colegAnualBase = economic?.colegiatura_anual || 0;
+  // Usar economic directamente como fuente de verdad (no priorizar paymentPlan)
+  const effective = getEffectiveEconomicFromPlan({ economic, paymentPlan: null });
+
+  const colegAnualBase = effective.colegiatura_anual || 0;
   const colegAnual = sumPerStudentNet > 0 ? sumPerStudentNet : colegAnualBase;
-  const cuotasNum = Number(economic?.cantidad_cuotas) || 0;
+  const cuotasNum = Number(effective.cantidad_cuotas) || 0;
   const montoCuotaCalc = (() => {
-    if (economic?.colegiatura_anual && economic?.cantidad_cuotas) {
-      const total = Number(economic.colegiatura_anual) || 0;
-      const cuotas = Number(economic.cantidad_cuotas) || 0;
-      if (total > 0 && cuotas > 0) return Math.round(total / cuotas);
+    // Prefer explicit plan monto_por_cuota when present.
+    if (effective.monto_cuota > 0) return Math.round(effective.monto_cuota);
+    if (effective.colegiatura_anual > 0 && effective.cantidad_cuotas > 0) {
+      return Math.round(effective.colegiatura_anual / effective.cantidad_cuotas);
     }
-    return economic?.monto_cuota || 0;
+    return 0;
   })();
 
   // Descuento por planilla calculations (if provided)
@@ -1051,13 +1055,13 @@ export function buildPrestacionPayload(opts: {
     guardian_estado_civil: guardian.estado_civil || undefined,
     students_table: studentsTable,
     students_list: studentsList,
-    monto_matricula: formatCurrency(economic?.monto_matricula),
+    monto_matricula: formatCurrency(effective.monto_matricula),
   colegiatura_anual: formatCurrency(colegAnual),
   colegiatura_anual_texto: `${numberToWordsEs(colegAnual)} pesos`,
-    cantidad_cuotas: economic?.cantidad_cuotas?.toString() || '_______________',
+    cantidad_cuotas: effective.cantidad_cuotas ? String(effective.cantidad_cuotas) : '_______________',
   monto_cuota: formatCurrency(montoCuotaCalc),
   monto_cuota_texto: `${numberToWordsEs(montoCuotaCalc)} pesos`,
-    dia_vencimiento: economic?.dia_vencimiento?.toString() || '_______________',
+    dia_vencimiento: effective.dia_vencimiento ? String(effective.dia_vencimiento) : '_______________',
     forma_pago_cheques: paymentMethod?.cheques ? '☑' : '☐',
     forma_pago_transferencia: paymentMethod?.transferencia ? '☑' : '☐',
     forma_pago_efectivo: paymentMethod?.efectivo ? '☑' : '☐',
@@ -1167,6 +1171,44 @@ export interface EnrollmentPaymentPlan {
   dia_vencimiento: number;
   payment_method: string | null;
   cuotas: Array<{ numero: number; amount: number; due_date: string }>;
+}
+
+export function getEffectiveEconomicFromPlan(input: {
+  economic?: {
+    monto_matricula?: number | string;
+    colegiatura_anual?: number | string;
+    cantidad_cuotas?: number | string;
+    monto_cuota?: number | string;
+    dia_vencimiento?: number | string;
+    primer_vencimiento?: string | null;
+  };
+  paymentPlan?: EnrollmentPaymentPlan | null;
+}): {
+  monto_matricula: number;
+  colegiatura_anual: number;
+  cantidad_cuotas: number;
+  monto_cuota: number;
+  dia_vencimiento: number;
+  primer_vencimiento: string | null;
+} {
+  const econ = input.economic || {};
+  const plan = input.paymentPlan || null;
+
+  const montoMatricula = toNumberOrZero(econ.monto_matricula);
+  const colegiaturaAnual = plan ? Math.max(0, toNumberOrZero(plan.monto_total)) : Math.max(0, toNumberOrZero(econ.colegiatura_anual));
+  const cantidadCuotas = plan ? Math.max(0, toPositiveInt(plan.n_cuotas)) : Math.max(0, toPositiveInt(econ.cantidad_cuotas));
+  const montoCuota = plan ? Math.max(0, toNumberOrZero(plan.monto_por_cuota)) : Math.max(0, toNumberOrZero(econ.monto_cuota));
+  const diaVencimiento = plan ? clampDayOfMonth(plan.dia_vencimiento) : clampDayOfMonth(econ.dia_vencimiento);
+  const primerVencimiento = plan?.primer_vencimiento || normalizeIsoDate(econ.primer_vencimiento) || null;
+
+  return {
+    monto_matricula: montoMatricula,
+    colegiatura_anual: colegiaturaAnual,
+    cantidad_cuotas: cantidadCuotas,
+    monto_cuota: montoCuota,
+    dia_vencimiento: diaVencimiento,
+    primer_vencimiento: primerVencimiento,
+  };
 }
 
 interface BuildPaymentPlanOptions {
@@ -1371,6 +1413,7 @@ export async function ensureEnrollmentDocuments(ctx: AutoDocContext): Promise<vo
     year: enrollment.year,
     students,
     economic: prioritario ? undefined : economic, // if prioritario we can still pass economic but optionally omit
+    paymentPlan: (meta?.payment_plan || null) as any,
     paymentMethod: prioritario ? undefined : paymentMethod,
     cheques: (!prioritario && chequesSeleccionados && Array.isArray(chequesArr)) ? chequesArr : undefined,
     descuento,
@@ -2804,17 +2847,26 @@ export async function listAllRecentEnrollments(): Promise<any[]> {
 // Fetch cheques for an enrollment
 export async function getChequesForEnrollment(enrollmentId: string): Promise<Array<ChequeSaveInput & { numero_cuota: number }> | null> {
   try {
-    const { data, error } = await supabase
+    if (!enrollmentId) return null;
+    // Nota: `order=numero_cuota` actualmente está provocando 400 en el backend.
+    // Para evitar romper la UX, siempre consultamos sin ORDER y ordenamos en cliente.
+    const res = await supabase
       .from('cheques')
       .select('*')
-      .eq('enrollment_id', enrollmentId)
-      .order('numero_cuota', { ascending: true });
-    
-    if (error) {
-      console.error('[cheques] fetch error', error);
+      .eq('enrollment_id', enrollmentId);
+
+    if (res.error) {
+      console.error('[cheques] fetch error', res.error);
       return null;
     }
-    return data;
+
+    const rows = (res.data || []) as any[];
+    rows.sort((a, b) => {
+      const na = Number(a?.numero_cuota ?? a?.cuota_numero ?? a?.cuota ?? 0);
+      const nb = Number(b?.numero_cuota ?? b?.cuota_numero ?? b?.cuota ?? 0);
+      return na - nb;
+    });
+    return rows as any;
   } catch (e) {
     console.error('[cheques] unexpected fetch error', e);
     return null;
