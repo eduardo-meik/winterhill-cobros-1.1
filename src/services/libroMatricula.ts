@@ -76,48 +76,47 @@ export function exportToExcel(data: LibroMatriculaRow[], filename: string = 'Lib
     row.nivel?.toLowerCase().includes('enseñanza media')
   );
 
-  // Mapear a formato Excel con headers traducidos
-  const mapToExcel = (rows: LibroMatriculaRow[]) => rows.map(row => ({
-    'Nº': row.numero_correlativo,
-    'Año Matrícula': row.year_matricula,
-    'Fecha Matrícula': row.fecha_matricula,
-    'Nivel': row.nivel,
-    'Curso': row.curso,
-    'Nombres': row.nombres,
-    'Apellido Paterno': row.apellido_paterno,
-    'Apellido Materno': row.apellido_materno,
-    'Run estudiante': row.run_estudiante,
-    'Fecha Nac Estudiante': row.fecha_nac_estudiante,
-    'Nacionalidad': row.nacionalidad,
-    'Género Estudiante': row.genero_estudiante,
-    '¿Con quién vive el estudiante?': row.con_quien_vive,
-    'Dirección Estudiante': row.direccion_estudiante,
-    'Comuna': row.comuna_estudiante,
-    '¿El estudiante repite el curso actual?': row.repite_curso,
-    '¿Cuál es la institución de procedencia del estudiante?': row.institucion_procedencia,
-    '¿Cuál es el nombre del apoderado?': row.nombre_apoderado,
-    '¿Cuál es el apellido paterno del apoderado?': row.apellido_paterno_apoderado,
-    '¿Cuál es el apellido materno del apoderado?': row.apellido_materno_apoderado,
-    '¿Cuál es su relación con el estudiante?': row.relacion_apoderado,
-    'Fecha nacimiento apoderado': row.fecha_nac_apoderado,
-    '¿Cuál es el RUT del apoderado?': row.run_apoderado,
-    '¿Cuál es el nivel educacional del apoderado?': row.nivel_educacional_apoderado,
-    '¿Cuál es la dirección de residencia del apoderado?': row.direccion_apoderado,
-    '¿Cuál es la comuna de residencia del apoderado?': row.comuna_apoderado,
-    '¿Cuál es el email de contacto del apoderado?': row.email_apoderado,
-    '¿Cuál es su teléfono?': row.telefono_apoderado,
-    'Apoderado Secundario': row.nombre_apoderado_secundario,
-    'Rut apoderado secundario': row.run_apoderado_secundario,
-    'Fecha Nacimiento': row.fecha_nac_apoderado_secundario,
-    'Añada el teléfono del contacto distinto al apoderado si fuese el caso': row.telefono_apoderado_secundario,
-    'mail apoderado secundario': row.email_apoderado_secundario,
-    'fecha de retiro del estudiante': row.fecha_retiro,
-    'motivo del retiro del estudiante': row.motivo_retiro,
-    'CONDICION': row.condicion
-  }));
+  // Mapear a formato Excel con headers exactos según requerimiento
+  const mapToExcel = (rows: LibroMatriculaRow[], startNumber: number = 1) => 
+    rows.map((row, index) => ({
+      'Numero de Inscripcion': startNumber + index,
+      'Nivel': row.nivel,
+      'Curso': row.curso,
+      'Nombres': row.nombres,
+      'Apellido Paterno': row.apellido_paterno,
+      'Apellido Materno': row.apellido_materno,
+      'Run estudiante': row.run_estudiante,
+      'Fecha Nac Estudiante': row.fecha_nac_estudiante,
+      'Nacionalidad': row.nacionalidad,
+      'Género Estudiante': row.genero_estudiante,
+      '  ¿Con quién vive el estudiante?': row.con_quien_vive,
+      'Dirección Estudiante': row.direccion_estudiante,
+      'Comuna': row.comuna_estudiante,
+      '  ¿El estudiante repite el curso actual?  ': row.repite_curso,
+      '  ¿Cuál es la institución de procedencia del estudiante?  ': row.institucion_procedencia,
+      '¿Cuál es el nombre del apoderado? ': row.nombre_apoderado,
+      '  ¿Cuál es el apellido paterno del apoderado?  ': row.apellido_paterno_apoderado,
+      '  ¿Cuál es el apellido materno del apoderado?  ': row.apellido_materno_apoderado,
+      '¿Cuál es su relación con el estudiante?': row.relacion_apoderado,
+      'Fecha nacimiento apoderado': row.fecha_nac_apoderado,
+      '  ¿Cuál es el RUT del apoderado?  ': row.run_apoderado,
+      '  ¿Cuál es el nivel educacional del apoderado?  ': row.nivel_educacional_apoderado,
+      '  ¿Cuál es la dirección de residencia del apoderado?  ': row.direccion_apoderado,
+      '  ¿Cuál es la comuna de residencia del apoderado? ': row.comuna_apoderado,
+      '  ¿Cuál es el email de contacto del apoderado?  ': row.email_apoderado,
+      '¿Cuál es su teléfono?': row.telefono_apoderado,
+      'Apoderado Secundario': row.nombre_apoderado_secundario,
+      'Rut apoderado secundario': row.run_apoderado_secundario,
+      'Fecha Nacimiento': row.fecha_nac_apoderado_secundario,
+      'Añada el teléfono del contacto distinto al apoderado si fuese el caso': row.telefono_apoderado_secundario,
+      'mail apoderado secundario': row.email_apoderado_secundario,
+      'fecha de retiro del estudiante ': row.fecha_retiro,
+      '  motivo del retiro del estudiante ': row.motivo_retiro,
+      'CONDICION': row.condicion
+    }));
 
-  const excelDataBasica = mapToExcel(basica);
-  const excelDataMedia = mapToExcel(media);
+  const excelDataBasica = mapToExcel(basica, 1);
+  const excelDataMedia = mapToExcel(media, 1);
 
   // Crear workbook con 2 hojas
   const wb = XLSX.utils.book_new();

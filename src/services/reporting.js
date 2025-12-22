@@ -14,132 +14,129 @@ const formatRutFicon = (rut) => {
 };
 
 export const generateLibroMatriculaReport = async () => {
-  // Fetch all active enrollments via enrollment_students to get 1 row per student
-  // We join student (with course) and enrollment (with guardian)
-  const { data: records, error } = await supabase
-    .from('enrollment_students')
-    .select(`
-      student:student_id (
-        id,
-        first_name,
-        apellido_paterno,
-        apellido_materno,
-        run,
-        date_of_birth,
-        genero,
-        direccion,
-        comuna,
-        curso_data:curso (
-          id,
-          nivel,
-          nom_curso
-        )
-      ),
-      enrollment:enrollment_id!inner (
-        id,
-        created_at,
-        year,
-        status,
-        meta,
-        guardian:guardian_id (
-          id,
-          first_name,
-          last_name,
-          run,
-          email,
-          phone,
-          address
-        )
-      )
-    `)
-    .in('enrollment.status', ['completed', 'ACTIVO']) // Support both status just in case
-    .eq('enrollment.year', new Date().getFullYear())
-    .order('enrollment(created_at)', { ascending: true });
+  // Use the RPC function with all 34 columns
+  const { data: records, error } = await supabase.rpc('generate_libro_matricula_report', {
+    p_year: null,
+    p_estado: null,
+    p_enrollment_status: null
+  });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error calling RPC:', error);
+    throw error;
+  }
+
+  if (!records || records.length === 0) {
+    throw new Error('No se encontraron datos para generar el reporte');
+  }
 
   const workbook = new ExcelJS.Workbook();
 
-  // Process data
-  const basica = [];
-  const media = [];
+  // Separate by nivel (Básica vs Media)
+  const basica = records.filter(row => 
+    row.nivel?.toLowerCase().includes('básica') || 
+    row.nivel?.toLowerCase().includes('basica') ||
+    row.nivel?.toLowerCase().includes('enseñanza básica')
+  );
+  
+  const media = records.filter(row => 
+    row.nivel?.toLowerCase().includes('media') ||
+    row.nivel?.toLowerCase().includes('enseñanza media')
+  );
 
-  (records || []).forEach(record => {
-    const st = record.student;
-    const enr = record.enrollment;
-    
-    if (!st || !enr) return;
+  // Define columns matching CSV structure (34 columns)
+  const columns = [
+    { header: 'Numero de Inscripcion', key: 'numero', width: 18 },
+    { header: 'Nivel', key: 'nivel', width: 18 },
+    { header: 'Curso', key: 'curso', width: 18 },
+    { header: 'Nombres', key: 'nombres', width: 20 },
+    { header: 'Apellido Paterno', key: 'apellido_paterno', width: 18 },
+    { header: 'Apellido Materno', key: 'apellido_materno', width: 18 },
+    { header: 'Run estudiante', key: 'run_estudiante', width: 15 },
+    { header: 'Fecha Nac Estudiante', key: 'fecha_nac_estudiante', width: 18 },
+    { header: 'Nacionalidad', key: 'nacionalidad', width: 15 },
+    { header: 'Género Estudiante', key: 'genero_estudiante', width: 16 },
+    { header: '  ¿Con quién vive el estudiante?', key: 'con_quien_vive', width: 35 },
+    { header: 'Dirección Estudiante', key: 'direccion_estudiante', width: 35 },
+    { header: 'Comuna', key: 'comuna', width: 18 },
+    { header: '  ¿El estudiante repite el curso actual?  ', key: 'repite_curso', width: 40 },
+    { header: '  ¿Cuál es la institución de procedencia del estudiante?  ', key: 'institucion_procedencia', width: 50 },
+    { header: '¿Cuál es el nombre del apoderado? ', key: 'nombre_apoderado', width: 35 },
+    { header: '  ¿Cuál es el apellido paterno del apoderado?  ', key: 'apellido_paterno_apoderado', width: 45 },
+    { header: '  ¿Cuál es el apellido materno del apoderado?  ', key: 'apellido_materno_apoderado', width: 45 },
+    { header: '¿Cuál es su relación con el estudiante?', key: 'relacion_apoderado', width: 38 },
+    { header: 'Fecha nacimiento apoderado', key: 'fecha_nac_apoderado', width: 25 },
+    { header: '  ¿Cuál es el RUT del apoderado?  ', key: 'run_apoderado', width: 35 },
+    { header: '  ¿Cuál es el nivel educacional del apoderado?  ', key: 'nivel_educacional_apoderado', width: 45 },
+    { header: '  ¿Cuál es la dirección de residencia del apoderado?  ', key: 'direccion_apoderado', width: 50 },
+    { header: '  ¿Cuál es la comuna de residencia del apoderado? ', key: 'comuna_apoderado', width: 45 },
+    { header: '  ¿Cuál es el email de contacto del apoderado?  ', key: 'email_apoderado', width: 45 },
+    { header: '¿Cuál es su teléfono?', key: 'telefono_apoderado', width: 20 },
+    { header: 'Apoderado Secundario', key: 'apoderado_secundario', width: 35 },
+    { header: 'Rut apoderado secundario', key: 'run_apoderado_secundario', width: 25 },
+    { header: 'Fecha Nacimiento', key: 'fecha_nac_apoderado_secundario', width: 18 },
+    { header: 'Añada el teléfono del contacto distinto al apoderado si fuese el caso', key: 'telefono_apoderado_secundario', width: 60 },
+    { header: 'mail apoderado secundario', key: 'email_apoderado_secundario', width: 30 },
+    { header: 'fecha de retiro del estudiante ', key: 'fecha_retiro', width: 30 },
+    { header: '  motivo del retiro del estudiante ', key: 'motivo_retiro', width: 35 },
+    { header: 'CONDICION', key: 'condicion', width: 20 }
+  ];
 
-    const guardian = enr.guardian || {};
-    const nivel = st.curso_data?.nivel; // 110 = Basica, 310 = Media
-
-    const rowData = {
-      ...st,
-      enrollment: enr,
-      guardian: guardian
-    };
-
-    if (nivel === 310) {
-      media.push(rowData);
-    } else {
-      // Default to Basica (includes 110 and Pre-K/Kinder if any)
-      basica.push(rowData);
-    }
-  });
-
-  // Sort by enrollment date
-  const sortByDate = (a, b) => new Date(a.enrollment.created_at) - new Date(b.enrollment.created_at);
-  basica.sort(sortByDate);
-  media.sort(sortByDate);
-
-  // Helper to add rows
-  const addRowsToSheet = (sheet, list) => {
+  // Helper to add rows with correlative numbering per level
+  const addRowsToSheet = (sheet, list, startNumber = 1) => {
     list.forEach((item, idx) => {
-      const g = item.guardian || {};
-      
       sheet.addRow({
-        num: idx + 1,
-        date: format(new Date(item.enrollment.created_at), 'dd/MM/yyyy HH:mm'),
-        rut: item.run,
-        ap_pat: item.apellido_paterno || '',
-        ap_mat: item.apellido_materno || '',
-        nombres: item.first_name,
-        curso: item.curso_data?.nom_curso || 'Sin Curso',
-        gender: item.genero,
-        dob: item.date_of_birth,
-        address: item.direccion,
-        commune: item.comuna,
-        g_rut: g.run,
-        g_name: `${g.first_name || ''} ${g.last_name || ''}`.trim(),
-        email: g.email,
-        phone: g.phone
+        numero: startNumber + idx,
+        nivel: item.nivel || '',
+        curso: item.curso || '',
+        nombres: item.nombres || '',
+        apellido_paterno: item.apellido_paterno || '',
+        apellido_materno: item.apellido_materno || '',
+        run_estudiante: item.run_estudiante || '',
+        fecha_nac_estudiante: item.fecha_nac_estudiante || '',
+        nacionalidad: item.nacionalidad || '',
+        genero_estudiante: item.genero_estudiante || '',
+        con_quien_vive: item.con_quien_vive || '',
+        direccion_estudiante: item.direccion_estudiante || '',
+        comuna: item.comuna_estudiante || '',
+        repite_curso: item.repite_curso || '',
+        institucion_procedencia: item.institucion_procedencia || '',
+        nombre_apoderado: item.nombre_apoderado || '',
+        apellido_paterno_apoderado: item.apellido_paterno_apoderado || '',
+        apellido_materno_apoderado: item.apellido_materno_apoderado || '',
+        relacion_apoderado: item.relacion_apoderado || '',
+        fecha_nac_apoderado: item.fecha_nac_apoderado || '',
+        run_apoderado: item.run_apoderado || '',
+        nivel_educacional_apoderado: item.nivel_educacional_apoderado || '',
+        direccion_apoderado: item.direccion_apoderado || '',
+        comuna_apoderado: item.comuna_apoderado || '',
+        email_apoderado: item.email_apoderado || '',
+        telefono_apoderado: item.telefono_apoderado || '',
+        apoderado_secundario: item.nombre_apoderado_secundario || '',
+        run_apoderado_secundario: item.run_apoderado_secundario || '',
+        fecha_nac_apoderado_secundario: item.fecha_nac_apoderado_secundario || '',
+        telefono_apoderado_secundario: item.telefono_apoderado_secundario || '',
+        email_apoderado_secundario: item.email_apoderado_secundario || '',
+        fecha_retiro: item.fecha_retiro || '',
+        motivo_retiro: item.motivo_retiro || '',
+        condicion: item.condicion || ''
       });
     });
   };
 
-  const sheetBasica = workbook.addWorksheet('Básica');
-  sheetBasica.columns = [
-      { header: 'N°', key: 'num', width: 5 },
-      { header: 'Fecha Matrícula', key: 'date', width: 18 },
-      { header: 'RUT Alumno', key: 'rut', width: 12 },
-      { header: 'Ap. Paterno', key: 'ap_pat', width: 15 },
-      { header: 'Ap. Materno', key: 'ap_mat', width: 15 },
-      { header: 'Nombres', key: 'nombres', width: 20 },
-      { header: 'Curso', key: 'curso', width: 15 },
-      { header: 'Sexo', key: 'gender', width: 8 },
-      { header: 'F. Nacim.', key: 'dob', width: 12 },
-      { header: 'Dirección', key: 'address', width: 30 },
-      { header: 'Comuna', key: 'commune', width: 15 },
-      { header: 'RUT Apoderado', key: 'g_rut', width: 12 },
-      { header: 'Nombre Apoderado', key: 'g_name', width: 25 },
-      { header: 'Email', key: 'email', width: 25 },
-      { header: 'Teléfono', key: 'phone', width: 15 },
-  ];
-  addRowsToSheet(sheetBasica, basica);
+  // Create Básica sheet
+  if (basica.length > 0) {
+    const sheetBasica = workbook.addWorksheet('Enseñanza Básica');
+    sheetBasica.columns = columns;
+    addRowsToSheet(sheetBasica, basica, 1);
+  }
 
-  const sheetMedia = workbook.addWorksheet('Media');
-  sheetMedia.columns = sheetBasica.columns;
-  addRowsToSheet(sheetMedia, media);
+  // Create Media sheet
+  if (media.length > 0) {
+    const sheetMedia = workbook.addWorksheet('Enseñanza Media');
+    sheetMedia.columns = columns;
+    addRowsToSheet(sheetMedia, media, 1);
+  }
 
   const buffer = await workbook.xlsx.writeBuffer();
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
