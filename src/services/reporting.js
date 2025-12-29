@@ -142,37 +142,125 @@ export const generateLibroMatriculaReport = async () => {
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 };
 
+// Helper to normalize RUN for comparison (remove dots, dashes, convert to uppercase)
+const normalizeRun = (run) => {
+  if (!run) return '';
+  return run.toString().replace(/\./g, '').replace(/-/g, '').toUpperCase().trim();
+};
+
 export const generateFiconReport = async () => {
   // P8: FICON Format
   // RUT sin puntos, DV separado.
+  // Uses the same RPC as Libro Matrícula to ensure data consistency
   
-  const { data: records, error } = await supabase
+  const { data: records, error } = await supabase.rpc('generate_libro_matricula_report', {
+    p_year: null,
+    p_estado: null,
+    p_enrollment_status: null
+  });
+
+  if (error) {
+    console.error('Error calling RPC for FICON:', error);
+    throw error;
+  }
+
+  if (!records || records.length === 0) {
+    throw new Error('No se encontraron datos para generar el reporte FICON');
+  }
+
+  console.log(`📊 FICON: Processing ${records.length} student records`);
+
+  // Get financial data from enrollments through enrollment_students relationship
+  // IMPORTANT: Don't filter by year or status here - get ALL enrollments and let the RPC filter
+  const { data: enrollmentData, error: enrollmentError } = await supabase
     .from('enrollment_students')
     .select(`
-      student:student_id (
-        id,
-        first_name,
-        apellido_paterno,
-        apellido_materno,
-        run
-      ),
-      enrollment:enrollment_id!inner (
+      student_id,
+      enrollment:enrollment_id (
         id,
         year,
-        status,
         meta,
-        guardian:guardian_id (
-          id,
-          first_name,
-          last_name,
-          run
-        )
+        status
       )
-    `)
-    .in('enrollment.status', ['completed', 'ACTIVO'])
-    .eq('enrollment.year', new Date().getFullYear());
+    `);
 
-  if (error) throw error;
+  if (enrollmentError) {
+    console.error('Error fetching enrollment data:', enrollmentError);
+  } else {
+    console.log(`📊 FICON: Found ${(enrollmentData || []).length} enrollment records`);
+  }
+
+  // Also get student RUNs to map correctly
+  const { data: students, error: studentsError } = await supabase
+    .from('students')
+    .select('id, run');
+
+  if (studentsError) {
+    console.error('Error fetching students:', studentsError);
+  } else {
+    console.log(`📊 FICON: Found ${(students || []).length} students`);
+  }
+
+  // Create student_id -> RUN mapping (normalized)
+  const studentRunMap = new Map();
+  const runToIdMap = new Map(); // Reverse mapping for lookup
+  (students || []).forEach(st => {
+    if (st.id && st.run) {
+      const normalizedRun = normalizeRun(st.run);
+      studentRunMap.set(st.id, normalizedRun);
+      runToIdMap.set(normalizedRun, st.id);
+    }
+  });
+
+  // Create a map of NORMALIZED student RUN -> financial data
+  // This ensures each student gets their own enrollment's financial information
+  const financialDataMap = new Map();
+  let mappedCount = 0;
+  
+  (enrollmentData || []).forEach(item => {
+    if (item.student_id && item.enrollment) {
+      const meta = item.enrollment.meta || {};
+      const studentRun = studentRunMap.get(item.student_id);
+      
+      if (studentRun) {
+        // Build medio_pago string from payment method flags
+        const mediosPago = [];
+        if (meta.forma_pago_cheques) mediosPago.push('Cheques');
+        if (meta.forma_pago_transferencia) mediosPago.push('Transferencia');
+        if (meta.forma_pago_efectivo) mediosPago.push('Efectivo');
+        if (meta.forma_pago_tarjeta) mediosPago.push('Tarjeta');
+        if (meta.forma_pago_pagare) mediosPago.push('Pagaré');
+        if (meta.forma_pago_descuento_planilla) mediosPago.push('Descuento Planilla');
+        if (meta.prioritario) mediosPago.push('Prioritario');
+        
+        const medioPagoStr = mediosPago.length > 0 ? mediosPago.join(', ') : 'No especificado';
+        
+        const financialData = {
+          arancel: meta.colegiatura_anual || 0,
+          matricula: meta.monto_matricula || 0,
+          cuotas: meta.cantidad_cuotas || 0,
+          monto_cuota: meta.monto_cuota || 0,
+          medio_pago: medioPagoStr
+        };
+        
+        financialDataMap.set(studentRun, financialData);
+        mappedCount++;
+        
+        // Debug: log first few mappings
+        if (mappedCount <= 3) {
+          console.log(`💰 FICON Mapping ${mappedCount}:`, {
+            run: studentRun,
+            arancel: financialData.arancel,
+            medio_pago: financialData.medio_pago,
+            enrollment_year: item.enrollment.year,
+            enrollment_status: item.enrollment.status
+          });
+        }
+      }
+    }
+  });
+  
+  console.log(`💰 FICON: Mapped ${mappedCount} students with financial data`);
 
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet('FICON');
@@ -186,36 +274,75 @@ export const generateFiconReport = async () => {
     { header: 'RUT_APODERADO', key: 'g_rut_body', width: 10 },
     { header: 'DV_APODERADO', key: 'g_rut_dv', width: 5 },
     { header: 'NOMBRE_APODERADO', key: 'g_name', width: 30 },
+    { header: 'MEDIO_PAGO', key: 'medio_pago', width: 20 },
     { header: 'ARANCEL_ANUAL', key: 'arancel', width: 15 },
     { header: 'MATRICULA', key: 'matricula', width: 15 },
     { header: 'N_CUOTAS', key: 'cuotas', width: 10 },
     { header: 'MONTO_CUOTA', key: 'monto_cuota', width: 15 },
   ];
 
-  (records || []).forEach(record => {
-    const st = record.student || {};
-    const enr = record.enrollment || {};
-    const g = enr.guardian || {};
-    const meta = enr.meta || {};
+  let matchedCount = 0;
+  let unmatchedCount = 0;
 
-    const stRut = formatRutFicon(st.run);
-    const gRut = formatRutFicon(g.run);
+  records.forEach((record, index) => {
+    const stRut = formatRutFicon(record.run_estudiante);
+    const gRut = formatRutFicon(record.run_apoderado);
+    
+    // Normalize the student RUN from the record for lookup
+    const normalizedStudentRun = normalizeRun(record.run_estudiante);
+    
+    // Get financial data using NORMALIZED student's RUN as key
+    const financialData = financialDataMap.get(normalizedStudentRun);
+    
+    if (financialData) {
+      matchedCount++;
+      // Debug first few matches
+      if (matchedCount <= 3) {
+        console.log(`✅ Match ${matchedCount}:`, {
+          student_run: record.run_estudiante,
+          normalized: normalizedStudentRun,
+          arancel: financialData.arancel,
+          medio_pago: financialData.medio_pago
+        });
+      }
+    } else {
+      unmatchedCount++;
+      // Debug first few unmatched
+      if (unmatchedCount <= 3) {
+        console.log(`❌ No Match ${unmatchedCount}:`, {
+          student_run: record.run_estudiante,
+          normalized: normalizedStudentRun,
+          student_name: record.nombres
+        });
+      }
+    }
+    
+    const dataToUse = financialData || {
+      arancel: 0,
+      matricula: 0,
+      cuotas: 0,
+      monto_cuota: 0,
+      medio_pago: 'No especificado'
+    };
     
     sheet.addRow({
       rut_body: stRut.body,
       rut_dv: stRut.dv,
-      ap_pat: st.apellido_paterno || '',
-      ap_mat: st.apellido_materno || '',
-      nombres: st.first_name,
+      ap_pat: record.apellido_paterno || '',
+      ap_mat: record.apellido_materno || '',
+      nombres: record.nombres || '',
       g_rut_body: gRut.body,
       g_rut_dv: gRut.dv,
-      g_name: `${g.first_name || ''} ${g.last_name || ''}`.trim(),
-      arancel: meta.colegiatura_anual || 0,
-      matricula: meta.monto_matricula || 0,
-      cuotas: meta.cantidad_cuotas || 0,
-      monto_cuota: meta.monto_cuota || 0
+      g_name: `${record.nombre_apoderado || ''} ${record.apellido_paterno_apoderado || ''} ${record.apellido_materno_apoderado || ''}`.trim(),
+      medio_pago: dataToUse.medio_pago,
+      arancel: dataToUse.arancel,
+      matricula: dataToUse.matricula,
+      cuotas: dataToUse.cuotas,
+      monto_cuota: dataToUse.monto_cuota
     });
   });
+  
+  console.log(`📊 FICON Summary: ${matchedCount} matched, ${unmatchedCount} unmatched out of ${records.length} total`);
 
   const buffer = await workbook.xlsx.writeBuffer();
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
