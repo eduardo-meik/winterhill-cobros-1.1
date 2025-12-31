@@ -30,6 +30,28 @@ export const generateLibroMatriculaReport = async () => {
     throw new Error('No se encontraron datos para generar el reporte');
   }
 
+  // Map folio por RUN y año de matrícula desde enrollments.meta.folio
+  const { data: enrollmentData, error: enrollmentError } = await supabase
+    .from('enrollment_students')
+    .select(`
+      student:student_id ( id, run ),
+      enrollment:enrollment_id ( id, year, meta )
+    `);
+
+  if (enrollmentError) {
+    console.error('Error fetching enrollment folios:', enrollmentError);
+  }
+
+  const folioMap = new Map();
+  (enrollmentData || []).forEach(item => {
+    const studentRun = normalizeRun(item.student?.run);
+    const enrollmentYear = item.enrollment?.year;
+    const folio = item.enrollment?.meta?.folio;
+    if (studentRun && enrollmentYear && folio) {
+      folioMap.set(`${studentRun}__${enrollmentYear}`, folio);
+    }
+  });
+
   const workbook = new ExcelJS.Workbook();
 
   // Separate by nivel (Básica vs Media)
@@ -49,6 +71,7 @@ export const generateLibroMatriculaReport = async () => {
     { header: 'Numero de Inscripcion', key: 'numero', width: 18 },
     { header: 'Nivel', key: 'nivel', width: 18 },
     { header: 'Curso', key: 'curso', width: 18 },
+    { header: 'Folio Matricula', key: 'folio_matricula', width: 18 },
     { header: 'Nombres', key: 'nombres', width: 20 },
     { header: 'Apellido Paterno', key: 'apellido_paterno', width: 18 },
     { header: 'Apellido Materno', key: 'apellido_materno', width: 18 },
@@ -85,10 +108,14 @@ export const generateLibroMatriculaReport = async () => {
   // Helper to add rows with correlative numbering per level
   const addRowsToSheet = (sheet, list, startNumber = 1) => {
     list.forEach((item, idx) => {
+      const folioKey = `${normalizeRun(item.run_estudiante)}__${item.year_matricula || ''}`;
+      const folioMatricula = folioMap.get(folioKey) || '';
+
       sheet.addRow({
         numero: startNumber + idx,
         nivel: item.nivel || '',
         curso: item.curso || '',
+        folio_matricula: folioMatricula,
         nombres: item.nombres || '',
         apellido_paterno: item.apellido_paterno || '',
         apellido_materno: item.apellido_materno || '',
@@ -214,13 +241,14 @@ export const generateFiconReport = async () => {
 
   // Create a map of NORMALIZED student RUN -> financial data
   // This ensures each student gets their own enrollment's financial information
-  const financialDataMap = new Map();
+  const financialDataMap = new Map(); // key: normalized RUN or RUN__year
   let mappedCount = 0;
   
   (enrollmentData || []).forEach(item => {
     if (item.student_id && item.enrollment) {
       const meta = item.enrollment.meta || {};
       const studentRun = studentRunMap.get(item.student_id);
+      const enrollmentYear = item.enrollment.year;
       
       if (studentRun) {
         // Build medio_pago string from payment method flags
@@ -240,10 +268,12 @@ export const generateFiconReport = async () => {
           matricula: meta.monto_matricula || 0,
           cuotas: meta.cantidad_cuotas || 0,
           monto_cuota: meta.monto_cuota || 0,
-          medio_pago: medioPagoStr
+          medio_pago: medioPagoStr,
+          folio: meta.folio || ''
         };
-        
-        financialDataMap.set(studentRun, financialData);
+        const keyWithYear = `${studentRun}__${enrollmentYear || ''}`;
+        financialDataMap.set(keyWithYear, financialData);
+        financialDataMap.set(studentRun, financialData); // fallback
         mappedCount++;
         
         // Debug: log first few mappings
@@ -252,7 +282,7 @@ export const generateFiconReport = async () => {
             run: studentRun,
             arancel: financialData.arancel,
             medio_pago: financialData.medio_pago,
-            enrollment_year: item.enrollment.year,
+            enrollment_year: enrollmentYear,
             enrollment_status: item.enrollment.status
           });
         }
@@ -271,6 +301,7 @@ export const generateFiconReport = async () => {
     { header: 'AP_PATERNO', key: 'ap_pat', width: 15 },
     { header: 'AP_MATERNO', key: 'ap_mat', width: 15 },
     { header: 'NOMBRES', key: 'nombres', width: 20 },
+    { header: 'FOLIO_MATRICULA', key: 'folio_matricula', width: 18 },
     { header: 'RUT_APODERADO', key: 'g_rut_body', width: 10 },
     { header: 'DV_APODERADO', key: 'g_rut_dv', width: 5 },
     { header: 'NOMBRE_APODERADO', key: 'g_name', width: 30 },
@@ -292,7 +323,8 @@ export const generateFiconReport = async () => {
     const normalizedStudentRun = normalizeRun(record.run_estudiante);
     
     // Get financial data using NORMALIZED student's RUN as key
-    const financialData = financialDataMap.get(normalizedStudentRun);
+    const recordYear = record.year_matricula || record.year || '';
+    const financialData = financialDataMap.get(`${normalizedStudentRun}__${recordYear}`) || financialDataMap.get(normalizedStudentRun);
     
     if (financialData) {
       matchedCount++;
@@ -322,7 +354,8 @@ export const generateFiconReport = async () => {
       matricula: 0,
       cuotas: 0,
       monto_cuota: 0,
-      medio_pago: 'No especificado'
+      medio_pago: 'No especificado',
+      folio: ''
     };
     
     sheet.addRow({
@@ -338,7 +371,8 @@ export const generateFiconReport = async () => {
       arancel: dataToUse.arancel,
       matricula: dataToUse.matricula,
       cuotas: dataToUse.cuotas,
-      monto_cuota: dataToUse.monto_cuota
+      monto_cuota: dataToUse.monto_cuota,
+      folio_matricula: dataToUse.folio || ''
     });
   });
   
