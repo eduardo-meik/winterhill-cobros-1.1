@@ -847,48 +847,25 @@ export function ReportingPage() {
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-4 p-4">
           <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Reportes</h1>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                onClick={handleExportLibroMatricula}
-                disabled={exporting || loading}
-              >
-                Libro Matrícula
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleExportFicon}
-                disabled={exporting || loading}
-              >
-                FICON
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleExportCheques}
-                disabled={exporting || loading}
-              >
-                Cheques
-              </Button>
-              <Button
-                onClick={() => handleExport('pdf')}
-                disabled={exporting || data.length === 0 || loading}
-                variant="secondary"
-                className="flex items-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                  <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM32,64H224V96H32Zm0,128V112H224v80Z"/>
-                </svg>
-                {exporting ? 'Generando...' : 'Exportar PDF'}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => handleExport('excel')}
-                disabled={exporting || data.length === 0 || loading}
-              >
-                Exportar Excel
-              </Button>
-            </div>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <Button
+              onClick={() => handleExport('pdf')}
+              disabled={exporting || data.length === 0 || loading}
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM32,64H224V96H32Zm0,128V112H224v80Z"/>
+              </svg>
+              {exporting ? 'Generando...' : 'Exportar PDF'}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handleExport('excel')}
+              disabled={exporting || data.length === 0 || loading}
+            >
+              Exportar Excel
+            </Button>
           </div>
         </div>
 
@@ -917,6 +894,12 @@ export function ReportingPage() {
                   {getFilteredData(data).length}
                 </span>
               )}
+            </TabButton>
+            <TabButton
+              isActive={activeTab === 'matricula'}
+              onClick={() => setActiveTab('matricula')}
+            >
+              Matrícula
             </TabButton>
             <TabButton
               isActive={activeTab === 'students'}
@@ -1028,6 +1011,60 @@ export function ReportingPage() {
                     isFiltered={getFilteredData(data).length !== data.length}
                   />
                 )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'matricula' && (
+          <div className="p-4">
+            <Card>
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Reportes de Matrícula</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Agrupados y filtrados a matrículas finalizadas/estudiantes matriculados.</p>
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Incluye folio de matrícula y pagaré cuando aplica.</span>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 shadow-sm flex flex-col h-full">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Libro de Matrícula</div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Excel académico con folio de matrícula y datos de curso.</p>
+                    <Button
+                      variant="secondary"
+                      className="mt-auto w-full"
+                      onClick={handleExportLibroMatricula}
+                      disabled={exporting || loading}
+                    >
+                      Exportar
+                    </Button>
+                  </div>
+                  <div className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 shadow-sm flex flex-col h-full">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">FICON</div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Excel financiero (medios de pago, arancel, matrícula, folio).</p>
+                    <Button
+                      variant="secondary"
+                      className="mt-auto w-full"
+                      onClick={handleExportFicon}
+                      disabled={exporting || loading}
+                    >
+                      Exportar
+                    </Button>
+                  </div>
+                  <div className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 shadow-sm flex flex-col h-full">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Cheques</div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Cheques asociados a matrícula (folio matrícula y pagaré/documento).</p>
+                    <Button
+                      variant="secondary"
+                      className="mt-auto w-full"
+                      onClick={handleExportCheques}
+                      disabled={exporting || loading}
+                    >
+                      Exportar
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
