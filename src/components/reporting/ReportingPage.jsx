@@ -14,7 +14,7 @@ import { PaymentsOverview } from './graphs/PaymentsOverview';
 import { PaymentStatusChart } from './graphs/PaymentStatusChart';
 import { PaymentMethodsChart } from './graphs/PaymentMethodsChart';
 import { PaymentsTable } from './tables/PaymentsTable'; // Import from the correct location
-import { generateLibroMatriculaReport, generateFiconReport } from '../../services/reporting';
+import { generateLibroMatriculaReport, generateFiconReport, generateChequesReport } from '../../services/reporting';
 
 export function ReportingPage() {
   const [filters, setFilters] = useState({
@@ -688,6 +688,26 @@ export function ReportingPage() {
     }
   };
 
+  const handleExportCheques = async () => {
+    try {
+      setExporting(true);
+      toast.loading('Generando Reporte Cheques...', { id: 'export-cheques' });
+      const blob = await generateChequesReport();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Reporte_Cheques_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Reporte de Cheques descargado', { id: 'export-cheques' });
+    } catch (error) {
+      console.error('Error exporting Cheques:', error);
+      toast.error('Error al generar reporte de Cheques', { id: 'export-cheques' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleApplyFilters = async (newFilters) => {
     // Log the current and new filters for debugging
     console.log("Current filters:", filters);
@@ -842,6 +862,13 @@ export function ReportingPage() {
                 disabled={exporting || loading}
               >
                 FICON
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleExportCheques}
+                disabled={exporting || loading}
+              >
+                Cheques
               </Button>
               <Button
                 onClick={() => handleExport('pdf')}

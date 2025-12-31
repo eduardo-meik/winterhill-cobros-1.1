@@ -347,3 +347,115 @@ export const generateFiconReport = async () => {
   const buffer = await workbook.xlsx.writeBuffer();
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 };
+
+// Reporte de matrículas con medio de pago Cheques
+export const generateChequesReport = async () => {
+  // Trae cheques y la matrícula asociada con guardian y estudiantes
+  const { data: cheques, error } = await supabase
+    .from('cheques')
+    .select(`
+      id, numero_serie, banco, fecha_emision, monto, estado, notas, created_at, updated_at,
+      enrollment:enrollment_id (
+        id,
+        year,
+        status,
+        meta,
+        guardian:guardian_id (
+          id, run, first_name, last_name, email, phone
+        ),
+        enrollment_students (
+        student:student_id (
+            id, run, first_name, apellido_paterno, apellido_materno,
+            curso:curso (
+              id, nom_curso, nivel
+            )
+          )
+        )
+      )
+    `);
+
+  if (error) {
+    console.error('Error fetching cheques:', error);
+    throw error;
+  }
+
+  if (!cheques || cheques.length === 0) {
+    throw new Error('No se encontraron cheques para generar el reporte');
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Cheques');
+
+  sheet.columns = [
+    { header: 'AÑO', key: 'year', width: 8 },
+    { header: 'ESTADO_MATRICULA', key: 'enrollment_status', width: 18 },
+    { header: 'CURSO', key: 'curso', width: 18 },
+    { header: 'FOLIO_MATRICULA', key: 'folio_matricula', width: 24 },
+    { header: 'FOLIO_PAGARE_O_DOC', key: 'folio_pagare', width: 24 },
+    { header: 'RUN_ALUMNO', key: 'student_run_body', width: 12 },
+    { header: 'DV_ALUMNO', key: 'student_run_dv', width: 6 },
+    { header: 'ALUMNO', key: 'student_name', width: 28 },
+    { header: 'RUN_APODERADO', key: 'guardian_run_body', width: 12 },
+    { header: 'DV_APODERADO', key: 'guardian_run_dv', width: 6 },
+    { header: 'APODERADO', key: 'guardian_name', width: 30 },
+    { header: 'EMAIL_APODERADO', key: 'guardian_email', width: 26 },
+    { header: 'PHONE_APODERADO', key: 'guardian_phone', width: 18 },
+    { header: 'MEDIO_PAGO', key: 'medio_pago', width: 12 },
+    { header: 'NUMERO_CHEQUE', key: 'numero_serie', width: 16 },
+    { header: 'BANCO', key: 'banco', width: 18 },
+    { header: 'FECHA_EMISION', key: 'fecha_emision', width: 14 },
+    { header: 'MONTO', key: 'monto', width: 14 },
+    { header: 'ESTADO_CHEQUE', key: 'estado_cheque', width: 14 },
+    { header: 'NOTAS', key: 'notas', width: 30 },
+    { header: 'CREATED_AT', key: 'created_at', width: 20 },
+    { header: 'UPDATED_AT', key: 'updated_at', width: 20 },
+    { header: 'ID_CHEQUE', key: 'cheque_id', width: 36 },
+    { header: 'ID_MATRICULA', key: 'enrollment_id', width: 36 }
+  ];
+
+  cheques.forEach((chq) => {
+    const enrollment = chq.enrollment || {};
+    const meta = enrollment.meta || {};
+    const guardian = enrollment.guardian || {};
+    const studentsList = (enrollment.enrollment_students || []).map(es => es.student).filter(Boolean);
+    const studentsToUse = studentsList.length > 0 ? studentsList : [null];
+
+    const guardianRut = formatRutFicon(guardian.run);
+    const guardianName = `${guardian.first_name || ''} ${guardian.last_name || ''}`.trim();
+    studentsToUse.forEach(student => {
+      const cursoNombre = meta.curso_nombre || meta.curso || meta.course || student?.curso?.nom_curso || '';
+      const studentRut = formatRutFicon(student?.run || '');
+      const studentName = student ? `${student.first_name || ''} ${student.apellido_paterno || ''} ${student.apellido_materno || ''}`.trim() : '';
+
+      sheet.addRow({
+        year: enrollment.year || '',
+        enrollment_status: enrollment.status || '',
+        curso: cursoNombre,
+        folio_matricula: meta.folio || '',
+        folio_pagare: chq.folio_number || '',
+        student_run_body: studentRut.body,
+        student_run_dv: studentRut.dv,
+        student_name: studentName,
+        guardian_run_body: guardianRut.body,
+        guardian_run_dv: guardianRut.dv,
+        guardian_name: guardianName,
+        guardian_email: guardian.email || '',
+        guardian_phone: guardian.phone || guardian.telefono || '',
+        medio_pago: 'Cheques',
+        numero_serie: chq.numero_serie || '',
+        banco: chq.banco || '',
+        fecha_emision: chq.fecha_emision || '',
+        monto: chq.monto || 0,
+        estado_cheque: chq.estado || '',
+        notas: chq.notas || '',
+        created_at: chq.created_at || '',
+        updated_at: chq.updated_at || '',
+        cheque_id: chq.id,
+        enrollment_id: enrollment.id || ''
+      });
+    });
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+};
