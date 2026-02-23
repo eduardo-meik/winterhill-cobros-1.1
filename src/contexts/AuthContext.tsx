@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase, signInWithGoogle, handleSupabaseError } from '../services/supabase';
 import toast from 'react-hot-toast';
@@ -307,8 +307,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   });
 
+  const contextValue = useMemo(() => ({
+    ...state,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    updatePassword,
+    signInWithGoogle: signInWithGoogleProvider,
+    refreshProfileRole,
+  }), [state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogleProvider, refreshProfileRole]);
+
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogle: signInWithGoogleProvider, refreshProfileRole }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

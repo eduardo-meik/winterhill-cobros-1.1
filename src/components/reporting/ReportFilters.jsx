@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { format } from 'date-fns';
 import debounce from 'lodash.debounce';
 import { Combobox } from '@headlessui/react';
@@ -61,7 +61,7 @@ export function ReportFilters({
   // Update local filters when parent filters change (for reset)
   // This is critical for the reset filters functionality
   React.useEffect(() => {
-    console.log("Parent filters changed:", filters);
+    if (import.meta.env.DEV) console.log("Parent filters changed");
     // Deep copy of filters to ensure we break references
     const filtersCopy = JSON.parse(JSON.stringify(filters));
     setLocalFilters(filtersCopy);
@@ -71,16 +71,20 @@ export function ReportFilters({
     setCourseQuery('');
     setStudentQuery('');
   }, [filters]);
-  
+
+  // Use a ref to always point at the latest onFiltersChange to avoid stale closures
+  const onFiltersChangeRef = useRef(onFiltersChange);
+  onFiltersChangeRef.current = onFiltersChange;
+
   const debouncedFiltersChange = useCallback(
     debounce((newFilters) => {
-      onFiltersChange(newFilters);
+      onFiltersChangeRef.current(newFilters);
     }, 300),
     []
   );
 
   const handleFilterChange = (key, value) => {
-    console.log(`Filter change: ${key} =`, value);
+    if (import.meta.env.DEV) console.log(`Filter change: ${key} =`, value);
     
     // Special handling for student IDs to ensure they're strings
     if (key === 'students' && Array.isArray(value)) {
@@ -92,7 +96,7 @@ export function ReportFilters({
     debouncedFiltersChange(newFilters);
     
     // If it's students filter, log what was actually set
-    if (key === 'students') {
+    if (import.meta.env.DEV && key === 'students') {
       console.log("Updated students filter:", newFilters.students);
     }
   };
@@ -160,7 +164,7 @@ export function ReportFilters({
             <Combobox
               value={localFilters.guardians || []}
               onChange={(value) => {
-                console.log("Guardian selection changed to:", value);
+                if (import.meta.env.DEV) console.log("Guardian selection changed to:", value);
                 handleFilterChange('guardians', value);
               }}
               multiple
@@ -328,10 +332,8 @@ export function ReportFilters({
             <Combobox
               value={localFilters.students || []}
               onChange={(value) => {
-                console.log("Student selection changed to:", value);
-                console.log("Selection data type:", typeof value, Array.isArray(value));
-                if (Array.isArray(value)) {
-                  console.log("First selected ID type:", typeof value[0]);
+                if (import.meta.env.DEV) {
+                  console.log("Student selection changed to:", value);
                 }
                 handleFilterChange('students', value);
               }}
@@ -569,7 +571,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={() => {
-              console.log("Reset filters button clicked");
+              if (import.meta.env.DEV) console.log("Reset filters button clicked");
               // Create a fresh default filters object
               const defaultFilters = {
                 status: 'all',

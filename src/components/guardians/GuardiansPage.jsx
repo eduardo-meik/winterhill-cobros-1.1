@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { GuardiansTable } from './GuardiansTable';
@@ -16,44 +16,44 @@ export function GuardiansPage() {
   const [selectedGuardian, setSelectedGuardian] = useState(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [relationshipType, setRelationshipType] = useState('all');
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     fetchGuardians();
   }, []);
 
+  // Debounce search term
   useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchTerm]);
+
+  // Memoized filtering — replaces dual state pattern
+  const filteredGuardians = useMemo(() => {
     const normalizeText = (text = '') => text
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
 
-    const filterGuardians = () => {
-      setIsSearching(true);
-      const searchNormalized = normalizeText(searchTerm);
+    const searchNormalized = normalizeText(debouncedSearch);
 
-      const results = guardians.filter(guardian => {
-        if (relationshipType !== 'all' && guardian.relationship_type !== relationshipType) return false;
-        if (!searchTerm) return true;
+    return guardians.filter(guardian => {
+      if (relationshipType !== 'all' && guardian.relationship_type !== relationshipType) return false;
+      if (!debouncedSearch) return true;
 
-        const fullName = `${guardian.first_name || ''} ${guardian.last_name || ''}`;
-        const normalizedName = normalizeText(fullName);
-        const normalizedRut = normalizeText(guardian.rut || '');
+      const fullName = `${guardian.first_name || ''} ${guardian.last_name || ''}`;
+      const normalizedName = normalizeText(fullName);
+      const normalizedRut = normalizeText(guardian.rut || '');
 
-        return normalizedName.includes(searchNormalized) ||
-               normalizedRut.includes(searchNormalized);
-      });
-
-      setSearchResults(results);
-      setIsSearching(false);
-    };
-
-    const debounceTimer = setTimeout(filterGuardians, 300);
-    return () => clearTimeout(debounceTimer);
-
-  }, [searchTerm, relationshipType, guardians]);
+      return normalizedName.includes(searchNormalized) ||
+             normalizedRut.includes(searchNormalized);
+    });
+  }, [guardians, debouncedSearch, relationshipType]);
 
   const fetchGuardians = async () => {
     try {
@@ -67,12 +67,10 @@ export function GuardiansPage() {
 
       const fetchedGuardians = data || [];
       setGuardians(fetchedGuardians);
-      setSearchResults(fetchedGuardians);
     } catch (error) {
       toast.error('Error al cargar los apoderados');
       console.error('Error:', error);
       setGuardians([]);
-      setSearchResults([]);
     } finally {
       setLoading(false);
     }
@@ -85,7 +83,7 @@ export function GuardiansPage() {
     totalPages,
     paginatedItems,
     handlePageChange
-  } = usePagination(searchResults);
+  } = usePagination(filteredGuardians);
 
   const handleCloseDetails = () => {
     setSelectedGuardian(null);
@@ -147,7 +145,7 @@ export function GuardiansPage() {
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                 </div>
-              ) : !loading && searchResults.length === 0 ? (
+              ) : !loading && filteredGuardians.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                   <p>No se encontraron apoderados que coincidan con los filtros.</p>
                   {(searchTerm || relationshipType !== 'all') && (
@@ -172,7 +170,7 @@ export function GuardiansPage() {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
-                    totalRecords={searchResults.length}
+                    totalRecords={filteredGuardians.length}
                     pageSize={pageSize}
                     onPageSizeChange={setPageSize}
                   />

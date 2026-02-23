@@ -530,6 +530,92 @@ Paso 10 ─ FASE 7.2  → Estandarizar helpers de rol (opcional)       [10 min]
 Paso 11 ─ Re-run Supabase Linter → Verificar 0 ERRORs, ≤3 WARNs   [5 min]
 ```
 
+---
+
+# ✅ Auditoría QA Frontend — Hallazgos y Remediación (2026-02-22)
+
+> Basado en `AUDIT_REPORT.md` — 21 hallazgos encontrados (5 críticos, 4 altos, 9 medios, 3 bajos).
+> **Todos los 21 hallazgos fueron corregidos.** Build Vite pasa sin errores.
+
+## Estado de Remediación Completa
+
+### 🔴 CRÍTICOS (5/5 corregidos)
+
+| # | Hallazgo | Archivo(s) | Corrección |
+|---|----------|------------|------------|
+| 1 | Escalación de privilegios: default → ADMIN | `usePermissions.ts` | Default cambiado a `READONLY` |
+| 2 | URL Vercel hardcodeada | `vite.config.js` | Eliminado fallback; usa `window.location.origin` en runtime |
+| 3 | Source maps en producción | `vite.config.js` | `sourcemap: mode !== 'production'` |
+| 4 | Fuga PII en console.log (22+ sentencias) | `MatriculaWizard.jsx` | Reemplazados por `Logger` con guards `import.meta.env.DEV` |
+| 5 | Puppeteer/Chromium en dependencies | `package.json` | Movidos a `devDependencies` |
+
+### 🟠 ALTOS (4/4 corregidos)
+
+| # | Hallazgo | Archivo(s) | Corrección |
+|---|----------|------------|------------|
+| 6 | Rules of Hooks violado (early return) | `PaymentDetailsModal.jsx` | Hooks movidos antes de returns condicionales |
+| 7 | Rutas matrícula/repactación sin StaffRoute | `App.jsx` | Envueltas en `<StaffRoute>` |
+| 8 | URL Supabase hardcodeada | `AuthContext.tsx` | Usa `import.meta.env.VITE_SUPABASE_URL` |
+| 9 | XSS en templates + memory leak | `autorizacionDescuento.ts`, `enrollmentReceipt.ts` | `escapeHtml()` en `src/utils/html.ts`; `revokeObjectURL` con timeout |
+
+### 🟡 MEDIOS (9/9 corregidos)
+
+| # | Hallazgo | Archivo(s) | Corrección |
+|---|----------|------------|------------|
+| 10 | Sin paginación de servidor | `PaymentsPage.jsx` | `.range(from, to)` server-side via `usePagination` |
+| 11 | N+1 en búsqueda de estudiantes | `PaymentsPage.jsx` | Join en query principal |
+| 12 | Cache sin invalidación por usuario | `matricula.ts` | `clearGuardianCaches()` en `SIGNED_OUT` |
+| 13 | `window.location.href` vs `navigate()` | `MatriculaWizard.jsx` | Reemplazado por `useNavigate()` |
+| 14 | Idle timeout deshabilitado | `AuthContext.tsx` | `ENABLE_IDLE_TIMEOUT = true` en producción |
+| 15 | `session: any` | `auth.ts` | Tipado como `Session` de Supabase |
+| 16 | Placeholders sin reemplazar | `autorizacionDescuento.ts` | `SCHOOL_INFO` en `src/constants/school.ts` |
+| 17 | MatriculaWizard 2,729 líneas (SRP) | `MatriculaWizard.jsx` | **Descompuesto** — ver sección abajo |
+| 18 | Memory leak Object URL | `enrollmentReceipt.ts` | Corregido en fix #9 |
+
+### 🟢 BAJOS (3/3 corregidos)
+
+| # | Hallazgo | Archivo(s) | Corrección |
+|---|----------|------------|------------|
+| 19 | Códigos de log duplicados | `logging.ts` | Deduplicados con prefijos únicos |
+| 20 | console.log en email.ts | `email.ts` | Envueltos en `import.meta.env.DEV` |
+| 21 | `normalizeRun` duplicada | `reporting.js` | Usa import de `src/utils/rut.ts` |
+
+---
+
+## Descomposición de MatriculaWizard (#17) — Detalle
+
+El monolito de 2,729 líneas fue descompuesto en 10 módulos:
+
+### Custom Hooks extraídos (5)
+
+| Hook | Responsabilidad | Archivo |
+|------|----------------|---------|
+| `useWizardNavigation` | Navegación entre pasos + validación | `src/hooks/matricula/useWizardNavigation.js` |
+| `useAssistedMode` | Búsqueda/selección de guardian para staff | `src/hooks/matricula/useAssistedMode.js` |
+| `useEnrollmentData` | Guardian, enrollment, students, deuda | `src/hooks/matricula/useEnrollmentData.js` |
+| `useEconomicData` | Datos económicos, plan de pago, cheques | `src/hooks/matricula/useEconomicData.js` |
+| `useDocumentGeneration` | PDF, email, firma, finalización | `src/hooks/matricula/useDocumentGeneration.js` |
+
+### Sub-componentes extraídos (4)
+
+| Componente | Step | Archivo |
+|------------|------|---------|
+| `StudentSelectionStep` | 0 | `src/components/matricula/steps/StudentSelectionStep.jsx` |
+| `EconomicDataStep` | 1 | `src/components/matricula/steps/EconomicDataStep.jsx` |
+| `PreviewStep` | 2 | `src/components/matricula/steps/PreviewStep.jsx` |
+| `DebtGatingBanner` | — | `src/components/matricula/steps/DebtGatingBanner.jsx` |
+
+### Resultado
+
+| Métrica | Antes | Después |
+|---------|-------|---------|
+| Líneas `MatriculaWizard.jsx` | 2,729 | ~510 (orquestador) |
+| `useState` en archivo principal | 39 | 3 (`year`, `viewMode`, render-only) |
+| `useEffect` en archivo principal | 17 | 1 (patch refs) |
+| Módulos totales | 1 | 10 (1 orquestador + 5 hooks + 4 componentes) |
+| Build Vite | ✅ | ✅ (18.54s, 0 errores) |
+| Backup eliminado | — | `MatriculaWizard.old.jsx` → commit `e50b441` |
+
 > 📝 **Nota plan Free:** Los warnings `auth_leaked_password_protection` y `vulnerable_postgres_version`
 > **no son resolvables** en el plan actual. El linter seguirá reportándolos. Objetivo realista:
 > **0 ERRORs + máximo 3 WARNs residuales** (leaked passwords + postgres version + OTP si no se cambia).

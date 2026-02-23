@@ -5,8 +5,7 @@ import { PaymentsTable } from './PaymentsTable';
 import { PaymentsFilters } from './PaymentsFilters';
 import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
-import * as ExcelJS from 'exceljs';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { supabase } from '@/services/supabase';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -23,7 +22,7 @@ export function PaymentsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [currentOffset, setCurrentOffset] = useState(0);
-  const BATCH_SIZE = 250; // Optimized smaller batch for faster queries
+  const searchTimerRef = useRef(null);
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
@@ -168,10 +167,23 @@ export function PaymentsPage() {
     fetchPayments(true); // Initial load
   }, []);
 
-  // Refetch when search or status changes to apply server-side filtering
+  // Refetch when status changes immediately; debounce search by 400ms
   useEffect(() => {
     fetchPayments(true);
-  }, [filters.search, filters.status]);
+  }, [filters.status]);
+
+  useEffect(() => {
+    // Skip initial mount (handled above)
+    if (searchTimerRef.current === null && !filters.search) {
+      searchTimerRef.current = 'init';
+      return;
+    }
+    clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      fetchPayments(true);
+    }, 400);
+    return () => clearTimeout(searchTimerRef.current);
+  }, [filters.search]);
 
   const fetchPayments = async (reset = true) => {
     try {
@@ -346,6 +358,7 @@ export function PaymentsPage() {
         'Notas': payment.notes || '-'
       }));
       
+      const ExcelJS = await import('exceljs');
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet('Pagos');
       

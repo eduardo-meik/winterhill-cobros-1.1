@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 
-export function GuardiansTable({ guardians, onViewDetails, onSuccess }) {
+export const GuardiansTable = React.memo(function GuardiansTable({ guardians, onViewDetails, onSuccess }) {
   const handleDelete = async (guardian) => {
     const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al apoderado ${guardian.first_name} ${guardian.last_name}?`);
     if (!confirmed) return;
@@ -85,4 +85,4 @@ export function GuardiansTable({ guardians, onViewDetails, onSuccess }) {
       </table>
     </div>
   );
-}
+});

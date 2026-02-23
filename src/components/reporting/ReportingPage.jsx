@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { format, parseISO } from 'date-fns';
-import * as ExcelJS from 'exceljs';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabase';
 import { PDFReport } from './PDFReport';
@@ -46,63 +45,26 @@ export function ReportingPage() {
     fetchData(filters);
   }, []);
 
-  // Helper function to filter data consistently across all components
-  const getFilteredData = (dataToFilter) => {
-    // First ensure all payments have the required student field
-    const validData = dataToFilter.filter(payment => 
-      payment && payment.student
-    );
-
-    console.log('Filtering data:', { 
-      totalRecords: dataToFilter.length,
-      validRecords: validData.length,
-      filters,
-      studentFilterActive: filters.students.length > 0,
-      firstStudentId: filters.students[0]
-    });
-
-    // Special logging for student filtering
-    if (filters.students.length > 0) {
-      console.log("Student filter active - examining records for matching student IDs");
-      const matchingRecords = validData.filter(payment => 
-        payment.student && 
-        filters.students.some(selectedId => {
-          const matchResult = String(payment.student.id) === String(selectedId);
-          if (matchResult) {
-            console.log("Found matching record:", {
-              paymentId: payment.id,
-              studentId: payment.student.id,
-              selectedId: selectedId,
-              bothAsString: `${String(payment.student.id)} === ${String(selectedId)}`
-            });
-          }
-          return matchResult;
-        })
-      );
-      
-      console.log(`Found ${matchingRecords.length} records matching the selected student IDs`);
-      
-      if (matchingRecords.length === 0 && validData.length > 0) {
-        // Debug the first few records to see why they're not matching
-        console.log("Sample records that didn't match:", validData.slice(0, 3).map(payment => ({
-          paymentId: payment.id,
-          studentId: payment.student?.id,
-          studentIdType: typeof payment.student?.id,
-          feeStudentId: payment.student_id,
-          selectedStudentIds: filters.students
-        })));
-      }
-    }
-
-    // Then apply filters
-    return validData.filter(payment => 
-      // Apply status filter
+  // Memoized filtered data — computed once per data/filters change instead of 8-11× per render
+  const filteredData = useMemo(() => {
+    const validData = data.filter(payment => payment && payment.student);
+    return validData.filter(payment =>
       (filters.status === 'all' || payment.status === filters.status) &&
-      // Apply student filter - Apply this filter regardless of whether it was applied in the database query
-      // This ensures consistency in filtering behavior
-      (!filters.students.length || 
+      (!filters.students.length ||
         (payment.student && filters.students.some(id => String(payment.student.id) === String(id)))) &&
-      // Apply course filter
+      (!filters.courses.length ||
+        filters.courses.includes(payment.student?.curso))
+    );
+  }, [data, filters.status, filters.students, filters.courses]);
+
+  // Keep getFilteredData as a thin wrapper for the export handler (which passes a different dataset)
+  const getFilteredData = (dataToFilter) => {
+    if (dataToFilter === data) return filteredData; // reuse memo
+    const validData = dataToFilter.filter(payment => payment && payment.student);
+    return validData.filter(payment =>
+      (filters.status === 'all' || payment.status === filters.status) &&
+      (!filters.students.length ||
+        (payment.student && filters.students.some(id => String(payment.student.id) === String(id)))) &&
       (!filters.courses.length ||
         filters.courses.includes(payment.student?.curso))
     );
@@ -112,7 +74,7 @@ export function ReportingPage() {
     try {
       setLoading(true);
       
-      console.log("Fetching data with filters:", JSON.stringify(filters, null, 2));
+      if (import.meta.env.DEV) console.log("Fetching data with filters:", JSON.stringify(filters, null, 2));
       
       // Start building the query
       let query = supabase.from('fee').select(`
@@ -150,12 +112,12 @@ export function ReportingPage() {
       // Direct student filter
       if (filters.students && filters.students.length > 0) {
         // Log the raw student IDs from the filters
-        console.log("Raw student IDs from filters:", filters.students);
+        if (import.meta.env.DEV) console.log("Raw student IDs from filters:", filters.students);
         
         try {
           // Approach 1: Use in() with string IDs
           const studentIdsAsString = filters.students.map(id => String(id));
-          console.log("Applying student filter to query:", {
+          if (import.meta.env.DEV) console.log("Applying student filter to query:", {
             originalIds: filters.students,
             normalizedIds: studentIdsAsString
           });
@@ -164,7 +126,7 @@ export function ReportingPage() {
           query = query.in('student_id', studentIdsAsString);
           
         } catch (filterError) {
-          console.error("Error normalizing student IDs:", filterError);
+          if (import.meta.env.DEV) console.error("Error normalizing student IDs:", filterError);
         }
       }
       
@@ -173,25 +135,19 @@ export function ReportingPage() {
       
       if (feesError) throw feesError;
       
-      console.log(`Initial query returned ${feesData?.length} records`);
+      if (import.meta.env.DEV) console.log(`Initial query returned ${feesData?.length} records`);
       
       // Always log if the query returned no records when filtering by students
       if (filters.students && filters.students.length > 0 && (!feesData || feesData.length === 0)) {
-        console.error('No records found for selected students! Student IDs:', filters.students);
+        if (import.meta.env.DEV) console.warn('No records found for selected students! Student IDs:', filters.students);
       }
       
       // Log a sample record to examine its structure
-      if (feesData && feesData.length > 0) {
+      if (import.meta.env.DEV && feesData && feesData.length > 0) {
         console.log('Sample fee record structure:', {
-          fee: feesData[0],
-          student: feesData[0].student,
           studentId: feesData[0].student?.id,
-          studentIdType: typeof feesData[0].student?.id,
           feeStudentId: feesData[0].student_id,
-          feeStudentIdType: typeof feesData[0].student_id
         });
-      } else {
-        console.warn('No fee records returned to inspect structure');
       }
       
       // Apply post-query filters
@@ -220,7 +176,7 @@ export function ReportingPage() {
       // Apply guardian filter - we need to filter by students related to selected guardians
       if (filters.guardians && filters.guardians.length > 0) {
         try {
-          console.log("Filtering by guardians:", filters.guardians);
+          if (import.meta.env.DEV) console.log("Filtering by guardians:", filters.guardians);
           
           // Query the student_guardian table to get students for the selected guardians
           let { data: guardianStudents, error: guardianStudentsError } = await supabase
@@ -245,10 +201,10 @@ export function ReportingPage() {
               return studentIdsFromGuardians.includes(feeStudentIdAsString);
             });
             
-            console.log(`After guardian filtering: ${filteredData.length} records remain`);
+            if (import.meta.env.DEV) console.log(`After guardian filtering: ${filteredData.length} records remain`);
           } else {
             // No students found for these guardians - empty result
-            console.log('No students found for selected guardians');
+            if (import.meta.env.DEV) console.log('No students found for selected guardians');
             filteredData = [];
           }
         } catch (error) {
@@ -266,12 +222,12 @@ export function ReportingPage() {
           return filters.courses.includes(fee.student.curso);
         });
         
-        console.log(`After course filtering: ${filteredData.length} records`);
+        if (import.meta.env.DEV) console.log(`After course filtering: ${filteredData.length} records`);
       }
       
       // Search filter has been removed
 
-      console.log(`After filtering: ${filteredData.length} records`);
+      if (import.meta.env.DEV) console.log(`After filtering: ${filteredData.length} records`);
       setData(filteredData);
       
     } catch (error) {
@@ -295,7 +251,7 @@ export function ReportingPage() {
 
   const fetchReferenceData = async () => {
     try {
-      console.log("Fetching reference data...");
+      if (import.meta.env.DEV) console.log("Fetching reference data...");
       
       // Fetch guardians separately for better error handling
       const guardiansResponse = await supabase
@@ -308,8 +264,7 @@ export function ReportingPage() {
         throw guardiansResponse.error;
       }
       
-      // Log the number of guardians found
-      console.log(`Found ${guardiansResponse.data?.length || 0} guardians`);
+      if (import.meta.env.DEV) console.log(`Found ${guardiansResponse.data?.length || 0} guardians`);
       
       // Fetch courses and students in parallel
       const [coursesResponse, studentsResponse] = await Promise.all([
@@ -328,11 +283,10 @@ export function ReportingPage() {
       }));
       
       setGuardians(processedGuardians);
-      console.log("Processed guardians:", processedGuardians.length);
+      if (import.meta.env.DEV) console.log("Reference data loaded:", processedGuardians.length, "guardians,", coursesResponse.data.length, "courses,", processedStudents.length, "students");
       
       // Courses
       setCourses(coursesResponse.data);
-      console.log("Courses:", coursesResponse.data.length);
       
       // Students
       const processedStudents = studentsResponse.data.map(s => ({
@@ -342,7 +296,6 @@ export function ReportingPage() {
       }));
       
       setStudents(processedStudents);
-      console.log("Processed students:", processedStudents.length);
       
     } catch (error) {
       console.error('Error fetching reference data:', error);
@@ -400,40 +353,21 @@ export function ReportingPage() {
       }
       
       // Apply all active filters to data
-      const filteredData = getFilteredData(data);
+      const filteredExportData = getFilteredData(data);
       
-      console.log('Export preparation:', {
+      if (import.meta.env.DEV) console.log('Export preparation:', {
         totalRecords: data.length,
-        filteredRecords: filteredData.length,
-        activeFilters: {
-          students: filters.students,
-          courses: filters.courses,
-          guardians: filters.guardians,
-          status: filters.status
-        }
+        filteredRecords: filteredExportData.length,
       });
       
-      // Show sample filtered data if available
-      if (filteredData.length > 0) {
-        console.log('Sample filtered record:', {
-          firstRecord: filteredData[0],
-          hasStudent: !!filteredData[0].student,
-          studentId: filteredData[0].student?.id
-        });
-      }
-      
       // Then filter out data with missing required fields
-      const validData = filteredData.filter(item => 
+      const validData = filteredExportData.filter(item => 
         item && item.student && 
         (item.student.first_name || item.student.whole_name)
       );
       
       if (validData.length === 0) {
-        console.error('No valid data for export after filtering', {
-          filteredCount: filteredData.length,
-          validCount: 0,
-          studentFilterActive: filters.students.length > 0
-        });
+        if (import.meta.env.DEV) console.warn('No valid data for export after filtering');
         toast.error('No hay datos válidos para exportar');
         setExporting(false);
         return;
@@ -504,6 +438,7 @@ export function ReportingPage() {
           toast.loading('Generando Excel, por favor espere...');
           
           // Excel export with summary information and formatted filters
+          const ExcelJS = await import('exceljs');
           const wb = new ExcelJS.Workbook();
           
           // Add info sheet with filter information
@@ -709,10 +644,6 @@ export function ReportingPage() {
   };
 
   const handleApplyFilters = async (newFilters) => {
-    // Log the current and new filters for debugging
-    console.log("Current filters:", filters);
-    console.log("New filters to apply:", newFilters);
-    
     // Special handling for guardian filters - make sure we have a deep copy
     const safeNewFilters = {
       ...newFilters,
@@ -723,13 +654,8 @@ export function ReportingPage() {
     };
     
     // Debug student IDs
-    if (safeNewFilters.students.length > 0) {
-      console.log("Student IDs after normalization:", {
-        ids: safeNewFilters.students,
-        types: safeNewFilters.students.map(id => typeof id),
-        firstId: safeNewFilters.students[0],
-        firstIdType: typeof safeNewFilters.students[0]
-      });
+    if (import.meta.env.DEV && safeNewFilters.students.length > 0) {
+      console.log("Student IDs after normalization:", safeNewFilters.students);
     }
     
     // Update the filters state
@@ -761,7 +687,7 @@ export function ReportingPage() {
       return safeNewFilters[key] !== filters[key];
     });
     
-    console.log("Has filter changes:", hasChanges);
+    if (import.meta.env.DEV) console.log("Has filter changes:", hasChanges);
     
     // Always fetch data, but with different toast messages
     if (hasChanges) {
@@ -774,7 +700,7 @@ export function ReportingPage() {
         }
       );
     } else {
-      console.log("No filter changes detected, fetching with current filters");
+      if (import.meta.env.DEV) console.log("No filter changes detected, fetching with current filters");
       await fetchData(safeNewFilters);
     }
   };
@@ -792,7 +718,7 @@ export function ReportingPage() {
       year: 'all'
     };
     
-    console.log("Resetting filters to defaults:", defaultFilters);
+    if (import.meta.env.DEV) console.log("Resetting filters to defaults");
     
     // First update the filters state to ensure components are properly reset
     setFilters(defaultFilters);
@@ -827,7 +753,7 @@ export function ReportingPage() {
       
       // Set the fresh data
       setData(feesData || []);
-      console.log(`Reset successful. Loaded ${feesData?.length || 0} fee records with no filters`);
+      if (import.meta.env.DEV) console.log(`Reset successful. Loaded ${feesData?.length || 0} fee records`);
       toast.success('Filtros restablecidos exitosamente');
     } catch (error) {
       console.error('Error resetting filters:', error);
@@ -836,9 +762,6 @@ export function ReportingPage() {
       setData([]);
     } finally {
       setLoading(false);
-      
-      // Double check that filters were actually reset
-      console.log("Final filters state after reset:", filters);
     }
   };
 
@@ -889,9 +812,9 @@ export function ReportingPage() {
               onClick={() => setActiveTab('payments')}
             >
               Aranceles 
-              {getFilteredData(data).length !== data.length && (
+              {filteredData.length !== data.length && (
                 <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 py-0.5 px-1.5 rounded-full">
-                  {getFilteredData(data).length}
+                  {filteredData.length}
                 </span>
               )}
             </TabButton>
@@ -933,7 +856,7 @@ export function ReportingPage() {
                 ) : (
                   <PaymentsOverview 
                     ref={paymentsOverviewRef} 
-                    data={getFilteredData(data)}
+                    data={filteredData}
                     loading={loading} 
                   />
                 )}
@@ -955,7 +878,7 @@ export function ReportingPage() {
                 ) : (
                   <PaymentStatusChart 
                     ref={paymentStatusRef} 
-                    data={getFilteredData(data)}
+                    data={filteredData}
                     loading={loading} 
                   />
                 )}
@@ -977,7 +900,7 @@ export function ReportingPage() {
                 ) : (
                   <PaymentMethodsChart 
                     ref={paymentMethodsRef} 
-                    data={getFilteredData(data)} 
+                    data={filteredData} 
                     loading={loading} 
                   />
                 )}
@@ -989,7 +912,7 @@ export function ReportingPage() {
               <CardHeader className="flex flex-wrap justify-between items-center">
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Detalle de Pagos</h2>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {getFilteredData(data).length} {getFilteredData(data).length === 1 ? 'registro' : 'registros'} encontrados
+                  {filteredData.length} {filteredData.length === 1 ? 'registro' : 'registros'} encontrados
                 </div>
               </CardHeader>
               <CardContent>
@@ -1004,11 +927,11 @@ export function ReportingPage() {
                   </div>
                 ) : (
                   <PaymentsTable 
-                    data={getFilteredData(data)} 
+                    data={filteredData} 
                     loading={loading}
-                    filteredCount={getFilteredData(data).length}
+                    filteredCount={filteredData.length}
                     totalCount={data.length}
-                    isFiltered={getFilteredData(data).length !== data.length}
+                    isFiltered={filteredData.length !== data.length}
                   />
                 )}
               </CardContent>

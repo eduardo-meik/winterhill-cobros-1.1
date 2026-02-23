@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
@@ -14,21 +14,30 @@ import { GuardianClaimPage } from './pages/auth/GuardianClaimPage';
 import { GuardianAcceptInvitePage } from './pages/auth/GuardianAcceptInvitePage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { MainLayout } from './components/layouts/MainLayout';
-import Dashboard from './components/Dashboard';
-import { StudentsPage } from './components/students/StudentsPage';
-import { GuardiansPage } from './components/guardians/GuardiansPage';
-import { PaymentsPage } from './components/payments/PaymentsPage';
-import { ReportingPage } from './components/reporting/ReportingPage.jsx';
-import { AssistantPage } from './components/assistant/AssistantPage';
-import { ProfilePage } from './components/profile/ProfilePage';
-import { SettingsPage } from './components/settings/SettingsPage';
-import { MatriculaWizard } from './components/matricula/MatriculaWizard';
-import { GuardianIntakePage } from './pages/guardian/GuardianIntakePage';
-import RepactacionWizard from './components/repactacion/RepactacionWizard';
-import { GuardianWelcomePage } from './pages/guardian/GuardianWelcomePage';
-import GuardianPortalPage from './pages/guardian/GuardianPortalPage';
-import GuardianEnrollmentPage from './pages/guardian/GuardianEnrollmentPage';
 import { useAuth } from './contexts/AuthContext';
+
+// Lazy-loaded route components — each becomes its own chunk
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const StudentsPage = React.lazy(() => import('./components/students/StudentsPage').then(m => ({ default: m.StudentsPage })));
+const GuardiansPage = React.lazy(() => import('./components/guardians/GuardiansPage').then(m => ({ default: m.GuardiansPage })));
+const PaymentsPage = React.lazy(() => import('./components/payments/PaymentsPage').then(m => ({ default: m.PaymentsPage })));
+const ReportingPage = React.lazy(() => import('./components/reporting/ReportingPage.jsx').then(m => ({ default: m.ReportingPage })));
+const AssistantPage = React.lazy(() => import('./components/assistant/AssistantPage').then(m => ({ default: m.AssistantPage })));
+const ProfilePage = React.lazy(() => import('./components/profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
+const SettingsPage = React.lazy(() => import('./components/settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const MatriculaWizard = React.lazy(() => import('./components/matricula/MatriculaWizard').then(m => ({ default: m.MatriculaWizard })));
+const GuardianIntakePage = React.lazy(() => import('./pages/guardian/GuardianIntakePage').then(m => ({ default: m.GuardianIntakePage })));
+const RepactacionWizard = React.lazy(() => import('./components/repactacion/RepactacionWizard'));
+const GuardianWelcomePage = React.lazy(() => import('./pages/guardian/GuardianWelcomePage').then(m => ({ default: m.GuardianWelcomePage })));
+const GuardianPortalPage = React.lazy(() => import('./pages/guardian/GuardianPortalPage'));
+const GuardianEnrollmentPage = React.lazy(() => import('./pages/guardian/GuardianEnrollmentPage'));
+
+// Shared loading fallback
+const PageSpinner = () => (
+  <div className="flex h-full items-center justify-center py-20">
+    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
+  </div>
+);
 
 // Dynamic root redirect based on role
 export function RootRedirect() {
@@ -74,12 +83,12 @@ export default function App() {
             {/* Root redirect: guardian -> bienvenida, others -> dashboard */}
             <Route index element={<RootRedirect />} />
 
-            {/* Main application routes */}
+            {/* Main application routes — lazy loaded */}
             <Route
               path="dashboard"
               element={(
                 <StaffRoute>
-                  <Dashboard />
+                  <Suspense fallback={<PageSpinner />}><Dashboard /></Suspense>
                 </StaffRoute>
               )}
             />
@@ -87,7 +96,7 @@ export default function App() {
               path="students"
               element={(
                 <StaffRoute>
-                  <StudentsPage />
+                  <Suspense fallback={<PageSpinner />}><StudentsPage /></Suspense>
                 </StaffRoute>
               )}
             />
@@ -95,7 +104,7 @@ export default function App() {
               path="guardians"
               element={(
                 <StaffRoute>
-                  <GuardiansPage />
+                  <Suspense fallback={<PageSpinner />}><GuardiansPage /></Suspense>
                 </StaffRoute>
               )}
             />
@@ -103,7 +112,7 @@ export default function App() {
               path="payments"
               element={(
                 <StaffRoute>
-                  <PaymentsPage />
+                  <Suspense fallback={<PageSpinner />}><PaymentsPage /></Suspense>
                 </StaffRoute>
               )}
             />
@@ -111,7 +120,7 @@ export default function App() {
               path="reporting"
               element={(
                 <StaffRoute>
-                  <ReportingPage />
+                  <Suspense fallback={<PageSpinner />}><ReportingPage /></Suspense>
                 </StaffRoute>
               )}
             />
@@ -119,18 +128,18 @@ export default function App() {
               path="assistant"
               element={(
                 <StaffRoute>
-                  <AssistantPage />
+                  <Suspense fallback={<PageSpinner />}><AssistantPage /></Suspense>
                 </StaffRoute>
               )}
             />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="matricula" element={<StaffRoute><MatriculaWizard /></StaffRoute>} />
-            <Route path="repactacion" element={<StaffRoute><RepactacionWizard /></StaffRoute>} />
-            <Route path="apoderado/encuesta" element={<GuardianIntakePage />} />
-            <Route path="apoderado/bienvenido" element={<GuardianWelcomePage />} />
-            <Route path="apoderado/portal" element={<GuardianPortalPage />} />
-            <Route path="apoderado/matricula" element={<GuardianEnrollmentPage />} />
+            <Route path="profile" element={<Suspense fallback={<PageSpinner />}><ProfilePage /></Suspense>} />
+            <Route path="settings" element={<Suspense fallback={<PageSpinner />}><SettingsPage /></Suspense>} />
+            <Route path="matricula" element={<StaffRoute><Suspense fallback={<PageSpinner />}><MatriculaWizard /></Suspense></StaffRoute>} />
+            <Route path="repactacion" element={<StaffRoute><Suspense fallback={<PageSpinner />}><RepactacionWizard /></Suspense></StaffRoute>} />
+            <Route path="apoderado/encuesta" element={<Suspense fallback={<PageSpinner />}><GuardianIntakePage /></Suspense>} />
+            <Route path="apoderado/bienvenido" element={<Suspense fallback={<PageSpinner />}><GuardianWelcomePage /></Suspense>} />
+            <Route path="apoderado/portal" element={<Suspense fallback={<PageSpinner />}><GuardianPortalPage /></Suspense>} />
+            <Route path="apoderado/matricula" element={<Suspense fallback={<PageSpinner />}><GuardianEnrollmentPage /></Suspense>} />
           </Route>
         </Routes>
         <Toaster position="top-right" />

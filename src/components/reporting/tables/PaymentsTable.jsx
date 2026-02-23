@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 import { TableContainer } from '../../ui/TableContainer';
 import { TableHeader } from '../../ui/TableHeader';
+import { usePagination } from '../../../hooks/usePagination';
+import { Pagination } from '../../ui/Pagination';
 
-export function PaymentsTable({ data, loading, onViewDetails, filteredCount, totalCount, isFiltered }) {
+export const PaymentsTable = React.memo(function PaymentsTable({ data, loading, onViewDetails, filteredCount, totalCount, isFiltered }) {
   const [sortField, setSortField] = useState('due_date');
   const [sortDirection, setSortDirection] = useState('asc');
   
@@ -43,8 +45,9 @@ export function PaymentsTable({ data, loading, onViewDetails, filteredCount, tot
     return payment[field];
   };
   
-  // Sort payments
-  const sortedPayments = [...data].sort((a, b) => {
+  // Memoized sort — only recomputes when data, sortField, or sortDirection changes
+  const sortedPayments = useMemo(() => {
+    return [...data].sort((a, b) => {
     const aValue = getSortValue(a, sortField);
     const bValue = getSortValue(b, sortField);
     
@@ -61,6 +64,18 @@ export function PaymentsTable({ data, loading, onViewDetails, filteredCount, tot
     }
     return 0;
   });
+  }, [data, sortField, sortDirection]);
+
+  // Pagination for large datasets
+  const {
+    currentPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    paginatedItems: paginatedPayments,
+    handlePageChange
+  } = usePagination(sortedPayments, 25);
+
     if (loading) {
     return (      <div className="flex items-center justify-center py-8">
         <div className="flex flex-col items-center">
@@ -155,7 +170,7 @@ export function PaymentsTable({ data, loading, onViewDetails, filteredCount, tot
           </tr>
         </TableHeader>
         <tbody>
-          {sortedPayments.map((payment) => (
+          {paginatedPayments.map((payment) => (
             <tr
               key={payment.id}
               className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors"
@@ -238,6 +253,16 @@ export function PaymentsTable({ data, loading, onViewDetails, filteredCount, tot
           ))}
         </tbody>
       </TableContainer>
+      {sortedPayments.length > 25 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          totalRecords={sortedPayments.length}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
+      )}
     </div>
   );
-}
+});

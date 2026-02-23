@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 import { TableContainer } from '../ui/TableContainer';
 import { TableHeader } from '../ui/TableHeader';
 
-export function PaymentsTable({
+export const PaymentsTable = React.memo(function PaymentsTable({
   payments,
   onViewDetails,
   loading
@@ -200,4 +200,4 @@ export function PaymentsTable({
       </TableContainer>
     </div>
   );
-}
+});
