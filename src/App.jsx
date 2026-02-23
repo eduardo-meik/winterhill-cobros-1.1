@@ -125,8 +125,8 @@ export default function App() {
             />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
-            <Route path="matricula" element={<MatriculaWizard />} />
-            <Route path="repactacion" element={<RepactacionWizard />} />
+            <Route path="matricula" element={<StaffRoute><MatriculaWizard /></StaffRoute>} />
+            <Route path="repactacion" element={<StaffRoute><RepactacionWizard /></StaffRoute>} />
             <Route path="apoderado/encuesta" element={<GuardianIntakePage />} />
             <Route path="apoderado/bienvenido" element={<GuardianWelcomePage />} />
             <Route path="apoderado/portal" element={<GuardianPortalPage />} />

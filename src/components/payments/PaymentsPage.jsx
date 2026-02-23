@@ -35,8 +35,6 @@ export function PaymentsPage() {
     startDate: '',
     endDate: ''
   });
-  const [matchedStudentIds, setMatchedStudentIds] = useState(new Set());
-
   // Optimize filter options calculation with useMemo and better data structure
   const filterOptions = useMemo(() => {
     if (payments.length === 0) return { cursos: [], years: [], cuotas: [] };
@@ -170,38 +168,10 @@ export function PaymentsPage() {
     fetchPayments(true); // Initial load
   }, []);
 
-  // Refetch when search changes to let the DB include rows even if embeds are null under RLS
+  // Refetch when search or status changes to apply server-side filtering
   useEffect(() => {
-    // Small debounce could be added if needed; for now, refetch on change
     fetchPayments(true);
-  }, [filters.search]);
-
-  // When searching by student name/run, also fetch matching student ids to include rows
-  useEffect(() => {
-    const fetchMatchingStudents = async () => {
-      try {
-        if (!filters.search || !filters.search.trim()) {
-          setMatchedStudentIds(new Set());
-          return;
-        }
-        const term = filters.search.trim();
-        const ilike = `%${term}%`;
-        const { data, error } = await supabase
-          .from('students')
-          .select('id, whole_name, run, first_name, apellido_paterno')
-          .or(
-            `whole_name.ilike.${ilike},first_name.ilike.${ilike},apellido_paterno.ilike.${ilike},run.ilike.${ilike}`
-          )
-          .limit(500);
-        if (error) throw error;
-        setMatchedStudentIds(new Set((data || []).map(s => s.id)));
-      } catch (e) {
-        if (import.meta.env.DEV) console.warn('Student search fallback failed:', e);
-        setMatchedStudentIds(new Set());
-      }
-    };
-    fetchMatchingStudents();
-  }, [filters.search]);
+  }, [filters.search, filters.status]);
 
   const fetchPayments = async (reset = true) => {
     try {
@@ -277,8 +247,16 @@ export function PaymentsPage() {
         query = query.in('student_id', ids);
       }
 
-      // Load all matching records at once
-      const { data: fees, error: feesError } = await query.order('created_at', { ascending: false });
+      // Apply server-side filters to reduce data transfer
+      if (filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+
+      // Load records with a safety limit to prevent unbounded queries
+      const SERVER_LIMIT = 5000;
+      const { data: fees, error: feesError } = await query
+        .order('created_at', { ascending: false })
+        .limit(SERVER_LIMIT);
 
       if (feesError) throw feesError;
       

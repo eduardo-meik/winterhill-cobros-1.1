@@ -7,8 +7,9 @@ import Logger from '../services/logger';
 import { LogCode } from '../types/logging'; 
 import { AuthContextType, AuthState, User as LocalUser } from '../types/auth';
 import { useIdleSessionTimeout } from '../hooks/useIdleSessionTimeout';
+import { clearGuardianCaches } from '../services/matricula';
 
-const ENABLE_IDLE_TIMEOUT = false;
+const ENABLE_IDLE_TIMEOUT = import.meta.env.PROD;
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -112,6 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         //   navigate('/reset-password');
         // }
       } else if (event === 'SIGNED_OUT') {
+        clearGuardianCaches(); // Prevent leaking cached data across sessions
         navigate('/login');
       }
     });
@@ -209,7 +211,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const resetPassword = async (email: string) => {
     setState(prev => ({ ...prev, loading: true }));
     try {
-      const functionUrl = 'https://yeotpplgerfpxviqazrn.supabase.co/functions/v1/password-recovery';
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/password-recovery`;
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

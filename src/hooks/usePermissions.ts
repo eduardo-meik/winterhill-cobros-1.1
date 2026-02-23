@@ -37,7 +37,8 @@ export const usePermissions = (): PermissionHookReturn => {
   }
   
   const { user } = authContext;
-  const userProfile = (user?.profile || USER_PROFILES.ADMIN) as UserProfile;
+  // SECURITY FIX: Default to READONLY (least privilege) instead of ADMIN
+  const userProfile = (user?.profile || USER_PROFILES.READONLY) as UserProfile;
   
   const permissions = new PermissionChecker(userProfile);
   
@@ -74,5 +75,6 @@ export const useUserProfile = (): UserProfile => {
     throw new Error('useUserProfile must be used within an AuthProvider');
   }
   
-  return (authContext.user?.profile || USER_PROFILES.ADMIN) as UserProfile;
+  // SECURITY FIX: Default to READONLY (least privilege) instead of ADMIN
+  return (authContext.user?.profile || USER_PROFILES.READONLY) as UserProfile;
 };

@@ -21,7 +21,9 @@ export async function sendEmailViaFunction(payload: SendEmailPayload) {
       body: payload,
     });
     
-    console.log('Function invoke result:', response);
+    if (import.meta.env.DEV) {
+      console.log('Function invoke status:', response.data?.status ?? 'unknown');
+    }
     
     const { data, error } = response;
     
@@ -30,30 +32,40 @@ export async function sendEmailViaFunction(payload: SendEmailPayload) {
       // Try to read the response body
       try {
         const responseText = await error.context.text();
-        console.error('Error response body:', responseText);
+        if (import.meta.env.DEV) {
+          console.error('Error response body:', responseText);
+        }
         const errorData = JSON.parse(responseText);
         throw new Error(errorData.error || errorData.message || 'Unknown error');
       } catch (parseError) {
-        console.error('Could not parse error response:', parseError);
+        if (import.meta.env.DEV) {
+          console.error('Could not parse error response:', parseError);
+        }
         throw new Error(error.message || 'Edge Function error');
       }
     }
     
     // If there's a network/invoke error without context
     if (error) {
-      console.error('Edge Function invocation error:', error);
+      if (import.meta.env.DEV) {
+        console.error('Edge Function invocation error:', error.message);
+      }
       throw new Error(error.message || 'Unknown error');
     }
     
     // If the function returned an error response
     if (data?.error) {
-      console.error('Edge Function returned error:', data.error);
+      if (import.meta.env.DEV) {
+        console.error('Edge Function returned error:', data.error);
+      }
       throw new Error(data.error);
     }
     
     return data as { id?: string; status: string };
   } catch (err: any) {
-    console.error('sendEmailViaFunction caught error:', err);
+    if (import.meta.env.DEV) {
+      console.error('sendEmailViaFunction caught error:', err?.message || err);
+    }
     throw err;
   }
 }

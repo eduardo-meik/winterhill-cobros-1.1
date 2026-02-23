@@ -1,6 +1,7 @@
 import * as ExcelJS from 'exceljs';
 import { supabase } from './supabase';
 import { format } from 'date-fns';
+import { normalizeRun } from '../utils/rut';
 
 // Helper to format RUT (remove dots, keep dash if needed or remove it too depending on requirement)
 // FICON requires RUT without dots. DV in separate column.
@@ -167,12 +168,6 @@ export const generateLibroMatriculaReport = async () => {
 
   const buffer = await workbook.xlsx.writeBuffer();
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-};
-
-// Helper to normalize RUN for comparison (remove dots, dashes, convert to uppercase)
-const normalizeRun = (run) => {
-  if (!run) return '';
-  return run.toString().replace(/\./g, '').replace(/-/g, '').toUpperCase().trim();
 };
 
 export const generateFiconReport = async () => {

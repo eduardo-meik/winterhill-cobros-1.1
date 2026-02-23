@@ -17,19 +17,18 @@ const DetailItem = ({ label, value }) => (
 );
 
 export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
-  if (!payment) return null;
-
+  // All hooks MUST be called before any conditional return (Rules of Hooks)
   const [guardianInfo, setGuardianInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    student_id: payment.student.id,
-    amount: payment.amount,
-    payment_date: payment.payment_date,
-    payment_method: payment.payment_method || '',
-    status: payment.status,
-    num_boleta: payment.num_boleta || '',
-    mov_bancario: payment.mov_bancario || '',
-    notes: payment.notes || ''
+    student_id: payment?.student?.id ?? '',
+    amount: payment?.amount ?? 0,
+    payment_date: payment?.payment_date ?? '',
+    payment_method: payment?.payment_method || '',
+    status: payment?.status ?? '',
+    num_boleta: payment?.num_boleta || '',
+    mov_bancario: payment?.mov_bancario || '',
+    notes: payment?.notes || ''
   });
   const [loading, setLoading] = useState(false);
   const permissions = usePermissions();
@@ -39,12 +38,15 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
   const [registerLoading, setRegisterLoading] = useState(false);
   const [sendingReceipt, setSendingReceipt] = useState(false);
   const [registerData, setRegisterData] = useState({
-    amount: payment.amount,
+    amount: payment?.amount ?? 0,
     payment_date: '',
     payment_method: '',
     mov_bancario: '',
     notes: ''
   });
+
+  // Early return AFTER all hooks
+  if (!payment) return null;
 
   useEffect(() => {
     fetchGuardianInfo();

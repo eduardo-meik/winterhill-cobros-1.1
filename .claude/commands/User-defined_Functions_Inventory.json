@@ -1,0 +1,842 @@
+[
+  {
+    "schema": "public",
+    "function_name": "set_updated_at",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_cheques_updated_at",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_student_academic_records_updated_at",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "set_academic_year_dates",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "gen_random_bytes",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "public",
+    "function_name": "sync_student_current_curso",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "url_encode",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_student_course",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pg_stat_statements_reset",
+    "return_type": "void",
+    "language": "C"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_enrollment_document_url",
+    "return_type": "text",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_pre_matriculado_students",
+    "return_type": "void",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_decrypt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "decrypt_iv",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "sign",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "try_cast_double",
+    "return_type": "double precision",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "vault",
+    "function_name": "create_secret",
+    "return_type": "uuid",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_current_year_cursos",
+    "return_type": "USER-DEFINED",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "guardian_portal_bootstrap",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_generate_v4",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_student_promotion_suggestion",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_generate_v5",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "public",
+    "function_name": "is_staff",
+    "return_type": "boolean",
+    "language": "SQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_nil",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_ns_dns",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "vault",
+    "function_name": "_crypto_aead_det_decrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_generate_v1",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_generate_v1mc",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_generate_v3",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_ns_oid",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_ns_url",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgrst_ddl_watch",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "grant_pg_graphql_access",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "actualizar_estado_std",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "sanitize_run",
+    "return_type": "text",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "validate_run",
+    "return_type": "boolean",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "claim_guardian_by_run",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_my_students_ids",
+    "return_type": "ARRAY",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "is_current_user_guardian_of_student",
+    "return_type": "boolean",
+    "language": "SQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "cast",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "set_fee_owner_default",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "calculate_enrollment_payment_plan",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "to_regrole",
+    "return_type": "regrole",
+    "language": "SQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "topic",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_guardian_outstanding_debt",
+    "return_type": "jsonb",
+    "language": "SQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "send",
+    "return_type": "void",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_current_user_role",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "suggest_cheques_for_enrollment",
+    "return_type": "record",
+    "language": "SQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "dearmor",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "decrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "digest",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "algorithm_sign",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "armor",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "armor",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "crypt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "hmac",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pg_stat_statements_info",
+    "return_type": "record",
+    "language": "C"
+  },
+  {
+    "schema": "public",
+    "function_name": "current_academic_year",
+    "return_type": "integer",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "api_update_guardian",
+    "return_type": "json",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "es_admin_o_equipo",
+    "return_type": "boolean",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "generate_invoice",
+    "return_type": "uuid",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "is_admin_or_asist",
+    "return_type": "boolean",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "trg_mark_document_signed_from_signature",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "trg_mark_document_signed_from_receipt",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "required_enrollment_documents_state",
+    "return_type": "jsonb",
+    "language": "SQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "apply_rls",
+    "return_type": "USER-DEFINED",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_guardian",
+    "return_type": "USER-DEFINED",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "audit_log_change",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "build_prepared_statement_sql",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "upsert_guardian_intake_survey",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_key_id",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_decrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "grant_pg_net_access",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "grant_pg_cron_access",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "check_equality_op",
+    "return_type": "boolean",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "current_jwt_role",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_updated_at",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_decrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_decrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_encrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_encrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_encrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_decrypt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_decrypt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_decrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_decrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_encrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "graphql",
+    "function_name": "increment_schema_version",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "graphql",
+    "function_name": "get_schema_version",
+    "return_type": "integer",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "submit_guardian_intake_survey",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_fee_updated_at",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "ensure_guardian_for_user",
+    "return_type": "uuid",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "update_profile_full_name",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "list_changes",
+    "return_type": "USER-DEFINED",
+    "language": "SQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "quote_wal2json",
+    "return_type": "text",
+    "language": "SQL"
+  },
+  {
+    "schema": "graphql",
+    "function_name": "_internal_resolve",
+    "return_type": "jsonb",
+    "language": "C"
+  },
+  {
+    "schema": "graphql",
+    "function_name": "resolve",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "actualizar_estado_std",
+    "return_type": "void",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "es_admin_o_equipo",
+    "return_type": "boolean",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "check_and_increment_rate_limit",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "subscription_check_filters",
+    "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "generate_invoice",
+    "return_type": "uuid",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_fees_with_students",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_guardians_by_student_ids",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_student_balance",
+    "return_type": "numeric",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "admin_upsert_guardian_intake",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_students_by_guardian_ids",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "admin_submit_guardian_intake",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_table_metadata",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "get_user_profile",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "create_guardian_invite",
+    "return_type": "text",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "accept_guardian_invite",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "broadcast_changes",
+    "return_type": "void",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pg_stat_statements",
+    "return_type": "record",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_armor_headers",
+    "return_type": "record",
+    "language": "C"
+  },
+  {
+    "schema": "public",
+    "function_name": "finalize_enrollment",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "is_visible_through_filters",
+    "return_type": "boolean",
+    "language": "SQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "record_document_receipt",
+    "return_type": "jsonb",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "set_graphql_placeholder",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "public",
+    "function_name": "generate_libro_matricula_report",
+    "return_type": "record",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "vault",
+    "function_name": "update_secret",
+    "return_type": "void",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_encrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_encrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_sym_encrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "verify",
+    "return_type": "record",
+    "language": "SQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgrst_drop_watch",
+    "return_type": "event_trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "url_decode",
+    "return_type": "bytea",
+    "language": "SQL"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "uuid_ns_x500",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "digest",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "encrypt",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "encrypt_iv",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "gen_random_uuid",
+    "return_type": "uuid",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "gen_salt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "gen_salt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "hmac",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_decrypt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_encrypt_bytea",
+    "return_type": "bytea",
+    "language": "C"
+  },
+  {
+    "schema": "extensions",
+    "function_name": "pgp_pub_decrypt",
+    "return_type": "text",
+    "language": "C"
+  },
+  {
+    "schema": "graphql_public",
+    "function_name": "graphql",
+    "return_type": "jsonb",
+    "language": "SQL"
+  },
+  {
+    "schema": "graphql",
+    "function_name": "comment_directive",
+    "return_type": "jsonb",
+    "language": "SQL"
+  },
+  {
+    "schema": "graphql",
+    "function_name": "exception",
+    "return_type": "text",
+    "language": "PLPGSQL"
+  }
+]

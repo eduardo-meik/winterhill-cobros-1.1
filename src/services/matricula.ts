@@ -110,6 +110,18 @@ let _missingEnsureGuardianFn = false;
 let _attemptedAutoCreate: Record<string, boolean> = {};
 let _attemptedManualCreate: Record<string, boolean> = {};
 
+/**
+ * Clears all module-level guardian caches.
+ * MUST be called on auth state change (SIGNED_OUT / SIGNED_IN) to prevent
+ * leaking data from one user session to another.
+ */
+export function clearGuardianCaches(): void {
+  _guardianCache = {};
+  _guardianFetchInFlight = {};
+  _attemptedAutoCreate = {};
+  _attemptedManualCreate = {};
+}
+
 // 1. Fetch guardian for current user (assuming one guardian per owner/user)
 export async function fetchCurrentGuardian(userId: string, userEmail?: string | null): Promise<GuardianRecord | null> {
   console.log('🔍 fetchCurrentGuardian called with userId:', userId, 'userEmail:', userEmail);

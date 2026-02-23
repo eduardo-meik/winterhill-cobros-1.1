@@ -1,4 +1,6 @@
 import { generatePDFFromHTML, downloadPDFBlob } from './pdfGenerator';
+import { escapeHtml } from '../utils/html';
+import { SCHOOL_INFO } from '../constants/school';
 
 export interface EnrollmentReceiptStudent {
   name: string;
@@ -36,12 +38,12 @@ export function buildEnrollmentReceiptHtml(data: EnrollmentReceiptData): string 
 
   const studentRows = (students || [])
     .map((s, idx) => {
-      const nivelLabel = s.nivel ? String(s.nivel) : '—';
-      const courseLabel = s.course || '—';
+      const nivelLabel = s.nivel ? escapeHtml(s.nivel) : '—';
+      const courseLabel = s.course ? escapeHtml(s.course) : '—';
       return `
         <tr>
           <td style="padding: 6px 10px; border: 1px solid #e5e7eb; text-align: center;">${idx + 1}</td>
-          <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${s.name}</td>
+          <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${escapeHtml(s.name)}</td>
           <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${nivelLabel}</td>
           <td style="padding: 6px 10px; border: 1px solid #e5e7eb;">${courseLabel}</td>
         </tr>`;
@@ -86,34 +88,34 @@ export function buildEnrollmentReceiptHtml(data: EnrollmentReceiptData): string 
 <body>
   <div class="header">
     <h2>Comprobante de Matrícula</h2>
-    <p>Corporación Educacional Winterhill</p>
-    <p class="sub">Este documento certifica la matrícula para el año académico ${year}.</p>
+    <p>${SCHOOL_INFO.name}</p>
+    <p class="sub">Este documento certifica la matrícula para el año académico ${escapeHtml(year)}.</p>
   </div>
 
   <table>
     <tr>
       <td class="label-col">Folio</td>
-      <td>${folio}</td>
+      <td>${escapeHtml(folio)}</td>
     </tr>
     <tr>
       <td class="label-col">Fecha y hora de emisión</td>
-      <td>${createdLabel}</td>
+      <td>${escapeHtml(createdLabel)}</td>
     </tr>
     <tr>
       <td class="label-col">Apoderado</td>
-      <td>${guardianName}</td>
+      <td>${escapeHtml(guardianName)}</td>
     </tr>
     <tr>
       <td class="label-col">RUN</td>
-      <td>${guardianRun || '—'}</td>
+      <td>${guardianRun ? escapeHtml(guardianRun) : '—'}</td>
     </tr>
     <tr>
       <td class="label-col">Correo de contacto</td>
-      <td>${guardianEmail || '—'}</td>
+      <td>${guardianEmail ? escapeHtml(guardianEmail) : '—'}</td>
     </tr>
     <tr>
       <td class="label-col">Año académico</td>
-      <td>${year}</td>
+      <td>${escapeHtml(year)}</td>
     </tr>
   </table>
 
@@ -132,7 +134,7 @@ export function buildEnrollmentReceiptHtml(data: EnrollmentReceiptData): string 
     </tbody>
   </table>
 
-  <p class="footer-note">Este comprobante se genera automáticamente y no requiere firma. Para fines de validación interna, imprima este documento o conserve el archivo PDF. Para cualquier consulta, contáctenos a secretariaadministrativa@winterhillenlinea.cl</p>
+  <p class="footer-note">Este comprobante se genera automáticamente y no requiere firma. Para fines de validación interna, imprima este documento o conserve el archivo PDF. Para cualquier consulta, contáctenos a ${SCHOOL_INFO.email}</p>
 </body>
 </html>`;
 }
@@ -160,6 +162,8 @@ export async function generateEnrollmentReceiptPdf(data: EnrollmentReceiptData, 
     // Reutilizamos previewPDFBlob indirectamente mediante una ventana nueva
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
+    // Release the object URL after a reasonable delay to free memory
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
 }
 
