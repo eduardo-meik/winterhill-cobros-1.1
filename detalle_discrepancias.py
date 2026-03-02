@@ -174,7 +174,7 @@ bd_ruts = set(db_by_rut.keys())
 sige_ruts = set(sige_students.keys())
 for rut in sorted(bd_ruts - sige_ruts):
     s = db_by_rut[rut]
-    if s.get('estado_std', '').upper() in ('ACTIVO', 'MATRICULADO', 'PRE-MATRICULADO', 'PRE_MATRICULADO'):
+    if s.get('estado_std', '').upper() in ('CURSANDO', 'CONFIRMADO', 'PRE_MATRICULADO', 'ACTIVO', 'MATRICULADO', 'PRE-MATRICULADO'):
         c = cursos_by_id.get(s.get('curso'), {}).get('nom_curso', '?')
         cat_bd_no_en_sige.append({'rut': s.get('run',''), 'nombre': s.get('whole_name',''), 'curso_bd': c, 'estado_bd': s.get('estado_std','')})
 

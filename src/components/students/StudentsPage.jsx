@@ -199,8 +199,9 @@ export function StudentsPage() {
                   className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="all">Todos los Estados</option>
-                  <option value="PENDIENTE">Pre-Matriculados</option>
-                  <option value="ACTIVO">Confirmados</option>
+                  <option value="PRE_MATRICULADO">Pre-Matriculados</option>
+                  <option value="CONFIRMADO">Confirmados</option>
+                  <option value="CURSANDO">Cursando</option>
                   <option value="RETIRADO">Retirados</option>
                 </select>
                 <select

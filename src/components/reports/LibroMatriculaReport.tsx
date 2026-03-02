@@ -77,8 +77,8 @@ export function LibroMatriculaReport() {
             >
               <option value="">Todos los estados</option>
               <option value="PRE_MATRICULADO">📋 Pre-Matriculado (Matrícula en proceso)</option>
-              <option value="MATRICULADO">✅ Pre-Matriculado (Pendiente de confirmación)</option>
-              <option value="ACTIVO">🎓 Confirmado (Cursando)</option>
+              <option value="CONFIRMADO">✅ Confirmado (Pendiente de inicio)</option>
+              <option value="CURSANDO">🎓 Cursando</option>
               <option value="RETIRADO">🚫 Retirado</option>
             </select>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">

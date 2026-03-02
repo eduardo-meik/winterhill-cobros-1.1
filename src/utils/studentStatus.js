@@ -1,28 +1,31 @@
+// DB values: PRE_MATRICULADO, CONFIRMADO, CURSANDO, RETIRADO
+// These map directly to their meaning — no indirection needed.
+
 const STATUS_NORMALIZATION = {
-  PENDIENTE: 'PENDIENTE',
-  PENDING: 'PENDIENTE',
-  MATRICULADO: 'PENDIENTE',
-  ACTIVO: 'ACTIVO',
-  ACTIVE: 'ACTIVO',
+  PRE_MATRICULADO: 'PRE_MATRICULADO',
+  CONFIRMADO: 'CONFIRMADO',
+  CURSANDO: 'CURSANDO',
   RETIRADO: 'RETIRADO',
+  // Legacy aliases (backward compat for any cached/stale data)
+  MATRICULADO: 'CONFIRMADO',
+  ACTIVO: 'CURSANDO',
+  PENDIENTE: 'PRE_MATRICULADO',
+  PENDING: 'PRE_MATRICULADO',
+  ACTIVE: 'CURSANDO',
   RETIRED: 'RETIRADO'
 };
 
 const STATUS_LABELS = {
-  PENDIENTE: 'Pre-Matriculado',
-  ACTIVO: 'Confirmado',
+  PRE_MATRICULADO: 'Pre-Matriculado',
+  CONFIRMADO: 'Confirmado',
+  CURSANDO: 'Cursando',
   RETIRADO: 'Retirado'
 };
 
-const CANONICAL_TO_DB_VALUE = {
-  PENDIENTE: 'MATRICULADO',
-  ACTIVO: 'ACTIVO',
-  RETIRADO: 'RETIRADO'
-};
-
 const STATUS_BADGE_CLASSES = {
-  PENDIENTE: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200',
-  ACTIVO: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
+  PRE_MATRICULADO: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200',
+  CONFIRMADO: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
+  CURSANDO: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200',
   RETIRADO: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-200',
   DEFAULT: 'bg-gray-100 text-gray-600 dark:bg-gray-800/50 dark:text-gray-300'
 };
@@ -54,13 +57,14 @@ export const getStudentStatusBadgeClass = (value, fallbackValue = null) => {
 };
 
 export const getStudentStatusOptions = () => ([
-  { value: CANONICAL_TO_DB_VALUE.PENDIENTE, label: STATUS_LABELS.PENDIENTE },
-  { value: CANONICAL_TO_DB_VALUE.ACTIVO, label: STATUS_LABELS.ACTIVO },
-  { value: CANONICAL_TO_DB_VALUE.RETIRADO, label: STATUS_LABELS.RETIRADO }
+  { value: 'PRE_MATRICULADO', label: STATUS_LABELS.PRE_MATRICULADO },
+  { value: 'CONFIRMADO', label: STATUS_LABELS.CONFIRMADO },
+  { value: 'CURSANDO', label: STATUS_LABELS.CURSANDO },
+  { value: 'RETIRADO', label: STATUS_LABELS.RETIRADO }
 ]);
 
 export const deriveStudentStatusFromRecord = (student) => {
   if (!student) return null;
   if (student.fecha_retiro) return 'RETIRADO';
-  return resolveStudentStatus(student.estado_std, CANONICAL_TO_DB_VALUE.PENDIENTE) || 'PENDIENTE';
+  return resolveStudentStatus(student.estado_std, 'PRE_MATRICULADO') || 'PRE_MATRICULADO';
 };

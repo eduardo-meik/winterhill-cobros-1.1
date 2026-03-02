@@ -2538,7 +2538,7 @@ export async function ensureStudentFromIntake(
       direccion: intake.student_address || null,
       comuna: intake.student_commune || null,
       con_quien_vive: livesWith || null,
-      estado_std: 'MATRICULADO'
+      estado_std: 'PRE_MATRICULADO'
     } as Record<string, any>;
 
     const { data: created, error: createError } = await supabase

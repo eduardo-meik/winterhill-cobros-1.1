@@ -27,7 +27,7 @@ const getFreshDefaultValues = () => ({
   direccion: '',
   comuna: '',
   con_quien_vive: '',
-  estado_std: 'MATRICULADO'
+  estado_std: 'PRE_MATRICULADO'
 });
 
 export function StudentFormModal({ isOpen, onClose, student = null, onSuccess }) {
@@ -56,7 +56,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
           fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : '', // Use '' if null
           fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : '', // Use '' if null
           curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
-          estado_std: student.estado_std || 'MATRICULADO'
+          estado_std: student.estado_std || 'PRE_MATRICULADO'
         };
         reset(studentDataForForm);
         fetchStudentGuardianAssociations(student.id);
@@ -163,7 +163,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       // Esta clave viene de la consulta con relación y no debe enviarse al guardar/actualizar.
       delete dataToSend.cursos;
       if (!dataToSend.estado_std) {
-        dataToSend.estado_std = 'MATRICULADO';
+        dataToSend.estado_std = 'PRE_MATRICULADO';
       }
       // --- Fin de la corrección ---
 
@@ -208,7 +208,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
         con_quien_vive: dataToSend.con_quien_vive || null,
         curso: dataToSend.curso
         ,
-        estado_std: (dataToSend.estado_std || (student ? student.estado_std : null) || 'MATRICULADO').toUpperCase()
+        estado_std: (dataToSend.estado_std || (student ? student.estado_std : null) || 'PRE_MATRICULADO').toUpperCase()
       };
 
       let studentIdToUpdate = student?.id;
@@ -461,7 +461,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                         <option key={option.value} value={option.value}>{option.label}</option>
                       ))}
                     </select>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pre-Matriculado (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Confirmado (valor ACTIVO) o Retirado cuando corresponda.</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pre-Matriculado hasta firmar los contratos físicos; luego cambia a Confirmado, Cursando o Retirado cuando corresponda.</p>
                     {errors.estado_std && (
                       <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.estado_std.message}</p>
                     )}
