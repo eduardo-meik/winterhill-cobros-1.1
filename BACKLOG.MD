@@ -62,7 +62,7 @@
 | TA-19 | 🟡 | `[ ]` | Crear componente `PromotionTool.jsx` (promoción masiva con preview y confirmación) | Accesible desde Sidebar (admin) |
 | TA-20 | 🟡 | `[ ]` | Agregar entrada "Promoción" al Sidebar para admin | Nuevo menú |
 | TA-21 | 🟢 | `[x]` | Cambiar ícono de Matrícula en Sidebar (actualmente repite el de Apoderados) | ✅ `ClipboardCheck` + `ArrowsRepeat` para Repactación |
-| TA-22 | 🟢 | `[ ]` | Corregir nomenclatura de estados: MATRICULADO→Pre-Matriculado, ACTIVO→Confirmado, RETIRADO | Mapeo confuso actualmente |
+| TA-22 | 🟢 | `[x]` | Corregir nomenclatura de estados: MATRICULADO→Pre-Matriculado, ACTIVO→Confirmado, RETIRADO | ✅ Actualizado en studentStatus.js + 7 archivos |
 | TA-23 | 🟢 | `[ ]` | Agregar tabs en `StudentDetailsModal`: Datos | Historial | Fees | Documentos | Mejor organización de info |
 
 ---
@@ -85,7 +85,7 @@
 | UX-01 | 🟡 | `[x]` | Indicador de año académico activo visible en toda la app | ✅ Badge en Dashboard y StudentsPage + Sidebar selector |
 | UX-02 | 🟢 | `[ ]` | Mejorar responsive de tablas en móvil | Tablas se cortan en pantallas pequeñas |
 | UX-03 | 🟢 | `[ ]` | Agregar breadcrumbs de navegación | Mejor orientación del usuario |
-| UX-04 | ⚪ | `[ ]` | Modo oscuro: revisar contrastes en componentes nuevos | Ya existe dark mode parcial |
+| UX-04 | ⚪ | `[x]` | Modo oscuro: revisar contrastes en componentes nuevos | ✅ Dark mode en YearSelector compact |
 
 ---
 
@@ -95,11 +95,11 @@
 
 | ID | Pri | Estado | Descripción | Origen |
 |----|-----|--------|-------------|--------|
-| BG-01 | 🟡 | `[ ]` | No se cambia automáticamente el nombre en los detalles de los apoderados | May 2025 |
-| BG-02 | 🟡 | `[ ]` | `StudentFormModal.jsx`: no persisten datos existentes previo a modificación | May 2025 |
-| BG-03 | 🟡 | `[ ]` | Ícono de ojo en estudiantes asociados a apoderado no muestra información | May 2025 |
-| BG-04 | 🟡 | `[ ]` | No se muestra RUT de estudiante al acceder desde ícono de ojo en detalle de apoderados | May 2025 |
-| BG-05 | 🟡 | `[ ]` | Filtros de reportes no funcionan, no se generan resultados | May 2025 |
+| BG-01 | 🟡 | `[x]` | No se cambia automáticamente el nombre en los detalles de los apoderados | ✅ Local state guardianData se actualiza tras save |
+| BG-02 | 🟡 | `[x]` | `StudentFormModal.jsx`: no persisten datos existentes previo a modificación | ✅ Agregado defaultValues a useForm |
+| BG-03 | 🟡 | `[x]` | Ícono de ojo en estudiantes asociados a apoderado no muestra información | ✅ Sección Estudiantes Asociados agregada en vista apoderado |
+| BG-04 | 🟡 | `[x]` | No se muestra RUT de estudiante al acceder desde ícono de ojo en detalle de apoderados | ✅ `run` incluido en query + display |
+| BG-05 | 🟡 | `[x]` | Filtros de reportes no funcionan, no se generan resultados | ✅ ReferenceError de processedStudents corregido |
 
 ---
 
@@ -113,7 +113,7 @@
 | MJ-02 | 🟢 | `[ ]` | Mostrar detalle de deuda por cada apoderado | May 2025 |
 | MJ-03 | 🟢 | `[ ]` | Crear reportes de deudas por apoderados | May 2025 |
 | MJ-04 | 🟡 | `[ ]` | Los cambios en datos no se reflejan inmediatamente (cache/refresh) | May 2025 |
-| MJ-05 | ⚪ | `[ ]` | Correos largos salen del menú de perfiles (overflow) | May 2025 |
+| MJ-05 | ⚪ | `[x]` | Correos largos salen del menú de perfiles (overflow) | ✅ truncate + title tooltip en UserMenu |
 
 ---
 
