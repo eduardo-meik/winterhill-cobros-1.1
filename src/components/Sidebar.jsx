@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGuardianData } from '../contexts/GuardianContext';
-import { House, UsersThree, ChatDots, Money, ChartPie, Guardian } from './Icons';
+import { House, UsersThree, ChatDots, Money, ChartPie, Guardian, ClipboardCheck, ArrowsRepeat } from './Icons';
+import { YearSelector } from './ui/YearSelector';
 import clsx from 'clsx';
 
 /**
@@ -16,12 +17,12 @@ const baseMenuItems = [
   { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin', 'asist'] },
   {
     id: 'matricula',
-    icon: Guardian,
+    icon: ClipboardCheck,
     text: 'Matrícula',
     roles: ['admin', 'asist', 'guardian'],
     condition: ({ role, guardianReady }) => role !== 'guardian' || guardianReady
   },
-  { id: 'repactacion', icon: Money, text: 'Repactación', roles: ['admin', 'asist'] }
+  { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: ['admin', 'asist'] }
   // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   
 ];
@@ -92,6 +93,12 @@ export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick,
         </div>
         
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
+          {/* Academic Year Selector — visible to admin/asist only */}
+          {(role === 'admin' || role === 'asist') && (
+            <div className={clsx('border-b border-gray-100 dark:border-gray-800', isCollapsed ? 'p-2' : 'px-4 py-3')}>
+              <YearSelector compact={isCollapsed} />
+            </div>
+          )}
           {/* Navigation menu */}
           <nav className={clsx(
             "flex flex-col gap-1 flex-shrink-0",

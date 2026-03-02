@@ -10,6 +10,7 @@ import { StudentDetailsModal } from '../students/StudentDetailsModal';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
 
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
+  const [guardianData, setGuardianData] = useState(guardian);
   const [associatedStudents, setAssociatedStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -34,7 +35,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
   const handleCancel = () => {
     setIsEditing(false);
-    reset(guardian);
+    reset(guardianData);
   };
 
   const onSubmit = async (data) => {
@@ -98,6 +99,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       }
 
       toast.success('Apoderado actualizado exitosamente');
+      setGuardianData(prev => ({ ...prev, ...data }));
       setIsEditing(false);
       fetchAssociatedStudents();
       onSuccess?.();
@@ -110,7 +112,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al apoderado ${guardian.first_name} ${guardian.last_name}?`);
+    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al apoderado ${guardianData.first_name} ${guardianData.last_name}?`);
     if (!confirmed) return;
 
     try {
@@ -157,7 +159,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       
       const { data: students, error: studentsError } = await supabase
         .from('students')
-        .select('id, whole_name, first_name, apellido_paterno, apellido_materno, curso')
+        .select('id, whole_name, first_name, apellido_paterno, apellido_materno, curso, run')
         .in('id', studentIds);
         
       if (studentsError) throw studentsError;
@@ -184,6 +186,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
         return {
           id: student.id,
           whole_name: student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''} ${student.apellido_materno || ''}`.trim(),
+          run: student.run || null,
           nom_curso: curso ? curso.nom_curso : 'Sin curso asignado'
         };
       });
@@ -234,7 +237,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
 
     // Prevent saving if value hasn't changed
-    if (fieldEditValue === (guardian[fieldKey] || '')) {
+    if (fieldEditValue === (guardianData[fieldKey] || '')) {
       handleFieldCancel();
       return;
     }
@@ -251,6 +254,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       if (error) throw error;
 
       toast.success(`${fieldKey.replace(/_/g, ' ')} actualizado exitosamente.`);
+      setGuardianData(prev => ({ ...prev, ...updateData }));
       onSuccess?.(); 
       handleFieldCancel();
     } catch (error) {
@@ -363,10 +367,10 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800 shrink-0">
               <div>
                 <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {guardian.first_name} {guardian.last_name}
+                  {guardianData.first_name} {guardianData.last_name}
                 </Dialog.Title>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {guardian.relationship_type} • RUT: {guardian.run || 'No especificado'}
+                  {guardianData.relationship_type} • RUT: {guardianData.run || 'No especificado'}
                 </p>
               </div>
               <button
@@ -563,26 +567,66 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                   </div>
                 </form>
               ) : (
+                <>
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  {renderDetailItem('RUT', 'run', guardian.run)}
-                  {renderDetailItem('Email', 'email', guardian.email, 'email')}
-                  {renderDetailItem('Teléfono', 'phone', guardian.phone, 'tel')}
-                  {renderDetailItem('Dirección', 'address', guardian.address)}
-                  {renderDetailItem('Comuna', 'comuna', guardian.comuna)}
-                  {renderDetailItem('Tipo de Relación', 'relationship_type', guardian.relationship_type, 'select', [
+                  {renderDetailItem('RUT', 'run', guardianData.run)}
+                  {renderDetailItem('Email', 'email', guardianData.email, 'email')}
+                  {renderDetailItem('Teléfono', 'phone', guardianData.phone, 'tel')}
+                  {renderDetailItem('Dirección', 'address', guardianData.address)}
+                  {renderDetailItem('Comuna', 'comuna', guardianData.comuna)}
+                  {renderDetailItem('Tipo de Relación', 'relationship_type', guardianData.relationship_type, 'select', [
                     { value: '', label: 'Seleccionar tipo' },
                     { value: 'PADRE', label: 'PADRE' },
                     { value: 'MADRE', label: 'MADRE' },
                     { value: 'TUTOR', label: 'TUTOR' },
                   ])}
-                  {renderDetailItem('Tipo de Apoderado', 'tipo_apoderado', guardian.tipo_apoderado, 'select', [
+                  {renderDetailItem('Tipo de Apoderado', 'tipo_apoderado', guardianData.tipo_apoderado, 'select', [
                     { value: '', label: 'Seleccionar tipo' },
                     { value: 'ECONOMICO', label: 'ECONOMICO' },
                     { value: 'PEDAGOGICO', label: 'PEDAGOGICO' },
-                    { value: 'AMBOS', label: 'AMBOS' }, // Assuming AMBOS is a possible value
+                    { value: 'AMBOS', label: 'AMBOS' },
                     { value: 'RESPONSABLE', label: 'RESPONSABLE' },
                   ])}
                 </dl>
+
+                {/* BG-03 + BG-04: Estudiantes Asociados section in view mode */}
+                {associatedStudents.length > 0 && (
+                  <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                      Estudiantes Asociados ({associatedStudents.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {associatedStudents.map(student => (
+                        <div
+                          key={student.id}
+                          className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-dark-hover"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                              {student.whole_name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {student.run ? `RUT: ${student.run} • ` : ''}{student.nom_curso}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setViewingStudent(student)}
+                            disabled={editingFieldKey !== null}
+                            className="ml-2 p-1.5 text-gray-400 hover:text-primary dark:hover:text-primary-light rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                            title="Ver detalle del estudiante"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                </>
               )}
             </div>
 

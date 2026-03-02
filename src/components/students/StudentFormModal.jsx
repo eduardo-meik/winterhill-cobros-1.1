@@ -39,6 +39,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     watch,
     setValue
   } = useForm({
+    defaultValues: getFreshDefaultValues()
   });
 
   const [cursos, setCursos] = useState([]);
@@ -460,7 +461,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                         <option key={option.value} value={option.value}>{option.label}</option>
                       ))}
                     </select>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pendiente (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Matriculado (valor ACTIVO) o Retirado cuando corresponda.</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pre-Matriculado (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Confirmado (valor ACTIVO) o Retirado cuando corresponda.</p>
                     {errors.estado_std && (
                       <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.estado_std.message}</p>
                     )}

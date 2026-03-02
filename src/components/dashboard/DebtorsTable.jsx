@@ -4,19 +4,19 @@ import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
-export function DebtorsTable() {
+export function DebtorsTable({ academicYear }) {
   const [debtors, setDebtors] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchTopDebtors();
-  }, []);
+  }, [academicYear]);
 
   const fetchTopDebtors = async () => {
     try {
       setLoading(true);
 
-      const { data: fees, error } = await supabase
+      let query = supabase
         .from('fee')
         .select(`
           amount,
@@ -32,6 +32,12 @@ export function DebtorsTable() {
           )
         `)
         .in('status', ['pending', 'overdue']);
+
+      if (academicYear) {
+        query = query.eq('year_academico', academicYear);
+      }
+
+      const { data: fees, error } = await query;
 
       if (error) throw error;
 

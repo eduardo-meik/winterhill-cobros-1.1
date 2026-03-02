@@ -9,8 +9,8 @@ const STATUS_NORMALIZATION = {
 };
 
 const STATUS_LABELS = {
-  PENDIENTE: 'Pendiente',
-  ACTIVO: 'Matriculado',
+  PENDIENTE: 'Pre-Matriculado',
+  ACTIVO: 'Confirmado',
   RETIRADO: 'Retirado'
 };
 

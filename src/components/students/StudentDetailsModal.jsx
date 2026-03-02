@@ -31,10 +31,13 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
   const [editingFieldKey, setEditingFieldKey] = useState(null); // null | 'run' | 'email' | etc.
   const [fieldEditValue, setFieldEditValue] = useState('');
   const [isSavingField, setIsSavingField] = useState(false);
+  const [academicRecords, setAcademicRecords] = useState([]);
+  const [loadingRecords, setLoadingRecords] = useState(true);
 
   // Fetch guardian data when component mounts
   useEffect(() => {
     fetchGuardians();
+    fetchAcademicRecords();
   }, [student.id]);
 
   const fetchGuardians = async () => {
@@ -88,6 +91,36 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
   const handleEditSuccess = () => {
     setIsEditing(false);
     onSuccess?.();
+  };
+
+  const fetchAcademicRecords = async () => {
+    if (!student?.id) return;
+    try {
+      setLoadingRecords(true);
+      const { data, error } = await supabase
+        .from('student_academic_records')
+        .select(`
+          id,
+          year_academico,
+          estado,
+          fecha_inicio,
+          fecha_termino,
+          curso:curso_id (
+            id,
+            nom_curso,
+            nivel
+          )
+        `)
+        .eq('student_id', student.id)
+        .order('year_academico', { ascending: false });
+
+      if (error) throw error;
+      setAcademicRecords(data || []);
+    } catch (error) {
+      console.error('Error fetching academic records:', error);
+    } finally {
+      setLoadingRecords(false);
+    }
   };
 
   const handleFieldEditClick = (fieldKey, currentValue) => {
@@ -304,7 +337,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                 {renderDetailItem('Curso', 'curso', student.cursos?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
                 {renderDetailItem('Nombre Social', 'nombre_social', student.nombre_social, 'text')}
                 {renderDetailItem('Estado', 'fecha_retiro', friendlyStatus, 'select', [
-                  { value: '', label: 'Matriculado' },
+                  { value: '', label: 'Confirmado' },
                   { value: new Date().toISOString().split('T')[0], label: 'Retirado' }
                 ])} {/* This needs careful handling for 'active' vs 'retired' state based on fecha_retiro */}
                 {renderDetailItem('Fecha de Matrícula', 'fecha_matricula', student.fecha_matricula, 'date')}
@@ -387,6 +420,60 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500 dark:text-gray-400">No hay apoderados asociados.</p>
+                )}
+              </div>
+
+              {/* Academic History section */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                  Historial Académico
+                </h3>
+                {loadingRecords ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : academicRecords.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200 dark:border-gray-700">
+                          <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Año</th>
+                          <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Curso</th>
+                          <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Estado</th>
+                          <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Período</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {academicRecords.map((record) => (
+                          <tr key={record.id} className="border-b border-gray-100 dark:border-gray-800">
+                            <td className="py-2 px-3 font-medium text-gray-900 dark:text-white">{record.year_academico}</td>
+                            <td className="py-2 px-3 text-gray-700 dark:text-gray-300">{record.curso?.nom_curso || '—'}</td>
+                            <td className="py-2 px-3">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                record.estado === 'activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                record.estado === 'completado' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                                record.estado === 'retirado' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                                'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                              }`}>
+                                {record.estado === 'activo' ? 'Activo' :
+                                 record.estado === 'completado' ? 'Completado' :
+                                 record.estado === 'retirado' ? 'Retirado' :
+                                 record.estado === 'repitio' ? 'Repitió' :
+                                 record.estado === 'trasladado' ? 'Trasladado' :
+                                 record.estado}
+                              </span>
+                            </td>
+                            <td className="py-2 px-3 text-gray-500 dark:text-gray-400">
+                              {record.fecha_inicio ? formatDate(record.fecha_inicio) : '—'}
+                              {record.fecha_termino ? ` — ${formatDate(record.fecha_termino)}` : ''}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No hay registros académicos.</p>
                 )}
               </div>
             </div>

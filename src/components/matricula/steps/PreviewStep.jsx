@@ -273,7 +273,7 @@ export function PreviewStep({
               </div>
               {assistedMode && (
                 <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-2">
-                  Este paso deja a los estudiantes en estado Pendiente (valor MATRICULADO) hasta que el equipo marque Matriculado (valor ACTIVO) o Retirado desde el módulo de Estudiantes.
+                  Este paso deja a los estudiantes en estado Pre-Matriculado (valor MATRICULADO) hasta que el equipo marque Confirmado (valor ACTIVO) o Retirado desde el módulo de Estudiantes.
                 </p>
               )}
               <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">

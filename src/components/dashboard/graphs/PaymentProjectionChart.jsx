@@ -28,22 +28,28 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export function PaymentProjectionChart() {
+export function PaymentProjectionChart({ academicYear }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [academicYear]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      const { data: fees, error } = await supabase
+      let query = supabase
         .from('fee')
         .select('amount, status, due_date, payment_date')
         .order('due_date', { ascending: true });
+
+      if (academicYear) {
+        query = query.eq('year_academico', academicYear);
+      }
+
+      const { data: fees, error } = await query;
 
       if (error) throw error;
 

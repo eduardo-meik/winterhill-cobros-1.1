@@ -283,7 +283,6 @@ export function ReportingPage() {
       }));
       
       setGuardians(processedGuardians);
-      if (import.meta.env.DEV) console.log("Reference data loaded:", processedGuardians.length, "guardians,", coursesResponse.data.length, "courses,", processedStudents.length, "students");
       
       // Courses
       setCourses(coursesResponse.data);
@@ -296,6 +295,8 @@ export function ReportingPage() {
       }));
       
       setStudents(processedStudents);
+      
+      if (import.meta.env.DEV) console.log("Reference data loaded:", processedGuardians.length, "guardians,", coursesResponse.data.length, "courses,", processedStudents.length, "students");
       
     } catch (error) {
       console.error('Error fetching reference data:', error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Added useMemo
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { StudentsTable } from './StudentsTable';
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 import { deriveStudentStatusFromRecord } from '../../utils/studentStatus';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 export function StudentsPage() {
   const [students, setStudents] = useState([]);
@@ -24,6 +25,7 @@ export function StudentsPage() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const { academicYear } = useAcademicYear();
 
   // Debounce search term
   useEffect(() => {
@@ -46,11 +48,15 @@ export function StudentsPage() {
             year_academico
           )
         `)
+        .eq('cursos.year_academico', academicYear)
         .order('apellido_paterno', { ascending: true });
 
       if (error) throw error;
-      setStudents(data || []);
-      return data || [];
+      // Filter out students whose curso doesn't match the selected year
+      // (Supabase inner filtering on joined tables returns null cursos instead of omitting the row)
+      const filtered = (data || []).filter(s => s.cursos !== null);
+      setStudents(filtered);
+      return filtered;
     } catch (error) {
       toast.error('Error al cargar los estudiantes');
       console.error('Error fetching students:', error);
@@ -59,7 +65,7 @@ export function StudentsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [academicYear]);
 
   useEffect(() => {
     fetchStudents();
@@ -158,7 +164,12 @@ export function StudentsPage() {
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-4 p-4">
-          <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Estudiantes</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Estudiantes</h1>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+              {academicYear}
+            </span>
+          </div>
           <Button onClick={() => handleOpenFormModal(null)}>Agregar Estudiante</Button>
         </div>
 
@@ -188,8 +199,8 @@ export function StudentsPage() {
                   className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="all">Todos los Estados</option>
-                  <option value="PENDIENTE">Pendientes</option>
-                  <option value="ACTIVO">Matriculados</option>
+                  <option value="PENDIENTE">Pre-Matriculados</option>
+                  <option value="ACTIVO">Confirmados</option>
                   <option value="RETIRADO">Retirados</option>
                 </select>
                 <select

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { GuardianProvider } from './contexts/GuardianContext';
+import { AcademicYearProvider } from './contexts/AcademicYearContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { StaffRoute } from './components/auth/StaffRoute';
 import { LoginPage } from './pages/auth/LoginPage';
@@ -74,9 +75,11 @@ export default function App() {
             path="/"
             element={(
               <ProtectedRoute>
-                <GuardianProvider>
-                  <MainLayout />
-                </GuardianProvider>
+                <AcademicYearProvider>
+                  <GuardianProvider>
+                    <MainLayout />
+                  </GuardianProvider>
+                </AcademicYearProvider>
               </ProtectedRoute>
             )}
           >

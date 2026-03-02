@@ -1,0 +1,838 @@
+﻿categoria,rut,nombre_sige,curso_sige,enrollment_id,campo,valor_actual_bd,valor_sige,accion
+1-CREAR_ESTUDIANTE,27249739-7,CANALES GODOY SANTIAGO ALEJANDRO,1° Básico,,students + enrollment,NO EXISTE,CANALES GODOY SANTIAGO ALEJANDRO,"Crear estudiante y matrícula 2026. Curso: 1° Básico, Monto: $0, F.Pago: "
+1-CREAR_ESTUDIANTE,25479463-5,FLORES MUÑOZ SIMONE ANTONIA,3° Básico-A,,students + enrollment,NO EXISTE,FLORES MUÑOZ SIMONE ANTONIA,"Crear estudiante y matrícula 2026. Curso: 3° Básico-A, Monto: $102.870, F.Pago: pagare"
+1-CREAR_ESTUDIANTE,27067010-5,MUÑOZ CARVAJAL RENATO AUGUSTO,1° Básico,,students + enrollment,NO EXISTE,MUÑOZ CARVAJAL RENATO AUGUSTO,"Crear estudiante y matrícula 2026. Curso: 1° Básico, Monto: $0, F.Pago: "
+1-CREAR_ESTUDIANTE,24254730-6,PONCE LABARCA AINHOA BELÉN,8° Básico,,students + enrollment,NO EXISTE,PONCE LABARCA AINHOA BELÉN,"Crear estudiante y matrícula 2026. Curso: 8° Básico, Monto: $102.870, F.Pago: PAGARE"
+1-CREAR_ESTUDIANTE,26757037-K,ROJAS VACCARO ANOUK TABARÉ,1° Básico,,students + enrollment,NO EXISTE,ROJAS VACCARO ANOUK TABARÉ,"Crear estudiante y matrícula 2026. Curso: 1° Básico, Monto: $36.005, F.Pago: DESCUENTO"
+1-CREAR_ESTUDIANTE,29030419-9,TERUEL  FLORENCIA AYALÉN,3° Básico-B,,students + enrollment,NO EXISTE,TERUEL  FLORENCIA AYALÉN,"Crear estudiante y matrícula 2026. Curso: 3° Básico-B, Monto: $0, F.Pago: "
+2-CREAR_MATRICULA,24786893-3,ANDALÓN DARWIT IVÁN,6° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 5° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23111722-9,AROS BRIONES GASPAR ALONSO,3 Medio -A,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 2° MEDIO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,25125189-4,AVENDAÑO LUNA SOFÍA ELIZABETH,5° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 4° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23399594-0,CUELLO ARANCIBIA CAMILO ANDRÉS,2 Medio,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 1° MEDIO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,25767658-7,ESPINOZA CORNEJO SALVADOR EMILIANO,3° Básico-A,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 3° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,26838566-5,GODOY DIDIER SALVADOR GASPAR,1° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 1° BASICO B),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23519459-7,LÓPEZ OSORIO SANTIAGO RAIMUNDO,2 Medio,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 1° MEDIO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,25168497-9,MANCILLA GALLARDO LAUTARO,5° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 4° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23103299-1,MARTÍNEZ PINO GASPAR NEWEN,2 Medio,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 1° MEDIO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,24831872-4,MERCADO FIGUEROA PEDRO SEBASTIÁN,6° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 5° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23882519-9,MIRANDA ZAMORANO BENJAMÍN OCTAVIO,1 Medio -A,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 8° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,24704324-1,MIRANDA ZAMORANO MATEO AMARO,6° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 5° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,24761113-4,OPAZO MELLA VICTORIA ELINOR,6° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 5° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,22514762-0,PIZARRO CABELLO VLADYMIR IGNACIO,4 Medio -B,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 3° MEDIO B),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,24569213-7,RALLÍN SALAZAR ISIDORA BEATRIZ,7° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 6° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23249804-8,RALLÍN SALAZAR SOFÍA PAZ,3 Medio -B,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 2° MEDIO B),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23893373-0,ROSSI GONZÁLEZ LUCAS IGNACIO,1 Medio -A,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 8° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $133.126, Cuotas: 10, F.Pago: CHEQUE"
+2-CREAR_MATRICULA,24113987-5,SALAZAR ORBENES ISABELLA ANTONIA,8° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 7° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,25404838-0,TAPIA ROJAS INARA,4° Básico-A,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 3° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,24074294-2,TAPIA VÁSQUEZ MARTÍN ALIRO,8° Básico,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 7° BASICO A),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+2-CREAR_MATRICULA,23541383-3,VERGARA JARAMILLO FELIPE ALEXANDER,1 Medio -B,,enrollment (year=2026),Sin matrícula 2026 (curso BD: 8° BASICO B),Crear matrícula 2026,"Crear enrollment 2026. Monto: $0, Cuotas: , F.Pago: "
+3-COMPLETAR_MATRICULA,25511928-1,ALARCÓN OYARZÚN AYLIN MAITE ELOÍSA,4° Básico-A,d83a358c-b4fe-4191-8ec2-54c990b95ca8,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24105774-7,ALLENDE TABILO SOFÍA ANTONELLA,8° Básico,21d7dffa-ad4f-4a8a-812b-407090f388ce,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25350542-7,ARAYA AGUILAR ALELÍ,4° Básico-B,9abd66dc-36cb-42e9-a24e-c7224e8d0951,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23808283-8,ARAYA LARA GASPAR ANDRÉS,1 Medio -B,781dad64-74bb-4743-a1ca-ccad7e045ed4,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25637976-7,BIEHL SALAZAR ALEXANDER ANDRES,4° Básico-A,50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26559159-0,BIEHL SALAZAR CHARLOTTE ANDREA,2° Básico,50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24946765-0,BRIONES FIGUEROA AMANDA SAYEN,5° Básico,895d5a6b-18af-46e8-81b0-ceb746e8f6ee,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25924637-7,BRIONES FIGUEROA HELENA MAILEN,3° Básico-A,895d5a6b-18af-46e8-81b0-ceb746e8f6ee,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24900633-5,CANDIA ROJAS LAUTARO,5° Básico,4d40d3ab-a8bd-408f-a75a-ae7780358f90,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,22559294-2,CARVAJAL GUAJARDO LEONOR CAROLINA,4 Medio -A,73435dec-b050-4d90-8f54-86c1f23847ff,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24822697-8,CARVAJAL PUYOL MARIANO IGNACIO,5° Básico,ad47cfea-46ee-4752-934b-9fda0c9377ef,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25495456-K,CASTILLO BUSTAMANTE DANTE ARITZ,4° Básico-A,05ea6c8e-8a3b-48df-ad7b-d7ce88b05865,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23990258-8,CASTILLO LÓPEZ DAHLIA DESIREÉ,8° Básico,0e5db320-9da9-44dd-86ae-ff5e2645678f,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23001109-5,CONEJEROS BELTRAMI DANIEL ERNESTO,3 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23878140-K,CONEJEROS BELTRAMI JAVIERA VIOLETA,1 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25354011-7,CONTRERAS VERGARA EMILIO GAEL,4° Básico-B,11dcf02c-681f-4974-94f7-89ca74969b88,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25869579-8,CORTÉS BASCUÑÁN PAZ MIA,3° Básico-B,48a3588a-8964-410b-8e71-6d36b2968613,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26084417-2,CRUZ GARAY MARGARITA EMILIA,3° Básico-B,9e81fe54-a75e-48ad-8877-8f67d0f30616,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25964135-7,CUADRO CÁRCAMO FACUNDO GASPAR,3° Básico-B,4fc6e3dc-a88f-4edb-910e-2685806930f0,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24687493-K,CUADRO CÁRCAMO MATILDA ESPERANZA,6° Básico,4fc6e3dc-a88f-4edb-910e-2685806930f0,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24402364-9,DUQUE PUGAS ALMA,7° Básico,26aa7318-095a-460e-9a05-da0b457377bb,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24705100-7,DÍAZ NOVOA LAURA RENATA,6° Básico,a0bb84d1-20ce-420d-837c-6e43283bf8e0,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24386397-K,EGAÑA CABRERA ELENA FRANCISCA,7° Básico,184d6e71-b4c8-40d7-bef1-20440137dc1e,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23705014-2,EGAÑA CABRERA MÁXIMO LEONIDAS,1 Medio -B,184d6e71-b4c8-40d7-bef1-20440137dc1e,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26140643-8,ELDREDGE INOSTROZA FELICIA CONSTANZA,3° Básico-B,d53c9622-45f2-43b3-9973-95270350d5af,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23937301-1,ESCOBAR CEBALLO AGUSTINA JACQUELINE,8° Básico,570445da-0dbd-4aa8-bf7c-2a63b89e55b8,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26476798-9,FEREDA GUTIERREZ DAVIAN EMMANUELLE,1 Medio -B,204538b6-4bf7-4f8a-84b5-6649950fc075,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23001243-1,FERRADA JARA AYLEEN EMILIA,4 Medio -A,b1a17266-e399-4f00-b949-f12b4ab4f303,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24237064-3,GERALDO HYDE MARIANO SANTTINO,8° Básico,3a8a2063-c803-4b9c-83ae-e5689dfb466a,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23877976-6,GODOY DIDIER MATILDA MAGDALENA,1 Medio -B,0a00ccdb-b23f-4857-90a2-f99e45c0775b,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25873333-9,GONZÁLEZ CASTRO GASPAR ALONSO,3° Básico-B,415b507a-acb7-4193-8e8b-992fd3d3f8b8,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23847613-5,GONZÁLEZ KIMER AURORA MAGDALENA,1 Medio -A,54fa273b-de64-4d52-a026-71b4ccf8b1a5,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25929702-8,GUEICO GAETE ALONDRA SOFÍA,3° Básico-A,660a4dec-45ad-41a0-a100-04274626b1f2,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24482725-K,GÓMEZ PERALTA LUCAS LEÓN,7° Básico,9a788342-9f8d-42eb-9c7f-996b878c067d,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23919589-K,JARA NAVEAS JORGE ANTONIO,8° Básico,807f89e5-9efe-4d4d-bcca-b855339174fb,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23512569-2,JIMÉNEZ ZEGERS TRINIDAD ANTONIA,1 Medio -B,e66f1e29-80da-4797-bd98-3a4a82c79854,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25840798-9,LASNIER FIGUEROA THOMAS VALENTÍN,3° Básico-B,89c47263-df33-49ce-9bbf-10dcf4d19c00,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26584136-8,MARTÍNEZ LUCERO FACUNDO RODRIGO,2° Básico,cb2b3380-8884-4d39-9062-088b0ca8482f,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25810408-0,MEDINA SEPÚLVEDA DANTE VELKAN,3° Básico-A,a1a8a8f8-6297-46d1-849c-9d55ff0bc72f,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25943041-0,MENDOZA DAZA GASPAR,3° Básico-A,32cff3f9-e488-4f62-a494-fd6653fa335c,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26749660-9,NÚÑEZ RAMÍREZ SALVADOR IGNACIO,2° Básico,d1bbc2be-96d5-4585-bd0d-b7140282e120,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,27183790-9,PEÑA LÓPEZ ISAAC GAEL,1° Básico,0e5db320-9da9-44dd-86ae-ff5e2645678f,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25830620-1,PEÑAFIEL ALVARADO SILVIO DARÍO,3° Básico-B,006f2777-5517-42b1-82c3-a540b07125bb,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26863472-K,PIÑA BOMBAL MAXIMILIANO VICENTE,1° Básico,50bebbba-c6bd-448f-b073-1cd3cee89d78,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24557067-8,RAMÍREZ ACEVEDO ANTONIO LEÓN,7° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26297890-7,RAMÍREZ ACEVEDO JULIÁN EDUARDO,2° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26129705-1,RIQUELME MONSALVES RAFAELA FLORENCIA,3° Básico-B,5faa960c-50b6-4759-beb5-f9677ce26d16,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,26191736-K,ROJAS PUGAS ENYA FENRIR,3° Básico-B,26aa7318-095a-460e-9a05-da0b457377bb,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25357794-0,SANHUEZA NAVEAS GABRIEL LUIS,4° Básico-B,807f89e5-9efe-4d4d-bcca-b855339174fb,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,24223389-1,SEREY PÉREZ GASPAR ALONSO,8° Básico,db10dde3-6dbb-4582-9220-62e9a6e043b8,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25606891-5,UBERUAGA CAJALES MARTÍN,4° Básico-B,eaa3f7f1-9ca5-4b18-80f1-08e05dc52f9a,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,23022065-4,VALDÉS SANTIAGO BENJAMÍN ESTEBAN,4 Medio -A,86fadb96-58ef-4b0b-ae6b-c8fa067d947f,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25686131-3,VEGA PLAZA PASCAL ALUDY,4° Básico-B,138f0e5e-6d4d-4ff9-8f06-603cea01c9cc,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25852711-9,ZAPATA VIDELA GASPAR ARTURO,3° Básico-B,806c3deb-9128-4473-b676-da58efe40c68,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,27047648-1,ZOLEZZI HENRÍQUEZ DOMINIQUE PAOLA,1° Básico,41450c85-801e-4653-b45f-70f60e81a196,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25764691-2,ZOLEZZI HENRÍQUEZ RAFFAELLA VALENTINA,3° Básico-A,41450c85-801e-4653-b45f-70f60e81a196,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+3-COMPLETAR_MATRICULA,25938092-8,ÁVALOS QUIÑONES DANTE,2° Básico,d38a677f-dea9-4f78-9806-90fba6930628,status,draft,completed,"Cambiar status de ""draft"" a ""completed"""
+4-ACTUALIZAR_MONTO,25418027-0,ABARZA MORALES SALVADOR TOMÁS,4° Básico-A,6e76faf8-1c56-4f78-bf57-ac0616ae8cf2,meta.monto_cuota,$0,$92.583,Actualizar monto de $0 → $92.583
+4-ACTUALIZAR_MONTO,22949882-7,ACUÑA ARIAS MARTÍN ALONSO,4 Medio -B,069a92ac-0a75-4a5b-9e44-4f9f57cacf43,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24241264-8,ADASME SILVA MAILEN AMANDA,8° Básico,f160be4e-e9a9-48e8-87f6-903cf8e57ca1,meta.monto_cuota,$0,$82.296,Actualizar monto de $0 → $82.296
+4-ACTUALIZAR_MONTO,23200888-1,AGUILAR BROUSSAIN FACUNDO,3 Medio -B,8a17455c-c51b-45b9-9a4d-ec666881bc83,meta.monto_cuota,$0,$1.331.260,Actualizar monto de $0 → $1.331.260
+4-ACTUALIZAR_MONTO,23256719-8,AGUIRRE CRUZ THEO,3 Medio -A,935f63e0-5a8b-45fc-83c7-7d1618a84c15,meta.monto_cuota,$0,$1.331.260,Actualizar monto de $0 → $1.331.260
+4-ACTUALIZAR_MONTO,23420668-0,ALARCÓN HERRERA AGUSTINA,2 Medio,d407e4ba-fb8e-4c6e-b547-46448ee4a06d,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26141639-5,ALARCÓN HERRERA MARTINA,3° Básico-A,d407e4ba-fb8e-4c6e-b547-46448ee4a06d,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25511928-1,ALARCÓN OYARZÚN AYLIN MAITE ELOÍSA,4° Básico-A,d83a358c-b4fe-4191-8ec2-54c990b95ca8,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24958405-3,ALBORNOZ MORGADO ANAÍS ILLARI,7° Básico,a0697f61-b884-4078-b453-ee6343eec4b7,meta.monto_cuota,$0,$25.718,Actualizar monto de $0 → $25.718
+4-ACTUALIZAR_MONTO,24609631-7,ALLENDE TABILO IGNACIO JAVIER,5° Básico,af7bfacc-bcfa-434a-a5bc-e228bccf6633,meta.monto_cuota,$0,$72.009,Actualizar monto de $0 → $72.009
+4-ACTUALIZAR_MONTO,22961936-5,AMOR ABURTO FRANCISCO JAVIER,4 Medio -A,32407e30-16df-4539-b46e-a1aba5bc67b9,meta.monto_cuota,$0,$53.250,Actualizar monto de $0 → $53.250
+4-ACTUALIZAR_MONTO,23681990-6,AMOR ABURTO VICENTE ALONSO,1 Medio -B,32407e30-16df-4539-b46e-a1aba5bc67b9,meta.monto_cuota,$0,$53.250,Actualizar monto de $0 → $53.250
+4-ACTUALIZAR_MONTO,22828026-7,ANMELLA SILVA CRISTÓBAL,4 Medio -B,8ac1f63e-7046-4cc1-b29f-9374ef3e8bc2,meta.monto_cuota,$0,$79.996,Actualizar monto de $0 → $79.996
+4-ACTUALIZAR_MONTO,27126104-7,AQUEVEQUE SOLANO FACUNDO,1° Básico,918c6611-d1af-4d87-842e-fb502ff3bef5,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24587195-3,ARANA CALDERÓN FRANCO AUGUSTO,6° Básico,9fd2f8c1-e989-4237-81e1-1656b3112773,meta.monto_cuota,$0,$25.718,Actualizar monto de $0 → $25.718
+4-ACTUALIZAR_MONTO,25554250-8,ARAOS VERGARA FRANCESCO AGUSTÍN,3° Básico-B,b1d6abc0-d844-4af2-83e1-f67630ecf231,meta.monto_cuota,$0,$82.296,Actualizar monto de $0 → $82.296
+4-ACTUALIZAR_MONTO,25350542-7,ARAYA AGUILAR ALELÍ,4° Básico-B,9abd66dc-36cb-42e9-a24e-c7224e8d0951,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,26687709-9,ARAYA CORTEZ SAMANTHA VICTORIA SIMONE,2° Básico,01a6bb99-5571-462d-a817-114bbb747b43,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25658625-8,ARENAS LANDEROS DANTE LEÓN,4° Básico-B,626d645e-351b-4860-b9ae-1ec51e296686,meta.monto_cuota,$0,$205.740,Actualizar monto de $0 → $205.740
+4-ACTUALIZAR_MONTO,27245224-5,ARENAS LANDEROS ELOÍSA IZADI,1° Básico,626d645e-351b-4860-b9ae-1ec51e296686,meta.monto_cuota,$0,$205.740,Actualizar monto de $0 → $205.740
+4-ACTUALIZAR_MONTO,23882043-K,ARENAS LANDEROS OCTAVIO ANDRÉS,1 Medio -A,626d645e-351b-4860-b9ae-1ec51e296686,meta.monto_cuota,$0,$266.252,Actualizar monto de $0 → $266.252
+4-ACTUALIZAR_MONTO,25306816-7,ARMIJO TOBAR MAXIMILIANO RODRIGO,5° Básico,9e6e28b7-6247-4093-804a-8fbbc172b8bc,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22692513-9,ARÉVALO TOLEDO AMANDA ANTONIA,4 Medio -B,d81f01b4-c738-4c2b-aff7-5fcf38a6354f,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26128305-0,AVENDAÑO LUNA LAURA ANTONIA,3° Básico-A,4f28bec4-27b7-4cbb-91b1-46d3904226ec,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25262916-5,AYALA AGUILERA RENATO SAMUEL,4° Básico-B,e4f64a0c-f6ad-4dae-8cf8-a9e4e92d6e21,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,25717393-3,AYALA SEPÚLVEDA JULIÁN,4° Básico-A,b460f6d1-161f-4500-86c0-562fa5de70af,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23269629-K,BARRAZA MELO FRANCISCA IGNACIA,3 Medio -B,79fb8e49-c458-4f9f-a7cd-13763d35d9f3,meta.monto_cuota,$0,$106.501,Actualizar monto de $0 → $106.501
+4-ACTUALIZAR_MONTO,22767771-6,BARRERA ARANCIBIA LEONOR ALEXANDRA,4 Medio -B,02052dc8-a58c-40b9-bb88-7c1bc3ca3fa7,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26657060-0,BERROCAL ROA ISIDORA ALINE,2° Básico,3602cbaf-10c5-432a-a94d-142d8eb4abbe,meta.monto_cuota,$102.870,$25.718,Actualizar monto de $102.870 → $25.718
+4-ACTUALIZAR_MONTO,22866430-8,BOBADILLA GARRIDO ANTONELLA ANAÍS,4 Medio -B,c290107f-daa6-4547-bef1-d6677d285d33,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25924637-7,BRIONES FIGUEROA HELENA MAILEN,3° Básico-A,895d5a6b-18af-46e8-81b0-ceb746e8f6ee,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23307488-8,BÁEZ CONTRERAS ALEXIS ANDRÉS,3 Medio -B,867c8bda-b972-4006-ab90-e68e497faf50,meta.monto_cuota,$0,$106.501,Actualizar monto de $0 → $106.501
+4-ACTUALIZAR_MONTO,22829976-6,CACES SEPÚLVEDA GASPAR ALFONSO,4 Medio -B,70285275-2e4b-4da0-a838-28ed5b062b26,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24631708-9,CACES SEPÚLVEDA LIBERTAD,6° Básico,70285275-2e4b-4da0-a838-28ed5b062b26,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23796905-7,CAMPUSANO ARAVENA MATILDE AMAYA,1 Medio -A,2ec341e5-2b9d-4cad-81fc-9ac883a724ed,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25558118-K,CANCINO TAPIA TOMÁS LEÓN,4° Básico-B,2c017dd2-3020-49cf-9503-70cf0a300af8,meta.monto_cuota,$0,$36.005,Actualizar monto de $0 → $36.005
+4-ACTUALIZAR_MONTO,25607211-4,CANTARUTTI CONCHA GIULIANO ANTONINO,4° Básico-A,3a2ffbbc-85b4-4f1d-9b01-50d9e1c4493d,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25904278-K,CARRASCO SEPÚLVEDA CONSTANZA PAZ,3° Básico-A,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.monto_cuota,$0,$1.202.870,Actualizar monto de $0 → $1.202.870
+4-ACTUALIZAR_MONTO,22832796-4,CARRASCO SEPÚLVEDA CRISTIAN ANDRÉS,4 Medio -A,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24341658-2,CARRASCO SEPÚLVEDA FRANCISCO GABRIEL,7° Básico,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,26116316-0,CARRILLO BRIONES SANTIAGO ALONSO,2° Básico,44e90b36-0dc8-4426-bf01-1ea374b1fb12,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22559294-2,CARVAJAL GUAJARDO LEONOR CAROLINA,4 Medio -A,73435dec-b050-4d90-8f54-86c1f23847ff,meta.monto_cuota,$0,$1.331.260,Actualizar monto de $0 → $1.331.260
+4-ACTUALIZAR_MONTO,23040665-0,CARVAJAL GUTIÉRREZ DANAE AMELIE,4 Medio -B,0fd48c9a-ea48-406e-96ae-a08e633b689b,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23964383-3,CARVAJAL GUTIÉRREZ LEONARDO MANUEL,1 Medio -A,0fd48c9a-ea48-406e-96ae-a08e633b689b,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24822697-8,CARVAJAL PUYOL MARIANO IGNACIO,5° Básico,ad47cfea-46ee-4752-934b-9fda0c9377ef,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22752675-0,CARVALLO LÓPEZ FABIANNA EVOLET,4 Medio -B,55cdcf44-2819-42ac-ab12-8445d0385122,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25495456-K,CASTILLO BUSTAMANTE DANTE ARITZ,4° Básico-A,05ea6c8e-8a3b-48df-ad7b-d7ce88b05865,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23613517-9,CASTRO CORREA MATÍAS ANKATU,2 Medio,6599447f-fd35-4d28-99dd-888c99ee2a62,meta.monto_cuota,$0,$1.331.260,Actualizar monto de $0 → $1.331.260
+4-ACTUALIZAR_MONTO,23201403-2,CATALÁN SAAVEDRA NICOLÁS IGNACIO,3 Medio -A,626f08c8-170d-453f-afe9-2b3780652364,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24245393-K,CEPEDA FOXON AYÜN,7° Básico,59d9c8b8-32db-482d-9304-72652f943931,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,26793970-5,CHÁVEZ RÍOS LORETO CATALINA,1° Básico,e55c3cd1-6202-4bb2-9101-120f353fe238,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23255578-5,CISTERNAS ESPINOZA JOSEFA ANTONIA,3 Medio -B,8f6d3ab5-0656-4b5a-9a54-f3b20600f99d,meta.monto_cuota,$0,$93.188,Actualizar monto de $0 → $93.188
+4-ACTUALIZAR_MONTO,23001109-5,CONEJEROS BELTRAMI DANIEL ERNESTO,3 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23878140-K,CONEJEROS BELTRAMI JAVIERA VIOLETA,1 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22908888-2,CONTRERAS BASUALTO CATALINA PAZ,4 Medio -A,e866942f-5dde-40ef-99dc-91ca90e3ad40,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25105852-0,CORTÉS PARRA JOAQUÍN RAFAEL,5° Básico,64ac047b-d57e-48bc-8b5c-84022c16cf8c,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22828650-8,CRISOSTO PASTÉN DIEGO TOMÁS,4 Medio -B,c1dbbc1a-56ef-457a-b93d-919882be5a0d,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26084417-2,CRUZ GARAY MARGARITA EMILIA,3° Básico-B,9e81fe54-a75e-48ad-8877-8f67d0f30616,meta.monto_cuota,$0,$72.009,Actualizar monto de $0 → $72.009
+4-ACTUALIZAR_MONTO,25964135-7,CUADRO CÁRCAMO FACUNDO GASPAR,3° Básico-B,4fc6e3dc-a88f-4edb-910e-2685806930f0,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24687493-K,CUADRO CÁRCAMO MATILDA ESPERANZA,6° Básico,4fc6e3dc-a88f-4edb-910e-2685806930f0,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23320765-9,CÁCERES ARANDA EMILIA PASCALE,3 Medio -A,af2f19bf-1484-4284-968d-80ce919d1506,meta.monto_cuota,$0,$93.188,Actualizar monto de $0 → $93.188
+4-ACTUALIZAR_MONTO,23167878-6,DURÁN FERNÁNDEZ DANIELA IGNACIA AURELIA,3 Medio -A,7e86d4b1-4c3b-482e-9edf-329012bdb0db,meta.monto_cuota,$0,$93.188,Actualizar monto de $0 → $93.188
+4-ACTUALIZAR_MONTO,23810832-2,DÁVILA SEPÚLVEDA FIORELLA SOFÍA,1 Medio -A,42c738ed-c879-4158-b5e5-b351857569ac,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23378477-K,DÍAZ CALBULLANCA CRISTÓBAL ALONSO,2 Medio,0a040d84-3d90-4c00-b263-86b41211c294,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4-ACTUALIZAR_MONTO,23846465-K,DÍAZ GONZÁLEZ LEÓN VLADIMIR,1 Medio -A,5b70b39b-0634-4e88-b182-63a6532fa981,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24705100-7,DÍAZ NOVOA LAURA RENATA,6° Básico,a0bb84d1-20ce-420d-837c-6e43283bf8e0,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24681478-3,DÍAZ SEMBLER BALTAZAR NICOLÁS,6° Básico,92e87763-1ec8-4cf6-a9de-8d74b9413865,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24386397-K,EGAÑA CABRERA ELENA FRANCISCA,7° Básico,184d6e71-b4c8-40d7-bef1-20440137dc1e,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,26140643-8,ELDREDGE INOSTROZA FELICIA CONSTANZA,3° Básico-B,d53c9622-45f2-43b3-9973-95270350d5af,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23937301-1,ESCOBAR CEBALLO AGUSTINA JACQUELINE,8° Básico,570445da-0dbd-4aa8-bf7c-2a63b89e55b8,meta.monto_cuota,$0,$720.090,Actualizar monto de $0 → $720.090
+4-ACTUALIZAR_MONTO,23160195-3,ESPINOSA PEÑALOZA CRISTÓBAL AGUSTÍN,3 Medio -B,632dd187-f336-46af-8561-1ef80aa3a8e7,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22845025-1,ESPINOZA REYES GONZALO IGNACIO,3 Medio -B,9d5d6220-74d6-4fc6-9a8a-242f6d65d0dd,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24300364-4,ESPÍNDOLA VELOZO SILVIO EMILIANO,7° Básico,9e3f2043-3b1d-4b62-bd6c-02c0722674b9,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23710850-7,FICA PACCI JOAQUÍN ALONSO,1 Medio -A,88a1092c-1cfd-4c16-8c6a-2c3f28b1d60f,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22743019-2,FICK IBACETA CRISTÓBAL GERMÁN,4 Medio -B,b3db34df-a0f9-49c8-90b9-ed413c2cc855,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25890092-8,FIGUEROA DONOSO ÁMBAR ALEJANDRA,3° Básico-B,3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25227177-5,FILÚN SANTIBÁÑEZ MAXIMILIANO ANDREÉ,5° Básico,96bd0aca-ea46-42a1-bcb7-0521204a3495,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23005586-6,FLORES AROS GABRIEL ANTONIO,4 Medio -A,d3939647-fc5c-4430-8b86-576a3e8dee8d,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22710789-8,FLORES MORALES MARTÍN IGNACIO,4 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23791796-0,FLORES MORALES SOFÍA ANTONIA,1 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24362666-8,FLORES MUÑOZ ROQUE ANTUEL,7° Básico,ea2a399e-f3d0-4eb3-92f2-ed77db65738a,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24382773-6,FONSECA GOLDENBERG JULIETA SOLEDAD,7° Básico,a0421dcb-e14b-4ee4-901c-2ded703645ec,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23473045-2,FONSECA GOLDENBERG ROBERTA ANAÍS,2 Medio,a0421dcb-e14b-4ee4-901c-2ded703645ec,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23706034-2,FUENTES TORO GAEL EMILIANO,1 Medio -B,34673862-ec1a-43d1-ba0a-328da6291be6,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26734177-K,FUENZALIDA ANDRADE RAMIRO PASCUAL,2° Básico,b586387a-9d35-40d6-8970-8310b2aafa5a,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23252188-0,FUNES GARVISO FLORENCIA ANTONIA,3 Medio -A,ef48868a-9d78-4b73-a969-4141edd993d9,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24778231-1,GALAZ DURÁN FLORENCIA,6° Básico,fba5295b-2960-4398-8ed7-ac1f6ab0cedb,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25458455-K,GALAZ DURÁN OLIVIA,4° Básico-B,fba5295b-2960-4398-8ed7-ac1f6ab0cedb,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24557181-K,GALLARDO ARROYO MATEO JULIÁN,7° Básico,b518d850-0c16-4cba-b1a7-7433779c8847,meta.monto_cuota,$0,$72.009,Actualizar monto de $0 → $72.009
+4-ACTUALIZAR_MONTO,26071660-3,GALLARDO ROSS TRISTÁN ANDRÈ,3° Básico-A,c8da3e53-9681-4431-9e56-2928e28de03f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25692904-K,GARCÍA GUERRERO SIMÓN TAIEL,4° Básico-A,2fea7dc0-3d86-45d2-91e6-2c4f1c01bebd,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25819531-0,GATICA DÍAZ LUKAS ALONSO,3° Básico-A,b64ea244-c5f3-4b3e-a585-d8bb7f2ba257,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22791197-2,GERHARD VERGARA LUCAS VICENTE,4 Medio -A,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23528648-3,GERHARD VERGARA MATEO ENRIQUE,2 Medio,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24498498-3,GERHARD VERGARA RENATA PASCUALA,7° Básico,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23847613-5,GONZÁLEZ KIMER AURORA MAGDALENA,1 Medio -A,54fa273b-de64-4d52-a026-71b4ccf8b1a5,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22941028-8,GONZÁLEZ MORA JOAQUÍN AMARO,4 Medio -A,80909804-011f-4b79-9704-da1ab0cfc718,meta.monto_cuota,$0,$93.188,Actualizar monto de $0 → $93.188
+4-ACTUALIZAR_MONTO,25478275-0,GONZÁLEZ VARGAS RODOLFO PIETRO,4° Básico-B,2367dc5d-7acc-4e84-913c-9ed0e58f6892,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25929702-8,GUEICO GAETE ALONDRA SOFÍA,3° Básico-A,660a4dec-45ad-41a0-a100-04274626b1f2,meta.monto_cuota,$0,$92.583,Actualizar monto de $0 → $92.583
+4-ACTUALIZAR_MONTO,23449122-9,GUERRERO BIRKE VIOLETA BEATRIZ,2 Medio,9755e5d1-e54f-4443-884b-721219622d77,meta.monto_cuota,$0,$332.815,Actualizar monto de $0 → $332.815
+4-ACTUALIZAR_MONTO,22984166-1,GUTIÉRREZ SEPÚLVEDA RAFAELA ANTONIA,4 Medio -A,e81dc188-09e2-421b-9a48-f1fcc380f093,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24431020-6,GUZMÁN TORRES VICENTE ANTONIO,7° Básico,c1188d50-38c3-456f-bf3f-9a7c0131fdfe,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24482725-K,GÓMEZ PERALTA LUCAS LEÓN,7° Básico,9a788342-9f8d-42eb-9c7f-996b878c067d,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25664469-K,HERNÁNDEZ GALLEGUILLOS IGNACIO VALENTÍN,4° Básico-A,e22ca13c-2b67-4f0d-8020-1af14b984001,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22921315-6,HERRERA CARRASCO JULIETA,3 Medio -A,f11f542c-7b13-4fa0-aef3-322c0922d64e,meta.monto_cuota,$0,$106.501,Actualizar monto de $0 → $106.501
+4-ACTUALIZAR_MONTO,25504642-K,HUERTA SILVA AGUSTINA ISIDORA,4° Básico-B,68e7da22-0674-409c-92b6-908849214908,meta.monto_cuota,$0,$92.583,Actualizar monto de $0 → $92.583
+4-ACTUALIZAR_MONTO,23042156-0,IBARRA BARRIENTOS DANIELA IGNACIA,4 Medio -B,7273117b-4ffe-4e7d-9929-7ef27d08bd19,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26464424-0,IRARRÁZABAL BASÁEZ RENATA EMILIA,2° Básico,5ad7dbf2-7183-4c93-a9ad-d700bed09ef7,meta.monto_cuota,$0,$99.324,Actualizar monto de $0 → $99.324
+4-ACTUALIZAR_MONTO,25947700-K,JARAMILLO MORALES JOAQUÍN ALONZO,3° Básico-A,2ae46f37-efda-4d26-b15b-358f464399ed,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25033387-0,JIMÉNEZ ACUÑA ALLAN ALEJANDRO,3° Básico-B,2f93a4e9-b33c-44ec-b342-b0ed0a155bac,meta.monto_cuota,$0,$25.718,Actualizar monto de $0 → $25.718
+4-ACTUALIZAR_MONTO,26793920-9,KARMY ELTIT IAN SALVADOR,1° Básico,ae5db068-3438-463a-9b3a-f8f91191b5c1,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25723210-7,KARMY ELTIT ÓLIVER VALENTÍN,3° Básico-A,ae5db068-3438-463a-9b3a-f8f91191b5c1,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25969885-5,LABRÍN MUÑOZ SANDINO TAHIEL,3° Básico-A,a6e68488-20ee-4c48-8486-fd5906bf7d80,meta.monto_cuota,$0,$30.861,Actualizar monto de $0 → $30.861
+4-ACTUALIZAR_MONTO,22788468-1,LARIOS RIOSECO ARANZA ELISA,4 Medio -B,7d46e5e0-fc62-45c0-98e0-93b57685fbe0,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25840798-9,LASNIER FIGUEROA THOMAS VALENTÍN,3° Básico-B,89c47263-df33-49ce-9bbf-10dcf4d19c00,meta.monto_cuota,$0,$1.028.700,Actualizar monto de $0 → $1.028.700
+4-ACTUALIZAR_MONTO,24252189-7,LAZCANO MALDONADO SIMÓN EMILIO,8° Básico,a392bde7-871d-44ed-b57f-5180fddb97a1,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23051742-8,LEIVA ACOSTA ANTU SAID,3 Medio -A,29cc6c78-0b7e-454e-a556-1563f4151f74,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23082366-9,LERIS MUÑOZ JOSEPHINA PAZ,3 Medio -B,b378dffd-a296-494a-b0dc-b5b1792140e4,meta.monto_cuota,$0,$93.188,Actualizar monto de $0 → $93.188
+4-ACTUALIZAR_MONTO,24581814-9,MALLEA DÍAZ LUA ABRIL,7° Básico,057cd578-f771-4c7f-8019-75cb769772b7,meta.monto_cuota,$0,$25.718,Actualizar monto de $0 → $25.718
+4-ACTUALIZAR_MONTO,23703645-K,MARTORI COVARRUBIAS ALONSO TOMÁS,1 Medio -B,05d4264e-b81e-4b4f-a8e2-3e873ebdc833,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24682795-8,MARTÍNEZ LUCERO CATALINA ISIDORA,6° Básico,88605e77-5983-4807-8e66-8c91b7f2b252,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,26584136-8,MARTÍNEZ LUCERO FACUNDO RODRIGO,2° Básico,cb2b3380-8884-4d39-9062-088b0ca8482f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25304357-1,MARTÍNEZ PÉREZ MAILEN PAZ,5° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.monto_cuota,$0,$25.718,Actualizar monto de $0 → $25.718
+4-ACTUALIZAR_MONTO,24315417-0,MARTÍNEZ PÉREZ RAFAEL ALONSO,7° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.monto_cuota,$0,$25.718,Actualizar monto de $0 → $25.718
+4-ACTUALIZAR_MONTO,23590064-5,MATTAR GALLEGUILLOS FABRICIO ABDEL,3 Medio -B,ca45875e-a5a8-4c15-a409-6357b2f65802,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26211725-1,MATTIA PAZ SANTIAGO,2° Básico,9d2e8df1-3123-4acf-b5a7-c590593df705,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25353074-K,MATURANA DÍAZ STEFFANO JÓAN,4° Básico-A,75620919-1d03-432a-b90a-8e6638712c22,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,22800908-3,MEDINA FIGUEROA ÁLVARO IGNACIO,4 Medio -A,0a35a2ef-a9c2-4008-9352-6f0ec09ac582,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25701667-6,MENA BARTUCEVIC LEÓN IGNACIO,4° Básico-B,1fe3e9cd-1b6b-4d69-bf04-7bdb2eac2142,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25943041-0,MENDOZA DAZA GASPAR,3° Básico-A,32cff3f9-e488-4f62-a494-fd6653fa335c,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25821721-7,MIRANDA MADARIAGA JOAQUÍN ALONSO,3° Básico-A,dcb39663-f6ab-4113-a874-21abdfa92244,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22429820-K,MIRANDA VARGAS BENJAMÍN ALBERTO ANTONIO,4 Medio -B,f1caa763-2d23-4875-862e-ca7ddefe4759,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23219047-7,MIRANDA ÁLVAREZ DAMIÁN IGNACIO,3 Medio -B,68178644-172b-4e34-9d03-d86125492c65,meta.monto_cuota,$0,$190.180,Actualizar monto de $0 → $190.180
+4-ACTUALIZAR_MONTO,25412424-9,MORALES RAMÍREZ IGNACIA EMILIA,4° Básico-A,dd152845-fba5-4fcd-b510-e6edf752b088,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22824659-K,MORENO BUSTAMANTE SALVADOR ALONSO,3 Medio -B,80a6e309-c49e-436f-ac1d-d63b45ced2ee,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23789601-7,MOYA ARIAS CLEMENTE GABRIEL,1 Medio -B,2d7e4bf1-4483-4960-9393-f374f6213596,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25589136-7,MUÑOZ ARIAS ISABELLA VIOLETA,4° Básico-B,6e6dd93a-d9b4-467d-b441-abaf86461c67,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25917951-3,MUÑOZ MENDES NAHUEL GUILLERMO LEÓN,3° Básico-A,b97bdcd8-576d-4f9f-b2df-853bf6e0cf22,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25230505-K,MUÑOZ NAVARRO EMILIA JOSEFA,5° Básico,52d27e5e-2e85-4d0e-b86b-69c945adc415,meta.monto_cuota,$0,$36.005,Actualizar monto de $0 → $36.005
+4-ACTUALIZAR_MONTO,25761339-9,NAVARRO AVILÉS ANTONELLA PAZ,3° Básico-A,a3e1b488-8df0-4d03-9da7-452de10c810f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23691703-7,NAVARRO RIVEROS ROBERT KLAUS,1 Medio -A,2867eee4-8216-4d9d-b083-65b5123793d4,meta.monto_cuota,$0,$106.501,Actualizar monto de $0 → $106.501
+4-ACTUALIZAR_MONTO,22918982-4,NAVARRO TOLEDO GUSTAVO ALONSO,4 Medio -A,47b88114-9cd6-4884-b718-c04fdff9c577,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23308414-K,NEGRETE IBACACHE ANTONELLA IGNACIA,3 Medio -A,789dae56-0b1f-4b2b-bbbe-ae7a60330b38,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,27233231-2,NIELSEN FLORES FARID RODRIGO,1° Básico,f2e66fe8-4216-468a-a3cd-1f6cc1d3f5ff,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,26749660-9,NÚÑEZ RAMÍREZ SALVADOR IGNACIO,2° Básico,d1bbc2be-96d5-4585-bd0d-b7140282e120,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22918793-7,OPAZO CABELLO RENATO ALONSO,3 Medio -A,38d5b7f9-8113-445d-8ea8-722de2a0769e,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22994477-0,ORTIZ MOLINA AGUSTÍN,4 Medio -A,be82953a-03d2-435b-8d92-9593e54909b1,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23503996-6,PAREDES INZULZA FACUNDO LEÓN,2 Medio,cf682317-2ccf-4f13-b936-e7980715b1dc,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24133380-9,PEIRANO CARVAJAL FLORENCIA PASCAL,8° Básico,bd8a20e6-cf68-48b6-8a3b-44a4ab45c55f,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,22862722-4,PERALTA ROJAS EMILIA IGNACIA,4 Medio -B,daf72670-be8a-41e6-9833-ec8845510073,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4-ACTUALIZAR_MONTO,23749066-5,PEÑA BUSTAMANTE AMELIA,1 Medio -A,097a6e1e-ff71-4ef8-b17f-328274c3091a,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,22755244-1,PIZARRO GUTIÉRREZ BORJA MANUEL,4 Medio -A,ac982c30-a870-4b94-af0e-8f1520234149,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25067339-6,PIÑA BOMBAL SEBASTIÁN HERNÁN,5° Básico,08440fe6-76b5-4760-b3b1-c5aff34dbc8d,meta.monto_cuota,$0,$51.435,Actualizar monto de $0 → $51.435
+4-ACTUALIZAR_MONTO,26340647-8,PIÑONES RAMÍREZ AUKAN AMARU,2° Básico,e9bfe1fb-ba8c-47e3-afb1-cd115a2136a6,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,25832054-9,PUEBLA MORENO ELEONORA,3° Básico-A,f1b103fb-4400-471f-8d2a-4dd789326207,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23630186-9,QUIROGA MUÑOZ NATIVA LUZ,2 Medio,ce770b76-b546-454a-a926-b9146c58e79c,meta.monto_cuota,$0,$86.532,Actualizar monto de $0 → $86.532
+4-ACTUALIZAR_MONTO,24557067-8,RAMÍREZ ACEVEDO ANTONIO LEÓN,7° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,meta.monto_cuota,$0,$41.148,Actualizar monto de $0 → $41.148
+4-ACTUALIZAR_MONTO,26297890-7,RAMÍREZ ACEVEDO JULIÁN EDUARDO,2° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,meta.monto_cuota,$0,$41.148,Actualizar monto de $0 → $41.148
+4-ACTUALIZAR_MONTO,24478999-4,REBOLLEDO STHANDIER DOMINGA,7° Básico,e7829e3e-6340-462f-9965-426314b2086e,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23884967-5,REVECO PÉREZ LEÓN,1 Medio -B,1e69adbc-2c64-4676-a1ea-3b50051a5e4e,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23149623-8,REYES BAEZA THAÍS MONSERRAT ARELLY,3 Medio -B,2310b833-2973-4a40-aee8-64e3976cb4ab,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23770079-1,REYES CODINA GASPAR ENRIQUE,1 Medio -A,b4cbb9cf-f7c8-44b6-ba35-c7c0842049d3,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25084028-4,RIQUELME CORNEJO JOSEFA PATRICIA,5° Básico,83a2d7cb-4145-4c31-b842-a96e9e1db6ef,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22878786-8,RODRÍGUEZ ABURTO JOSEFA RENATA,4 Medio -A,6d64084e-ea24-4a36-a74e-83216e085fdc,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4-ACTUALIZAR_MONTO,24212542-8,RODRÍGUEZ BARRERA RENATO ALONSO,8° Básico,e2ddf8e0-8374-46fb-8ce9-9f201d91d6e9,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,27171050-K,RODRÍGUEZ ESTEFANÍA GASPAR LUCIANO,1° Básico,7de67eb0-a861-4879-95eb-d5ef4246d8cc,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23714513-5,ROJAS BENAVIDES MAGDALENA PAZ,1 Medio -A,06f17d0b-a0cb-4d9f-a0a5-e6b0fc3080f0,meta.monto_cuota,$0,$106.501,Actualizar monto de $0 → $106.501
+4-ACTUALIZAR_MONTO,23337628-0,ROMANI GUTIÉRREZ CRISTÓBAL LEÓN,2 Medio,32544798-ccc3-4f37-b63b-913c0794316e,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4-ACTUALIZAR_MONTO,25713058-4,RUBINA STRAUBE MAE AMÉLIE,4° Básico-A,3a40ffcb-db75-40cc-9210-32d6be55a1a5,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,26815405-1,SABA ESCOBAR FLORENCIA ANELEY,1° Básico,a53b63f2-792c-40f5-b8a7-ed67003dc5cc,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23602495-4,SALAZAR CORNEJO BENJAMÍN ARTURO,2 Medio,1dd277d2-6373-48a5-b8a1-16e5a4d5014a,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24751293-4,SALAZAR CORNEJO MAGDALENA LEONOR,6° Básico,1dd277d2-6373-48a5-b8a1-16e5a4d5014a,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25924270-3,SALINAS CARRASCO VICENTE SALVADOR,3° Básico-A,f972167c-5003-4247-b8be-0a89536b6d51,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23443471-3,SALINAS VÉLIZ AMANDA FRANCISCA,2 Medio,124f2fcb-ee42-47a1-8e52-180919137c32,meta.monto_cuota,$0,$147.918,Actualizar monto de $0 → $147.918
+4-ACTUALIZAR_MONTO,25349901-K,SAN MARTÍN MONTERO NICOLÁS GAEL,4° Básico-B,a74a6cdb-0b24-43eb-9adf-07134a540215,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23997071-0,SANTA MARÍA CARTES AMELIA SOFÍA,7° Básico,c1c6e332-540f-45fe-ae1e-486646c3e689,meta.monto_cuota,$0,$72.009,Actualizar monto de $0 → $72.009
+4-ACTUALIZAR_MONTO,23205714-9,SANTELICES MEZA ISIDORA VALENTINA,3 Medio -A,672fa1c5-70eb-486c-8cd6-79bb00229257,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23381582-9,SCHULZ GALLEGUILLOS SOFIA VAI MOANA,2 Medio,e06706cc-a57f-407e-84ea-a3be618f0f07,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23341445-K,SEGURA PEZO ISIDORA VALENTINA,2 Medio,69cda971-eb14-4faa-9740-981649071317,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4-ACTUALIZAR_MONTO,26920280-7,SEPÚLVEDA BRAVO DIEGO VALENTÍN,1° Básico,02879867-f809-4403-8d7b-0f9a7f8d1491,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23536007-1,SEPÚLVEDA BRAVO MARTÍN ALONSO,2 Medio,02879867-f809-4403-8d7b-0f9a7f8d1491,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23600999-8,SEPÚLVEDA OJEDA HELENA VICTORIA,2 Medio,712b7e35-7965-4fd8-bdd7-e061c0a381df,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24625627-6,SILVA ACEVEDO MATILDA CELESTE,6° Básico,ef31f280-4ecb-4210-9508-14046a018e90,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25302873-4,SILVA VARGAS ARA IGNACIA,5° Básico,0df0822d-53aa-456d-8677-0a12b5e29895,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22783399-8,SOLÍS GÓMEZ MAGDALENA BEATRIZ,4 Medio -A,eae29906-dc8a-4fe4-9bd4-bada71977dba,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24388738-0,SPENCER MARDONES GASPAR THOMAS,7° Básico,74af7c9d-cb77-4785-b35d-fd41cb61fb4f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,26057653-4,SPIGETTH LABRIN ISIDORA IGNACIA,3° Básico-A,1e9bd4aa-286c-4582-9e26-ec5e6c25e31b,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24051700-0,SÁNCHEZ CARVALLO AMANDA CAROLINA,8° Básico,3ccd1299-c9c9-45b4-8e33-da8788a6b628,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23207805-7,TELLO AGUAYO JUAN JOSÉ,2 Medio,29bc76e8-fec2-4f3e-b502-c69566693d07,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26685499-4,TORRES FERNÁNDEZ AMANDA,2° Básico,7f9d1595-3c22-4df7-bd43-e2994acc205f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25606891-5,UBERUAGA CAJALES MARTÍN,4° Básico-B,eaa3f7f1-9ca5-4b18-80f1-08e05dc52f9a,meta.monto_cuota,$0,$36.005,Actualizar monto de $0 → $36.005
+4-ACTUALIZAR_MONTO,23286265-3,UMAÑA GONZÁLEZ PÁVEL SANDINO,3 Medio -A,cfde4fbb-f707-414d-b112-e8b6979c390f,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,26741815-2,VALDÉS COVARRUBIAS SAMUEL SIMÓN,2° Básico,1aaca118-c47b-478d-9dda-1b60d3ebe85e,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24473727-7,VALDÉS COVARRUBIAS SANTIAGO,7° Básico,1aaca118-c47b-478d-9dda-1b60d3ebe85e,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25618895-3,VALPREDA VIVEROS MATÍAS SALVADOR,4° Básico-A,ea205546-6328-4607-8b50-2db4515a2323,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25232702-9,VARGAS ARAVENA ELOÍSA,5° Básico,a7379488-e1f2-4370-9169-350a5c058900,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,23251268-7,VARGAS ARAVENA ROMÁN,3 Medio -B,a7379488-e1f2-4370-9169-350a5c058900,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4-ACTUALIZAR_MONTO,23475511-0,VARGAS DELGADO AGUSTINA ISIDORA,2 Medio,82c90787-3918-43e4-a032-040ce31b54f3,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24169011-3,VARGAS NARVÁEZ ANTONELLA AMANDA,8° Básico,7f67818a-8f9d-4145-b0a6-0c78a5743906,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25178753-0,VEAS ASPILLAGA AMARANTA ROSA,5° Básico,abffd6ef-c1dd-4679-ab6b-5a0b1ec53851,meta.monto_cuota,$0,$51.435,Actualizar monto de $0 → $51.435
+4-ACTUALIZAR_MONTO,23714855-K,VELÁSQUEZ ZAVALA AGUSTÍN ANDRÉS,1 Medio -B,4d63e10f-55ef-4228-8e18-01f7a30092a2,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23699034-6,VICUÑA PÉREZ MIGUEL ESTEBAN,1 Medio -A,794a4776-1e12-40c8-b8d6-1e8f0441ed45,meta.monto_cuota,$0,$1.331.260,Actualizar monto de $0 → $1.331.260
+4-ACTUALIZAR_MONTO,23704392-8,VIDAL SÁNCHEZ FERNANDA EMILIA,1 Medio -A,07b47ca6-b02a-462a-8e61-e24768c8cd53,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24353237-K,VILCHES CUSICANQUI AMPARO BELÉN,7° Básico,ba39cf44-16b7-4e94-86da-f38282845904,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22894591-9,VILLAVICENCIO ABARCA LAURA FRANCISCA,4 Medio -B,aac078e6-2cef-4094-9496-d1882953f68c,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23470102-9,VIZCARRA GANDARA FRANCISCO TOMÁS,1 Medio -A,ca8746c1-99e0-4373-af17-9329bd136237,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,25505941-6,VÉLIZ VARGAS LUCIANO EMILIO,4° Básico-A,046a97cc-99b4-4640-9762-730e5545031f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,24081762-4,VÉLIZ VARGAS RAFAEL IGNACIO,8° Básico,046a97cc-99b4-4640-9762-730e5545031f,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23277432-0,WILSON CÁRCAMO ALONSO MARTÍN,3 Medio -B,127eb37a-2702-4512-9626-e5be0c9d3db9,meta.monto_cuota,$0,$53.250,Actualizar monto de $0 → $53.250
+4-ACTUALIZAR_MONTO,26746827-3,WILSON CÁRCAMO ANAÍS MARIEN,1° Básico,127eb37a-2702-4512-9626-e5be0c9d3db9,meta.monto_cuota,$0,$78.060,Actualizar monto de $0 → $78.060
+4-ACTUALIZAR_MONTO,23594831-1,WILSON LAUREL CHRISTOPHER DYLAN,1 Medio -A,e10ae10d-8291-4831-ad1c-f7744a1ad97d,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23552329-9,YÁÑEZ KOENIG CATALINA ANTONIA,1 Medio -A,e8c57d50-cbb7-4600-bd0f-7677b062ce57,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,24373455-K,YÁÑEZ KOENIG LEÓN EMILIO,7° Básico,e8c57d50-cbb7-4600-bd0f-7677b062ce57,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,25542296-0,ZAMORA INOSTROZA AGUSTÍN IGNACIO,4° Básico-A,b9f8dcd1-7a96-4414-85af-33a4c89ee0f9,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,22982378-7,ZAPATA CARE EMILIANO PABLO,4 Medio -B,0f1d34a0-c53f-4104-8a99-2cb74bebfb34,meta.monto_cuota,$0,$133.126,Actualizar monto de $0 → $133.126
+4-ACTUALIZAR_MONTO,23942270-5,ZAVALA SALUCCI FELIPE ALEJANDRO,8° Básico,732d0650-c971-464f-bd70-fec8be284661,meta.monto_cuota,$0,$61.722,Actualizar monto de $0 → $61.722
+4-ACTUALIZAR_MONTO,25764691-2,ZOLEZZI HENRÍQUEZ RAFFAELLA VALENTINA,3° Básico-A,41450c85-801e-4653-b45f-70f60e81a196,meta.monto_cuota,$0,$102.870,Actualizar monto de $0 → $102.870
+4-ACTUALIZAR_MONTO,23450299-9,ÁVILA TELLO RENATA RAYEN,2 Medio,a0999f25-89ae-40ca-b77d-b9d9b73009af,meta.monto_cuota,$0,$79.876,Actualizar monto de $0 → $79.876
+4b-ACTUALIZAR_ANUAL,25418027-0,ABARZA MORALES SALVADOR TOMÁS,4° Básico-A,6e76faf8-1c56-4f78-bf57-ac0616ae8cf2,meta.ingreso_anual,$0,$925.830,Actualizar ingreso anual de $0 → $925.830
+4b-ACTUALIZAR_ANUAL,22949882-7,ACUÑA ARIAS MARTÍN ALONSO,4 Medio -B,069a92ac-0a75-4a5b-9e44-4f9f57cacf43,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24241264-8,ADASME SILVA MAILEN AMANDA,8° Básico,f160be4e-e9a9-48e8-87f6-903cf8e57ca1,meta.ingreso_anual,$0,$822.960,Actualizar ingreso anual de $0 → $822.960
+4b-ACTUALIZAR_ANUAL,23200888-1,AGUILAR BROUSSAIN FACUNDO,3 Medio -B,8a17455c-c51b-45b9-9a4d-ec666881bc83,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23256719-8,AGUIRRE CRUZ THEO,3 Medio -A,935f63e0-5a8b-45fc-83c7-7d1618a84c15,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23420668-0,ALARCÓN HERRERA AGUSTINA,2 Medio,d407e4ba-fb8e-4c6e-b547-46448ee4a06d,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26141639-5,ALARCÓN HERRERA MARTINA,3° Básico-A,d407e4ba-fb8e-4c6e-b547-46448ee4a06d,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25511928-1,ALARCÓN OYARZÚN AYLIN MAITE ELOÍSA,4° Básico-A,d83a358c-b4fe-4191-8ec2-54c990b95ca8,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24958405-3,ALBORNOZ MORGADO ANAÍS ILLARI,7° Básico,a0697f61-b884-4078-b453-ee6343eec4b7,meta.ingreso_anual,$0,$257,Actualizar ingreso anual de $0 → $257
+4b-ACTUALIZAR_ANUAL,24609631-7,ALLENDE TABILO IGNACIO JAVIER,5° Básico,af7bfacc-bcfa-434a-a5bc-e228bccf6633,meta.ingreso_anual,$0,$720.090,Actualizar ingreso anual de $0 → $720.090
+4b-ACTUALIZAR_ANUAL,22961936-5,AMOR ABURTO FRANCISCO JAVIER,4 Medio -A,32407e30-16df-4539-b46e-a1aba5bc67b9,meta.ingreso_anual,$0,$532.500,Actualizar ingreso anual de $0 → $532.500
+4b-ACTUALIZAR_ANUAL,23681990-6,AMOR ABURTO VICENTE ALONSO,1 Medio -B,32407e30-16df-4539-b46e-a1aba5bc67b9,meta.ingreso_anual,$0,$532.500,Actualizar ingreso anual de $0 → $532.500
+4b-ACTUALIZAR_ANUAL,22828026-7,ANMELLA SILVA CRISTÓBAL,4 Medio -B,8ac1f63e-7046-4cc1-b29f-9374ef3e8bc2,meta.ingreso_anual,$0,$799.960,Actualizar ingreso anual de $0 → $799.960
+4b-ACTUALIZAR_ANUAL,27126104-7,AQUEVEQUE SOLANO FACUNDO,1° Básico,918c6611-d1af-4d87-842e-fb502ff3bef5,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24587195-3,ARANA CALDERÓN FRANCO AUGUSTO,6° Básico,9fd2f8c1-e989-4237-81e1-1656b3112773,meta.ingreso_anual,$0,$257.180,Actualizar ingreso anual de $0 → $257.180
+4b-ACTUALIZAR_ANUAL,25554250-8,ARAOS VERGARA FRANCESCO AGUSTÍN,3° Básico-B,b1d6abc0-d844-4af2-83e1-f67630ecf231,meta.ingreso_anual,$0,$822.960,Actualizar ingreso anual de $0 → $822.960
+4b-ACTUALIZAR_ANUAL,25350542-7,ARAYA AGUILAR ALELÍ,4° Básico-B,9abd66dc-36cb-42e9-a24e-c7224e8d0951,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,26687709-9,ARAYA CORTEZ SAMANTHA VICTORIA SIMONE,2° Básico,01a6bb99-5571-462d-a817-114bbb747b43,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25658625-8,ARENAS LANDEROS DANTE LEÓN,4° Básico-B,626d645e-351b-4860-b9ae-1ec51e296686,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,27245224-5,ARENAS LANDEROS ELOÍSA IZADI,1° Básico,626d645e-351b-4860-b9ae-1ec51e296686,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23882043-K,ARENAS LANDEROS OCTAVIO ANDRÉS,1 Medio -A,626d645e-351b-4860-b9ae-1ec51e296686,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25306816-7,ARMIJO TOBAR MAXIMILIANO RODRIGO,5° Básico,9e6e28b7-6247-4093-804a-8fbbc172b8bc,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22692513-9,ARÉVALO TOLEDO AMANDA ANTONIA,4 Medio -B,d81f01b4-c738-4c2b-aff7-5fcf38a6354f,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26128305-0,AVENDAÑO LUNA LAURA ANTONIA,3° Básico-A,4f28bec4-27b7-4cbb-91b1-46d3904226ec,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25262916-5,AYALA AGUILERA RENATO SAMUEL,4° Básico-B,e4f64a0c-f6ad-4dae-8cf8-a9e4e92d6e21,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,25717393-3,AYALA SEPÚLVEDA JULIÁN,4° Básico-A,b460f6d1-161f-4500-86c0-562fa5de70af,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23269629-K,BARRAZA MELO FRANCISCA IGNACIA,3 Medio -B,79fb8e49-c458-4f9f-a7cd-13763d35d9f3,meta.ingreso_anual,$0,$1.065.010,Actualizar ingreso anual de $0 → $1.065.010
+4b-ACTUALIZAR_ANUAL,22767771-6,BARRERA ARANCIBIA LEONOR ALEXANDRA,4 Medio -B,02052dc8-a58c-40b9-bb88-7c1bc3ca3fa7,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26657060-0,BERROCAL ROA ISIDORA ALINE,2° Básico,3602cbaf-10c5-432a-a94d-142d8eb4abbe,meta.ingreso_anual,$0,$257.180,Actualizar ingreso anual de $0 → $257.180
+4b-ACTUALIZAR_ANUAL,22866430-8,BOBADILLA GARRIDO ANTONELLA ANAÍS,4 Medio -B,c290107f-daa6-4547-bef1-d6677d285d33,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25924637-7,BRIONES FIGUEROA HELENA MAILEN,3° Básico-A,895d5a6b-18af-46e8-81b0-ceb746e8f6ee,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22829976-6,CACES SEPÚLVEDA GASPAR ALFONSO,4 Medio -B,70285275-2e4b-4da0-a838-28ed5b062b26,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24631708-9,CACES SEPÚLVEDA LIBERTAD,6° Básico,70285275-2e4b-4da0-a838-28ed5b062b26,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23796905-7,CAMPUSANO ARAVENA MATILDE AMAYA,1 Medio -A,2ec341e5-2b9d-4cad-81fc-9ac883a724ed,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25558118-K,CANCINO TAPIA TOMÁS LEÓN,4° Básico-B,2c017dd2-3020-49cf-9503-70cf0a300af8,meta.ingreso_anual,$0,$360.050,Actualizar ingreso anual de $0 → $360.050
+4b-ACTUALIZAR_ANUAL,25607211-4,CANTARUTTI CONCHA GIULIANO ANTONINO,4° Básico-A,3a2ffbbc-85b4-4f1d-9b01-50d9e1c4493d,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25904278-K,CARRASCO SEPÚLVEDA CONSTANZA PAZ,3° Básico-A,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.ingreso_anual,$0,$12.028.700,Actualizar ingreso anual de $0 → $12.028.700
+4b-ACTUALIZAR_ANUAL,22832796-4,CARRASCO SEPÚLVEDA CRISTIAN ANDRÉS,4 Medio -A,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24341658-2,CARRASCO SEPÚLVEDA FRANCISCO GABRIEL,7° Básico,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,26116316-0,CARRILLO BRIONES SANTIAGO ALONSO,2° Básico,44e90b36-0dc8-4426-bf01-1ea374b1fb12,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22559294-2,CARVAJAL GUAJARDO LEONOR CAROLINA,4 Medio -A,73435dec-b050-4d90-8f54-86c1f23847ff,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23040665-0,CARVAJAL GUTIÉRREZ DANAE AMELIE,4 Medio -B,0fd48c9a-ea48-406e-96ae-a08e633b689b,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23964383-3,CARVAJAL GUTIÉRREZ LEONARDO MANUEL,1 Medio -A,0fd48c9a-ea48-406e-96ae-a08e633b689b,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24822697-8,CARVAJAL PUYOL MARIANO IGNACIO,5° Básico,ad47cfea-46ee-4752-934b-9fda0c9377ef,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22752675-0,CARVALLO LÓPEZ FABIANNA EVOLET,4 Medio -B,55cdcf44-2819-42ac-ab12-8445d0385122,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25495456-K,CASTILLO BUSTAMANTE DANTE ARITZ,4° Básico-A,05ea6c8e-8a3b-48df-ad7b-d7ce88b05865,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23613517-9,CASTRO CORREA MATÍAS ANKATU,2 Medio,6599447f-fd35-4d28-99dd-888c99ee2a62,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23201403-2,CATALÁN SAAVEDRA NICOLÁS IGNACIO,3 Medio -A,626f08c8-170d-453f-afe9-2b3780652364,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24245393-K,CEPEDA FOXON AYÜN,7° Básico,59d9c8b8-32db-482d-9304-72652f943931,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,26793970-5,CHÁVEZ RÍOS LORETO CATALINA,1° Básico,e55c3cd1-6202-4bb2-9101-120f353fe238,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23255578-5,CISTERNAS ESPINOZA JOSEFA ANTONIA,3 Medio -B,8f6d3ab5-0656-4b5a-9a54-f3b20600f99d,meta.ingreso_anual,$0,$931.880,Actualizar ingreso anual de $0 → $931.880
+4b-ACTUALIZAR_ANUAL,23001109-5,CONEJEROS BELTRAMI DANIEL ERNESTO,3 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23878140-K,CONEJEROS BELTRAMI JAVIERA VIOLETA,1 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22908888-2,CONTRERAS BASUALTO CATALINA PAZ,4 Medio -A,e866942f-5dde-40ef-99dc-91ca90e3ad40,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25105852-0,CORTÉS PARRA JOAQUÍN RAFAEL,5° Básico,64ac047b-d57e-48bc-8b5c-84022c16cf8c,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22828650-8,CRISOSTO PASTÉN DIEGO TOMÁS,4 Medio -B,c1dbbc1a-56ef-457a-b93d-919882be5a0d,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26084417-2,CRUZ GARAY MARGARITA EMILIA,3° Básico-B,9e81fe54-a75e-48ad-8877-8f67d0f30616,meta.ingreso_anual,$0,$720.090,Actualizar ingreso anual de $0 → $720.090
+4b-ACTUALIZAR_ANUAL,25964135-7,CUADRO CÁRCAMO FACUNDO GASPAR,3° Básico-B,4fc6e3dc-a88f-4edb-910e-2685806930f0,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24687493-K,CUADRO CÁRCAMO MATILDA ESPERANZA,6° Básico,4fc6e3dc-a88f-4edb-910e-2685806930f0,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23320765-9,CÁCERES ARANDA EMILIA PASCALE,3 Medio -A,af2f19bf-1484-4284-968d-80ce919d1506,meta.ingreso_anual,$0,$931.880,Actualizar ingreso anual de $0 → $931.880
+4b-ACTUALIZAR_ANUAL,23167878-6,DURÁN FERNÁNDEZ DANIELA IGNACIA AURELIA,3 Medio -A,7e86d4b1-4c3b-482e-9edf-329012bdb0db,meta.ingreso_anual,$0,$931.880,Actualizar ingreso anual de $0 → $931.880
+4b-ACTUALIZAR_ANUAL,23810832-2,DÁVILA SEPÚLVEDA FIORELLA SOFÍA,1 Medio -A,42c738ed-c879-4158-b5e5-b351857569ac,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23378477-K,DÍAZ CALBULLANCA CRISTÓBAL ALONSO,2 Medio,0a040d84-3d90-4c00-b263-86b41211c294,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4b-ACTUALIZAR_ANUAL,23846465-K,DÍAZ GONZÁLEZ LEÓN VLADIMIR,1 Medio -A,5b70b39b-0634-4e88-b182-63a6532fa981,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24705100-7,DÍAZ NOVOA LAURA RENATA,6° Básico,a0bb84d1-20ce-420d-837c-6e43283bf8e0,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24681478-3,DÍAZ SEMBLER BALTAZAR NICOLÁS,6° Básico,92e87763-1ec8-4cf6-a9de-8d74b9413865,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24386397-K,EGAÑA CABRERA ELENA FRANCISCA,7° Básico,184d6e71-b4c8-40d7-bef1-20440137dc1e,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,26140643-8,ELDREDGE INOSTROZA FELICIA CONSTANZA,3° Básico-B,d53c9622-45f2-43b3-9973-95270350d5af,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23937301-1,ESCOBAR CEBALLO AGUSTINA JACQUELINE,8° Básico,570445da-0dbd-4aa8-bf7c-2a63b89e55b8,meta.ingreso_anual,$0,$720.090,Actualizar ingreso anual de $0 → $720.090
+4b-ACTUALIZAR_ANUAL,23160195-3,ESPINOSA PEÑALOZA CRISTÓBAL AGUSTÍN,3 Medio -B,632dd187-f336-46af-8561-1ef80aa3a8e7,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22845025-1,ESPINOZA REYES GONZALO IGNACIO,3 Medio -B,9d5d6220-74d6-4fc6-9a8a-242f6d65d0dd,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24300364-4,ESPÍNDOLA VELOZO SILVIO EMILIANO,7° Básico,9e3f2043-3b1d-4b62-bd6c-02c0722674b9,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23710850-7,FICA PACCI JOAQUÍN ALONSO,1 Medio -A,88a1092c-1cfd-4c16-8c6a-2c3f28b1d60f,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22743019-2,FICK IBACETA CRISTÓBAL GERMÁN,4 Medio -B,b3db34df-a0f9-49c8-90b9-ed413c2cc855,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25890092-8,FIGUEROA DONOSO ÁMBAR ALEJANDRA,3° Básico-B,3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25227177-5,FILÚN SANTIBÁÑEZ MAXIMILIANO ANDREÉ,5° Básico,96bd0aca-ea46-42a1-bcb7-0521204a3495,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23005586-6,FLORES AROS GABRIEL ANTONIO,4 Medio -A,d3939647-fc5c-4430-8b86-576a3e8dee8d,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22710789-8,FLORES MORALES MARTÍN IGNACIO,4 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23791796-0,FLORES MORALES SOFÍA ANTONIA,1 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24362666-8,FLORES MUÑOZ ROQUE ANTUEL,7° Básico,ea2a399e-f3d0-4eb3-92f2-ed77db65738a,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24382773-6,FONSECA GOLDENBERG JULIETA SOLEDAD,7° Básico,a0421dcb-e14b-4ee4-901c-2ded703645ec,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23473045-2,FONSECA GOLDENBERG ROBERTA ANAÍS,2 Medio,a0421dcb-e14b-4ee4-901c-2ded703645ec,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23706034-2,FUENTES TORO GAEL EMILIANO,1 Medio -B,34673862-ec1a-43d1-ba0a-328da6291be6,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26734177-K,FUENZALIDA ANDRADE RAMIRO PASCUAL,2° Básico,b586387a-9d35-40d6-8970-8310b2aafa5a,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23252188-0,FUNES GARVISO FLORENCIA ANTONIA,3 Medio -A,ef48868a-9d78-4b73-a969-4141edd993d9,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24778231-1,GALAZ DURÁN FLORENCIA,6° Básico,fba5295b-2960-4398-8ed7-ac1f6ab0cedb,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25458455-K,GALAZ DURÁN OLIVIA,4° Básico-B,fba5295b-2960-4398-8ed7-ac1f6ab0cedb,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24557181-K,GALLARDO ARROYO MATEO JULIÁN,7° Básico,b518d850-0c16-4cba-b1a7-7433779c8847,meta.ingreso_anual,$0,$720.090,Actualizar ingreso anual de $0 → $720.090
+4b-ACTUALIZAR_ANUAL,26071660-3,GALLARDO ROSS TRISTÁN ANDRÈ,3° Básico-A,c8da3e53-9681-4431-9e56-2928e28de03f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25692904-K,GARCÍA GUERRERO SIMÓN TAIEL,4° Básico-A,2fea7dc0-3d86-45d2-91e6-2c4f1c01bebd,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25819531-0,GATICA DÍAZ LUKAS ALONSO,3° Básico-A,b64ea244-c5f3-4b3e-a585-d8bb7f2ba257,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22791197-2,GERHARD VERGARA LUCAS VICENTE,4 Medio -A,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23528648-3,GERHARD VERGARA MATEO ENRIQUE,2 Medio,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24498498-3,GERHARD VERGARA RENATA PASCUALA,7° Básico,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23847613-5,GONZÁLEZ KIMER AURORA MAGDALENA,1 Medio -A,54fa273b-de64-4d52-a026-71b4ccf8b1a5,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22941028-8,GONZÁLEZ MORA JOAQUÍN AMARO,4 Medio -A,80909804-011f-4b79-9704-da1ab0cfc718,meta.ingreso_anual,$0,$931.880,Actualizar ingreso anual de $0 → $931.880
+4b-ACTUALIZAR_ANUAL,25478275-0,GONZÁLEZ VARGAS RODOLFO PIETRO,4° Básico-B,2367dc5d-7acc-4e84-913c-9ed0e58f6892,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25929702-8,GUEICO GAETE ALONDRA SOFÍA,3° Básico-A,660a4dec-45ad-41a0-a100-04274626b1f2,meta.ingreso_anual,$0,$925.830,Actualizar ingreso anual de $0 → $925.830
+4b-ACTUALIZAR_ANUAL,23449122-9,GUERRERO BIRKE VIOLETA BEATRIZ,2 Medio,9755e5d1-e54f-4443-884b-721219622d77,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22984166-1,GUTIÉRREZ SEPÚLVEDA RAFAELA ANTONIA,4 Medio -A,e81dc188-09e2-421b-9a48-f1fcc380f093,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24431020-6,GUZMÁN TORRES VICENTE ANTONIO,7° Básico,c1188d50-38c3-456f-bf3f-9a7c0131fdfe,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24482725-K,GÓMEZ PERALTA LUCAS LEÓN,7° Básico,9a788342-9f8d-42eb-9c7f-996b878c067d,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25664469-K,HERNÁNDEZ GALLEGUILLOS IGNACIO VALENTÍN,4° Básico-A,e22ca13c-2b67-4f0d-8020-1af14b984001,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22921315-6,HERRERA CARRASCO JULIETA,3 Medio -A,f11f542c-7b13-4fa0-aef3-322c0922d64e,meta.ingreso_anual,$0,$1.065.010,Actualizar ingreso anual de $0 → $1.065.010
+4b-ACTUALIZAR_ANUAL,25504642-K,HUERTA SILVA AGUSTINA ISIDORA,4° Básico-B,68e7da22-0674-409c-92b6-908849214908,meta.ingreso_anual,$0,$925.830,Actualizar ingreso anual de $0 → $925.830
+4b-ACTUALIZAR_ANUAL,23042156-0,IBARRA BARRIENTOS DANIELA IGNACIA,4 Medio -B,7273117b-4ffe-4e7d-9929-7ef27d08bd19,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26464424-0,IRARRÁZABAL BASÁEZ RENATA EMILIA,2° Básico,5ad7dbf2-7183-4c93-a9ad-d700bed09ef7,meta.ingreso_anual,$0,$993.240,Actualizar ingreso anual de $0 → $993.240
+4b-ACTUALIZAR_ANUAL,25947700-K,JARAMILLO MORALES JOAQUÍN ALONZO,3° Básico-A,2ae46f37-efda-4d26-b15b-358f464399ed,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25033387-0,JIMÉNEZ ACUÑA ALLAN ALEJANDRO,3° Básico-B,2f93a4e9-b33c-44ec-b342-b0ed0a155bac,meta.ingreso_anual,$0,$257.180,Actualizar ingreso anual de $0 → $257.180
+4b-ACTUALIZAR_ANUAL,26793920-9,KARMY ELTIT IAN SALVADOR,1° Básico,ae5db068-3438-463a-9b3a-f8f91191b5c1,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25723210-7,KARMY ELTIT ÓLIVER VALENTÍN,3° Básico-A,ae5db068-3438-463a-9b3a-f8f91191b5c1,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25969885-5,LABRÍN MUÑOZ SANDINO TAHIEL,3° Básico-A,a6e68488-20ee-4c48-8486-fd5906bf7d80,meta.ingreso_anual,$0,$308.610,Actualizar ingreso anual de $0 → $308.610
+4b-ACTUALIZAR_ANUAL,22788468-1,LARIOS RIOSECO ARANZA ELISA,4 Medio -B,7d46e5e0-fc62-45c0-98e0-93b57685fbe0,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25840798-9,LASNIER FIGUEROA THOMAS VALENTÍN,3° Básico-B,89c47263-df33-49ce-9bbf-10dcf4d19c00,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24252189-7,LAZCANO MALDONADO SIMÓN EMILIO,8° Básico,a392bde7-871d-44ed-b57f-5180fddb97a1,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23051742-8,LEIVA ACOSTA ANTU SAID,3 Medio -A,29cc6c78-0b7e-454e-a556-1563f4151f74,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23082366-9,LERIS MUÑOZ JOSEPHINA PAZ,3 Medio -B,b378dffd-a296-494a-b0dc-b5b1792140e4,meta.ingreso_anual,$0,$931.880,Actualizar ingreso anual de $0 → $931.880
+4b-ACTUALIZAR_ANUAL,24581814-9,MALLEA DÍAZ LUA ABRIL,7° Básico,057cd578-f771-4c7f-8019-75cb769772b7,meta.ingreso_anual,$0,$257.180,Actualizar ingreso anual de $0 → $257.180
+4b-ACTUALIZAR_ANUAL,23703645-K,MARTORI COVARRUBIAS ALONSO TOMÁS,1 Medio -B,05d4264e-b81e-4b4f-a8e2-3e873ebdc833,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24682795-8,MARTÍNEZ LUCERO CATALINA ISIDORA,6° Básico,88605e77-5983-4807-8e66-8c91b7f2b252,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,26584136-8,MARTÍNEZ LUCERO FACUNDO RODRIGO,2° Básico,cb2b3380-8884-4d39-9062-088b0ca8482f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25304357-1,MARTÍNEZ PÉREZ MAILEN PAZ,5° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.ingreso_anual,$0,$257.180,Actualizar ingreso anual de $0 → $257.180
+4b-ACTUALIZAR_ANUAL,24315417-0,MARTÍNEZ PÉREZ RAFAEL ALONSO,7° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.ingreso_anual,$0,$257.180,Actualizar ingreso anual de $0 → $257.180
+4b-ACTUALIZAR_ANUAL,23590064-5,MATTAR GALLEGUILLOS FABRICIO ABDEL,3 Medio -B,ca45875e-a5a8-4c15-a409-6357b2f65802,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26211725-1,MATTIA PAZ SANTIAGO,2° Básico,9d2e8df1-3123-4acf-b5a7-c590593df705,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25353074-K,MATURANA DÍAZ STEFFANO JÓAN,4° Básico-A,75620919-1d03-432a-b90a-8e6638712c22,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,22800908-3,MEDINA FIGUEROA ÁLVARO IGNACIO,4 Medio -A,0a35a2ef-a9c2-4008-9352-6f0ec09ac582,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25701667-6,MENA BARTUCEVIC LEÓN IGNACIO,4° Básico-B,1fe3e9cd-1b6b-4d69-bf04-7bdb2eac2142,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25943041-0,MENDOZA DAZA GASPAR,3° Básico-A,32cff3f9-e488-4f62-a494-fd6653fa335c,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25821721-7,MIRANDA MADARIAGA JOAQUÍN ALONSO,3° Básico-A,dcb39663-f6ab-4113-a874-21abdfa92244,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22429820-K,MIRANDA VARGAS BENJAMÍN ALBERTO ANTONIO,4 Medio -B,f1caa763-2d23-4875-862e-ca7ddefe4759,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23219047-7,MIRANDA ÁLVAREZ DAMIÁN IGNACIO,3 Medio -B,68178644-172b-4e34-9d03-d86125492c65,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25412424-9,MORALES RAMÍREZ IGNACIA EMILIA,4° Básico-A,dd152845-fba5-4fcd-b510-e6edf752b088,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22824659-K,MORENO BUSTAMANTE SALVADOR ALONSO,3 Medio -B,80a6e309-c49e-436f-ac1d-d63b45ced2ee,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23789601-7,MOYA ARIAS CLEMENTE GABRIEL,1 Medio -B,2d7e4bf1-4483-4960-9393-f374f6213596,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25589136-7,MUÑOZ ARIAS ISABELLA VIOLETA,4° Básico-B,6e6dd93a-d9b4-467d-b441-abaf86461c67,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25917951-3,MUÑOZ MENDES NAHUEL GUILLERMO LEÓN,3° Básico-A,b97bdcd8-576d-4f9f-b2df-853bf6e0cf22,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25230505-K,MUÑOZ NAVARRO EMILIA JOSEFA,5° Básico,52d27e5e-2e85-4d0e-b86b-69c945adc415,meta.ingreso_anual,$0,$360.050,Actualizar ingreso anual de $0 → $360.050
+4b-ACTUALIZAR_ANUAL,25761339-9,NAVARRO AVILÉS ANTONELLA PAZ,3° Básico-A,a3e1b488-8df0-4d03-9da7-452de10c810f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23691703-7,NAVARRO RIVEROS ROBERT KLAUS,1 Medio -A,2867eee4-8216-4d9d-b083-65b5123793d4,meta.ingreso_anual,$0,$1.065.010,Actualizar ingreso anual de $0 → $1.065.010
+4b-ACTUALIZAR_ANUAL,22918982-4,NAVARRO TOLEDO GUSTAVO ALONSO,4 Medio -A,47b88114-9cd6-4884-b718-c04fdff9c577,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23308414-K,NEGRETE IBACACHE ANTONELLA IGNACIA,3 Medio -A,789dae56-0b1f-4b2b-bbbe-ae7a60330b38,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,27233231-2,NIELSEN FLORES FARID RODRIGO,1° Básico,f2e66fe8-4216-468a-a3cd-1f6cc1d3f5ff,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,26749660-9,NÚÑEZ RAMÍREZ SALVADOR IGNACIO,2° Básico,d1bbc2be-96d5-4585-bd0d-b7140282e120,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22918793-7,OPAZO CABELLO RENATO ALONSO,3 Medio -A,38d5b7f9-8113-445d-8ea8-722de2a0769e,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22994477-0,ORTIZ MOLINA AGUSTÍN,4 Medio -A,be82953a-03d2-435b-8d92-9593e54909b1,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23503996-6,PAREDES INZULZA FACUNDO LEÓN,2 Medio,cf682317-2ccf-4f13-b936-e7980715b1dc,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24133380-9,PEIRANO CARVAJAL FLORENCIA PASCAL,8° Básico,bd8a20e6-cf68-48b6-8a3b-44a4ab45c55f,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,22862722-4,PERALTA ROJAS EMILIA IGNACIA,4 Medio -B,daf72670-be8a-41e6-9833-ec8845510073,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4b-ACTUALIZAR_ANUAL,23749066-5,PEÑA BUSTAMANTE AMELIA,1 Medio -A,097a6e1e-ff71-4ef8-b17f-328274c3091a,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,22755244-1,PIZARRO GUTIÉRREZ BORJA MANUEL,4 Medio -A,ac982c30-a870-4b94-af0e-8f1520234149,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26863472-K,PIÑA BOMBAL MAXIMILIANO VICENTE,1° Básico,50bebbba-c6bd-448f-b073-1cd3cee89d78,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25067339-6,PIÑA BOMBAL SEBASTIÁN HERNÁN,5° Básico,08440fe6-76b5-4760-b3b1-c5aff34dbc8d,meta.ingreso_anual,$0,$514.350,Actualizar ingreso anual de $0 → $514.350
+4b-ACTUALIZAR_ANUAL,26340647-8,PIÑONES RAMÍREZ AUKAN AMARU,2° Básico,e9bfe1fb-ba8c-47e3-afb1-cd115a2136a6,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,25832054-9,PUEBLA MORENO ELEONORA,3° Básico-A,f1b103fb-4400-471f-8d2a-4dd789326207,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23630186-9,QUIROGA MUÑOZ NATIVA LUZ,2 Medio,ce770b76-b546-454a-a926-b9146c58e79c,meta.ingreso_anual,$0,$865.320,Actualizar ingreso anual de $0 → $865.320
+4b-ACTUALIZAR_ANUAL,24557067-8,RAMÍREZ ACEVEDO ANTONIO LEÓN,7° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,meta.ingreso_anual,$0,$411.480,Actualizar ingreso anual de $0 → $411.480
+4b-ACTUALIZAR_ANUAL,26297890-7,RAMÍREZ ACEVEDO JULIÁN EDUARDO,2° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,meta.ingreso_anual,$0,$411.480,Actualizar ingreso anual de $0 → $411.480
+4b-ACTUALIZAR_ANUAL,24478999-4,REBOLLEDO STHANDIER DOMINGA,7° Básico,e7829e3e-6340-462f-9965-426314b2086e,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23884967-5,REVECO PÉREZ LEÓN,1 Medio -B,1e69adbc-2c64-4676-a1ea-3b50051a5e4e,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23149623-8,REYES BAEZA THAÍS MONSERRAT ARELLY,3 Medio -B,2310b833-2973-4a40-aee8-64e3976cb4ab,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23770079-1,REYES CODINA GASPAR ENRIQUE,1 Medio -A,b4cbb9cf-f7c8-44b6-ba35-c7c0842049d3,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25084028-4,RIQUELME CORNEJO JOSEFA PATRICIA,5° Básico,83a2d7cb-4145-4c31-b842-a96e9e1db6ef,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22878786-8,RODRÍGUEZ ABURTO JOSEFA RENATA,4 Medio -A,6d64084e-ea24-4a36-a74e-83216e085fdc,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4b-ACTUALIZAR_ANUAL,24212542-8,RODRÍGUEZ BARRERA RENATO ALONSO,8° Básico,e2ddf8e0-8374-46fb-8ce9-9f201d91d6e9,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23714513-5,ROJAS BENAVIDES MAGDALENA PAZ,1 Medio -A,06f17d0b-a0cb-4d9f-a0a5-e6b0fc3080f0,meta.ingreso_anual,$0,$1.065.010,Actualizar ingreso anual de $0 → $1.065.010
+4b-ACTUALIZAR_ANUAL,23337628-0,ROMANI GUTIÉRREZ CRISTÓBAL LEÓN,2 Medio,32544798-ccc3-4f37-b63b-913c0794316e,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4b-ACTUALIZAR_ANUAL,25713058-4,RUBINA STRAUBE MAE AMÉLIE,4° Básico-A,3a40ffcb-db75-40cc-9210-32d6be55a1a5,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,26815405-1,SABA ESCOBAR FLORENCIA ANELEY,1° Básico,a53b63f2-792c-40f5-b8a7-ed67003dc5cc,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23602495-4,SALAZAR CORNEJO BENJAMÍN ARTURO,2 Medio,1dd277d2-6373-48a5-b8a1-16e5a4d5014a,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24751293-4,SALAZAR CORNEJO MAGDALENA LEONOR,6° Básico,1dd277d2-6373-48a5-b8a1-16e5a4d5014a,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25924270-3,SALINAS CARRASCO VICENTE SALVADOR,3° Básico-A,f972167c-5003-4247-b8be-0a89536b6d51,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23443471-3,SALINAS VÉLIZ AMANDA FRANCISCA,2 Medio,124f2fcb-ee42-47a1-8e52-180919137c32,meta.ingreso_anual,$0,$1.331.262,Actualizar ingreso anual de $0 → $1.331.262
+4b-ACTUALIZAR_ANUAL,25349901-K,SAN MARTÍN MONTERO NICOLÁS GAEL,4° Básico-B,a74a6cdb-0b24-43eb-9adf-07134a540215,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23997071-0,SANTA MARÍA CARTES AMELIA SOFÍA,7° Básico,c1c6e332-540f-45fe-ae1e-486646c3e689,meta.ingreso_anual,$0,$720.090,Actualizar ingreso anual de $0 → $720.090
+4b-ACTUALIZAR_ANUAL,23205714-9,SANTELICES MEZA ISIDORA VALENTINA,3 Medio -A,672fa1c5-70eb-486c-8cd6-79bb00229257,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23381582-9,SCHULZ GALLEGUILLOS SOFIA VAI MOANA,2 Medio,e06706cc-a57f-407e-84ea-a3be618f0f07,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23341445-K,SEGURA PEZO ISIDORA VALENTINA,2 Medio,69cda971-eb14-4faa-9740-981649071317,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4b-ACTUALIZAR_ANUAL,26920280-7,SEPÚLVEDA BRAVO DIEGO VALENTÍN,1° Básico,02879867-f809-4403-8d7b-0f9a7f8d1491,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23536007-1,SEPÚLVEDA BRAVO MARTÍN ALONSO,2 Medio,02879867-f809-4403-8d7b-0f9a7f8d1491,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23600999-8,SEPÚLVEDA OJEDA HELENA VICTORIA,2 Medio,712b7e35-7965-4fd8-bdd7-e061c0a381df,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24625627-6,SILVA ACEVEDO MATILDA CELESTE,6° Básico,ef31f280-4ecb-4210-9508-14046a018e90,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25302873-4,SILVA VARGAS ARA IGNACIA,5° Básico,0df0822d-53aa-456d-8677-0a12b5e29895,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22783399-8,SOLÍS GÓMEZ MAGDALENA BEATRIZ,4 Medio -A,eae29906-dc8a-4fe4-9bd4-bada71977dba,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24388738-0,SPENCER MARDONES GASPAR THOMAS,7° Básico,74af7c9d-cb77-4785-b35d-fd41cb61fb4f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,26057653-4,SPIGETTH LABRIN ISIDORA IGNACIA,3° Básico-A,1e9bd4aa-286c-4582-9e26-ec5e6c25e31b,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24051700-0,SÁNCHEZ CARVALLO AMANDA CAROLINA,8° Básico,3ccd1299-c9c9-45b4-8e33-da8788a6b628,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23207805-7,TELLO AGUAYO JUAN JOSÉ,2 Medio,29bc76e8-fec2-4f3e-b502-c69566693d07,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26685499-4,TORRES FERNÁNDEZ AMANDA,2° Básico,7f9d1595-3c22-4df7-bd43-e2994acc205f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25606891-5,UBERUAGA CAJALES MARTÍN,4° Básico-B,eaa3f7f1-9ca5-4b18-80f1-08e05dc52f9a,meta.ingreso_anual,$0,$360.050,Actualizar ingreso anual de $0 → $360.050
+4b-ACTUALIZAR_ANUAL,23286265-3,UMAÑA GONZÁLEZ PÁVEL SANDINO,3 Medio -A,cfde4fbb-f707-414d-b112-e8b6979c390f,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,26741815-2,VALDÉS COVARRUBIAS SAMUEL SIMÓN,2° Básico,1aaca118-c47b-478d-9dda-1b60d3ebe85e,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24473727-7,VALDÉS COVARRUBIAS SANTIAGO,7° Básico,1aaca118-c47b-478d-9dda-1b60d3ebe85e,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25618895-3,VALPREDA VIVEROS MATÍAS SALVADOR,4° Básico-A,ea205546-6328-4607-8b50-2db4515a2323,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25232702-9,VARGAS ARAVENA ELOÍSA,5° Básico,a7379488-e1f2-4370-9169-350a5c058900,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,23251268-7,VARGAS ARAVENA ROMÁN,3 Medio -B,a7379488-e1f2-4370-9169-350a5c058900,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4b-ACTUALIZAR_ANUAL,23475511-0,VARGAS DELGADO AGUSTINA ISIDORA,2 Medio,82c90787-3918-43e4-a032-040ce31b54f3,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24169011-3,VARGAS NARVÁEZ ANTONELLA AMANDA,8° Básico,7f67818a-8f9d-4145-b0a6-0c78a5743906,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25178753-0,VEAS ASPILLAGA AMARANTA ROSA,5° Básico,abffd6ef-c1dd-4679-ab6b-5a0b1ec53851,meta.ingreso_anual,$0,$514.350,Actualizar ingreso anual de $0 → $514.350
+4b-ACTUALIZAR_ANUAL,23714855-K,VELÁSQUEZ ZAVALA AGUSTÍN ANDRÉS,1 Medio -B,4d63e10f-55ef-4228-8e18-01f7a30092a2,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23699034-6,VICUÑA PÉREZ MIGUEL ESTEBAN,1 Medio -A,794a4776-1e12-40c8-b8d6-1e8f0441ed45,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23704392-8,VIDAL SÁNCHEZ FERNANDA EMILIA,1 Medio -A,07b47ca6-b02a-462a-8e61-e24768c8cd53,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24353237-K,VILCHES CUSICANQUI AMPARO BELÉN,7° Básico,ba39cf44-16b7-4e94-86da-f38282845904,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22894591-9,VILLAVICENCIO ABARCA LAURA FRANCISCA,4 Medio -B,aac078e6-2cef-4094-9496-d1882953f68c,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23470102-9,VIZCARRA GANDARA FRANCISCO TOMÁS,1 Medio -A,ca8746c1-99e0-4373-af17-9329bd136237,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,25505941-6,VÉLIZ VARGAS LUCIANO EMILIO,4° Básico-A,046a97cc-99b4-4640-9762-730e5545031f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,24081762-4,VÉLIZ VARGAS RAFAEL IGNACIO,8° Básico,046a97cc-99b4-4640-9762-730e5545031f,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23277432-0,WILSON CÁRCAMO ALONSO MARTÍN,3 Medio -B,127eb37a-2702-4512-9626-e5be0c9d3db9,meta.ingreso_anual,$0,$532.500,Actualizar ingreso anual de $0 → $532.500
+4b-ACTUALIZAR_ANUAL,26746827-3,WILSON CÁRCAMO ANAÍS MARIEN,1° Básico,127eb37a-2702-4512-9626-e5be0c9d3db9,meta.ingreso_anual,$0,$780.600,Actualizar ingreso anual de $0 → $780.600
+4b-ACTUALIZAR_ANUAL,23594831-1,WILSON LAUREL CHRISTOPHER DYLAN,1 Medio -A,e10ae10d-8291-4831-ad1c-f7744a1ad97d,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23552329-9,YÁÑEZ KOENIG CATALINA ANTONIA,1 Medio -A,e8c57d50-cbb7-4600-bd0f-7677b062ce57,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,24373455-K,YÁÑEZ KOENIG LEÓN EMILIO,7° Básico,e8c57d50-cbb7-4600-bd0f-7677b062ce57,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,25542296-0,ZAMORA INOSTROZA AGUSTÍN IGNACIO,4° Básico-A,b9f8dcd1-7a96-4414-85af-33a4c89ee0f9,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,22982378-7,ZAPATA CARE EMILIANO PABLO,4 Medio -B,0f1d34a0-c53f-4104-8a99-2cb74bebfb34,meta.ingreso_anual,$0,$1.331.260,Actualizar ingreso anual de $0 → $1.331.260
+4b-ACTUALIZAR_ANUAL,23942270-5,ZAVALA SALUCCI FELIPE ALEJANDRO,8° Básico,732d0650-c971-464f-bd70-fec8be284661,meta.ingreso_anual,$0,$617.220,Actualizar ingreso anual de $0 → $617.220
+4b-ACTUALIZAR_ANUAL,25764691-2,ZOLEZZI HENRÍQUEZ RAFFAELLA VALENTINA,3° Básico-A,41450c85-801e-4653-b45f-70f60e81a196,meta.ingreso_anual,$0,$1.028.700,Actualizar ingreso anual de $0 → $1.028.700
+4b-ACTUALIZAR_ANUAL,23450299-9,ÁVILA TELLO RENATA RAYEN,2 Medio,a0999f25-89ae-40ca-b77d-b9d9b73009af,meta.ingreso_anual,$0,$798.760,Actualizar ingreso anual de $0 → $798.760
+4c-ACTUALIZAR_FORMA_PAGO,25418027-0,ABARZA MORALES SALVADOR TOMÁS,4° Básico-A,6e76faf8-1c56-4f78-bf57-ac0616ae8cf2,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22949882-7,ACUÑA ARIAS MARTÍN ALONSO,4 Medio -B,069a92ac-0a75-4a5b-9e44-4f9f57cacf43,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24241264-8,ADASME SILVA MAILEN AMANDA,8° Básico,f160be4e-e9a9-48e8-87f6-903cf8e57ca1,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23200888-1,AGUILAR BROUSSAIN FACUNDO,3 Medio -B,8a17455c-c51b-45b9-9a4d-ec666881bc83,meta.payment_method,(vacío),TARJETA,Establecer forma de pago: TARJETA
+4c-ACTUALIZAR_FORMA_PAGO,23256719-8,AGUIRRE CRUZ THEO,3 Medio -A,935f63e0-5a8b-45fc-83c7-7d1618a84c15,meta.payment_method,(vacío),TARJETA,Establecer forma de pago: TARJETA
+4c-ACTUALIZAR_FORMA_PAGO,23420668-0,ALARCÓN HERRERA AGUSTINA,2 Medio,d407e4ba-fb8e-4c6e-b547-46448ee4a06d,meta.payment_method,(vacío),TRANSFERENCIA,Establecer forma de pago: TRANSFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,26141639-5,ALARCÓN HERRERA MARTINA,3° Básico-A,d407e4ba-fb8e-4c6e-b547-46448ee4a06d,meta.payment_method,(vacío),TRANSFERENCIA,Establecer forma de pago: TRANSFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,25511928-1,ALARCÓN OYARZÚN AYLIN MAITE ELOÍSA,4° Básico-A,d83a358c-b4fe-4191-8ec2-54c990b95ca8,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24958405-3,ALBORNOZ MORGADO ANAÍS ILLARI,7° Básico,a0697f61-b884-4078-b453-ee6343eec4b7,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,24609631-7,ALLENDE TABILO IGNACIO JAVIER,5° Básico,af7bfacc-bcfa-434a-a5bc-e228bccf6633,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22961936-5,AMOR ABURTO FRANCISCO JAVIER,4 Medio -A,32407e30-16df-4539-b46e-a1aba5bc67b9,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23681990-6,AMOR ABURTO VICENTE ALONSO,1 Medio -B,32407e30-16df-4539-b46e-a1aba5bc67b9,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22828026-7,ANMELLA SILVA CRISTÓBAL,4 Medio -B,8ac1f63e-7046-4cc1-b29f-9374ef3e8bc2,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,27126104-7,AQUEVEQUE SOLANO FACUNDO,1° Básico,918c6611-d1af-4d87-842e-fb502ff3bef5,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24587195-3,ARANA CALDERÓN FRANCO AUGUSTO,6° Básico,9fd2f8c1-e989-4237-81e1-1656b3112773,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,25554250-8,ARAOS VERGARA FRANCESCO AGUSTÍN,3° Básico-B,b1d6abc0-d844-4af2-83e1-f67630ecf231,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25350542-7,ARAYA AGUILAR ALELÍ,4° Básico-B,9abd66dc-36cb-42e9-a24e-c7224e8d0951,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26687709-9,ARAYA CORTEZ SAMANTHA VICTORIA SIMONE,2° Básico,01a6bb99-5571-462d-a817-114bbb747b43,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25658625-8,ARENAS LANDEROS DANTE LEÓN,4° Básico-B,626d645e-351b-4860-b9ae-1ec51e296686,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,27245224-5,ARENAS LANDEROS ELOÍSA IZADI,1° Básico,626d645e-351b-4860-b9ae-1ec51e296686,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23882043-K,ARENAS LANDEROS OCTAVIO ANDRÉS,1 Medio -A,626d645e-351b-4860-b9ae-1ec51e296686,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25306816-7,ARMIJO TOBAR MAXIMILIANO RODRIGO,5° Básico,9e6e28b7-6247-4093-804a-8fbbc172b8bc,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22692513-9,ARÉVALO TOLEDO AMANDA ANTONIA,4 Medio -B,d81f01b4-c738-4c2b-aff7-5fcf38a6354f,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26128305-0,AVENDAÑO LUNA LAURA ANTONIA,3° Básico-A,4f28bec4-27b7-4cbb-91b1-46d3904226ec,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25262916-5,AYALA AGUILERA RENATO SAMUEL,4° Básico-B,e4f64a0c-f6ad-4dae-8cf8-a9e4e92d6e21,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25717393-3,AYALA SEPÚLVEDA JULIÁN,4° Básico-A,b460f6d1-161f-4500-86c0-562fa5de70af,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22767771-6,BARRERA ARANCIBIA LEONOR ALEXANDRA,4 Medio -B,02052dc8-a58c-40b9-bb88-7c1bc3ca3fa7,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23126375-6,BARRÍA ZÁRRAGA ARIEL EMILIO,3 Medio -A,5eefe121-a2a1-451f-8282-ed74376a4df0,meta.payment_method,(vacío),beca,Establecer forma de pago: beca
+4c-ACTUALIZAR_FORMA_PAGO,26657060-0,BERROCAL ROA ISIDORA ALINE,2° Básico,3602cbaf-10c5-432a-a94d-142d8eb4abbe,meta.payment_method,(vacío),descuento planilla,Establecer forma de pago: descuento planilla
+4c-ACTUALIZAR_FORMA_PAGO,22866430-8,BOBADILLA GARRIDO ANTONELLA ANAÍS,4 Medio -B,c290107f-daa6-4547-bef1-d6677d285d33,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22829976-6,CACES SEPÚLVEDA GASPAR ALFONSO,4 Medio -B,70285275-2e4b-4da0-a838-28ed5b062b26,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,24631708-9,CACES SEPÚLVEDA LIBERTAD,6° Básico,70285275-2e4b-4da0-a838-28ed5b062b26,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,23796905-7,CAMPUSANO ARAVENA MATILDE AMAYA,1 Medio -A,2ec341e5-2b9d-4cad-81fc-9ac883a724ed,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,25558118-K,CANCINO TAPIA TOMÁS LEÓN,4° Básico-B,2c017dd2-3020-49cf-9503-70cf0a300af8,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,25607211-4,CANTARUTTI CONCHA GIULIANO ANTONINO,4° Básico-A,3a2ffbbc-85b4-4f1d-9b01-50d9e1c4493d,meta.payment_method,(vacío),cheques,Establecer forma de pago: cheques
+4c-ACTUALIZAR_FORMA_PAGO,25904278-K,CARRASCO SEPÚLVEDA CONSTANZA PAZ,3° Básico-A,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,22832796-4,CARRASCO SEPÚLVEDA CRISTIAN ANDRÉS,4 Medio -A,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24341658-2,CARRASCO SEPÚLVEDA FRANCISCO GABRIEL,7° Básico,e23eab60-d5cd-49e5-90a8-189104140ce8,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,26116316-0,CARRILLO BRIONES SANTIAGO ALONSO,2° Básico,44e90b36-0dc8-4426-bf01-1ea374b1fb12,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,22559294-2,CARVAJAL GUAJARDO LEONOR CAROLINA,4 Medio -A,73435dec-b050-4d90-8f54-86c1f23847ff,meta.payment_method,(vacío),tarjeta,Establecer forma de pago: tarjeta
+4c-ACTUALIZAR_FORMA_PAGO,23040665-0,CARVAJAL GUTIÉRREZ DANAE AMELIE,4 Medio -B,0fd48c9a-ea48-406e-96ae-a08e633b689b,meta.payment_method,(vacío),cheque,Establecer forma de pago: cheque
+4c-ACTUALIZAR_FORMA_PAGO,23964383-3,CARVAJAL GUTIÉRREZ LEONARDO MANUEL,1 Medio -A,0fd48c9a-ea48-406e-96ae-a08e633b689b,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,24822697-8,CARVAJAL PUYOL MARIANO IGNACIO,5° Básico,ad47cfea-46ee-4752-934b-9fda0c9377ef,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22752675-0,CARVALLO LÓPEZ FABIANNA EVOLET,4 Medio -B,55cdcf44-2819-42ac-ab12-8445d0385122,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25495456-K,CASTILLO BUSTAMANTE DANTE ARITZ,4° Básico-A,05ea6c8e-8a3b-48df-ad7b-d7ce88b05865,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23613517-9,CASTRO CORREA MATÍAS ANKATU,2 Medio,6599447f-fd35-4d28-99dd-888c99ee2a62,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,23201403-2,CATALÁN SAAVEDRA NICOLÁS IGNACIO,3 Medio -A,626f08c8-170d-453f-afe9-2b3780652364,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24245393-K,CEPEDA FOXON AYÜN,7° Básico,59d9c8b8-32db-482d-9304-72652f943931,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26793970-5,CHÁVEZ RÍOS LORETO CATALINA,1° Básico,e55c3cd1-6202-4bb2-9101-120f353fe238,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,23255578-5,CISTERNAS ESPINOZA JOSEFA ANTONIA,3 Medio -B,8f6d3ab5-0656-4b5a-9a54-f3b20600f99d,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23001109-5,CONEJEROS BELTRAMI DANIEL ERNESTO,3 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,23878140-K,CONEJEROS BELTRAMI JAVIERA VIOLETA,1 Medio -A,949f452f-c039-4da0-ac5a-0afa3658b058,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,22908888-2,CONTRERAS BASUALTO CATALINA PAZ,4 Medio -A,e866942f-5dde-40ef-99dc-91ca90e3ad40,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25105852-0,CORTÉS PARRA JOAQUÍN RAFAEL,5° Básico,64ac047b-d57e-48bc-8b5c-84022c16cf8c,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22828650-8,CRISOSTO PASTÉN DIEGO TOMÁS,4 Medio -B,c1dbbc1a-56ef-457a-b93d-919882be5a0d,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26084417-2,CRUZ GARAY MARGARITA EMILIA,3° Básico-B,9e81fe54-a75e-48ad-8877-8f67d0f30616,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25964135-7,CUADRO CÁRCAMO FACUNDO GASPAR,3° Básico-B,4fc6e3dc-a88f-4edb-910e-2685806930f0,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24687493-K,CUADRO CÁRCAMO MATILDA ESPERANZA,6° Básico,4fc6e3dc-a88f-4edb-910e-2685806930f0,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23320765-9,CÁCERES ARANDA EMILIA PASCALE,3 Medio -A,af2f19bf-1484-4284-968d-80ce919d1506,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23167878-6,DURÁN FERNÁNDEZ DANIELA IGNACIA AURELIA,3 Medio -A,7e86d4b1-4c3b-482e-9edf-329012bdb0db,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23810832-2,DÁVILA SEPÚLVEDA FIORELLA SOFÍA,1 Medio -A,42c738ed-c879-4158-b5e5-b351857569ac,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23378477-K,DÍAZ CALBULLANCA CRISTÓBAL ALONSO,2 Medio,0a040d84-3d90-4c00-b263-86b41211c294,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23846465-K,DÍAZ GONZÁLEZ LEÓN VLADIMIR,1 Medio -A,5b70b39b-0634-4e88-b182-63a6532fa981,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,24705100-7,DÍAZ NOVOA LAURA RENATA,6° Básico,a0bb84d1-20ce-420d-837c-6e43283bf8e0,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,24681478-3,DÍAZ SEMBLER BALTAZAR NICOLÁS,6° Básico,92e87763-1ec8-4cf6-a9de-8d74b9413865,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26140643-8,ELDREDGE INOSTROZA FELICIA CONSTANZA,3° Básico-B,d53c9622-45f2-43b3-9973-95270350d5af,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23937301-1,ESCOBAR CEBALLO AGUSTINA JACQUELINE,8° Básico,570445da-0dbd-4aa8-bf7c-2a63b89e55b8,meta.payment_method,(vacío),TARJETA,Establecer forma de pago: TARJETA
+4c-ACTUALIZAR_FORMA_PAGO,23160195-3,ESPINOSA PEÑALOZA CRISTÓBAL AGUSTÍN,3 Medio -B,632dd187-f336-46af-8561-1ef80aa3a8e7,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22845025-1,ESPINOZA REYES GONZALO IGNACIO,3 Medio -B,9d5d6220-74d6-4fc6-9a8a-242f6d65d0dd,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24300364-4,ESPÍNDOLA VELOZO SILVIO EMILIANO,7° Básico,9e3f2043-3b1d-4b62-bd6c-02c0722674b9,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23710850-7,FICA PACCI JOAQUÍN ALONSO,1 Medio -A,88a1092c-1cfd-4c16-8c6a-2c3f28b1d60f,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22743019-2,FICK IBACETA CRISTÓBAL GERMÁN,4 Medio -B,b3db34df-a0f9-49c8-90b9-ed413c2cc855,meta.payment_method,(vacío),cheque,Establecer forma de pago: cheque
+4c-ACTUALIZAR_FORMA_PAGO,25227177-5,FILÚN SANTIBÁÑEZ MAXIMILIANO ANDREÉ,5° Básico,96bd0aca-ea46-42a1-bcb7-0521204a3495,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23005586-6,FLORES AROS GABRIEL ANTONIO,4 Medio -A,d3939647-fc5c-4430-8b86-576a3e8dee8d,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22710789-8,FLORES MORALES MARTÍN IGNACIO,4 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23791796-0,FLORES MORALES SOFÍA ANTONIA,1 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24362666-8,FLORES MUÑOZ ROQUE ANTUEL,7° Básico,ea2a399e-f3d0-4eb3-92f2-ed77db65738a,meta.payment_method,(vacío),TRANSFERENCIA,Establecer forma de pago: TRANSFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,24382773-6,FONSECA GOLDENBERG JULIETA SOLEDAD,7° Básico,a0421dcb-e14b-4ee4-901c-2ded703645ec,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23473045-2,FONSECA GOLDENBERG ROBERTA ANAÍS,2 Medio,a0421dcb-e14b-4ee4-901c-2ded703645ec,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23706034-2,FUENTES TORO GAEL EMILIANO,1 Medio -B,34673862-ec1a-43d1-ba0a-328da6291be6,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,26734177-K,FUENZALIDA ANDRADE RAMIRO PASCUAL,2° Básico,b586387a-9d35-40d6-8970-8310b2aafa5a,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23252188-0,FUNES GARVISO FLORENCIA ANTONIA,3 Medio -A,ef48868a-9d78-4b73-a969-4141edd993d9,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24778231-1,GALAZ DURÁN FLORENCIA,6° Básico,fba5295b-2960-4398-8ed7-ac1f6ab0cedb,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25458455-K,GALAZ DURÁN OLIVIA,4° Básico-B,fba5295b-2960-4398-8ed7-ac1f6ab0cedb,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24557181-K,GALLARDO ARROYO MATEO JULIÁN,7° Básico,b518d850-0c16-4cba-b1a7-7433779c8847,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25692904-K,GARCÍA GUERRERO SIMÓN TAIEL,4° Básico-A,2fea7dc0-3d86-45d2-91e6-2c4f1c01bebd,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25819531-0,GATICA DÍAZ LUKAS ALONSO,3° Básico-A,b64ea244-c5f3-4b3e-a585-d8bb7f2ba257,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,22791197-2,GERHARD VERGARA LUCAS VICENTE,4 Medio -A,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23528648-3,GERHARD VERGARA MATEO ENRIQUE,2 Medio,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24498498-3,GERHARD VERGARA RENATA PASCUALA,7° Básico,c6f20d30-8204-4b3e-be68-0d61b574a5b3,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23847613-5,GONZÁLEZ KIMER AURORA MAGDALENA,1 Medio -A,54fa273b-de64-4d52-a026-71b4ccf8b1a5,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,22941028-8,GONZÁLEZ MORA JOAQUÍN AMARO,4 Medio -A,80909804-011f-4b79-9704-da1ab0cfc718,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25478275-0,GONZÁLEZ VARGAS RODOLFO PIETRO,4° Básico-B,2367dc5d-7acc-4e84-913c-9ed0e58f6892,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25929702-8,GUEICO GAETE ALONDRA SOFÍA,3° Básico-A,660a4dec-45ad-41a0-a100-04274626b1f2,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23449122-9,GUERRERO BIRKE VIOLETA BEATRIZ,2 Medio,9755e5d1-e54f-4443-884b-721219622d77,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,22984166-1,GUTIÉRREZ SEPÚLVEDA RAFAELA ANTONIA,4 Medio -A,e81dc188-09e2-421b-9a48-f1fcc380f093,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,24431020-6,GUZMÁN TORRES VICENTE ANTONIO,7° Básico,c1188d50-38c3-456f-bf3f-9a7c0131fdfe,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24482725-K,GÓMEZ PERALTA LUCAS LEÓN,7° Básico,9a788342-9f8d-42eb-9c7f-996b878c067d,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25664469-K,HERNÁNDEZ GALLEGUILLOS IGNACIO VALENTÍN,4° Básico-A,e22ca13c-2b67-4f0d-8020-1af14b984001,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22921315-6,HERRERA CARRASCO JULIETA,3 Medio -A,f11f542c-7b13-4fa0-aef3-322c0922d64e,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25504642-K,HUERTA SILVA AGUSTINA ISIDORA,4° Básico-B,68e7da22-0674-409c-92b6-908849214908,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23042156-0,IBARRA BARRIENTOS DANIELA IGNACIA,4 Medio -B,7273117b-4ffe-4e7d-9929-7ef27d08bd19,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,26464424-0,IRARRÁZABAL BASÁEZ RENATA EMILIA,2° Básico,5ad7dbf2-7183-4c93-a9ad-d700bed09ef7,meta.payment_method,(vacío),TRANSFERENCIA,Establecer forma de pago: TRANSFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,25033387-0,JIMÉNEZ ACUÑA ALLAN ALEJANDRO,3° Básico-B,2f93a4e9-b33c-44ec-b342-b0ed0a155bac,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,26793920-9,KARMY ELTIT IAN SALVADOR,1° Básico,ae5db068-3438-463a-9b3a-f8f91191b5c1,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25723210-7,KARMY ELTIT ÓLIVER VALENTÍN,3° Básico-A,ae5db068-3438-463a-9b3a-f8f91191b5c1,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25969885-5,LABRÍN MUÑOZ SANDINO TAHIEL,3° Básico-A,a6e68488-20ee-4c48-8486-fd5906bf7d80,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,22788468-1,LARIOS RIOSECO ARANZA ELISA,4 Medio -B,7d46e5e0-fc62-45c0-98e0-93b57685fbe0,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,25840798-9,LASNIER FIGUEROA THOMAS VALENTÍN,3° Básico-B,89c47263-df33-49ce-9bbf-10dcf4d19c00,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24252189-7,LAZCANO MALDONADO SIMÓN EMILIO,8° Básico,a392bde7-871d-44ed-b57f-5180fddb97a1,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,23051742-8,LEIVA ACOSTA ANTU SAID,3 Medio -A,29cc6c78-0b7e-454e-a556-1563f4151f74,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23082366-9,LERIS MUÑOZ JOSEPHINA PAZ,3 Medio -B,b378dffd-a296-494a-b0dc-b5b1792140e4,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24171839-5,LOYOLA GRONDONA BASTIÁN ANGEL MAICKOLL,8° Básico,1715e001-1157-403f-8e86-66e7d5dd97c2,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24581814-9,MALLEA DÍAZ LUA ABRIL,7° Básico,057cd578-f771-4c7f-8019-75cb769772b7,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,23703645-K,MARTORI COVARRUBIAS ALONSO TOMÁS,1 Medio -B,05d4264e-b81e-4b4f-a8e2-3e873ebdc833,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,24682795-8,MARTÍNEZ LUCERO CATALINA ISIDORA,6° Básico,88605e77-5983-4807-8e66-8c91b7f2b252,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26584136-8,MARTÍNEZ LUCERO FACUNDO RODRIGO,2° Básico,cb2b3380-8884-4d39-9062-088b0ca8482f,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25304357-1,MARTÍNEZ PÉREZ MAILEN PAZ,5° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,24315417-0,MARTÍNEZ PÉREZ RAFAEL ALONSO,7° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,23590064-5,MATTAR GALLEGUILLOS FABRICIO ABDEL,3 Medio -B,ca45875e-a5a8-4c15-a409-6357b2f65802,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26211725-1,MATTIA PAZ SANTIAGO,2° Básico,9d2e8df1-3123-4acf-b5a7-c590593df705,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25353074-K,MATURANA DÍAZ STEFFANO JÓAN,4° Básico-A,75620919-1d03-432a-b90a-8e6638712c22,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22800908-3,MEDINA FIGUEROA ÁLVARO IGNACIO,4 Medio -A,0a35a2ef-a9c2-4008-9352-6f0ec09ac582,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,25701667-6,MENA BARTUCEVIC LEÓN IGNACIO,4° Básico-B,1fe3e9cd-1b6b-4d69-bf04-7bdb2eac2142,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25943041-0,MENDOZA DAZA GASPAR,3° Básico-A,32cff3f9-e488-4f62-a494-fd6653fa335c,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25821721-7,MIRANDA MADARIAGA JOAQUÍN ALONSO,3° Básico-A,dcb39663-f6ab-4113-a874-21abdfa92244,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,22429820-K,MIRANDA VARGAS BENJAMÍN ALBERTO ANTONIO,4 Medio -B,f1caa763-2d23-4875-862e-ca7ddefe4759,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23219047-7,MIRANDA ÁLVAREZ DAMIÁN IGNACIO,3 Medio -B,68178644-172b-4e34-9d03-d86125492c65,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25412424-9,MORALES RAMÍREZ IGNACIA EMILIA,4° Básico-A,dd152845-fba5-4fcd-b510-e6edf752b088,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22824659-K,MORENO BUSTAMANTE SALVADOR ALONSO,3 Medio -B,80a6e309-c49e-436f-ac1d-d63b45ced2ee,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23789601-7,MOYA ARIAS CLEMENTE GABRIEL,1 Medio -B,2d7e4bf1-4483-4960-9393-f374f6213596,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25589136-7,MUÑOZ ARIAS ISABELLA VIOLETA,4° Básico-B,6e6dd93a-d9b4-467d-b441-abaf86461c67,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25917951-3,MUÑOZ MENDES NAHUEL GUILLERMO LEÓN,3° Básico-A,b97bdcd8-576d-4f9f-b2df-853bf6e0cf22,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25230505-K,MUÑOZ NAVARRO EMILIA JOSEFA,5° Básico,52d27e5e-2e85-4d0e-b86b-69c945adc415,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,25761339-9,NAVARRO AVILÉS ANTONELLA PAZ,3° Básico-A,a3e1b488-8df0-4d03-9da7-452de10c810f,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,23691703-7,NAVARRO RIVEROS ROBERT KLAUS,1 Medio -A,2867eee4-8216-4d9d-b083-65b5123793d4,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22918982-4,NAVARRO TOLEDO GUSTAVO ALONSO,4 Medio -A,47b88114-9cd6-4884-b718-c04fdff9c577,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23308414-K,NEGRETE IBACACHE ANTONELLA IGNACIA,3 Medio -A,789dae56-0b1f-4b2b-bbbe-ae7a60330b38,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,27233231-2,NIELSEN FLORES FARID RODRIGO,1° Básico,f2e66fe8-4216-468a-a3cd-1f6cc1d3f5ff,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,26749660-9,NÚÑEZ RAMÍREZ SALVADOR IGNACIO,2° Básico,d1bbc2be-96d5-4585-bd0d-b7140282e120,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22994477-0,ORTIZ MOLINA AGUSTÍN,4 Medio -A,be82953a-03d2-435b-8d92-9593e54909b1,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23503996-6,PAREDES INZULZA FACUNDO LEÓN,2 Medio,cf682317-2ccf-4f13-b936-e7980715b1dc,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24133380-9,PEIRANO CARVAJAL FLORENCIA PASCAL,8° Básico,bd8a20e6-cf68-48b6-8a3b-44a4ab45c55f,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,22862722-4,PERALTA ROJAS EMILIA IGNACIA,4 Medio -B,daf72670-be8a-41e6-9833-ec8845510073,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23749066-5,PEÑA BUSTAMANTE AMELIA,1 Medio -A,097a6e1e-ff71-4ef8-b17f-328274c3091a,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,22755244-1,PIZARRO GUTIÉRREZ BORJA MANUEL,4 Medio -A,ac982c30-a870-4b94-af0e-8f1520234149,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26863472-K,PIÑA BOMBAL MAXIMILIANO VICENTE,1° Básico,50bebbba-c6bd-448f-b073-1cd3cee89d78,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25067339-6,PIÑA BOMBAL SEBASTIÁN HERNÁN,5° Básico,08440fe6-76b5-4760-b3b1-c5aff34dbc8d,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,26340647-8,PIÑONES RAMÍREZ AUKAN AMARU,2° Básico,e9bfe1fb-ba8c-47e3-afb1-cd115a2136a6,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25832054-9,PUEBLA MORENO ELEONORA,3° Básico-A,f1b103fb-4400-471f-8d2a-4dd789326207,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23630186-9,QUIROGA MUÑOZ NATIVA LUZ,2 Medio,ce770b76-b546-454a-a926-b9146c58e79c,meta.payment_method,(vacío),TRANSFERENCIA,Establecer forma de pago: TRANSFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,24557067-8,RAMÍREZ ACEVEDO ANTONIO LEÓN,7° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,26297890-7,RAMÍREZ ACEVEDO JULIÁN EDUARDO,2° Básico,784c4915-5cb7-47f9-a5fe-d78646a62411,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24478999-4,REBOLLEDO STHANDIER DOMINGA,7° Básico,e7829e3e-6340-462f-9965-426314b2086e,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23884967-5,REVECO PÉREZ LEÓN,1 Medio -B,1e69adbc-2c64-4676-a1ea-3b50051a5e4e,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23149623-8,REYES BAEZA THAÍS MONSERRAT ARELLY,3 Medio -B,2310b833-2973-4a40-aee8-64e3976cb4ab,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23770079-1,REYES CODINA GASPAR ENRIQUE,1 Medio -A,b4cbb9cf-f7c8-44b6-ba35-c7c0842049d3,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25084028-4,RIQUELME CORNEJO JOSEFA PATRICIA,5° Básico,83a2d7cb-4145-4c31-b842-a96e9e1db6ef,meta.payment_method,(vacío),transferencia,Establecer forma de pago: transferencia
+4c-ACTUALIZAR_FORMA_PAGO,22878786-8,RODRÍGUEZ ABURTO JOSEFA RENATA,4 Medio -A,6d64084e-ea24-4a36-a74e-83216e085fdc,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24212542-8,RODRÍGUEZ BARRERA RENATO ALONSO,8° Básico,e2ddf8e0-8374-46fb-8ce9-9f201d91d6e9,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,27171050-K,RODRÍGUEZ ESTEFANÍA GASPAR LUCIANO,1° Básico,7de67eb0-a861-4879-95eb-d5ef4246d8cc,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23714513-5,ROJAS BENAVIDES MAGDALENA PAZ,1 Medio -A,06f17d0b-a0cb-4d9f-a0a5-e6b0fc3080f0,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23337628-0,ROMANI GUTIÉRREZ CRISTÓBAL LEÓN,2 Medio,32544798-ccc3-4f37-b63b-913c0794316e,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25713058-4,RUBINA STRAUBE MAE AMÉLIE,4° Básico-A,3a40ffcb-db75-40cc-9210-32d6be55a1a5,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26815405-1,SABA ESCOBAR FLORENCIA ANELEY,1° Básico,a53b63f2-792c-40f5-b8a7-ed67003dc5cc,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23602495-4,SALAZAR CORNEJO BENJAMÍN ARTURO,2 Medio,1dd277d2-6373-48a5-b8a1-16e5a4d5014a,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,24751293-4,SALAZAR CORNEJO MAGDALENA LEONOR,6° Básico,1dd277d2-6373-48a5-b8a1-16e5a4d5014a,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,25924270-3,SALINAS CARRASCO VICENTE SALVADOR,3° Básico-A,f972167c-5003-4247-b8be-0a89536b6d51,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23443471-3,SALINAS VÉLIZ AMANDA FRANCISCA,2 Medio,124f2fcb-ee42-47a1-8e52-180919137c32,meta.payment_method,(vacío),TRANSFERENCIA,Establecer forma de pago: TRANSFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,23997071-0,SANTA MARÍA CARTES AMELIA SOFÍA,7° Básico,c1c6e332-540f-45fe-ae1e-486646c3e689,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23205714-9,SANTELICES MEZA ISIDORA VALENTINA,3 Medio -A,672fa1c5-70eb-486c-8cd6-79bb00229257,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23381582-9,SCHULZ GALLEGUILLOS SOFIA VAI MOANA,2 Medio,e06706cc-a57f-407e-84ea-a3be618f0f07,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23341445-K,SEGURA PEZO ISIDORA VALENTINA,2 Medio,69cda971-eb14-4faa-9740-981649071317,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26920280-7,SEPÚLVEDA BRAVO DIEGO VALENTÍN,1° Básico,02879867-f809-4403-8d7b-0f9a7f8d1491,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23536007-1,SEPÚLVEDA BRAVO MARTÍN ALONSO,2 Medio,02879867-f809-4403-8d7b-0f9a7f8d1491,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23600999-8,SEPÚLVEDA OJEDA HELENA VICTORIA,2 Medio,712b7e35-7965-4fd8-bdd7-e061c0a381df,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,24625627-6,SILVA ACEVEDO MATILDA CELESTE,6° Básico,ef31f280-4ecb-4210-9508-14046a018e90,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25302873-4,SILVA VARGAS ARA IGNACIA,5° Básico,0df0822d-53aa-456d-8677-0a12b5e29895,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24388738-0,SPENCER MARDONES GASPAR THOMAS,7° Básico,74af7c9d-cb77-4785-b35d-fd41cb61fb4f,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24051700-0,SÁNCHEZ CARVALLO AMANDA CAROLINA,8° Básico,3ccd1299-c9c9-45b4-8e33-da8788a6b628,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23207805-7,TELLO AGUAYO JUAN JOSÉ,2 Medio,29bc76e8-fec2-4f3e-b502-c69566693d07,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,26685499-4,TORRES FERNÁNDEZ AMANDA,2° Básico,7f9d1595-3c22-4df7-bd43-e2994acc205f,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25606891-5,UBERUAGA CAJALES MARTÍN,4° Básico-B,eaa3f7f1-9ca5-4b18-80f1-08e05dc52f9a,meta.payment_method,(vacío),DESCUENTO,Establecer forma de pago: DESCUENTO
+4c-ACTUALIZAR_FORMA_PAGO,23286265-3,UMAÑA GONZÁLEZ PÁVEL SANDINO,3 Medio -A,cfde4fbb-f707-414d-b112-e8b6979c390f,meta.payment_method,(vacío),transferencia,Establecer forma de pago: transferencia
+4c-ACTUALIZAR_FORMA_PAGO,26741815-2,VALDÉS COVARRUBIAS SAMUEL SIMÓN,2° Básico,1aaca118-c47b-478d-9dda-1b60d3ebe85e,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24473727-7,VALDÉS COVARRUBIAS SANTIAGO,7° Básico,1aaca118-c47b-478d-9dda-1b60d3ebe85e,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25618895-3,VALPREDA VIVEROS MATÍAS SALVADOR,4° Básico-A,ea205546-6328-4607-8b50-2db4515a2323,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25232702-9,VARGAS ARAVENA ELOÍSA,5° Básico,a7379488-e1f2-4370-9169-350a5c058900,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23251268-7,VARGAS ARAVENA ROMÁN,3 Medio -B,a7379488-e1f2-4370-9169-350a5c058900,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23475511-0,VARGAS DELGADO AGUSTINA ISIDORA,2 Medio,82c90787-3918-43e4-a032-040ce31b54f3,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,24169011-3,VARGAS NARVÁEZ ANTONELLA AMANDA,8° Básico,7f67818a-8f9d-4145-b0a6-0c78a5743906,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25178753-0,VEAS ASPILLAGA AMARANTA ROSA,5° Básico,abffd6ef-c1dd-4679-ab6b-5a0b1ec53851,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,25686131-3,VEGA PLAZA PASCAL ALUDY,4° Básico-B,138f0e5e-6d4d-4ff9-8f06-603cea01c9cc,meta.payment_method,(vacío),cheques,Establecer forma de pago: cheques
+4c-ACTUALIZAR_FORMA_PAGO,23714855-K,VELÁSQUEZ ZAVALA AGUSTÍN ANDRÉS,1 Medio -B,4d63e10f-55ef-4228-8e18-01f7a30092a2,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23699034-6,VICUÑA PÉREZ MIGUEL ESTEBAN,1 Medio -A,794a4776-1e12-40c8-b8d6-1e8f0441ed45,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,23704392-8,VIDAL SÁNCHEZ FERNANDA EMILIA,1 Medio -A,07b47ca6-b02a-462a-8e61-e24768c8cd53,meta.payment_method,(vacío),transferencia,Establecer forma de pago: transferencia
+4c-ACTUALIZAR_FORMA_PAGO,24353237-K,VILCHES CUSICANQUI AMPARO BELÉN,7° Básico,ba39cf44-16b7-4e94-86da-f38282845904,meta.payment_method,(vacío),CHEQUES,Establecer forma de pago: CHEQUES
+4c-ACTUALIZAR_FORMA_PAGO,22894591-9,VILLAVICENCIO ABARCA LAURA FRANCISCA,4 Medio -B,aac078e6-2cef-4094-9496-d1882953f68c,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23470102-9,VIZCARRA GANDARA FRANCISCO TOMÁS,1 Medio -A,ca8746c1-99e0-4373-af17-9329bd136237,meta.payment_method,(vacío),transferencia,Establecer forma de pago: transferencia
+4c-ACTUALIZAR_FORMA_PAGO,25505941-6,VÉLIZ VARGAS LUCIANO EMILIO,4° Básico-A,046a97cc-99b4-4640-9762-730e5545031f,meta.payment_method,(vacío),TRANFERENCIA,Establecer forma de pago: TRANFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,24081762-4,VÉLIZ VARGAS RAFAEL IGNACIO,8° Básico,046a97cc-99b4-4640-9762-730e5545031f,meta.payment_method,(vacío),TRANFERENCIA,Establecer forma de pago: TRANFERENCIA
+4c-ACTUALIZAR_FORMA_PAGO,23277432-0,WILSON CÁRCAMO ALONSO MARTÍN,3 Medio -B,127eb37a-2702-4512-9626-e5be0c9d3db9,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,26746827-3,WILSON CÁRCAMO ANAÍS MARIEN,1° Básico,127eb37a-2702-4512-9626-e5be0c9d3db9,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23594831-1,WILSON LAUREL CHRISTOPHER DYLAN,1 Medio -A,e10ae10d-8291-4831-ad1c-f7744a1ad97d,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23552329-9,YÁÑEZ KOENIG CATALINA ANTONIA,1 Medio -A,e8c57d50-cbb7-4600-bd0f-7677b062ce57,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,24373455-K,YÁÑEZ KOENIG LEÓN EMILIO,7° Básico,e8c57d50-cbb7-4600-bd0f-7677b062ce57,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,25542296-0,ZAMORA INOSTROZA AGUSTÍN IGNACIO,4° Básico-A,b9f8dcd1-7a96-4414-85af-33a4c89ee0f9,meta.payment_method,(vacío),CHEQUE,Establecer forma de pago: CHEQUE
+4c-ACTUALIZAR_FORMA_PAGO,22982378-7,ZAPATA CARE EMILIANO PABLO,4 Medio -B,0f1d34a0-c53f-4104-8a99-2cb74bebfb34,meta.payment_method,(vacío),pagare,Establecer forma de pago: pagare
+4c-ACTUALIZAR_FORMA_PAGO,23942270-5,ZAVALA SALUCCI FELIPE ALEJANDRO,8° Básico,732d0650-c971-464f-bd70-fec8be284661,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4c-ACTUALIZAR_FORMA_PAGO,23450299-9,ÁVILA TELLO RENATA RAYEN,2 Medio,a0999f25-89ae-40ca-b77d-b9d9b73009af,meta.payment_method,(vacío),PAGARE,Establecer forma de pago: PAGARE
+4d-ACTUALIZAR_CUOTAS,23200888-1,AGUILAR BROUSSAIN FACUNDO,3 Medio -B,8a17455c-c51b-45b9-9a4d-ec666881bc83,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,23256719-8,AGUIRRE CRUZ THEO,3 Medio -A,935f63e0-5a8b-45fc-83c7-7d1618a84c15,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,25658625-8,ARENAS LANDEROS DANTE LEÓN,4° Básico-B,626d645e-351b-4860-b9ae-1ec51e296686,meta.cantidad_cuotas,10,5,Actualizar cuotas de 10 → 5
+4d-ACTUALIZAR_CUOTAS,27245224-5,ARENAS LANDEROS ELOÍSA IZADI,1° Básico,626d645e-351b-4860-b9ae-1ec51e296686,meta.cantidad_cuotas,10,5,Actualizar cuotas de 10 → 5
+4d-ACTUALIZAR_CUOTAS,23882043-K,ARENAS LANDEROS OCTAVIO ANDRÉS,1 Medio -A,626d645e-351b-4860-b9ae-1ec51e296686,meta.cantidad_cuotas,10,5,Actualizar cuotas de 10 → 5
+4d-ACTUALIZAR_CUOTAS,25924637-7,BRIONES FIGUEROA HELENA MAILEN,3° Básico-A,895d5a6b-18af-46e8-81b0-ceb746e8f6ee,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,22559294-2,CARVAJAL GUAJARDO LEONOR CAROLINA,4 Medio -A,73435dec-b050-4d90-8f54-86c1f23847ff,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,23613517-9,CASTRO CORREA MATÍAS ANKATU,2 Medio,6599447f-fd35-4d28-99dd-888c99ee2a62,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,23937301-1,ESCOBAR CEBALLO AGUSTINA JACQUELINE,8° Básico,570445da-0dbd-4aa8-bf7c-2a63b89e55b8,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,25890092-8,FIGUEROA DONOSO ÁMBAR ALEJANDRA,3° Básico-B,3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,22710789-8,FLORES MORALES MARTÍN IGNACIO,4 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,23791796-0,FLORES MORALES SOFÍA ANTONIA,1 Medio -B,72eb0c3f-beb2-4916-934e-3db4ef3555b7,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,26734177-K,FUENZALIDA ANDRADE RAMIRO PASCUAL,2° Básico,b586387a-9d35-40d6-8970-8310b2aafa5a,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,26071660-3,GALLARDO ROSS TRISTÁN ANDRÈ,3° Básico-A,c8da3e53-9681-4431-9e56-2928e28de03f,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,23449122-9,GUERRERO BIRKE VIOLETA BEATRIZ,2 Medio,9755e5d1-e54f-4443-884b-721219622d77,meta.cantidad_cuotas,10,4,Actualizar cuotas de 10 → 4
+4d-ACTUALIZAR_CUOTAS,25947700-K,JARAMILLO MORALES JOAQUÍN ALONZO,3° Básico-A,2ae46f37-efda-4d26-b15b-358f464399ed,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,25840798-9,LASNIER FIGUEROA THOMAS VALENTÍN,3° Básico-B,89c47263-df33-49ce-9bbf-10dcf4d19c00,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,26584136-8,MARTÍNEZ LUCERO FACUNDO RODRIGO,2° Básico,cb2b3380-8884-4d39-9062-088b0ca8482f,meta.cantidad_cuotas,(vacío),10,Actualizar cuotas de (vacío) → 10
+4d-ACTUALIZAR_CUOTAS,25304357-1,MARTÍNEZ PÉREZ MAILEN PAZ,5° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,24315417-0,MARTÍNEZ PÉREZ RAFAEL ALONSO,7° Básico,c1538293-107a-44c3-9637-59c645eb1237,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,23219047-7,MIRANDA ÁLVAREZ DAMIÁN IGNACIO,3 Medio -B,68178644-172b-4e34-9d03-d86125492c65,meta.cantidad_cuotas,10,7,Actualizar cuotas de 10 → 7
+4d-ACTUALIZAR_CUOTAS,27171050-K,RODRÍGUEZ ESTEFANÍA GASPAR LUCIANO,1° Básico,7de67eb0-a861-4879-95eb-d5ef4246d8cc,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,23443471-3,SALINAS VÉLIZ AMANDA FRANCISCA,2 Medio,124f2fcb-ee42-47a1-8e52-180919137c32,meta.cantidad_cuotas,10,9,Actualizar cuotas de 10 → 9
+4d-ACTUALIZAR_CUOTAS,25349901-K,SAN MARTÍN MONTERO NICOLÁS GAEL,4° Básico-B,a74a6cdb-0b24-43eb-9adf-07134a540215,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,26057653-4,SPIGETTH LABRIN ISIDORA IGNACIA,3° Básico-A,1e9bd4aa-286c-4582-9e26-ec5e6c25e31b,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+4d-ACTUALIZAR_CUOTAS,23699034-6,VICUÑA PÉREZ MIGUEL ESTEBAN,1 Medio -A,794a4776-1e12-40c8-b8d6-1e8f0441ed45,meta.cantidad_cuotas,10,1,Actualizar cuotas de 10 → 1
+4d-ACTUALIZAR_CUOTAS,25764691-2,ZOLEZZI HENRÍQUEZ RAFFAELLA VALENTINA,3° Básico-A,41450c85-801e-4653-b45f-70f60e81a196,meta.cantidad_cuotas,0,10,Actualizar cuotas de 0 → 10
+5-QUITAR_PRIORITARIO,25605450-7,AVDALOV SAGREDO BRISA OLIVIA,4° Básico-B,03c2d150-7804-4e2c-8b8b-32c724079322,meta.prioritario,true,false,Quitar prioritario. SIGE F.Pago: (vacío)
+5-QUITAR_PRIORITARIO,22353864-9,CARRASCO CABEZAS VICENTE MAXIMILIANO,4 Medio -A,6579e051-047f-4794-8e38-fea1479ba66b,meta.prioritario,true,false,Quitar prioritario. SIGE F.Pago: (vacío)
+5-QUITAR_PRIORITARIO,26734177-K,FUENZALIDA ANDRADE RAMIRO PASCUAL,2° Básico,b586387a-9d35-40d6-8970-8310b2aafa5a,meta.prioritario,true,false,Quitar prioritario. SIGE F.Pago: PAGARE
+6-PONER_PRIORITARIO,23808283-8,ARAYA LARA GASPAR ANDRÉS,1 Medio -B,781dad64-74bb-4743-a1ca-ccad7e045ed4,meta.prioritario,false,true,Marcar como prioritario según SIGE
+6-PONER_PRIORITARIO,25354011-7,CONTRERAS VERGARA EMILIO GAEL,4° Básico-B,11dcf02c-681f-4974-94f7-89ca74969b88,meta.prioritario,false,true,Marcar como prioritario según SIGE
+6-PONER_PRIORITARIO,23512569-2,JIMÉNEZ ZEGERS TRINIDAD ANTONIA,1 Medio -B,e66f1e29-80da-4797-bd98-3a4a82c79854,meta.prioritario,false,true,Marcar como prioritario según SIGE
+7-EN_BD_NO_EN_SIGE,2.250.142-9,ABEL IGNACIO MORAGA MENA,(BD: 3° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.535.677-7,AGUSTIN ALEXIS SOTO MUÑOZ,(BD: 2° MEDIO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,26.051.126-2,AGUSTIN ANTONIO PINTO LAZO,(BD: 2° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.454.730-6,AINHOA BELÉN PONCE LABARCA,(BD: 8° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.269.017-K,AMARO ANTONIO CRESPO SARMIENTO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.828.018-0,AMARO ESTEBAN GATICA JARAMILLO,(BD: 2° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.038.237-5,AMARO MAURICIO LEIVA PALMA,(BD: 3° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.804.714-5,ANASTASIA SOL GERALDO HYDE,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.323.437-7,ANDREW JARED MARCHANT GARRIDO,(BD: 4° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.711.586-4,ANDRÉS OMAR BARRIA ZULOAGA,(BD: 1° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,99.999.999-9,ANOUK TABARÉ VACCARO ROJAS,(BD: 1° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,24.745.487-K,ANTONIA VALENTINA BRITO GONZALEZ,(BD: 5° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22210063-1,ARACELY CHICA,(BD: 1° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.419.562-1,AZKINTU ALEJANDRO BANDA BASTIAS,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.269.021-8,BELEN NATALIA CRESPO SARMIENTO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.695.195-4,BENITO EDUARDO ARRIAGADA CORTES,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.663.470-3,CLAUDIO ANDRES RIQUELME ALEGRIA,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.741.211-7,DARIO FERNANDO NAVARRO GOMEZ,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.408.057-3,DEAVIN NICKO AGUSTIN RAMIREZ ARANCIBIA,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.484.430-1,DIEGO EMILIANO PEÑA BUSTAMANTE,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.109.403-9,DOMINGO SONNEVILLE VALDIVIA,(BD: 4° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,26.081.615-2,DOMINIQUE PAZ CHANDIA LOPEZ,(BD: 2° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.592.959-9,EDUARDO  DE LA QUINTANA BOTTA,(BD: 3° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.923.777-0,ELIAN ISMAEL BENAVIDES DONOSO,(BD: 6° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.812.203-1,EMILIA ISABELLA OLLINO BRAVO,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.679.457-3,EMILIA ROMAN DELGADILLO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.485.834-K,EMMA ISABELLA HENRÍQUEZ BOHORQUEZ,(BD: 3° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.269.011-0,EMMA PAZ CRESPO SARMIENTO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.712.604-7,FACUNDO AQUEVEQUE SOLANO,(BD: 1° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.905.949-K,FACUNDO SILVIO HINOJOSA VACCARO,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,24.682.546-7,FATIMA ALMA DE VERONICA QUEGLAS RAMÍREZ,(BD: 5° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.665.241-8,FERNANDA ANAHIS GATICA OSORIO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.590.693-9,FLORENCIA ANDREA MOLINA TAPIA,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,100.589.843-5,FLORENCIA AYELEN TERUEL,(BD: 3° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.504.174-0,FRANCO ALLEN THOMAS BASAURE,(BD: 4° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.041.974-0,FRANCO ALLEN THOMAS BASAURE,(BD: 4° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.578.661-5,GABRIEL EDUARDO OYARZUN GALLEGOS,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.415.458-5,GASTON VICENTE RIVEROS CALVO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.964.631-6,GIULIANO MARCUS ELUNEY MANCINI ABALLAY,(BD: 2° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.392.498-5,GONZALO LEÓN ARANDA ARANDA,(BD: 3° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,26.083.645-5,HENZEL VALENTIN ALFARO ORTEGA,(BD: 2° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.157.963-K,IGNACIA MIA RAMOS CORNEJ0,(BD: 3° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,26.457.405-6,ISABEL ELIANA BANDA VALENZUELA,(BD: 1° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.205.149-9,ISIDORA VALENTINA SANTELICES MEZA,(BD: 2° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.673.331-9,JOAQUIN IGNACIO SANCHEZ CASTRO,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.937.375-5,JOHAO ALEXIS MONTIEL TORRES,(BD: 8° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.597.780-1,JOSE OLLINO BRAVO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.553.082-3,LUCAS FEINALDO ARANA CALDERON,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.656.288-5,LUCIA AMPARO AROS  BRIONES,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.558.548-2,MARTIN IGNACIO SAMIR MARDONES LESPINASSE,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.374.338-5,MATEO SALAZAR LOPEZ,(BD: 4° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.785.183-8,MAXIMILIANO ANTONIO ARANCIBIA CUEVAS,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,24.321.352-5,MAXIMILIANO ESTEBAN CHAURA ARAYA,(BD: 6° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.387.523-8,MAXIMILIANO TOMAS SOTO MORALES,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.225.498-1,MIA PAZ NIKOLE PIZARRO CABELLO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.746.402-K,MICAELA ANTONIA FERRER CÉSPEDES,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.923.379-3,NICANOR EMILIANO JARA MARTÍNEZ,(BD: 3° MEDIO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.825.833-2,NICOLAS  JOSEFA LEMUS MARDONES,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,24.305.401-K,NICOLAS EMILIO AHUMADA PEREZ,(BD: 6° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.684.772-3,PABLO ANDRES DIAZ FUENZALIDA,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.829.298-0,PASCAL HEREDIA QUISPE,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.292.942-2,Pendiente CARVAJAL GUAJARDO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.533.775-6,RENATA CONSTANZA GUZMAN TORRES,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,25.725.141-1,SALVADOR INTI BANDA VALENZUELA,(BD: 2° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,23.246.983-8,SAMUEL ALONSO LEONIDAS ULLOA FIGUEROA,(BD: 1° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.398.005-8,SERGIO ISMAEL VIDAL SANCHEZ,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.547.943-5,SIMONE ANTONIA FLORES MUÑOZ,(BD: 3° BASICO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.708.810-9,TOMAS SALVADOR CAÑON BERNOFF,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.593.273-5,VALENTINA ANDREA SAEZ MONSALVE,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.684.749-9,VALENTINA ANTONELLA CANSECO CARCAMO,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.571.321-9,VALENTINA ISIDORA PEREZ GUZMAN,(BD: 3° MEDIO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,24.317.585-2,VICENTE ALESSANDRO ARANCIBIA CUEVAS,(BD: 8° BASICO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.546.944-K,VICENTE TOMAS MANRIQUEZ MENDOZA,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,22.585.803-9,VIOLETA ABRIL CONTRERAS ESTAY,(BD: 4° MEDIO A),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE
+7-EN_BD_NO_EN_SIGE,2.397.907-3,antonella ARAYA CORTÉS,(BD: 2° MEDIO B),,estado_std,ACTIVO,NO ESTÁ EN SIGE,Revisar si debe desactivarse o si falta en SIGE

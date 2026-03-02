@@ -48,6 +48,7 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
             <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Estudiante</th>
             <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Convenio</th>
             <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Curso</th>
+            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Año</th>
             <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Estado</th>
             <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Fecha Matrícula</th>
             <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Acciones</th>
@@ -80,6 +81,11 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
                 <p className="text-sm text-gray-900 dark:text-white">
                   {student.cursos?.nom_curso || 'Sin asignar'}
                 </p>
+              </td>
+              <td className="py-3 px-4">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  {student.cursos?.year_academico || '—'}
+                </span>
               </td>
               <td className="py-3 px-4">
                 {(() => {

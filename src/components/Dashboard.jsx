@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAcademicYear } from '../contexts/AcademicYearContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/Button';
 import { StatCard } from './dashboard/StatCard';
@@ -20,16 +21,17 @@ export default function Dashboard() {
     delinquencyRate: 0,
     previousDelinquencyRate: 0
   });
+  const { academicYear } = useAcademicYear();
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [academicYear]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       
-      // Fetch all fees
+      // Fetch fees filtered by academic year
       const { data: fees, error } = await supabase
         .from('fee')
         .select(`
@@ -42,7 +44,8 @@ export default function Dashboard() {
               nom_curso
             )
           )
-        `);
+        `)
+        .eq('year_academico', academicYear);
 
       if (error) throw error;
 
@@ -91,7 +94,12 @@ export default function Dashboard() {
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap justify-between gap-3 p-4">
-          <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+              {academicYear}
+            </span>
+          </div>
           <DashboardActions />
         </div>
         
@@ -122,13 +130,13 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
           <div className="lg:col-span-2 space-y-4">
-            <DebtTrendChart />
-            <PaymentProjectionChart />
+            <DebtTrendChart academicYear={academicYear} />
+            <PaymentProjectionChart academicYear={academicYear} />
           </div>
           
           <div className="space-y-4">
-            <DebtDistributionChart />
-            <DebtorsTable />
+            <DebtDistributionChart academicYear={academicYear} />
+            <DebtorsTable academicYear={academicYear} />
           </div>
         </div>
       </div>
