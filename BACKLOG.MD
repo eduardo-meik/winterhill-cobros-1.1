@@ -1,6 +1,6 @@
 # 📋 BACKLOG — Winterhill Cobros v1.1
 
-> **Última actualización:** 2 de marzo de 2026 (implementación parcial completada)  
+> **Última actualización:** 2 de marzo de 2026 (fixes críticos completados)  
 > **Leyenda:** 🔴 Crítico · 🟡 Alto · 🟢 Normal · ⚪ Bajo  
 > **Estados:** `[ ]` Pendiente · `[~]` En progreso · `[x]` Completado · `[-]` Descartado
 
@@ -32,7 +32,7 @@
 | TA-04 | 🔴 | `[x]` | Reescribir `get_student_promotion_suggestion` (actualmente stub NULL) | ✅ Implementación real con secuencia de niveles |
 | TA-05 | 🟡 | `[x]` | Crear RPC `promote_students_batch(from_year, to_year, student_ids[], dry_run)` | ✅ `batch_promote_students(uuid[], int)` |
 | TA-06 | 🟡 | `[x]` | Migración de datos: poblar `student_academic_records` con datos 2025 existentes | ✅ Backfill en misma migración |
-| TA-07 | 🟡 | `[ ]` | Verificar/crear cursos con `year_academico = 2026` en tabla `cursos` | Bloqueante si no existen |
+| TA-07 | 🟡 | `[x]` | Verificar/crear cursos con `year_academico = 2026` en tabla `cursos` | ✅ Migración clona cursos 2025→2026 idempotente |
 
 ### Fase 2 — Módulo de Estudiantes
 
@@ -53,7 +53,7 @@
 | TA-15 | 🟡 | `[x]` | Filtrar Dashboard (4 StatCards) por `year_academico` del contexto global | ✅ Usa `academicYear` del contexto |
 | TA-16 | 🟡 | `[x]` | Filtrar gráficos (DebtTrend, DebtDistribution, PaymentProjection) por año | ✅ Prop `academicYear` |
 | TA-17 | 🟡 | `[x]` | Filtrar `DebtorsTable` por año académico | ✅ Prop `academicYear` |
-| TA-18 | 🟡 | `[ ]` | `PaymentsPage`: cambiar filtro de `due_date.year` a `fee.year_academico` | Categorización incorrecta actual |
+| TA-18 | 🟡 | `[x]` | `PaymentsPage`: cambiar filtro de `due_date.year` a `fee.year_academico` | ✅ Server-side filter con AcademicYearContext, year dropdown removido |
 
 ### Fase 4 — UI/UX y Promoción Masiva
 
@@ -71,8 +71,8 @@
 
 | ID | Pri | Estado | Descripción | Notas |
 |----|-----|--------|-------------|-------|
-| FE-01 | 🔴 | `[ ]` | Verificar que fees generados en `finalize_enrollment` incluyan `year_academico` correcto | Ya funciona parcialmente |
-| FE-02 | 🟡 | `[ ]` | Asegurar que fees no se dupliquen al re-ejecutar matrícula | Unique index existe, verificar idempotencia |
+| FE-01 | 🔴 | `[x]` | Verificar que fees generados en `finalize_enrollment` incluyan `year_academico` correcto | ✅ ON CONFLICT corregido a (student_id, year_academico, numero_cuota) |
+| FE-02 | 🟡 | `[x]` | Asegurar que fees no se dupliquen al re-ejecutar matrícula | ✅ ON CONFLICT ahora coincide con unique index ux_fee_student_year_cuota |
 | FE-03 | 🟡 | `[ ]` | Separar fees por año en vista de pagos del guardian | Portal guardian sin contexto de año |
 | FE-04 | 🟢 | `[ ]` | Dashboard financiero: comparativa año actual vs anterior | Nuevo gráfico |
 
@@ -146,4 +146,4 @@
 |-------|----------|--------|
 | 2026-03-02 | ¿Renombrar estados en DB (MATRICULADO→PRE_MATRICULADO) o solo mapear en UI? | Pendiente |
 | 2026-03-02 | ¿Promoción masiva crea matrícula formal o solo pre-asigna curso? | Pendiente |
-| 2026-03-02 | ¿Cursos 2026 se crean manualmente o se clonan de 2025? | Pendiente |
+| 2026-03-02 | ¿Cursos 2026 se crean manualmente o se clonan de 2025? | ✅ Resuelto: migración clona automáticamente |
