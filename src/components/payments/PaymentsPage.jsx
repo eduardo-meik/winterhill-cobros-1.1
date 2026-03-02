@@ -11,9 +11,11 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
+  const { academicYear } = useAcademicYear();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -28,7 +30,6 @@ export function PaymentsPage() {
     status: 'all',
     curso: 'all',
     month: 'all',
-    year: 'all',
     paymentMethod: 'all',
     cuota: 'all', // Added filter for cuota
     startDate: '',
@@ -36,11 +37,10 @@ export function PaymentsPage() {
   });
   // Optimize filter options calculation with useMemo and better data structure
   const filterOptions = useMemo(() => {
-    if (payments.length === 0) return { cursos: [], years: [], cuotas: [] };
+    if (payments.length === 0) return { cursos: [], cuotas: [] };
     
     // Use Set for O(1) lookups and better performance
     const cursosSet = new Set();
-    const yearsSet = new Set();
     const cuotasSet = new Set();
     
     // Single pass through data for all filter options
@@ -48,12 +48,6 @@ export function PaymentsPage() {
       // Extract curso names
       const cursoName = payment.student?.cursos?.nom_curso;
       if (cursoName) cursosSet.add(cursoName);
-      
-      // Extract years from due_date
-      if (payment.due_date) {
-        const year = new Date(payment.due_date).getFullYear().toString();
-        yearsSet.add(year);
-      }
       
       // Extract cuota numbers - convert to string for consistent comparison
       if (payment.numero_cuota !== null && payment.numero_cuota !== undefined) {
@@ -63,7 +57,6 @@ export function PaymentsPage() {
     
     return { 
       cursos: Array.from(cursosSet).sort(),
-      years: Array.from(yearsSet).sort(),
       cuotas: Array.from(cuotasSet).sort((a, b) => parseInt(a) - parseInt(b))
     };
   }, [payments]);
@@ -106,12 +99,6 @@ export function PaymentsPage() {
           if (filters.month !== 'all') {
             const paymentMonth = (paymentDate.getMonth() + 1).toString();
             if (paymentMonth !== filters.month) return false;
-          }
-          
-          // Year filter
-          if (filters.year !== 'all') {
-            const paymentYear = paymentDate.getFullYear().toString();
-            if (paymentYear !== filters.year) return false;
           }
           
           // Date range filters
@@ -164,8 +151,8 @@ export function PaymentsPage() {
   } = usePagination(filteredPayments);
 
   useEffect(() => {
-    fetchPayments(true); // Initial load
-  }, []);
+    fetchPayments(true); // Refetch when academic year changes
+  }, [academicYear]);
 
   // Refetch when status changes immediately; debounce search by 400ms
   useEffect(() => {
@@ -199,15 +186,16 @@ export function PaymentsPage() {
 
       const startTime = performance.now();
 
-      // Get total count efficiently
+      // Get total count for the current academic year
       const { count, error: countError } = await supabase
         .from('fee')
-        .select('id', { count: 'exact', head: true });
+        .select('id', { count: 'exact', head: true })
+        .eq('year_academico', academicYear);
       
       if (countError) throw countError;
       setTotalCount(count || 0);
 
-      // Build base query
+      // Build base query — includes year_academico and filters by academic year
       let query = supabase
         .from('fee')
         .select(`
@@ -219,6 +207,7 @@ export function PaymentsPage() {
           payment_date,
           payment_method,
           numero_cuota,
+          year_academico,
           num_boleta,
           mov_bancario,
           notes,
@@ -235,7 +224,8 @@ export function PaymentsPage() {
               nom_curso
             )
           )
-        `);
+        `)
+        .eq('year_academico', academicYear);
 
       // If searching by student text, narrow results server-side by matching student ids
       if (filters.search && filters.search.trim()) {
@@ -327,7 +317,6 @@ export function PaymentsPage() {
       status: 'all',
       curso: 'all',
       month: 'all',
-      year: 'all',
       paymentMethod: 'all',
       cuota: 'all',
       startDate: '',

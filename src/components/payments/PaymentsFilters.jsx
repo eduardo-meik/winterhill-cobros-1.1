@@ -1,9 +1,6 @@
 import React from 'react';
 import { Button } from '../ui/Button';
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 10 }, (_, i) => (currentYear - 5 + i).toString()); // Last 5 years + next 4 years
-
 const months = [
   { value: '1', label: 'Enero' }, { value: '2', label: 'Febrero' },
   { value: '3', label: 'Marzo' }, { value: '4', label: 'Abril' },
@@ -66,24 +63,7 @@ export function PaymentsFilters({
         ))}
       </select>
 
-      {/* Year Filter */}
-      <select
-        value={filters.year}
-        onChange={(e) => handleFilterChange('year', e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-      >
-        <option value="all">Todos los Años</option>
-        {/* Use dynamic years from data if available */}
-        {filterOptions.years.length > 0 ? 
-          filterOptions.years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))
-          :
-          years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))
-        }
-      </select>
+      {/* Year is now controlled by the global AcademicYear selector in the sidebar */}
 
       {/* Payment Method Filter */}
       <select
