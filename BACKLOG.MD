@@ -144,6 +144,6 @@
 
 | Fecha | Decisión | Estado |
 |-------|----------|--------|
-| 2026-03-02 | ¿Renombrar estados en DB (MATRICULADO→PRE_MATRICULADO) o solo mapear en UI? | Pendiente |
+| 2026-03-02 | ¿Renombrar estados en DB (MATRICULADO→PRE_MATRICULADO) o solo mapear en UI? | ✅ Resuelto: Opción B — renombrados en DB (MATRICULADO→CONFIRMADO, ACTIVO→CURSANDO) |
 | 2026-03-02 | ¿Promoción masiva crea matrícula formal o solo pre-asigna curso? | Pendiente |
 | 2026-03-02 | ¿Cursos 2026 se crean manualmente o se clonan de 2025? | ✅ Resuelto: migración clona automáticamente |
