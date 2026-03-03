@@ -59,8 +59,8 @@
 
 | ID | Pri | Estado | Descripción | Notas |
 |----|-----|--------|-------------|-------|
-| TA-19 | 🟡 | `[ ]` | Crear componente `PromotionTool.jsx` (promoción masiva con preview y confirmación) | Accesible desde Sidebar (admin) |
-| TA-20 | 🟡 | `[ ]` | Agregar entrada "Promoción" al Sidebar para admin | Nuevo menú |
+| TA-19 | 🟡 | `[x]` | Crear componente `PromotionTool.jsx` (promoción masiva con preview y confirmación) | ✅ PromotionTool con preview (dry-run), enrollment formal + fees, migración `promote_and_enroll_batch` |
+| TA-20 | 🟡 | `[x]` | Agregar entrada "Promoción" al Sidebar para admin | ✅ GraduationCap icon, ruta /promocion, admin-only |
 | TA-21 | 🟢 | `[x]` | Cambiar ícono de Matrícula en Sidebar (actualmente repite el de Apoderados) | ✅ `ClipboardCheck` + `ArrowsRepeat` para Repactación |
 | TA-22 | 🟢 | `[x]` | Corregir nomenclatura de estados: MATRICULADO→Pre-Matriculado, ACTIVO→Confirmado, RETIRADO | ✅ Actualizado en studentStatus.js + 7 archivos |
 | TA-23 | 🟢 | `[ ]` | Agregar tabs en `StudentDetailsModal`: Datos | Historial | Fees | Documentos | Mejor organización de info |
@@ -144,6 +144,6 @@
 
 | Fecha | Decisión | Estado |
 |-------|----------|--------|
-| 2026-03-02 | ¿Renombrar estados en DB (MATRICULADO→PRE_MATRICULADO) o solo mapear en UI? | ✅ Resuelto: Opción B — renombrados en DB (MATRICULADO→CONFIRMADO, ACTIVO→CURSANDO) |
-| 2026-03-02 | ¿Promoción masiva crea matrícula formal o solo pre-asigna curso? | Pendiente |
+| 2026-03-02 | ¿Renombrar estados en DB (MATRICULADO→PRE_MATRICULADO) o solo mapear en UI? | ✅ Resuelto: mantener DB como está, mapear en UI via studentStatus.js |
+| 2026-03-02 | ¿Promoción masiva crea matrícula formal o solo pre-asigna curso? | ✅ Resuelto: crea matrícula formal (enrollment + fees) via promote_and_enroll_batch |
 | 2026-03-02 | ¿Cursos 2026 se crean manualmente o se clonan de 2025? | ✅ Resuelto: migración clona automáticamente |

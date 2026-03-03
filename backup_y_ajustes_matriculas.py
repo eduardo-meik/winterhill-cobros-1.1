@@ -363,7 +363,7 @@ for rut, sige in sige_students.items():
 # ─── Cat 7: Activos en BD sin presencia en SIGE ───
 sige_ruts = set(sige_students.keys())
 for rut, st in db_by_rut.items():
-    if rut not in sige_ruts and st.get('estado_std') in ('CURSANDO', 'CONFIRMADO', 'ACTIVO'):
+    if rut not in sige_ruts and st.get('estado_std') == 'ACTIVO':
         curso_obj = cursos_by_id.get(st.get('curso'), {})
         curso_bd = curso_obj.get('nom_curso', 'SIN CURSO')
         ajustes.append({
@@ -373,7 +373,7 @@ for rut, st in db_by_rut.items():
             'curso_sige':       f'(BD: {curso_bd})',
             'enrollment_id':    '',
             'campo':            'estado_std',
-            'valor_actual_bd':  st.get('estado_std', ''),
+            'valor_actual_bd':  'ACTIVO',
             'valor_sige':       'NO ESTÁ EN SIGE',
             'accion':           'Revisar si debe desactivarse o si falta en SIGE',
         })

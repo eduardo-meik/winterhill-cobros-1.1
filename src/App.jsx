@@ -29,6 +29,7 @@ const SettingsPage = React.lazy(() => import('./components/settings/SettingsPage
 const MatriculaWizard = React.lazy(() => import('./components/matricula/MatriculaWizard').then(m => ({ default: m.MatriculaWizard })));
 const GuardianIntakePage = React.lazy(() => import('./pages/guardian/GuardianIntakePage').then(m => ({ default: m.GuardianIntakePage })));
 const RepactacionWizard = React.lazy(() => import('./components/repactacion/RepactacionWizard'));
+const PromotionTool = React.lazy(() => import('./components/promotion/PromotionTool'));
 const GuardianWelcomePage = React.lazy(() => import('./pages/guardian/GuardianWelcomePage').then(m => ({ default: m.GuardianWelcomePage })));
 const GuardianPortalPage = React.lazy(() => import('./pages/guardian/GuardianPortalPage'));
 const GuardianEnrollmentPage = React.lazy(() => import('./pages/guardian/GuardianEnrollmentPage'));
@@ -138,6 +139,7 @@ export default function App() {
             <Route path="profile" element={<Suspense fallback={<PageSpinner />}><ProfilePage /></Suspense>} />
             <Route path="settings" element={<Suspense fallback={<PageSpinner />}><SettingsPage /></Suspense>} />
             <Route path="matricula" element={<StaffRoute><Suspense fallback={<PageSpinner />}><MatriculaWizard /></Suspense></StaffRoute>} />
+            <Route path="promocion" element={<StaffRoute><Suspense fallback={<PageSpinner />}><PromotionTool /></Suspense></StaffRoute>} />
             <Route path="repactacion" element={<StaffRoute><Suspense fallback={<PageSpinner />}><RepactacionWizard /></Suspense></StaffRoute>} />
             <Route path="apoderado/encuesta" element={<Suspense fallback={<PageSpinner />}><GuardianIntakePage /></Suspense>} />
             <Route path="apoderado/bienvenido" element={<Suspense fallback={<PageSpinner />}><GuardianWelcomePage /></Suspense>} />

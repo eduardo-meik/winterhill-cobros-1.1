@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGuardianData } from '../contexts/GuardianContext';
-import { House, UsersThree, ChatDots, Money, ChartPie, Guardian, ClipboardCheck, ArrowsRepeat } from './Icons';
+import { House, UsersThree, ChatDots, Money, ChartPie, Guardian, ClipboardCheck, ArrowsRepeat, GraduationCap } from './Icons';
 import { YearSelector } from './ui/YearSelector';
 import clsx from 'clsx';
 
@@ -22,6 +22,7 @@ const baseMenuItems = [
     roles: ['admin', 'asist', 'guardian'],
     condition: ({ role, guardianReady }) => role !== 'guardian' || guardianReady
   },
+  { id: 'promocion', icon: GraduationCap, text: 'Promoción', roles: ['admin'] },
   { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: ['admin', 'asist'] }
   // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   

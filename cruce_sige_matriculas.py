@@ -312,7 +312,7 @@ bd_ruts = set(db_by_rut.keys())
 sige_ruts = set(sige_students.keys())
 only_bd = bd_ruts - sige_ruts
 # Filter to active students
-only_bd_active = [db_by_rut[r] for r in only_bd if db_by_rut[r].get('estado_std', '').upper() in ('CURSANDO', 'CONFIRMADO', 'PRE_MATRICULADO', 'ACTIVO', 'MATRICULADO', 'PRE-MATRICULADO')]
+only_bd_active = [db_by_rut[r] for r in only_bd if db_by_rut[r].get('estado_std', '').upper() in ('ACTIVO', 'MATRICULADO', 'PRE-MATRICULADO', 'PRE_MATRICULADO')]
 if only_bd_active:
     print(f'\n  ⚠️  {len(only_bd_active)} alumnos ACTIVOS en BD pero NO en SIGE 2026:')
     for s in sorted(only_bd_active, key=lambda x: x.get('whole_name') or '')[:15]:
