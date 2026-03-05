@@ -471,6 +471,43 @@ export function useDocumentGeneration({
         options.paymentPlan = planToSend;
       }
 
+      // Build per-student payment plans so each sibling gets their own cuota amount
+      if (!prioritario && students.length > 0 && studentEconomicMap) {
+        const perStudentPlans = {};
+        students.forEach(st => {
+          const econ = studentEconomicMap[st.id];
+          if (!econ) return;
+          const stColegiatura = Number(econ.colegiatura_anual) || 0;
+          const stDescuento = Number(econ.monto_total_descuento) || 0;
+          const stCuotas = Math.max(1, Number(econ.cantidad_cuotas) || cuotasCount || 10);
+          const stNeto = Math.max(0, stColegiatura - stDescuento);
+          const stMontoCuota = stCuotas > 0 ? Math.round(stNeto / stCuotas) : 0;
+          const stPlan = buildEnrollmentPaymentPlan({
+            enrollmentYear: year,
+            economic: {
+              colegiatura_anual: stNeto,
+              cantidad_cuotas: stCuotas,
+              monto_cuota: stMontoCuota,
+              dia_vencimiento: diaVencimiento,
+            },
+            paymentMethodFlags: paymentMethod,
+          });
+          if (stPlan) {
+            perStudentPlans[st.id] = stPlan;
+          }
+        });
+        if (Object.keys(perStudentPlans).length > 0) {
+          options.per_student_plans = perStudentPlans;
+          // Persist per_student_plans in enrollment meta so confirm can use them
+          try {
+            await updateEnrollmentMeta(enrollment.id, { per_student_plans: perStudentPlans });
+            setEnrollment(prev => prev ? { ...prev, meta: { ...(prev.meta || {}), per_student_plans: perStudentPlans } } : prev);
+          } catch (metaErr) {
+            console.warn('Could not persist per_student_plans to meta', metaErr);
+          }
+        }
+      }
+
       const preview = await finalizeEnrollmentPreview(enrollment.id, options);
       setFinalizePreview(preview);
       setFinalizeOpen(true);
@@ -484,13 +521,19 @@ export function useDocumentGeneration({
     } finally {
       setFinalizing(false);
     }
-  }, [enrollment, students, economic, aggregatedEconomicTotals, totalNetMonthlyInstallment, prioritario, year, paymentMethod]);
+  }, [enrollment, students, economic, aggregatedEconomicTotals, totalNetMonthlyInstallment, prioritario, year, paymentMethod, studentEconomicMap]);
 
   const handleFinalizeConfirm = useCallback(async () => {
     if (!enrollment?.id) return;
     try {
       setFinalizing(true);
-      const result = await finalizeEnrollmentConfirm(enrollment.id);
+      // Pass per_student_plans so each student gets individual cuota amounts
+      const confirmOptions = {};
+      const perStudentPlans = enrollment?.meta?.per_student_plans;
+      if (perStudentPlans && typeof perStudentPlans === 'object') {
+        confirmOptions.per_student_plans = perStudentPlans;
+      }
+      const result = await finalizeEnrollmentConfirm(enrollment.id, confirmOptions);
       setFinalizeAlert({ type: 'success', message: `Matrícula finalizada correctamente. Folio: ${result.folio || 'N/A'}` });
       setEnrollmentFolio(result.folio || null);
       setEnrollment(prev => ({ ...prev, status: 'completed' }));

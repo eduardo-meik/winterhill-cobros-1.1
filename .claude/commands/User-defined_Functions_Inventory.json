@@ -384,12 +384,6 @@
     "language": "SQL"
   },
   {
-    "schema": "realtime",
-    "function_name": "apply_rls",
-    "return_type": "USER-DEFINED",
-    "language": "PLPGSQL"
-  },
-  {
     "schema": "public",
     "function_name": "update_guardian",
     "return_type": "USER-DEFINED",
@@ -399,6 +393,12 @@
     "schema": "public",
     "function_name": "audit_log_change",
     "return_type": "trigger",
+    "language": "PLPGSQL"
+  },
+  {
+    "schema": "realtime",
+    "function_name": "apply_rls",
+    "return_type": "USER-DEFINED",
     "language": "PLPGSQL"
   },
   {
