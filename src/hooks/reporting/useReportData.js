@@ -90,7 +90,6 @@ export function useReportData() {
           apellido_materno,
           whole_name,
           run,
-          curso,
           curso:cursos (
             id,
             nom_curso,
@@ -346,7 +345,6 @@ export function useReportData() {
             apellido_materno,
             whole_name,
             run,
-            curso,
             curso:cursos (
               id,
               nom_curso,

@@ -386,7 +386,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
               <div className="mt-4">
               {/* Student details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {renderDetailItem('Curso', 'curso', student.cursos?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
+                {renderDetailItem('Curso', 'curso', student.curso?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
                 {renderDetailItem('Nombre Social', 'nombre_social', student.nombre_social, 'text')}
                 {renderDetailItem('Estado', 'fecha_retiro', friendlyStatus, 'select', [
                   { value: '', label: 'Confirmado' },

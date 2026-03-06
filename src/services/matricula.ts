@@ -296,7 +296,6 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
           id,
           whole_name,
           run,
-          curso,
           first_name,
           apellido_paterno,
           apellido_materno,
@@ -346,18 +345,17 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
         const apellidosStr = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim();
         const lastName: string | undefined = apellidosStr ? apellidosStr : undefined;
         const full = s.whole_name || [s.first_name, lastName ?? ''].filter(Boolean).join(' ').trim();
-        const c = s.cursos || null;
+        const c = s.curso || null;
         const cursoLabel = c?.nom_curso
           || (c ? `${c.nivel ?? ''}${c.letra_curso ? ' ' + c.letra_curso : ''}`.trim() : null)
-          || s.curso
           || null;
         const obj: StudentRecord = {
           id: s.id as string,
           whole_name: (full || undefined) as string | undefined,
           run: (s.run || undefined) as string | undefined,
-          curso: (s.curso || undefined) as string | undefined,
+          curso: (c?.id || undefined) as string | undefined,
           curso_nombre: (cursoLabel || undefined) as string | undefined,
-          curso_id: (s.curso || undefined) as string | undefined,
+          curso_id: (c?.id || undefined) as string | undefined,
           target_course: targetCourseLabel,
           target_course_id: targetCourseId,
           target_nivel: targetNivel,
@@ -544,10 +542,9 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
       .map(r => r.students)
       .filter(Boolean)
       .map((s: any) => {
-        const c = s.cursos || null;
+        const c = s.curso || null;
         const label = c?.nom_curso
           || (c ? `${c.nivel ?? ''}${c.letra_curso ? ' ' + c.letra_curso : ''}`.trim() : null)
-          || s.curso
           || null;
         const apellidos = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim() || null;
         return {
@@ -556,7 +553,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           first_name: s.first_name || null,
           last_name: apellidos,
           run: s.run || null,
-          curso_id: c?.id || s.curso || null,
+          curso_id: c?.id || null,
           curso_label: label,
           date_of_birth: s.date_of_birth || null,
           genero: s.genero || null,

@@ -51,7 +51,6 @@ export function PromotionTool() {
           whole_name,
           run,
           estado_std,
-          curso,
           curso:cursos (
             id,
             nom_curso,
@@ -74,7 +73,7 @@ export function PromotionTool() {
 
       // Filter for students whose curso matches the current academic year
       const yearStudents = (studentsData || []).filter(
-        s => s.cursos?.year_academico === academicYear
+        s => s.curso?.year_academico === academicYear
       );
 
       // 2. Get promotion suggestion for each student via RPC
@@ -112,7 +111,7 @@ export function PromotionTool() {
   const niveles = useMemo(() => {
     const set = new Set();
     students.forEach(s => {
-      if (s.cursos?.nivel) set.add(s.cursos.nivel);
+      if (s.curso?.nivel) set.add(s.curso.nivel);
     });
     return Array.from(set).sort();
   }, [students]);
@@ -123,7 +122,7 @@ export function PromotionTool() {
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-      if (filterNivel !== 'all' && s.cursos?.nivel !== filterNivel) return false;
+      if (filterNivel !== 'all' && s.curso?.nivel !== filterNivel) return false;
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         const name = (s.whole_name || `${s.first_name || ''} ${s.apellido_paterno || ''}`).toLowerCase();
@@ -441,7 +440,7 @@ export function PromotionTool() {
                               </td>
                               <td className="py-3 px-3">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                  {student.cursos?.nom_curso || '—'}
+                                  {student.curso?.nom_curso || '—'}
                                 </span>
                               </td>
                               <td className="py-3 px-3 text-center text-gray-400">

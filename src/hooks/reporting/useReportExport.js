@@ -61,7 +61,7 @@ function buildReadableFilters(filters, guardians, courses) {
 function formatDataForExport(validData) {
   return validData.map(item => ({
     'Estudiante': item.student?.whole_name || `${item.student?.first_name || ''} ${item.student?.apellido_paterno || ''}`,
-    'Curso': item.student?.cursos?.nom_curso || 'Sin asignar',
+    'Curso': item.student?.curso?.nom_curso || 'Sin asignar',
     'RUN': item.student?.run || 'N/A',
     'Cuota N°': item.numero_cuota || 'N/A',
     'Monto': parseInt(item.amount || 0).toLocaleString('es-CL'),

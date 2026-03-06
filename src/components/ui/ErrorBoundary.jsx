@@ -17,6 +17,7 @@ export class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      const err = this.state.error;
       return (
         <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center">
           <div className="rounded-full bg-red-100 dark:bg-red-900/30 p-4 mb-4">
@@ -27,9 +28,25 @@ export class ErrorBoundary extends React.Component {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Algo salió mal
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-md">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 max-w-md">
             Ocurrió un error inesperado. Intenta recargar la página.
           </p>
+          {/* ── DEBUG: error real visible ── */}
+          <div className="my-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg text-left max-w-2xl w-full overflow-auto">
+            <p className="text-sm font-bold text-red-800 dark:text-red-300 mb-1">Error:</p>
+            <pre className="text-xs text-red-700 dark:text-red-400 whitespace-pre-wrap break-words">
+              {err?.message || String(err)}
+            </pre>
+            {err?.stack && (
+              <>
+                <p className="text-sm font-bold text-red-800 dark:text-red-300 mt-3 mb-1">Stack:</p>
+                <pre className="text-xs text-red-700 dark:text-red-400 whitespace-pre-wrap break-words max-h-48 overflow-auto">
+                  {err.stack}
+                </pre>
+              </>
+            )}
+          </div>
+          {/* ── FIN DEBUG ── */}
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"

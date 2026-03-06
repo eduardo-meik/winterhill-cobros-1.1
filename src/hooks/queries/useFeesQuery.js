@@ -25,7 +25,6 @@ export function useFeesQuery(academicYear, options = {}) {
             apellido_materno,
             whole_name,
             run,
-            curso,
             curso:cursos (
               id,
               nom_curso

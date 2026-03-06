@@ -143,7 +143,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           await generateReceiptPdf({
             feeId: payment.id,
             studentName: getStudentDisplayName(payment.student),
-            courseName: payment.student?.cursos?.nom_curso || null,
+            courseName: payment.student?.curso?.nom_curso || null,
             numeroCuota: payment.numero_cuota || null,
             yearAcademico: year,
             amount: Number(formData.amount || payment.amount),
@@ -236,7 +236,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         await generateReceiptPdf({
           feeId: payment.id,
           studentName: getStudentDisplayName(payment.student),
-          courseName: payment.student?.cursos?.nom_curso || null,
+          courseName: payment.student?.curso?.nom_curso || null,
           numeroCuota: payment.numero_cuota || null,
           yearAcademico: year,
           amount: amountNum,
@@ -269,7 +269,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       await generateReceiptPdf({
         feeId: payment.id,
         studentName: getStudentDisplayName(payment.student),
-        courseName: payment.student?.cursos?.nom_curso || null,
+        courseName: payment.student?.curso?.nom_curso || null,
         numeroCuota: payment.numero_cuota || null,
         yearAcademico: year,
         amount: Number(payment.amount),
@@ -305,7 +305,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       const html = buildReceiptEmailHtml({
         feeId: payment.id,
         studentName: getStudentDisplayName(payment.student),
-        courseName: payment.student?.cursos?.nom_curso || null,
+        courseName: payment.student?.curso?.nom_curso || null,
         numeroCuota: payment.numero_cuota || null,
         yearAcademico: year,
         amount: Number(payment.amount),
@@ -382,7 +382,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                               {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {payment.student?.run} - {payment.student?.cursos?.nom_curso || 'Sin curso asignado'}
+                              {payment.student?.run} - {payment.student?.curso?.nom_curso || 'Sin curso asignado'}
                             </p>
                           </div>
                         </div>
@@ -574,7 +574,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                        />
                        <DetailItem 
                          label="Curso" 
-                         value={payment.student?.cursos?.nom_curso || 'No asignado'}
+                         value={payment.student?.curso?.nom_curso || 'No asignado'}
                        />
                      </div>
                    </div>
@@ -649,7 +649,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                    />
                    <DetailItem 
                      label="Curso del Estudiante" 
-                     value={payment.student?.cursos?.nom_curso || 'No asignado'}
+                     value={payment.student?.curso?.nom_curso || 'No asignado'}
                    />
                    {payment.payment_date && (
                      <DetailItem 

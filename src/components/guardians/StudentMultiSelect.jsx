@@ -9,7 +9,7 @@ export function StudentMultiSelect({ selectedIds = [], onChange, error }) {
     const searchLower = searchTerm.toLowerCase();
     const wholeNameMatch = student.whole_name?.toLowerCase().includes(searchLower);
     const runMatch = student.run?.toLowerCase().includes(searchLower);
-    const cursoMatch = student.cursos?.nom_curso?.toLowerCase().includes(searchLower);
+    const cursoMatch = student.curso?.nom_curso?.toLowerCase().includes(searchLower);
     return wholeNameMatch || runMatch || cursoMatch;
   });
 
@@ -48,7 +48,7 @@ export function StudentMultiSelect({ selectedIds = [], onChange, error }) {
                   {student.whole_name || `${student.apellido_paterno}, ${student.first_name}`}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {student.run} ({student.cursos?.nom_curso || 'Sin curso'})
+                  {student.run} ({student.curso?.nom_curso || 'Sin curso'})
                 </p>
               </div>
             </label>

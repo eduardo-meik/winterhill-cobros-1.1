@@ -144,9 +144,10 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       // --- Inicio de la corrección ---
       // Crear una copia de los datos para modificarla
       const dataToSend = { ...formData };
-      // Eliminar explícitamente la clave 'cursos' si existe.
-      // Esta clave viene de la consulta con relación y no debe enviarse al guardar/actualizar.
-      delete dataToSend.cursos;
+      // Si 'curso' es un objeto (del join PostgREST), extraer solo el UUID
+      if (dataToSend.curso && typeof dataToSend.curso === 'object') {
+        dataToSend.curso = dataToSend.curso.id;
+      }
       if (!dataToSend.estado_std) {
         dataToSend.estado_std = 'MATRICULADO';
       }

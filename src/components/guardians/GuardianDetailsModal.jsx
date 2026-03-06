@@ -241,7 +241,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
           id: student.id,
           whole_name: student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''} ${student.apellido_materno || ''}`.trim(),
           run: student.run || null,
-          nom_curso: student.cursos?.nom_curso || 'Sin curso asignado'
+          nom_curso: student.curso?.nom_curso || 'Sin curso asignado'
         }));
       
       setAssociatedStudents(processedStudents);

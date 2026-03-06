@@ -29,7 +29,7 @@ export const PaymentsTable = React.memo(function PaymentsTable({
     }
     
     if (field === 'curso') {
-      return payment.student?.cursos?.nom_curso || '';
+      return payment.student?.curso?.nom_curso || '';
     }
     
     if (field === 'due_date' && payment.due_date) {
@@ -96,7 +96,7 @@ export const PaymentsTable = React.memo(function PaymentsTable({
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{payment.student?.cursos?.nom_curso || 'Curso no asignado'}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{payment.student?.curso?.nom_curso || 'Curso no asignado'}</p>
               </div>
               <span className={clsx(
                 'px-2 py-0.5 rounded-full text-xs font-medium',
@@ -178,7 +178,7 @@ export const PaymentsTable = React.memo(function PaymentsTable({
                         {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {payment.student?.cursos?.nom_curso || 'Curso no asignado'}
+                        {payment.student?.curso?.nom_curso || 'Curso no asignado'}
                       </p>
                     </div>
                   </div>

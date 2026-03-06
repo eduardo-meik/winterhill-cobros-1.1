@@ -185,7 +185,6 @@ export function useEnrollmentData({ user, year, assistedMode, assistedGuardian, 
           id,
           whole_name,
           run,
-          curso,
           curso:cursos (
             nom_curso,
             nivel,
@@ -201,17 +200,16 @@ export function useEnrollmentData({ user, year, assistedMode, assistedGuardian, 
     const list = (data || [])
       .map(r => {
         const s = r.students || {};
-        const c = s.cursos || null;
+        const c = s.curso || null;
         const cursoLabel =
           c?.nom_curso ||
           (c ? `${c.nivel ?? ''}${c.letra_curso ? ` ${c.letra_curso}` : ''}`.trim() : null) ||
-          s.curso ||
           null;
         return {
           id: s.id,
           whole_name: s.whole_name,
           run: s.run,
-          curso: s.curso || undefined,
+          curso: c?.id || undefined,
           curso_nombre: cursoLabel || undefined,
         };
       })

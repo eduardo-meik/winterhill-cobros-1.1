@@ -67,7 +67,7 @@ export function StudentReportTable({ data, loading, filteredByGuardians, guardia
               </td>
               <td className="py-3 px-4">
                 <p className="text-sm text-gray-900 dark:text-white">
-                  {student.cursos?.nom_curso || 'No asignado'}
+                  {student.curso?.nom_curso || 'No asignado'}
                 </p>
               </td>
             </tr>

@@ -47,7 +47,7 @@ export function PaymentsPage() {
     // Single pass through data for all filter options
     payments.forEach(payment => {
       // Extract curso names
-      const cursoName = payment.student?.cursos?.nom_curso;
+      const cursoName = payment.student?.curso?.nom_curso;
       if (cursoName) cursosSet.add(cursoName);
       
       // Extract cuota numbers - convert to string for consistent comparison
@@ -222,7 +222,7 @@ export function PaymentsPage() {
         'Estudiante': payment.student?.whole_name || 
           `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`,
         'RUN': payment.student?.run || '-',
-        'Curso': payment.student?.cursos?.nom_curso || '-',
+        'Curso': payment.student?.curso?.nom_curso || '-',
         'Cuota N°': payment.numero_cuota || '-',
         'Monto': payment.amount ? `$${Math.round(payment.amount).toLocaleString()}` : '-',
         'Estado': payment.status === 'paid' ? 'Pagado' : 

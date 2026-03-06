@@ -108,7 +108,7 @@ export class PDFReport {
     const tableData = payments.map(payment => [
       payment.student?.whole_name || 
         `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`,
-      payment.student?.cursos?.nom_curso || 'No asignado',
+      payment.student?.curso?.nom_curso || 'No asignado',
       payment.numero_cuota || 'N/A',
       payment.amount ? `$${Math.round(payment.amount).toLocaleString('es-CL')}` : '$0',
       payment.status === 'paid' ? 'Pagado' : 

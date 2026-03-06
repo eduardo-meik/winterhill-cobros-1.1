@@ -56,8 +56,8 @@ export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly =
                 <span className={clsx('px-2 py-0.5 rounded-full text-xs font-medium', badgeClass)}>{label}</span>
               </div>
               <div className="grid grid-cols-2 gap-1 text-xs text-gray-600 dark:text-gray-300 mb-3">
-                <span>Curso: {student.cursos?.nom_curso || 'Sin asignar'}</span>
-                <span>Año: {student.cursos?.year_academico || '—'}</span>
+                <span>Curso: {student.curso?.nom_curso || 'Sin asignar'}</span>
+                <span>Año: {student.curso?.year_academico || '—'}</span>
                 <span>Convenio: {student.categoria_social || 'Sin convenio'}</span>
                 <span>Matrícula: {formatDate(student.fecha_matricula)}</span>
               </div>
@@ -111,12 +111,12 @@ export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly =
               </td>
               <td className="py-3 px-4">
                 <p className="text-sm text-gray-900 dark:text-white">
-                  {student.cursos?.nom_curso || 'Sin asignar'}
+                  {student.curso?.nom_curso || 'Sin asignar'}
                 </p>
               </td>
               <td className="py-3 px-4">
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                  {student.cursos?.year_academico || '—'}
+                  {student.curso?.year_academico || '—'}
                 </span>
               </td>
               <td className="py-3 px-4">

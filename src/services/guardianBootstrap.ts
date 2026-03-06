@@ -269,8 +269,8 @@ async function fetchGuardianStudentsList(guardianId: string): Promise<GuardianLi
         if (!student) return null;
         const apellidoParts = [student.apellido_paterno, student.apellido_materno].filter(Boolean).join(' ').trim();
         const wholeName = student.whole_name || [student.first_name, apellidoParts].filter(Boolean).join(' ').trim();
-        const course = student.cursos || {};
-        const courseLabel = course.nom_curso || student.curso || null;
+        const course = student.curso || {};
+        const courseLabel = course.nom_curso || null;
         const linked: GuardianLinkedStudent = {
           id: student.id,
           first_name: student.first_name,

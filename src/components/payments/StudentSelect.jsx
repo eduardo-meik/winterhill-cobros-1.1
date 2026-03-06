@@ -52,7 +52,7 @@ export function StudentSelect({ value, onChange, error }) {
     return students.filter(student => {
       const nameNormalized = normalizeText(student.whole_name);
       const runDigitsAndK = getRunDigitsAndK(student.run);
-      const cursoNormalized = normalizeText(student.cursos?.nom_curso);
+      const cursoNormalized = normalizeText(student.curso?.nom_curso);
 
       const nameMatch = nameNormalized.includes(searchNormalized);
       // Check digits+K OR raw RUN
@@ -137,7 +137,7 @@ export function StudentSelect({ value, onChange, error }) {
                     {student.whole_name || `${student.apellido_paterno}, ${student.first_name}`}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {student.run} ({student.cursos?.nom_curso || 'Sin curso'})
+                    {student.run} ({student.curso?.nom_curso || 'Sin curso'})
                   </p>
                 </div>
               </div>

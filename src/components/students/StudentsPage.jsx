@@ -45,7 +45,7 @@ export function StudentsPage() {
 
   // Generate unique course names AND convenio names for filter dropdowns
   const uniqueCursos = useMemo(() =>
-    [...new Set(students.map(s => s.cursos?.nom_curso).filter(Boolean))].sort(),
+    [...new Set(students.map(s => s.curso?.nom_curso).filter(Boolean))].sort(),
     [students]
   );
   const uniqueConvenios = useMemo(() =>
@@ -63,7 +63,7 @@ export function StudentsPage() {
 
     return students.filter(student => {
       const cursoMatch = filters.curso === 'all' ||
-        student.cursos?.nom_curso === filters.curso;
+        student.curso?.nom_curso === filters.curso;
       const studentStatus = deriveStudentStatusFromRecord(student);
       const statusMatch = filters.status === 'all' || studentStatus === filters.status;
       const searchMatch = !debouncedSearchTerm ||
@@ -131,8 +131,8 @@ export function StudentsPage() {
       const excelData = dataToExport.map(student => ({
         'Nombre': student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''}`,
         'RUN': student.run || '-',
-        'Curso': student.cursos?.nom_curso || '-',
-        'A\u00f1o': student.cursos?.year_academico || '-',
+        'Curso': student.curso?.nom_curso || '-',
+        'Año': student.curso?.year_academico || '-',
         'Estado': getStudentStatusLabel(deriveStudentStatusFromRecord(student)),
         'Convenio': student.categoria_social || 'Sin convenio',
         'G\u00e9nero': student.genero || '-',
