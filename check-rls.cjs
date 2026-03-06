@@ -1,11 +1,18 @@
 const https = require('https');
-const SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllb3RwcGxnZXJmcHh2aXFhenJuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDg5NzgyNiwiZXhwIjoyMDYwNDczODI2fQ.RcnqnfYDq7dmUuKD2c6tUQJ9ArA0PJ448lTWwEQtb9M';
+const fs = require('fs');
+const envContent = fs.readFileSync('.env', 'utf-8');
+const env = {};
+envContent.split('\n').forEach(line => {
+  const [key, ...rest] = line.split('=');
+  if (key && rest.length) env[key.trim()] = rest.join('=').trim();
+});
+const SK = env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = env.VITE_SUPABASE_URL;
+if (!SK || !SUPABASE_URL) { console.error('Missing keys in .env'); process.exit(1); }
 
-// Try querying pg_policies via RPC
-// If exec_sql doesn't exist, we'll use the policies.json file or check another way
 function httpRequest(method, path, body) {
   return new Promise((resolve, reject) => {
-    const url = new URL('https://yeotpplgerfpxviqazrn.supabase.co' + path);
+    const url = new URL(SUPABASE_URL + path);
     const headers = {
       'apikey': SK,
       'Authorization': 'Bearer ' + SK,

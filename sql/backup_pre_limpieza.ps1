@@ -2,7 +2,12 @@
 ## Backup de todas las tablas afectadas ANTES de la limpieza de datos
 ## Fecha: 2026-03-06
 
-$token = "REDACTED_ACCESS_TOKEN"
+# Read token from environment variable — NEVER hardcode secrets
+$token = $env:SUPABASE_ACCESS_TOKEN
+if (-not $token) {
+    Write-Host "ERROR: Set SUPABASE_ACCESS_TOKEN environment variable first" -ForegroundColor Red
+    exit 1
+}
 $projectRef = "yeotpplgerfpxviqazrn"
 $baseUrl = "https://api.supabase.com/v1/projects/$projectRef/database/query"
 $backupDir = "sql\backups_pre_limpieza_2026-03-06"

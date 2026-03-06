@@ -9,11 +9,23 @@
  */
 const https = require('https');
 
-const SUPABASE_URL = 'https://yeotpplgerfpxviqazrn.supabase.co';
-const ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllb3RwcGxnZXJmcHh2aXFhenJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4OTc4MjYsImV4cCI6MjA2MDQ3MzgyNn0.qfjT0PLm3ff4m3jr7FGEAYCu0Gm97YEtZDUe-tS_urs';
-const SERVICE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllb3RwcGxnZXJmcHh2aXFhenJuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDg5NzgyNiwiZXhwIjoyMDYwNDczODI2fQ.RcnqnfYDq7dmUuKD2c6tUQJ9ArA0PJ448lTWwEQtb9M';
+// Read keys from .env file (NEVER hardcode secrets)
+const fs = require('fs');
+const envContent = fs.readFileSync('.env', 'utf-8');
+const env = {};
+envContent.split('\n').forEach(line => {
+  const [key, ...rest] = line.split('=');
+  if (key && rest.length) env[key.trim()] = rest.join('=').trim();
+});
+
+const SUPABASE_URL = env.VITE_SUPABASE_URL;
+const ANON_KEY = env.VITE_SUPABASE_ANON_KEY;
+const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SERVICE_KEY || !ANON_KEY) {
+  console.error('ERROR: Missing keys in .env file');
+  process.exit(1);
+}
 
 function httpRequest(method, path, apiKey, authToken, body) {
   return new Promise((resolve, reject) => {
