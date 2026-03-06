@@ -20,6 +20,14 @@ const initialAuthState: AuthState = {
   loading: true,
 };
 
+const clearStoredAuthSession = () => {
+  try {
+    localStorage.removeItem('supabase.auth.token');
+  } catch {
+    // ignore storage errors
+  }
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AuthState>(initialAuthState);
   const navigate = useNavigate();
@@ -84,6 +92,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const buildValidatedAuthState = useCallback(async (session: any): Promise<AuthState> => {
+    if (!session?.access_token) {
+      return {
+        session: null,
+        user: null,
+        loading: false,
+      };
+    }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !userData?.user) {
+      Logger.getInstance().log(
+        LogCode.AUTH_SESSION_FETCH_FAILED,
+        `Invalid stored session: ${userError?.message || 'No authenticated user returned'}`,
+        session?.user?.id,
+        'buildValidatedAuthState',
+        { level: 'WARN', area: 'AUTH', error: userError }
+      );
+      clearStoredAuthSession();
+      return {
+        session: null,
+        user: null,
+        loading: false,
+      };
+    }
+
+    const { role, profile } = await fetchProfileRole(userData.user.id);
+    return {
+      session,
+      user: mapSupabaseUserToLocalUser(userData.user, role, profile),
+      loading: false,
+    };
+  }, []);
+
   useEffect(() => {
     const getSession = async () => {
       try {
@@ -92,8 +135,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching session initial: ${error.message}`, undefined, 'getSession', { level: 'ERROR', area: 'AUTH', error });
           throw error;
         }
-        const { role, profile } = await fetchProfileRole(session?.user?.id);
-        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role, profile), loading: false });
+        const nextState = await buildValidatedAuthState(session);
+        setState(nextState);
       } catch (error: any) {
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Catch getSession: ${error.message}`, undefined, 'getSessionCatch', { level: 'ERROR', area: 'AUTH', errorMessage: error.message });
         setState(prev => ({ ...prev, loading: false }));
@@ -104,8 +147,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       Logger.getInstance().log(LogCode.AUTH_STATE_CHANGED, `Auth event: ${event}`, session?.user?.id, 'onAuthStateChange', { level: 'INFO', area: 'AUTH', session });
       (async () => {
-        const { role, profile } = await fetchProfileRole(session?.user?.id);
-        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role, profile), loading: false });
+        const nextState = await buildValidatedAuthState(session);
+        setState(nextState);
       })();
       
       if (event === 'PASSWORD_RECOVERY') {
@@ -115,6 +158,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // }
       } else if (event === 'SIGNED_OUT') {
         clearGuardianCaches(); // Prevent leaking cached data across sessions
+        clearStoredAuthSession();
         navigate('/login');
       }
     });
@@ -122,7 +166,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [buildValidatedAuthState, navigate]);
 
   const signIn = async (email: string, password: string /*, remember = false */) => {
     setState(prev => ({ ...prev, loading: true }));
