@@ -16,15 +16,18 @@ export function useStudentsQuery(options = {}) {
         .from('students')
         .select(`
           *,
-          cursos:curso (
+          cursos (
             id, nom_curso, nivel, year_academico
           )
         `)
         .order('apellido_paterno', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       return data ?? [];
     },
+    
     ...options,
   });
 }

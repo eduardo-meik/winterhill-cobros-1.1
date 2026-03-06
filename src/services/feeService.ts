@@ -83,7 +83,7 @@ export async function fetchGuardianFees(
         whole_name,
         run,
         curso,
-        cursos:curso(nom_curso)
+        cursos(nom_curso)
       )
     `)
     .eq('guardian_id', guardianId)
@@ -128,7 +128,7 @@ export async function fetchStudentFees(
         whole_name,
         run,
         curso,
-        cursos:curso(nom_curso)
+        cursos(nom_curso)
       )
     `)
     .eq('student_id', studentId)
@@ -167,7 +167,7 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
         whole_name,
         run,
         curso,
-        cursos:curso(nom_curso)
+        cursos(nom_curso)
       )
     `)
     .eq('guardian_id', guardianId)

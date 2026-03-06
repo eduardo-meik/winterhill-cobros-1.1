@@ -77,10 +77,10 @@ export const validateExactAmount = async (
   }
 
   try {
-    // Consultar el monto esperado de la cuota
+    // Consultar el monto esperado de la cuota (tabla fee)
     const { data: cuotaData, error } = await supabaseClient
-      .from('cuotas') // Asumo que existe una tabla de cuotas
-      .select('amount, description')
+      .from('fee')
+      .select('amount, notes')
       .eq('id', cuotaId)
       .single();
 

@@ -14,12 +14,17 @@ import { useFeesQuery } from '../hooks/queries/useFeesQuery';
 import { subMonths } from 'date-fns';
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const academicYear = new Date().getFullYear(); // Fallback temporal para gráficas que lo necesiten
 
   // MJ-04: refetchOnWindowFocus replaces the manual visibilitychange listener
-  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear, {
+  const { data: fees = [], isLoading: loading, error: feesError } = useFeesQuery(academicYear, {
     refetchOnWindowFocus: 'always',
   });
+
+  // DEBUG BANNER - remove after confirming it works
+  const debugInfo = `Role: ${user?.role || 'N/A'} | Profile: ${user?.profile || 'N/A'} | Fees: ${loading ? 'loading...' : fees.length} | Error: ${feesError?.message || 'none'}`;
+  console.log('[DASHBOARD]', debugInfo);
 
   const metrics = useMemo(() => {
     if (!fees.length) return { activeDebtors: 0, totalDebt: 0, projectedIncome: 0, delinquencyRate: 0, previousDelinquencyRate: 0 };
@@ -53,6 +58,10 @@ export default function Dashboard() {
 
   return (
     <main className="flex-1 min-w-0 overflow-auto">
+      {/* DEBUG BANNER - remove after confirming */}
+      <div style={{background:'#fef08a',color:'#92400e',padding:'8px 16px',fontFamily:'monospace',fontSize:'13px',borderBottom:'2px solid #f59e0b'}}>
+        {debugInfo}
+      </div>
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap justify-between gap-3 p-4">
           <div className="flex items-center gap-3">

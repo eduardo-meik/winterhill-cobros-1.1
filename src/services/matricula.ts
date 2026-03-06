@@ -301,7 +301,7 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
           apellido_paterno,
           apellido_materno,
           date_of_birth,
-          cursos:curso (
+          cursos (
             id,
             nom_curso,
             nivel,
@@ -529,7 +529,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           comuna,
           institucion_procedencia,
           con_quien_vive,
-          cursos:curso (
+          cursos (
             id,
             nom_curso,
             nivel,

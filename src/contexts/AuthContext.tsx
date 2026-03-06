@@ -68,10 +68,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .single();
       
       if (profileError && profileError.code !== 'PGRST116') { // PGRST116 = no rows found
+        console.error('[AUTH] ❌ Profile fetch error:', profileError.code, profileError.message);
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile data: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
       }
 
       if (!profileData?.role) {
+        console.warn('[AUTH] ⚠️ No role found for user', userId, '→ defaulting to guardian');
         return {
           role: 'guardian',
           profile: 'READONLY',
@@ -82,11 +84,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const roleLower = roleLowerRaw && ['admin', 'asist', 'guardian'].includes(roleLowerRaw) ? roleLowerRaw : 'guardian';
       const roleUpper = roleLower.toUpperCase();
       const derivedProfile = roleUpper === 'ADMIN' || roleUpper === 'ASIST' ? roleUpper : 'READONLY';
+      console.log('[AUTH] ✅ Profile resolved:', { userId, role: roleLower, profile: derivedProfile });
       return {
         role: roleLower,
         profile: derivedProfile
       };
     } catch (err: any) {
+      console.error('[AUTH] ❌ Exception fetching profile:', err.message);
       Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile data: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
       return { profile: 'READONLY' }; // Safe default
     }

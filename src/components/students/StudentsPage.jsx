@@ -12,7 +12,7 @@ import { format } from 'date-fns';
 import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
 export function StudentsPage() {
-  const { data: allStudents = [], isLoading: loading } = useStudentsQuery();
+  const { data: allStudents = [], isLoading: loading, refetch: fetchStudents } = useStudentsQuery();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
