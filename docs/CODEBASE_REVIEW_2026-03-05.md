@@ -229,6 +229,13 @@ Performance, query, and rendering inefficiencies.
 | E-01 (ext.) | Created `useStudentsQuery` and `useCursosQuery` shared React Query hooks (wide select, auto-cached). Converted `StudentSelect` (payment form dropdown) to `useStudentsQuery` — eliminates manual `useState`/`useEffect` fetch. Converted `StudentFormModal` curso dropdown to `useCursosQuery` — eliminates manual `useState`/`useEffect` fetch. Students and cursos data now cache-shared across all consumers using these hooks. | `src/hooks/queries/useStudentsQuery.js` (new), `src/hooks/queries/useCursosQuery.js` (new), `StudentSelect.jsx`, `StudentFormModal.jsx` |
 | E-04 (partial) | Added fee cache invalidation (`queryClient.invalidateQueries(['fees'])`) to all 5 fee mutation sites across `RegisterPaymentModal` (2 paths: update existing + insert new) and `PaymentDetailsModal` (3: save, delete, registerPay). Dashboard/charts now auto-refresh when payments are registered, edited, or deleted on the PaymentsPage — eliminates stale data across page navigations. | `RegisterPaymentModal.jsx`, `PaymentDetailsModal.jsx` |
 
+### Session 7 — Shared Hooks Expansion + Students Cache Invalidation (2026-03-06)
+
+| ID | Fix | Files |
+|----|-----|-------|
+| E-01 (ext.) | Widened `useStudentsQuery` select to `*` (all columns) for full compatibility with `StudentsPage` export and display. Converted `StudentMultiSelect` (guardian form multi-select) to `useStudentsQuery` — eliminates manual `useState`/`useEffect`/supabase fetch. Converted `StudentsPage` to `useStudentsQuery` — eliminates `useCallback`/`useEffect` fetch cycle; year filtering now client-side `useMemo`; `selectedStudent` auto-syncs via `useEffect`. Converted `GuardianDetailsModal` associated-students lookup to `useStudentsQuery` — eliminates 2 separate supabase calls (students + cursos) per guardian detail view. Converted `useEnrollmentData` cursos fetch to `useCursosQuery` — eliminates per-year `useEffect`/supabase fetch; now derives `availableYearCourses` via `useMemo` from cached data. | `useStudentsQuery.js`, `StudentMultiSelect.jsx`, `StudentsPage.jsx`, `GuardianDetailsModal.jsx`, `useEnrollmentData.js` |
+| E-04 (ext.) | Added student cache invalidation (`queryClient.invalidateQueries(['students'])`) to all 4 student mutation sites: `StudentsTable` (delete), `StudentFormModal` (insert + update), `StudentDetailsModal` (inline field edit). All consumers of `useStudentsQuery` now auto-refresh when students are created, edited, or deleted — eliminates stale data across StudentsPage, StudentSelect, StudentMultiSelect, and GuardianDetailsModal. | `StudentsTable.jsx`, `StudentFormModal.jsx`, `StudentDetailsModal.jsx` |
+
 ### Remaining Items
 
 Fixes **not yet applied** — still in the backlog:

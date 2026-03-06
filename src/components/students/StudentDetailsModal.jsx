@@ -7,6 +7,7 @@ import { StudentFormModal } from './StudentFormModal';
 import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
 import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 
@@ -20,6 +21,7 @@ const formatDate = (dateString) => {
 };
 
 export function StudentDetailsModal({ student, onClose, onSuccess }) { 
+  const queryClient = useQueryClient();
   if (!student) return null;
 
   const [isEditing, setIsEditing] = useState(false);
@@ -226,6 +228,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
       if (error) throw error;
 
       toast.success(`${label} actualizado exitosamente.`);
+      queryClient.invalidateQueries({ queryKey: ['students'] });
       onSuccess?.(); 
       handleFieldCancel();
     } catch (error) {

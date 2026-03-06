@@ -15,8 +15,7 @@ export function useStudentsQuery(options = {}) {
       const { data, error } = await supabase
         .from('students')
         .select(`
-          id, first_name, apellido_paterno, apellido_materno,
-          whole_name, run, estado_std, curso,
+          *,
           cursos:curso (
             id, nom_curso, nivel, year_academico
           )

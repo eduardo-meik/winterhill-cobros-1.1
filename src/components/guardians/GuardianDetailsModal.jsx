@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { StudentDetailsModal } from '../students/StudentDetailsModal';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [guardianData, setGuardianData] = useState(guardian);
@@ -24,6 +25,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [enrollmentStatuses, setEnrollmentStatuses] = useState({}); // { studentId: status }
   const [debtSummary, setDebtSummary] = useState(null); // { studentId: { paid, pending, overdue, total } }
   const navigate = useNavigate();
+  const { data: allStudents = [] } = useStudentsQuery();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: guardian
@@ -232,39 +234,15 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
       const studentIds = associations.map(a => a.student_id);
       
-      const { data: students, error: studentsError } = await supabase
-        .from('students')
-        .select('id, whole_name, first_name, apellido_paterno, apellido_materno, curso, run')
-        .in('id', studentIds);
-        
-      if (studentsError) throw studentsError;
-      
-      const cursoIds = Array.from(new Set(students.filter(s => s.curso).map(s => s.curso)));
-      
-      let cursosMap = {};
-      if (cursoIds.length > 0) {
-        const { data: cursos, error: cursosError } = await supabase
-          .from('cursos')
-          .select('id, nom_curso')
-          .in('id', cursoIds);
-          
-        if (cursosError) throw cursosError;
-        
-        cursosMap = (cursos || []).reduce((map, curso) => {
-          map[curso.id] = curso;
-          return map;
-        }, {});
-      }
-      
-      const processedStudents = students.map(student => {
-        const curso = student.curso ? cursosMap[student.curso] : null;
-        return {
+      // Use cached students from shared hook instead of separate fetches
+      const processedStudents = allStudents
+        .filter(s => studentIds.includes(s.id))
+        .map(student => ({
           id: student.id,
           whole_name: student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''} ${student.apellido_materno || ''}`.trim(),
           run: student.run || null,
-          nom_curso: curso ? curso.nom_curso : 'Sin curso asignado'
-        };
-      });
+          nom_curso: student.cursos?.nom_curso || 'Sin curso asignado'
+        }));
       
       setAssociatedStudents(processedStudents);
       setSelectedStudentIds(studentIds);

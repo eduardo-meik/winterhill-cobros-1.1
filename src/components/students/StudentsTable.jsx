@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import clsx from 'clsx';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   deriveStudentStatusFromRecord,
   getStudentStatusBadgeClass,
@@ -10,6 +11,7 @@ import {
 } from '../../utils/studentStatus';
 
 export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly = false }) {
+  const queryClient = useQueryClient();
   const handleDelete = async (student) => {
     const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al estudiante ${student.first_name} ${student.last_name}?`);
     if (!confirmed) return;
@@ -23,6 +25,7 @@ export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly =
       if (error) throw error;
 
       toast.success('Estudiante eliminado exitosamente');
+      queryClient.invalidateQueries({ queryKey: ['students'] });
       onSuccess?.();
     } catch (error) {
       console.error('Error:', error);

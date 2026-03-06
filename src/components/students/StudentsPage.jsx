@@ -1,21 +1,19 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { StudentsTable } from './StudentsTable';
 import { StudentDetailsModal } from './StudentDetailsModal';
 import { StudentFormModal } from './StudentFormModal';
-import { supabase } from '../../services/supabase';
 import { SearchBar } from './SearchBar';
-import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import { format } from 'date-fns';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
 export function StudentsPage() {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: allStudents = [], isLoading: loading } = useStudentsQuery();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -36,43 +34,19 @@ export function StudentsPage() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Use useCallback for fetchStudents
-  const fetchStudents = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('students')
-        .select(`
-          *,
-          cursos:curso (
-            id,
-            nom_curso,
-            nivel,
-            year_academico
-          )
-        `)
-        .eq('cursos.year_academico', academicYear)
-        .order('apellido_paterno', { ascending: true });
+  // Filter students by academic year (client-side, shared hook fetches all)
+  const students = useMemo(() =>
+    allStudents.filter(s => s.cursos?.year_academico === academicYear),
+    [allStudents, academicYear]
+  );
 
-      if (error) throw error;
-      // Filter out students whose curso doesn't match the selected year
-      // (Supabase inner filtering on joined tables returns null cursos instead of omitting the row)
-      const filtered = (data || []).filter(s => s.cursos !== null);
-      setStudents(filtered);
-      return filtered;
-    } catch (error) {
-      toast.error('Error al cargar los estudiantes');
-      console.error('Error fetching students:', error);
-      setStudents([]);
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  }, [academicYear]);
-
+  // Sync selectedStudent with latest data
   useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+    if (selectedStudent) {
+      const updated = students.find(s => s.id === selectedStudent.id);
+      if (updated) setSelectedStudent(updated);
+    }
+  }, [students]);
 
   // Generate unique course names AND convenio names for filter dropdowns
   const uniqueCursos = useMemo(() =>
@@ -141,21 +115,12 @@ export function StudentsPage() {
 
   const handleFormSuccess = () => {
     handleCloseFormModal();
-    fetchStudents();
   };
 
   const handleDetailsUpdateSuccess = async () => {
-    const updatedStudentsList = await fetchStudents();
-    if (selectedStudent && updatedStudentsList.length > 0) {
-      const newlyUpdatedStudentData = updatedStudentsList.find(s => s.id === selectedStudent.id);
-      if (newlyUpdatedStudentData) {
-        setSelectedStudent(newlyUpdatedStudentData);
-      } else {
-        handleCloseDetailsModal();
-      }
-    } else {
-       handleCloseDetailsModal();
-    }
+    // Students cache auto-refreshes via React Query invalidation
+    // selectedStudent syncs via the useEffect above
+    handleCloseDetailsModal();
   };
 
   const handleResetFilters = () => {

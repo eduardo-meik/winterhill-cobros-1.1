@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
+import { useCursosQuery } from '../queries/useCursosQuery';
 import {
   fetchCurrentGuardian,
   getOrCreateEnrollment,
@@ -32,7 +33,6 @@ export function useEnrollmentData({ user, year, assistedMode, assistedGuardian, 
   const [enrollment, setEnrollment] = useState(null);
   const [students, setStudents] = useState([]);
   const [allMyStudents, setAllMyStudents] = useState([]);
-  const [availableYearCourses, setAvailableYearCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -223,24 +223,14 @@ export function useEnrollmentData({ user, year, assistedMode, assistedGuardian, 
     loadAssociatedStudents();
   }, [loadAssociatedStudents]);
 
-  // Load courses for selected year
-  useEffect(() => {
-    const fetchCoursesForYear = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('cursos')
-          .select('id, nom_curso, nivel, letra_curso, year_academico')
-          .eq('year_academico', year)
-          .order('nivel', { ascending: true });
-        if (error) throw error;
-        setAvailableYearCourses(data || []);
-      } catch (e) {
-        console.error('Error loading year courses:', e?.message || e);
-        setAvailableYearCourses([]);
-      }
-    };
-    if (year) fetchCoursesForYear();
-  }, [year]);
+  // Derive courses for selected year from cached cursos
+  const { data: allCursos = [] } = useCursosQuery();
+  const availableYearCourses = useMemo(() =>
+    allCursos
+      .filter(c => c.year_academico === year)
+      .sort((a, b) => (a.nivel || '').localeCompare(b.nivel || '')),
+    [allCursos, year]
+  );
 
   // Add/remove student handlers
   const handleAddStudent = async (studentId) => {

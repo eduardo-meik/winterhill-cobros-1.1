@@ -9,6 +9,7 @@ import { GuardianMultiSelect } from './GuardianMultiSelect';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
 import { getStudentStatusOptions } from '../../utils/studentStatus';
 import { useCursosQuery } from '../../hooks/queries/useCursosQuery';
+import { useQueryClient } from '@tanstack/react-query';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -46,6 +47,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
   const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
   const statusOptions = getStudentStatusOptions();
   const { data: cursos = [] } = useCursosQuery();
+  const queryClient = useQueryClient();
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -281,6 +283,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       }
       // --- End of association update ---
 
+      queryClient.invalidateQueries({ queryKey: ['students'] });
       onSuccess?.();
       reset();
       setSelectedGuardiansInfo([]); // Clear selection after submit
