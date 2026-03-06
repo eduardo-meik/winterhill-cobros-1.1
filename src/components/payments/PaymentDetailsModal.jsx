@@ -9,6 +9,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf, buildReceiptEmailHtml } from '../../services/receiptGenerator';
 import { sendEmailViaFunction } from '../../services/email';
 import { friendlyError } from '../../utils/friendlyError';
+import { useQueryClient } from '@tanstack/react-query';
 
 /** Extract year safely from a date string, fallback to current year */
 function safeYearFromDate(dateStr) {
@@ -44,6 +45,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const permissions = usePermissions();
+  const queryClient = useQueryClient();
 
   // Registrar pago (ASIST) state
   const [isRegistering, setIsRegistering] = useState(false);
@@ -130,6 +132,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
 
       if (error) throw error;
 
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast.success('Pago actualizado exitosamente');
       // If ADMIN (or any role) changed status to paid, offer printing the receipt
       if (becamePaid) {
@@ -180,6 +183,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
 
       if (error) throw error;
 
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast.success('Pago eliminado exitosamente');
       onSuccess?.();
       onClose();
@@ -243,6 +247,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
 
       if (error) throw error;
 
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast.success('Pago registrado exitosamente');
       setIsRegistering(false);
       // Offer receipt printing for ASIST (and any role using this flow)

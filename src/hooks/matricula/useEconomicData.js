@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 import {
   updateEnrollmentMeta,
@@ -42,7 +42,6 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
     tarjeta: false,
     pagare: false,
   });
-  const [paymentPlan, setPaymentPlan] = useState(null);
   const [descuentoPlanilla, setDescuentoPlanilla] = useState(false);
   const [descuentoInfo, setDescuentoInfo] = useState({
     porcentaje_descuento: 0,
@@ -53,7 +52,7 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
   const [prioritario, setPrioritario] = useState(false);
   const [cheques, setCheques] = useState([]);
   const [showChequesModal, setShowChequesModal] = useState(false);
-  const [hydratedMetaForEnrollmentId, setHydratedMetaForEnrollmentId] = useState(null);
+  const hydratedMetaForEnrollmentId = useRef(null);
 
   const chequesButtonLabel = useMemo(() => {
     const count = cheques?.length || 0;
@@ -66,8 +65,8 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
 
   useEffect(() => {
     if (!enrollment || !enrollment.meta) return;
-    if (hydratedMetaForEnrollmentId === enrollment.id) return;
-    setHydratedMetaForEnrollmentId(enrollment.id);
+    if (hydratedMetaForEnrollmentId.current === enrollment.id) return;
+    hydratedMetaForEnrollmentId.current = enrollment.id;
 
     const meta = enrollment.meta || {};
 
@@ -112,9 +111,7 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
       setStudentEconomicMap(prev => ({ ...prev, ...meta.per_student_economic }));
     }
 
-    if (meta.payment_plan) {
-      setPaymentPlan(meta.payment_plan);
-    }
+    // payment_plan is now derived via useMemo — no need to hydrate
   }, [enrollment?.id]);
 
   // Load existing cheques from DB
@@ -331,10 +328,10 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
     };
   }, [students, studentEconomicMap]);
 
-  // Regenerate paymentPlan reactively from aggregatedEconomicTotals
-  useEffect(() => {
-    if (!enrollment?.year || !aggregatedEconomicTotals) return;
-    const plan = buildEnrollmentPaymentPlan({
+  // Derived paymentPlan — synchronous, no extra render cycle
+  const paymentPlan = useMemo(() => {
+    if (!enrollment?.year || !aggregatedEconomicTotals) return null;
+    return buildEnrollmentPaymentPlan({
       enrollmentYear: enrollment.year,
       economic: {
         monto_matricula: aggregatedEconomicTotals.totalMatricula,
@@ -348,7 +345,6 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
       },
       paymentMethodFlags: paymentMethod,
     });
-    setPaymentPlan(plan);
   }, [aggregatedEconomicTotals, paymentMethod, enrollment?.year]);
 
   // ---------- SAVE ----------
@@ -409,7 +405,6 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
 
     const updated = await updateEnrollmentMeta(enrollment.id, patch);
     if (updated) {
-      setPaymentPlan(localPlan);
       setEnrollment(prev => (prev ? { ...prev, meta: { ...(prev.meta || {}), ...patch } } : prev));
     }
 
@@ -442,7 +437,6 @@ export function useEconomicData({ enrollment, students, year, availableYearCours
     paymentMethod,
     setPaymentMethod,
     paymentPlan,
-    setPaymentPlan,
     descuentoPlanilla,
     setDescuentoPlanilla,
     descuentoInfo,

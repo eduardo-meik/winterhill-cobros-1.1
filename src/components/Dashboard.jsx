@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAcademicYear } from '../contexts/AcademicYearContext';
 import { useNavigate } from 'react-router-dom';
@@ -11,96 +11,46 @@ import { PaymentProjectionChart } from './dashboard/graphs/PaymentProjectionChar
 import { DebtorsTable } from './dashboard/DebtorsTable';
 import { YearComparisonChart } from './dashboard/graphs/YearComparisonChart';
 import { StatCardSkeleton } from './ui/Skeleton';
-import { supabase } from '../services/supabase';
-import toast from 'react-hot-toast';
-import { format, subMonths } from 'date-fns';
+import { useFeesQuery } from '../hooks/queries/useFeesQuery';
+import { subMonths } from 'date-fns';
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState(true);
-  const [metrics, setMetrics] = useState({
-    activeDebtors: 0,
-    totalDebt: 0,
-    projectedIncome: 0,
-    delinquencyRate: 0,
-    previousDelinquencyRate: 0
-  });
   const { academicYear } = useAcademicYear();
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, [academicYear]);
+  // MJ-04: refetchOnWindowFocus replaces the manual visibilitychange listener
+  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear, {
+    refetchOnWindowFocus: 'always',
+  });
 
-  // MJ-04: Auto-refresh when tab becomes visible (e.g., user returns from payments page)
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') fetchDashboardData();
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }, [academicYear]);
+  const metrics = useMemo(() => {
+    if (!fees.length) return { activeDebtors: 0, totalDebt: 0, projectedIncome: 0, delinquencyRate: 0, previousDelinquencyRate: 0 };
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch fees filtered by academic year
-      const { data: fees, error } = await supabase
-        .from('fee')
-        .select(`
-          *,
-          student:students (
-            id,
-            first_name, 
-            apellido_paterno,
-            curso:cursos!students_curso_fkey(
-              nom_curso
-            )
-          )
-        `)
-        .eq('year_academico', academicYear);
+    const now = new Date();
+    const lastMonth = subMonths(now, 1);
 
-      if (error) throw error;
+    const activeDebtors = new Set(
+      fees.filter(f => f.status !== 'paid').map(f => f.student_id)
+    ).size;
 
-      // Calculate metrics
-      const now = new Date();
-      const lastMonth = subMonths(now, 1);
-      
-      const activeDebtors = new Set(
-        fees.filter(f => f.status !== 'paid').map(f => f.student_id)
-      ).size;
+    const totalDebt = fees
+      .filter(f => f.status !== 'paid')
+      .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
 
-      const totalDebt = fees
-        .filter(f => f.status !== 'paid')
-        .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
+    const projectedIncome = fees
+      .filter(f => f.status === 'pending')
+      .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
 
-      const projectedIncome = fees
-        .filter(f => f.status === 'pending')
-        .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
+    const currentOverdue = fees.filter(f => f.status === 'overdue').length;
+    const previousOverdue = fees.filter(f =>
+      f.status === 'overdue' &&
+      new Date(f.due_date) <= lastMonth
+    ).length;
 
-      const currentOverdue = fees.filter(f => f.status === 'overdue').length;
-      const previousOverdue = fees.filter(f => 
-        f.status === 'overdue' && 
-        new Date(f.due_date) <= lastMonth
-      ).length;
+    const delinquencyRate = (currentOverdue / fees.length) * 100;
+    const previousDelinquencyRate = (previousOverdue / fees.length) * 100;
 
-      const delinquencyRate = (currentOverdue / fees.length) * 100;
-      const previousDelinquencyRate = (previousOverdue / fees.length) * 100;
-
-      setMetrics({
-        activeDebtors,
-        totalDebt,
-        projectedIncome,
-        delinquencyRate,
-        previousDelinquencyRate
-      });
-
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Error al cargar los datos del dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return { activeDebtors, totalDebt, projectedIncome, delinquencyRate, previousDelinquencyRate };
+  }, [fees]);
 
   return (
     <main className="flex-1 min-w-0 overflow-auto">

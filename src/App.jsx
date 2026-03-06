@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { GuardianProvider } from './contexts/GuardianContext';
@@ -47,9 +48,21 @@ export function RootRedirect() {
   return <Navigate to="/dashboard" replace />;
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000,  // 2 minutes before data is considered stale
+      gcTime: 10 * 60 * 1000,    // 10 minutes before unused cache is garbage-collected
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
 export default function App() {
   return (
     <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Routes>
           {/* Public routes that do not require authentication */}
@@ -140,6 +153,7 @@ export default function App() {
         </Routes>
         <Toaster position="top-right" />
       </AuthProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

@@ -214,17 +214,25 @@ Performance, query, and rendering inefficiencies.
 | E-07 | Investigated — `PaymentsTable` already uses `usePagination(sortedPayments, 25)`. Server-side pagination would break summary/chart/export calculations. Proper fix requires DB-level aggregation (RPC/views) — deferred. | — (no fix needed) |
 | X-05 | Added `aria-label` to 15 icon-only buttons (hamburger, modal close, inline save/cancel, filter clear/remove). Added `<Dialog.Title className="sr-only">` to `MobileMenu`. Added `aria-label` to 2 standalone search inputs. | `Header.jsx`, `MobileMenu.jsx`, `GuardianFormModal.jsx`, `GuardianDetailsModal.jsx`, `PaymentDetailsModal.jsx`, `ChequeDataModal.jsx`, `ChequesDataModal.jsx`, `FinalizeEnrollmentModal.jsx`, `ReportFilters.jsx`, `PaymentsFilters.jsx`, `MatriculaWizard.jsx` |
 
-### Session 5 — Decompose ReportingPage (2026-03-07)
+### Session 5 — Decompose ReportingPage + MatriculaWizard State + React Query (2026-03-07)
 
 | ID | Fix | Files |
 |----|-----|-------|
 | U-04 | Decomposed ~1 100-line `ReportingPage.jsx` monolith into a thin ~250-line composition shell + two custom hooks. `useReportData` (~290 lines) owns all state, Supabase fetching, `filteredData`/`guardianDebtMap` memos, and filter handlers. `useReportExport` (~240 lines) owns all export logic (Excel/PDF/Libro/FICON/Cheques) with shared `triggerDownload` helper and consolidated chart-capture loop. Original JSX preserved intact. | `src/hooks/reporting/useReportData.js` (new), `src/hooks/reporting/useReportExport.js` (new), `ReportingPage.jsx` (rewritten) |
+| U-11 | Reduced MatriculaWizard state overhead: (1) converted `paymentPlan` from `useState+useEffect` → `useMemo` (eliminates extra render cycle — plan now derived synchronously from `aggregatedEconomicTotals + paymentMethod`); (2) converted `hydratedMetaForEnrollmentId` from `useState` → `useRef` (guard flag never rendered, avoids unnecessary re-render on hydration); (3) removed dead no-op `useEffect` in MatriculaWizard.jsx. Net: −2 `useState`, −2 `useEffect`, +1 `useMemo`, +1 `useRef`. | `useEconomicData.js`, `MatriculaWizard.jsx` |
+| E-01 | Introduced `@tanstack/react-query` for data caching & deduplication. Created `QueryClientProvider` in `App.jsx` (staleTime 2 min, gcTime 10 min, retry 1). Created shared `useFeesQuery(academicYear)` hook with query key `['fees', year]` and a "wide" select that covers all dashboard consumers. Converted 6 components (`Dashboard`, `DebtorsTable`, `YearComparisonChart`, `DebtTrendChart`, `DebtDistributionChart`, `PaymentProjectionChart`) from direct `supabase.from('fee')` calls to the shared hook — reducing 7 parallel network requests (6 current-year + 1 prev-year in YearComparison) to at most 2 (current + previous year), fully cache-deduplicated. Removed manual `useState`/`useEffect` fetch cycles, replaced with `useMemo` derivations from cached data. Dashboard's MJ-04 visibility auto-refresh now uses `refetchOnWindowFocus: 'always'` instead of manual `visibilitychange` listener. | `App.jsx`, `src/hooks/queries/useFeesQuery.js` (new), `Dashboard.jsx`, `DebtorsTable.jsx`, `YearComparisonChart.jsx`, `DebtTrendChart.jsx`, `DebtDistributionChart.jsx`, `PaymentProjectionChart.jsx` |
+
+### Session 6 — React Query Expansion + Cache Invalidation (2026-03-06)
+
+| ID | Fix | Files |
+|----|-----|-------|
+| E-01 (ext.) | Created `useStudentsQuery` and `useCursosQuery` shared React Query hooks (wide select, auto-cached). Converted `StudentSelect` (payment form dropdown) to `useStudentsQuery` — eliminates manual `useState`/`useEffect` fetch. Converted `StudentFormModal` curso dropdown to `useCursosQuery` — eliminates manual `useState`/`useEffect` fetch. Students and cursos data now cache-shared across all consumers using these hooks. | `src/hooks/queries/useStudentsQuery.js` (new), `src/hooks/queries/useCursosQuery.js` (new), `StudentSelect.jsx`, `StudentFormModal.jsx` |
+| E-04 (partial) | Added fee cache invalidation (`queryClient.invalidateQueries(['fees'])`) to all 5 fee mutation sites across `RegisterPaymentModal` (2 paths: update existing + insert new) and `PaymentDetailsModal` (3: save, delete, registerPay). Dashboard/charts now auto-refresh when payments are registered, edited, or deleted on the PaymentsPage — eliminates stale data across page navigations. | `RegisterPaymentModal.jsx`, `PaymentDetailsModal.jsx` |
 
 ### Remaining Items
 
 Fixes **not yet applied** — still in the backlog:
 
 - **U-02**: Mixed .jsx/.tsx file extensions — requires multi-day migration
-- **U-11/U-12**: State machine for MatriculaWizard, test coverage
-- **E-01**: Introduce React Query for data caching
-- **E-04**: Optimistic updates for key mutations
+- **U-12**: Test coverage for critical paths
+- **E-04** (remaining): Full optimistic updates with `useMutation` + rollback (requires converting PaymentsPage to React Query first)

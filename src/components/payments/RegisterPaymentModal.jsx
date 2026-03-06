@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf } from '../../services/receiptGenerator';
 import { friendlyError } from '../../utils/friendlyError';
+import { useQueryClient } from '@tanstack/react-query';
 
 const defaultValues = {
   student_id: '',
@@ -40,6 +41,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
   const selectedNumeroCuota = watch('numero_cuota');
   const isFreePayment = watch('is_free_payment');
   const permissions = usePermissions();
+  const queryClient = useQueryClient();
 
   // State for cuota management
   const [availableCuotas, setAvailableCuotas] = useState([]);
@@ -292,6 +294,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
               cashierName,
             });
           }
+          queryClient.invalidateQueries({ queryKey: ['fees'] });
           reset();
           onSuccess();
           onClose();
@@ -334,6 +337,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
           cashierName,
         });
       }
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       reset();
       onSuccess();
       onClose();

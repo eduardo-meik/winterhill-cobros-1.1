@@ -76,12 +76,6 @@ export function MatriculaWizard() {
     viewMode,
   });
 
-  // Patch assisted mode setters after enrollment data is available
-  // (useAssistedMode's clearGuardian calls these)
-  React.useEffect(() => {
-    // This is intentionally a no-op if already wired correctly
-  }, []);
-
   const {
     guardian,
     setGuardian,

@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
 import { getStudentStatusOptions } from '../../utils/studentStatus';
+import { useCursosQuery } from '../../hooks/queries/useCursosQuery';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -42,9 +43,9 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     defaultValues: getFreshDefaultValues()
   });
 
-  const [cursos, setCursos] = useState([]);
   const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
   const statusOptions = getStudentStatusOptions();
+  const { data: cursos = [] } = useCursosQuery();
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -80,24 +81,6 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       toast.error('Error al cargar apoderados asociados.');
     }
   };
-
-  useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('cursos')
-          .select('*')
-          .order('nom_curso');
-          
-        if (error) throw error;
-        setCursos(data);
-      } catch (error) {
-        console.error('Error al cargar cursos:', error);
-      }
-    };
-
-    fetchCursos();
-  }, []);
 
   // Auto-ajuste de nivel (110 Básica, 310 Media) según curso seleccionado
   const selectedCursoId = watch('curso');

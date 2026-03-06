@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
 import { ChartSkeleton } from '../../ui/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { supabase } from '../../../services/supabase';
-import toast from 'react-hot-toast';
+import { useFeesQuery } from '../../../hooks/queries/useFeesQuery';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -25,54 +24,30 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function YearComparisonChart({ academicYear }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const previousYear = academicYear - 1;
 
-  useEffect(() => {
-    fetchData();
-  }, [academicYear]);
+  const { data: currentFees = [], isLoading: loadingCurrent } = useFeesQuery(academicYear);
+  const { data: prevFees = [], isLoading: loadingPrev } = useFeesQuery(previousYear);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+  const loading = loadingCurrent || loadingPrev;
 
-      const [currentRes, prevRes] = await Promise.all([
-        supabase
-          .from('fee')
-          .select('amount, status')
-          .eq('year_academico', academicYear),
-        supabase
-          .from('fee')
-          .select('amount, status')
-          .eq('year_academico', previousYear)
-      ]);
+  const data = useMemo(() => {
+    const summarize = (fees) => {
+      const paid = fees.filter(f => f.status === 'paid').reduce((s, f) => s + parseFloat(f.amount), 0);
+      const pending = fees.filter(f => f.status === 'pending').reduce((s, f) => s + parseFloat(f.amount), 0);
+      const overdue = fees.filter(f => f.status === 'overdue').reduce((s, f) => s + parseFloat(f.amount), 0);
+      return { paid, pending, overdue };
+    };
 
-      if (currentRes.error) throw currentRes.error;
-      if (prevRes.error) throw prevRes.error;
+    const current = summarize(currentFees);
+    const prev = summarize(prevFees);
 
-      const summarize = (fees) => {
-        const paid = fees.filter(f => f.status === 'paid').reduce((s, f) => s + parseFloat(f.amount), 0);
-        const pending = fees.filter(f => f.status === 'pending').reduce((s, f) => s + parseFloat(f.amount), 0);
-        const overdue = fees.filter(f => f.status === 'overdue').reduce((s, f) => s + parseFloat(f.amount), 0);
-        return { paid, pending, overdue };
-      };
-
-      const current = summarize(currentRes.data || []);
-      const prev = summarize(prevRes.data || []);
-
-      setData([
-        { category: 'Pagado', [academicYear]: current.paid, [previousYear]: prev.paid },
-        { category: 'Pendiente', [academicYear]: current.pending, [previousYear]: prev.pending },
-        { category: 'Vencido', [academicYear]: current.overdue, [previousYear]: prev.overdue },
-      ]);
-    } catch (err) {
-      console.error('Error fetching year comparison data:', err);
-      toast.error('Error al cargar comparativa anual');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return [
+      { category: 'Pagado', [academicYear]: current.paid, [previousYear]: prev.paid },
+      { category: 'Pendiente', [academicYear]: current.pending, [previousYear]: prev.pending },
+      { category: 'Vencido', [academicYear]: current.overdue, [previousYear]: prev.overdue },
+    ];
+  }, [currentFees, prevFees, academicYear, previousYear]);
 
   if (loading) {
     return <ChartSkeleton title={`Comparativa ${previousYear} vs ${academicYear}`} />;

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
 import { ChartSkeleton } from '../../ui/Skeleton';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { supabase } from '../../../services/supabase';
-import toast from 'react-hot-toast';
+import { useFeesQuery } from '../../../hooks/queries/useFeesQuery';
 
 const COLORS = ['#ef4444', '#eab308', '#3b82f6'];
 const RANGES = [
@@ -29,63 +28,31 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 export function DebtDistributionChart({ academicYear }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear);
 
-  useEffect(() => {
-    fetchData();
-  }, [academicYear]);
+  const data = useMemo(() => {
+    const pendingFees = fees.filter(f => f.status === 'pending' || f.status === 'overdue');
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+    const debtByStudent = pendingFees.reduce((acc, fee) => {
+      const studentId = fee.student.id;
+      acc[studentId] = (acc[studentId] || 0) + parseFloat(fee.amount);
+      return acc;
+    }, {});
 
-      let query = supabase
-        .from('fee')
-        .select(`
-          amount,
-          status,
-          student:students (
-            id
-          )
-        `)
-        .in('status', ['pending', 'overdue']);
+    const distribution = RANGES.map(range => ({
+      name: range.label,
+      value: Object.values(debtByStudent).filter(
+        debt => debt >= range.min && debt < range.max
+      ).length
+    }));
 
-      query = query.eq('year_academico', academicYear || new Date().getFullYear());
+    const total = distribution.reduce((sum, item) => sum + item.value, 0);
+    distribution.forEach(item => {
+      item.percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0.0';
+    });
 
-      const { data: fees, error } = await query;
-
-      if (error) throw error;
-
-      // Calculate total debt per student
-      const debtByStudent = fees.reduce((acc, fee) => {
-        const studentId = fee.student.id;
-        acc[studentId] = (acc[studentId] || 0) + parseFloat(fee.amount);
-        return acc;
-      }, {});
-
-      // Group students by debt range
-      const distribution = RANGES.map(range => ({
-        name: range.label,
-        value: Object.values(debtByStudent).filter(
-          debt => debt >= range.min && debt < range.max
-        ).length
-      }));
-
-      // Calculate percentages
-      const total = distribution.reduce((sum, item) => sum + item.value, 0);
-      distribution.forEach(item => {
-        item.percentage = ((item.value / total) * 100).toFixed(1);
-      });
-
-      setData(distribution);
-    } catch (err) {
-      console.error('Error fetching debt distribution data:', err);
-      toast.error('Error al cargar la distribución de deuda');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return distribution;
+  }, [fees]);
 
   if (loading) {
     return <ChartSkeleton title="Distribución de Deuda" />;

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
 import { ChartSkeleton } from '../../ui/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '../../../services/supabase';
+import { useFeesQuery } from '../../../hooks/queries/useFeesQuery';
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns';
-import toast from 'react-hot-toast';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -30,65 +29,36 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function PaymentProjectionChart({ academicYear }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear);
 
-  useEffect(() => {
-    fetchData();
-  }, [academicYear]);
+  const data = useMemo(() => {
+    const now = new Date();
+    const monthlyData = {};
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-
-      let query = supabase
-        .from('fee')
-        .select('amount, status, due_date, payment_date')
-        .order('due_date', { ascending: true });
-
-      query = query.eq('year_academico', academicYear || new Date().getFullYear());
-
-      const { data: fees, error } = await query;
-
-      if (error) throw error;
-
-      const now = new Date();
-      const monthlyData = {};
-
-      // Initialize next 6 months
-      for (let i = 0; i < 6; i++) {
-        const monthDate = addMonths(now, i);
-        const monthKey = startOfMonth(monthDate).toISOString();
-        monthlyData[monthKey] = {
-          month: format(monthDate, 'MMM yyyy'),
-          projected: 0,
-          actual: 0
-        };
-      }
-
-      // Process fees
-      fees.forEach(fee => {
-        const dueDate = parseISO(fee.due_date);
-        const monthKey = startOfMonth(dueDate).toISOString();
-        
-        if (monthlyData[monthKey]) {
-          const amount = parseFloat(fee.amount);
-          monthlyData[monthKey].projected += amount;
-          
-          if (fee.status === 'paid') {
-            monthlyData[monthKey].actual += amount;
-          }
-        }
-      });
-
-      setData(Object.values(monthlyData));
-    } catch (err) {
-      console.error('Error fetching payment projection data:', err);
-      toast.error('Error al cargar las proyecciones de pago');
-    } finally {
-      setLoading(false);
+    for (let i = 0; i < 6; i++) {
+      const monthDate = addMonths(now, i);
+      const monthKey = startOfMonth(monthDate).toISOString();
+      monthlyData[monthKey] = {
+        month: format(monthDate, 'MMM yyyy'),
+        projected: 0,
+        actual: 0
+      };
     }
-  };
+
+    fees.forEach(fee => {
+      const dueDate = parseISO(fee.due_date);
+      const monthKey = startOfMonth(dueDate).toISOString();
+      if (monthlyData[monthKey]) {
+        const amount = parseFloat(fee.amount);
+        monthlyData[monthKey].projected += amount;
+        if (fee.status === 'paid') {
+          monthlyData[monthKey].actual += amount;
+        }
+      }
+    });
+
+    return Object.values(monthlyData);
+  }, [fees]);
 
   if (loading) {
     return <ChartSkeleton title="Proyección de Pagos" />;

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react'; // Added useRef
-import { supabase } from '../../services/supabase';
-import toast from 'react-hot-toast';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 import clsx from 'clsx';
 
 // Helper function to normalize text (lowercase and remove accents)
@@ -19,8 +18,7 @@ const getRunDigitsAndK = (run = '') => {
 }
 
 export function StudentSelect({ value, onChange, error }) {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: students = [], isLoading: loading } = useStudentsQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const [isListOpen, setIsListOpen] = useState(false); // State to control list visibility
   const wrapperRef = useRef(null); // Ref for the component wrapper
@@ -40,40 +38,6 @@ export function StudentSelect({ value, onChange, error }) {
     };
   }, [wrapperRef]);
   // --- End Click Outside Handler ---
-
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const { data, error: fetchError } = await supabase
-        .from('students')
-        .select(`
-          id,
-          first_name,
-          apellido_paterno,
-          whole_name,
-          run,
-          curso,
-          cursos:curso (
-            id,
-            nom_curso
-          )
-        `)
-        .order('apellido_paterno', { ascending: true });
-
-      if (fetchError) throw fetchError;
-      setStudents(data || []);
-    } catch (fetchError) {
-      console.error('Error fetching students:', fetchError);
-      toast.error('Error al cargar los estudiantes');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Filtering logic using useMemo, depends directly on searchTerm
   const filteredStudents = useMemo(() => {

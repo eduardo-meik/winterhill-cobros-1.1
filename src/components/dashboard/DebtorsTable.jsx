@@ -1,77 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { TableSkeleton } from '../ui/Skeleton';
-import { supabase } from '../../services/supabase';
+import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
 import { format } from 'date-fns';
-import toast from 'react-hot-toast';
 
 export function DebtorsTable({ academicYear }) {
-  const [debtors, setDebtors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear);
 
-  useEffect(() => {
-    fetchTopDebtors();
-  }, [academicYear]);
+  const debtors = useMemo(() => {
+    const pendingFees = fees.filter(f => f.status === 'pending' || f.status === 'overdue');
 
-  const fetchTopDebtors = async () => {
-    try {
-      setLoading(true);
+    const debtByStudent = pendingFees.reduce((acc, fee) => {
+      const studentId = fee.student.id;
+      if (!acc[studentId]) {
+        acc[studentId] = {
+          student: fee.student,
+          totalDebt: 0,
+          overdueCount: 0,
+          lastDueDate: null
+        };
+      }
+      acc[studentId].totalDebt += parseFloat(fee.amount);
+      if (fee.status === 'overdue') acc[studentId].overdueCount++;
+      if (!acc[studentId].lastDueDate || new Date(fee.due_date) > new Date(acc[studentId].lastDueDate)) {
+        acc[studentId].lastDueDate = fee.due_date;
+      }
+      return acc;
+    }, {});
 
-      let query = supabase
-        .from('fee')
-        .select(`
-          amount,
-          status,
-          due_date,
-          student:students (
-            id,
-            first_name,
-            apellido_paterno,
-            curso:cursos!students_curso_fkey(
-              nom_curso
-            )
-          )
-        `)
-        .in('status', ['pending', 'overdue']);
-
-      query = query.eq('year_academico', academicYear || new Date().getFullYear());
-
-      const { data: fees, error } = await query;
-
-      if (error) throw error;
-
-      // Aggregate debt by student
-      const debtByStudent = fees.reduce((acc, fee) => {
-        const studentId = fee.student.id;
-        if (!acc[studentId]) {
-          acc[studentId] = {
-            student: fee.student,
-            totalDebt: 0,
-            overdueCount: 0,
-            lastDueDate: null
-          };
-        }
-        acc[studentId].totalDebt += parseFloat(fee.amount);
-        if (fee.status === 'overdue') acc[studentId].overdueCount++;
-        if (!acc[studentId].lastDueDate || new Date(fee.due_date) > new Date(acc[studentId].lastDueDate)) {
-          acc[studentId].lastDueDate = fee.due_date;
-        }
-        return acc;
-      }, {});
-
-      // Convert to array and sort by total debt
-      const sortedDebtors = Object.values(debtByStudent)
-        .sort((a, b) => b.totalDebt - a.totalDebt)
-        .slice(0, 5);
-
-      setDebtors(sortedDebtors);
-    } catch (err) {
-      console.error('Error fetching top debtors:', err);
-      toast.error('Error al cargar los deudores principales');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return Object.values(debtByStudent)
+      .sort((a, b) => b.totalDebt - a.totalDebt)
+      .slice(0, 5);
+  }, [fees]);
 
   return (
     <Card>
