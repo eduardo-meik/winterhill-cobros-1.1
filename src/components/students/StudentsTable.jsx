@@ -1,9 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
-import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
-import { useQueryClient } from '@tanstack/react-query';
+import { useStudentMutations } from '../../hooks/mutations/useStudentMutations';
 import {
   deriveStudentStatusFromRecord,
   getStudentStatusBadgeClass,
@@ -11,21 +10,14 @@ import {
 } from '../../utils/studentStatus';
 
 export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly = false }) {
-  const queryClient = useQueryClient();
+  const { deleteStudent } = useStudentMutations();
   const handleDelete = async (student) => {
     const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al estudiante ${student.first_name} ${student.last_name}?`);
     if (!confirmed) return;
 
     try {
-      const { error } = await supabase
-        .from('students')
-        .delete()
-        .eq('id', student.id);
-
-      if (error) throw error;
-
+      await deleteStudent.mutateAsync(student.id);
       toast.success('Estudiante eliminado exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['students'] });
       onSuccess?.();
     } catch (error) {
       console.error('Error:', error);

@@ -242,10 +242,15 @@ Performance, query, and rendering inefficiencies.
 |----|-----|-------|
 | E-04 (core) | **Widened `useFeesQuery` student join** to include `last_name`, `whole_name`, `run`, `curso`, and full `cursos(id, nom_curso)` — supports PaymentsPage export, detail modal, and receipt display. **Converted `PaymentsPage` from manual supabase fetch to `useFeesQuery(academicYear)`** — eliminates `fetchPayments` function (~100 lines: count query, server-side student search, status filter, 5000-record limit, transform), removes 3 `useEffect` refetch triggers (year change, status filter, debounced search), removes `useRef`/`useCallback` imports. All filtering now fully client-side from cached data via existing `filteredPayments` useMemo. Search is instant (no 400ms debounce + network roundtrip). PaymentsPage shares the same `['fees', year]` cache as all 6 dashboard widgets — one query serves the whole app. Modal `onSuccess` callbacks simplified to close-only (cache invalidation already handled inside modals via `queryClient.invalidateQueries`). | `useFeesQuery.js`, `PaymentsPage.jsx` |
 
+### Session 9 — useMutation Hooks for Fees & Students (2026-03-06)
+
+| ID | Fix | Files |
+|----|-----|-------|
+| E-04 (mutations) | **Created `useFeeMutations` hook** (`updateFee`, `deleteFee`) and **`useStudentMutations` hook** (`updateStudent`, `deleteStudent`) — shared React Query `useMutation` wrappers that centralise cache invalidation and provide automatic `isPending` state. **Converted `PaymentDetailsModal`** — `handleSave`, `handleDelete`, and `handleRegisterPay` now use `mutateAsync` instead of direct supabase calls; removed manual `loading`/`registerLoading` useState + `setLoading(true/false)` — replaced with derived `const loading = updateFee.isPending \|\| deleteFee.isPending`; eliminated `useQueryClient` import. **Converted `StudentsTable.handleDelete`** — uses `deleteStudent.mutateAsync`; eliminated direct supabase + `useQueryClient` imports. **Converted `StudentDetailsModal.handleFieldSave`** — uses `updateStudent.mutateAsync`; eliminated direct supabase update + `useQueryClient` import. `RegisterPaymentModal` and `StudentFormModal` left as-is (complex multi-table/multi-step logic where `react-hook-form` already manages `isSubmitting`). | `useFeeMutations.js` (new), `useStudentMutations.js` (new), `PaymentDetailsModal.jsx`, `StudentsTable.jsx`, `StudentDetailsModal.jsx` |
+
 ### Remaining Items
 
 Fixes **not yet applied** — still in the backlog:
 
 - **U-02**: Mixed .jsx/.tsx file extensions — requires multi-day migration
 - **U-12**: Test coverage for critical paths
-- **E-04** (remaining): Full optimistic updates with `useMutation` + rollback

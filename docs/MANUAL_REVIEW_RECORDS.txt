@@ -1,0 +1,190 @@
+======================================================================
+REGISTROS PARA REVISIÓN MANUAL - 2026-03-06
+======================================================================
+
+  ✅ 0 registros encontrados
+
+  30 registro(s):
+  id                                   | first_name      | last_name     | run          | email                   | created_at
+  -------------------------------------+-----------------+---------------+--------------+-------------------------+-----------
+  90d398c5-308b-470f-b8ee-86f63302c118 | NO DISPONIBLE   | MUÑOZ         | 33.333.333-3 | NULL                    | 2025-05-06
+  58f28e9b-d4b7-4a06-b3c3-0d1164768933 | NO DISPONIBLE   | MARTINEZ      | 66.666.666-6 | NULL                    | 2025-05-06
+  dd18851d-0603-49b2-8930-2739a9ac935a | NO DISPONIBLE   | CORNEJO       | 11.111.111-1 | NULL                    | 2025-05-06
+  d9353be9-fedb-4fb4-b3aa-106f29b6ff89 | NO DISPONIBLE   | LOPEZ         | 22.222.222-2 | NULL                    | 2025-05-06
+  bc923b2d-8411-44ee-a932-c0e2791cb209 | NO DISPONIBLE   | CÉSPEDES      | 99.321.123-9 | NO_DISPONIBLE@GMAIL.COM | 2025-05-14
+  ce62cfaf-cefe-4168-a230-8af8b7ef02b5 | APODERADO-TEST  | TEST          | 15.097.617-0 | NULL                    | 2025-09-25
+  1af61a51-9c86-4986-8b6f-b5fde62358b9 | APODERADO TEST  | APELLIDO TEST | 99.888.999-9 | e.cisternas.g@gmail.com | 2025-11-01
+  cecf88c5-acf1-4204-b3b8-2abc848a2f14 | Test PRUEBA Uno | dos           | 12.658.784-2 | test@hotmail.com        | 2025-11-12
+  c962e039-0606-4306-9ef2-9e033bfb099f | Papa            | Test          | 12.332.112-5 | test@test.cl            | 2025-11-15
+  a7c6e18f-bd8c-4f71-a68e-90358dee07c8 | papa            | nuevo test    | 65.345.345-4 | test@test.cl            | 2025-11-17
+  c6910368-e030-4f05-9ee2-cf5681d50391 | mama            | test          | 22.222.333-5 | test@test.com           | 2025-11-17
+  8f6f0840-b2e1-425d-8d94-15b61c906394 | nuevo           | test          | 11.111.456-7 | test@test.cl            | 2025-11-17
+  bbe8b32b-535e-4ba7-a0f4-155a73a16c0e | nuevo           | testing       | 44.444.333-3 | tetss@gege.cl           | 2025-11-17
+  075c7fb6-0f33-43be-81ef-a7f605f277c7 | nuevo           | testing       | 55.234.234-3 | test@test.cl            | 2025-11-17
+  b50db3e9-9e65-483c-94f7-c92f30de1d32 | juan            | test          | 22.111.333-2 | test@test.cl            | 2025-11-17
+  ebef4ac9-4dee-4bdf-971a-d201efe7d1d8 | falso           | borquez       | 7.777.188-0  | falso@gmail.com         | 2025-11-17
+  83977c87-ef00-4a72-bb9f-0c783991c4e4 | nnnnnnnnn       | nnnnnn        | 12.123.123-5 | nnnnnnnnn@hotmail.com   | 2025-11-17
+  36298d47-0781-4ade-abfc-6250e76fa2c6 | Pruebo          | Prueba        | 13.333.333-9 | nuevo@hotmail.com       | 2025-11-17
+  494dcfde-37d0-41d0-9b24-55c7da6affb7 | CARMEN          | FALSO         | 8.999.777-0  | FALSO@GMAIL.COM         | 2025-11-17
+  b777b865-4dde-43d7-8606-bcf484d7650c | Segundo         | Falso         | 11.444.222-5 | test@tees.cl            | 2025-11-17
+  91388107-37cc-4159-8199-e21cda308fe7 | paulo           | falso         | 13.333.444-5 | falso@gmail.com         | 2025-11-17
+  8d8fc182-29c0-468f-a5a4-ac5515239209 | DIEGO           | FALSO         | 7.888.999-6  | FALSO@GMAIL.COM         | 2025-11-17
+  d9b3a3c6-d747-4194-83a9-9377f2aedab2 | Pedre           | TEST          | 55.234.432-3 | test@ttes.cl            | 2025-11-19
+  d8a8f4f4-66cc-4ba9-9168-dbb984636104 | ttest Renata    | ttt           | 10.689.458-5 | tt@gmail.com            | 2025-11-20
+  97d3d04e-bd58-4b08-b626-e3f449d4ef6c | TTEST           | de Prueba     | 12.123.145-1 | ttt@hotmail.com         | 2025-11-20
+  f66a86a4-da01-48c3-9df6-bd67bfb61b39 | NUEVA           | PRUEBA        | 11.666.222-9 | TEST@MEIL.COM           | 2025-12-01
+  a855b5d1-9b7f-4b51-a03b-b93276ca91a0 | NUEVO TEST      | TEST          | 99.888.777-6 | TEST@TEST.CL            | 2025-12-01
+  422cfe6a-9d52-42d1-b70b-d8a761c26117 | TEST NUEVO      | TEST          | 12.121.212-1 | TEST@TEST.CL            | 2025-12-01
+  b82d95a1-0a47-4b8c-a996-d708a4b3bd1a | FALSO           | FALSO         | 77.777.777-7 | FALSO@FALSON.CL         | 2025-12-01
+  fb7382ef-6731-45d3-8f1a-fc0670f0a71e | TESTING         | TEST          | 43.453.454-3 | TEST@TSES.LC            | 2025-12-06
+
+  7 registro(s):
+  id                                   | student_id                           | nombre_alumno           | amount    | status | payment_date | year_academico | numero_cuota | created_at | updated_at
+  -------------------------------------+--------------------------------------+-------------------------+-----------+--------+--------------+----------------+--------------+------------+-----------
+  9dcea296-dba0-4df4-b3d3-83e91e6a8ac0 | 76efd3a1-8586-46f6-ab08-96ba11ef3334 | PASCAL ALUDY VEGA       | 99324.00  | paid   | NULL         | 2025           | 4            | 2025-05-12 | 2026-03-06
+  a72693bf-6aa0-4136-b4be-771d717ed5f1 | a86ead86-a4d2-404a-90f4-6735f2538e8d | FELIPE ALEJANDRO ZAVALA | 99324.00  | paid   | NULL         | 2025           | 10           | 2025-05-07 | 2026-03-06
+  eafd51b1-5355-4176-8960-b20d96cb0871 | 02fd7937-561a-4a53-ae18-0a3dc8e4517f | ISIDORA ALINE BERROCAL  | 24831.00  | paid   | NULL         | 2025           | 6            | 2025-05-07 | 2026-03-06
+  dbe3f083-e0f2-4855-b2a9-0b6dfeaeccff | 2ac75f25-4813-4c83-b5e2-b9a843fbd704 | EMILIA JOSEFA MUÑOZ     | 34763.00  | paid   | NULL         | 2025           | 8            | 2025-05-07 | 2026-03-06
+  d8eddc62-742f-4bb4-baf2-cafb33c43e65 | a69bf1eb-c487-4e3c-8a35-8c9e62bad84f | EMA FAIRUZ ALFARO       | 99324.00  | paid   | NULL         | 2025           | 8            | 2025-05-07 | 2026-03-06
+  0ab3b118-d3f9-4ae2-bc75-7bf83a7357fe | d86a1d56-f3f8-4b1b-a1c6-9e116cc9f2ab | LUCAS VICENTE GERHARD   | 128532.00 | paid   | NULL         | 2025           | 1            | 2025-05-07 | 2026-03-06
+  0db16624-f93c-4679-a5e8-b8db9fd4c496 | d6bcbe6f-1807-45f2-8e99-922d1c7ce8a5 | GASPAR ENRIQUE REYES    | 99324.00  | paid   | NULL         | 2025           | 9            | 2025-05-07 | 2026-03-06
+
+  10 registro(s):
+  id                                   | student_id                           | nombre_alumno                | amount    | status | due_date   | payment_date | year_academico | numero_cuota
+  -------------------------------------+--------------------------------------+------------------------------+-----------+--------+------------+--------------+----------------+-------------
+  55743c79-38f4-4e51-ac86-a740d8c27560 | 915f0761-37b4-4ed2-b182-0c02888607da | CRISTÓBAL ALONSO DÍAZ        | 128532.00 | paid   | 2025-09-10 | 1496-07-08   | 2025           | 7           
+  6d7e4d41-3f2b-4090-adfe-eaf807fa95a1 | 3317705f-7dd3-49ca-b547-21b3155fd611 | RENATA EMILIA IRARRÁZABAL    | 99324.00  | paid   | 2026-07-05 | 20025-10-29  | 2026           | 5           
+  8a5d1d18-3ff2-4f51-beed-e07676b83b10 | bc1b0a93-e1fb-4698-b172-e8545e59a43c | FRANCESCA LUANA CANALES      | 77119.00  | paid   | 2025-10-10 | 0025-12-14   | 2025           | 8           
+  1a458eaa-ecb7-46fd-a4c8-8a67d7947f31 | 36cf3295-ded7-4f74-8955-efca896e4f25 | VICENTE MAXIMILIANO CARRASCO | 51413.00  | paid   | 2025-10-10 | 0025-12-21   | 2025           | 8           
+  46c5aa17-e343-4ebb-b6ec-b21df1b6dcbf | 36cf3295-ded7-4f74-8955-efca896e4f25 | VICENTE MAXIMILIANO CARRASCO | 51413.00  | paid   | 2025-12-10 | 0025-12-21   | 2025           | 10          
+  2ee5a0d0-a5b2-477c-9166-33d6253549b7 | 88db792d-bcaa-4e17-bf5c-40eff65fc185 | JOSEFA ANTONIA CISTERNAS     | 127896.31 | paid   | 2025-06-10 | 62025-03-06  | 2025           | 4           
+  9de639c0-a8d2-4d01-9577-acf36b98e371 | 86b3fa7a-71e3-4f44-8e8e-54756d735df1 | AZKINTU ALEJANDRO BANDA      | 51413.00  | paid   | 2025-05-10 | 242025-07-24 | 2025           | 3           
+  b7630a34-97db-4182-847f-1745c6d70c42 | 915f0761-37b4-4ed2-b182-0c02888607da | CRISTÓBAL ALONSO DÍAZ        | 128532.00 | paid   | 2025-08-10 | 0205-12-03   | 2025           | 6           
+  8a26010f-4cc8-47ab-846d-e17cff7bc32b | d5a16ce0-960b-4f0d-898e-8fa8aece5402 | JULIAN ANTONIO OTTERMANN     | 51413.00  | paid   | 2025-05-10 | 2028-05-28   | 2025           | 3           
+  6fe4eea5-9e57-4679-b6ca-9fd14be3fc18 | d5bf37d4-345a-4d8d-a970-08d28bbb382b | CLEMENTE GABRIEL MOYA        | 49662.00  | paid   | 2025-04-10 | 92025-09-08  | 2025           | 2           
+
+  60 registro(s):
+  id                                   | first_name              | apellido_paterno | run           | date_of_birth | edad_calculada
+  -------------------------------------+-------------------------+------------------+---------------+---------------+---------------
+  8a9b0c1d-4e5f-4873-9a2b-3d4e5f6a7b8c | MARTIN                  | ALONSO           | 22.949.882-7  | 1900-12-29    | 125           
+  02562175-9b34-4673-9965-6a1be9892fce | AMARO MAURICIO          | LEIVA            | 25.038.237-5  | 1900-12-31    | 125           
+  e060c044-217b-4165-8cea-693c597f8d5d | TOMÁS SALVADOR          | CAÑÓN            | 22.708.810-9  | 1900-12-31    | 125           
+  365e1f4c-8d12-4950-b407-4cb41f2670a8 | ANTONIO                 | MIRANDA          | 22.429.820-K  | 1900-12-31    | 125           
+  9bfb0faa-44be-499c-8b97-06e82dd36ac3 | SERGIO ISMAEL           | VIDAL            | 22.398.005-8  | 1900-12-31    | 125           
+  81385a4b-09e0-4b93-bab5-1387c3b37011 | AGUSTINA EMILIA         | VILLALOBOS       | 24.550.930-8  | 1900-12-31    | 125           
+  9c8d7e6f-4a5b-4c3d-9e0f-2a1b3c4d5e6f | JOSEFA PATRICIA         | RIQUELME         | 25.084.028-4  | 1900-12-31    | 125           
+  b9a8c7d6-4e5f-410a-9b2c-3d4e5f6a7b8c | ISABEL ELIANA           | BANDA            | 26.457.405-6  | 1900-12-31    | 125           
+  e6d1e958-9c4e-4e5a-8782-2a3ef3cbdfd2 | MAE AMELIE              | RUBINA           | 25.713.058-4  | 1900-12-31    | 125           
+  ff66c43d-8f12-4921-aa9d-5a306a9234e6 | SOFÍA ELIZABETH         | AVENDAÑO         | 25.125.189-4  | 1900-12-31    | 125           
+  604757cf-8b2e-4987-a1f9-5b8630e35eac | SIMÓN MIJAHIL           | GONZÁLEZ         | 25.013.769-9  | 1900-12-31    | 125           
+  4a5b6c7d-4e8f-492a-9b0c-1d2e3f4a5b6c | GASPAR ALONSO           | AROS             | 23.111.722-9  | 1900-12-31    | 125           
+  11735527-e888-4f6b-a4a5-c0531744fa98 | ANOUK TABARÉ            | VACCARO          | 99.999.999-9  | 1984-01-10    | 42            
+  3a283002-2d43-4568-bd8c-d0fa2463cc81 | ALELÍ                   | ARAYA            | 25.350.542-7  | 2024-04-12    | 1             
+  41f78785-c552-479d-b51b-e49941ed6818 | GABRIEL ANTONIO         | FLORES           | 23.005.586-6  | 2024-04-27    | 1             
+  8100f568-89d1-4330-acb0-5ead711d631d | LUCIANO TRISTÁN         | RAMÍREZ          | 25.839.458-5  | 2024-07-18    | 1             
+  f6405475-4e26-46d6-b10c-6f7c0d6b1479 | ISIDORA VALENTINA       | SEGURA           | 23.341.445-K  | 2024-10-02    | 1             
+  44034a94-540c-42db-a352-5537717c0e13 | LAURA FRANCISCA         | VILLAVICENCIO    | 22.894.591-9  | 2024-12-07    | 1             
+  233d5ab3-4b74-486f-a703-9f9e623e68e8 | CHRISTOPHER             | CORTÉS           | 27.016.431-5  | 2025-09-13    | 0             
+  ec5a30f5-0787-4d8e-885a-53cc5b20fd0c | VALENTINA               | ISIDORA          | 23.621.077-4  | 2025-11-12    | 0             
+  757b4b99-525f-4297-8d00-fc5457163bcc | ARACELY                 | CHICA            | 22.210.063-1  | 2025-11-13    | 0             
+  c2181d9a-d749-4cb0-add6-080e3b53fce5 | SAMANTHA                | VICTORIA         | 26.687.709-9  | 2025-12-03    | 0             
+  08b2dd2d-0739-46fc-8a4d-19e9013ca0de | FLORENCIA               | AYELEN           | 100.589.843-5 | 2025-12-05    | 0             
+  aa8c800f-ae77-454e-9c52-2a38208b6190 | SALVADOR EMILIANO       | ESPINOZA         | 25.767.658-7  | 2025-12-05    | 0             
+  cd235a94-9927-4ce7-811f-deb993f6800b | LUKAS                   | ANDRÉS           | 23.886.325-2  | 2025-12-05    | 0             
+  e0bf1072-fbec-4732-aa38-4b892db92a9f | AGUSTINA                | ALARCÓN          | 23.420.668-0  | 2025-12-05    | 0             
+  bda681e7-4506-4a87-8fd7-27861a23b044 | XADIEL                  | VICENTE          | 23.839.626-3  | 2025-12-06    | 0             
+  69b0d056-1e58-4720-916b-2332ba9f40b4 | PASCAL                  | ISIDORA          | 23.140.755-3  | 2025-12-06    | 0             
+  2a9e7d8d-1cda-4d4c-a836-9fdd64fc11db | MÁXIMO                  | LEONIDAS         | 23.705.014-2  | 2025-12-06    | 0             
+  13a31b1d-6b23-498d-acf9-c457cca8ace0 | ANDREW JARED            | MARCHANT         | 25.323.437-7  | 2025-12-07    | 0             
+  7e81d144-6448-46bf-911e-9993e8cce163 | LUCAS LEÓN              | GÓMEZ            | 24.482.725-K  | 2025-12-07    | 0             
+  aff41538-7713-4127-8840-ff2b5b9148f2 | MAXIMILIANO ANDREÉ      | FILÚN            | 25.227.177-5  | 2025-12-07    | 0             
+  b994c186-9b36-490b-a2df-027a168c9e1d | MATILDA MAGDALENA       | GODOY            | 23.877.976-6  | 2025-12-07    | 0             
+  85751556-bf33-4844-8163-8bfd1b16bed2 | NICOLÁS GAEL            | SAN MARTÍN       | 25.349.901-K  | 2025-12-07    | 0             
+  eef2faa0-d445-4f9e-8ba0-20818dfa09be | LEÓN                    | REVECO           | 23.884.967-5  | 2025-12-07    | 0             
+  fcad561e-dc87-451f-b026-9b7ea774b602 | ANDRÉS OMAR             | BARRIA           | 23.711.586-4  | 2025-12-07    | 0             
+  09aa6efc-fe5a-4fa5-9b08-7a6db4211833 | Pendiente               | CARVAJAL         | 2.292.942-2   | 2025-12-07    | 0             
+  a4d93671-4652-4add-8bc3-20b4a28c6393 | FATIMA ALMA DE VERONICA | QUEGLAS          | 24.682.546-7  | 2025-12-07    | 0             
+  e338bbb1-b555-4075-8413-f3966494d609 | AYLEEN EMILIA           | FERRADA          | 23.001.243-1  | 2025-12-07    | 0             
+  0589660c-a01a-4707-826d-5ea8a2937f53 | BENJAMÍN ESTEBAN        | VALDÉS           | 23.022.065-4  | 2025-12-07    | 0             
+  5119bc74-34e2-47b8-a8d5-aebef948a271 | FELICIA CONSTANZA       | ELDREDGE         | 26.140.643-8  | 2025-12-07    | 0             
+  42f7c90e-4104-46ad-a53d-db691ec22e17 | CATALINA ISIDORA        | MARTÍNEZ         | 24.682.795-8  | 2025-12-07    | 0             
+  0af6d393-9a14-4979-a721-0c5e903cd654 | DAVIAN EMMANUELLE       | FEREDA           | 26.476.798-9  | 2025-12-07    | 0             
+  a7997e1c-29c7-47dc-a645-21e664bcb585 | ELENA FRANCISCA         | EGAÑA            | 24.386.397-K  | 2025-12-07    | 0             
+  f1fa9589-cce4-4ef0-adb0-1fde475373d8 | LEONOR CAROLINA         | CARVAJAL         | 22.559.294-2  | 2025-12-07    | 0             
+  dfb5dd30-be80-4b9d-b755-8348b0581a0d | LEÓN IGNACIO            | TORRES           | 23.051.527-1  | 2025-12-07    | 0             
+  5985d0b9-b7bc-48dc-a000-673cc9153aca | BRISA OLIVIA            | AVDALOV          | 25.605.450-7  | 2025-12-07    | 0             
+  f58fe5ef-4868-4203-9c67-f890f3ffd43c | ANTONIO OSVALDO         | NEIRA            | 23.622.725-1  | 2025-12-07    | 0             
+  ddddd93b-730a-4d20-b3b7-34cc53ed591f | ISIDORA IGNACIA         | SPIGETTH         | 26.057.653-4  | 2025-12-07    | 0             
+  6fb76534-e07e-4d31-8acf-4844a2fc2795 | FRANCISCO TOMÁS         | VIZCARRA         | 23.470.102-9  | 2025-12-07    | 0             
+  c9056283-35fa-4bcd-8b63-d0b1eae3d75e | JOAQUÍN ALONSO          | MIRANDA          | 25.821.721-7  | 2025-12-07    | 0             
+  05855245-38ee-44eb-90ca-7b8c81e58784 | TRINIDAD IGNACIA        | BERTEINS         | 23.578.484-K  | 2025-12-07    | 0             
+  a23b162c-a255-4e48-a5a5-8a7fcacece00 | GASPAR ANDRÉS           | ARAYA            | 23.808.283-8  | 2025-12-07    | 0             
+  b107a4f0-ea87-479d-a605-d831ff9957cd | AINHOA BELÉN            | PONCE            | 2.454.730-6   | 2025-12-07    | 0             
+  84ff81f8-d76e-490e-9b85-07f1113a121f | LUCAS                   | PABLO            | 23.051.150-0  | 2025-12-08    | 0             
+  5ec89816-98d5-4d29-baab-973cb0b5a849 | IGNACIA                 | MIA              | 23.157.963-K  | 2025-12-08    | 0             
+  b25243bb-c96f-4de3-8806-05d1384f0e02 | MATÍAS                  | ALONSO           | 22.599.890-6  | 2025-12-08    | 0             
+  b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1 | EIDAN                   | ALEXANDER        | 23.802.098-0  | 2025-12-08    | 0             
+  b6b51637-05bb-43ee-81d6-898336e5e906 | MAXIMILIANO VICENTE     | PIÑA             | 26.863.472-K  | 2026-06-29    | 0             
+  d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9 | NICANOR                 | (Sin apellido)   | 26.845.290-7  | 20019-05-18   | -17993        
+
+  4 registro(s):
+  id                                   | first_name | apellido_paterno | run          | fecha_retiro | motivo_retiro
+  -------------------------------------+------------+------------------+--------------+--------------+--------------
+  ab458138-974a-48d9-97d5-27a17940fbf3 | FABIAN     | JAVIER           | 27.560.978-1 | 2025-06-18   | NULL         
+  442dec88-9c76-4aa1-a17d-f21e600cd109 | DARIO      | AGUIRRE          | 25.183.187-4 | 2025-06-18   | NULL         
+  ecd96b60-7831-48c1-b607-249193b22c9d | JULIAN     | AGUSTÍN          | 25.362.507-4 | 2025-04-16   | NULL         
+  fb0bab10-7632-4b9f-8ea3-c2e0679db7bc | MARTÍN     | MUÑOZ            | 23.821.526-9 | 2025-05-08   | NULL         
+
+  11 registro(s):
+  id                                   | nombre             | run          | curso_en_students | curso_en_academic_record | year_academico
+  -------------------------------------+--------------------+--------------+-------------------+--------------------------+---------------
+  fd553b9a-4aeb-48c4-8725-80c8ad65eeb2 | GRACE ABIGAIL      | 22.948.868-6 | 3° MEDIO B        | 3° MEDIO A               | 2025          
+  26585428-490b-4450-8591-10c583a4f9eb | MARTINA ALARCON    | 26.141.639-5 | 3° BASICO A       | 2° BASICO A              | 2025          
+  e908fc55-e626-4978-a0f4-89ca8d90eb3f | VICENTE ALESSANDRO | 24.317.585-2 | 8° BASICO B       | 6° BASICO A              | 2025          
+  680a21a7-a3f9-4208-b425-8a388147cbd5 | MAITE ALMENDRA     | 23.012.560-0 | 3° MEDIO B        | 2° MEDIO B               | 2025          
+  b1f87e41-a351-4103-aea3-0713766c64ec | ELOISA ANAIS       | 24.830.996-2 | 5° BASICO A       | 5° BASICO A              | 2025          
+  719fba12-9be5-486c-9906-9c26418eefe7 | AMANDA ANTONIA     | 22.692.513-9 | 3° MEDIO A        | 3° MEDIO B               | 2025          
+  05ad76c9-d992-4e64-a5d6-5fd12a889bf5 | PHILIP ANTONIO     | 23.251.961-4 | 3° MEDIO B        | 2° MEDIO B               | 2025          
+  6812c399-a2ac-4f08-9a56-289848c655be | SILVIO DARIO       | 25.830.620-1 | 3° BASICO B       | 2° BASICO B              | 2025          
+  9a3e4488-fb61-4fda-a3a2-67e162cd74a7 | ANAÍS ILLARI       | 24.958.405-3 | 6° BASICO B       | 6° BASICO A              | 2025          
+  8b3e7d87-6755-447e-a893-ce158df21115 | SANTIAGO MATTIA    | 26.211.725-1 | 1° BASICO A       | 1° BASICO A              | 2025          
+  fc9488b5-7c2c-46cb-a125-26a100f86897 | FACUNDO RODRIGO    | 26.584.136-8 | 2° BASICO A       | 1° BASICO A              | 2025          
+
+  8 registro(s):
+  id                                   | first_name        | apellido_paterno | apellido_materno | run          | nom_curso   | created_at
+  -------------------------------------+-------------------+------------------+------------------+--------------+-------------+-----------
+  1592bb2f-4e35-4e4f-b89a-23e1ce4812c3 | FACUNDO           | AQUEVEQUE        | SOLANO           | 2.712.604-7  | 1° BASICO A | 2025-12-04
+  dae969d6-dae3-451a-b305-77c908383ded | FACUNDO           | AQUEVEQUE        | SOLANO           | 27.126.104-7 | 1° BASICO A | 2025-12-10
+  b7d65718-5212-4eea-87cb-c1e520548b37 | ABEL IGNACIO      | MORAGA           | MENA             | 2.250.142-9  | 3° MEDIO A  | 2025-12-17
+  55ca7ca8-81fb-4566-a603-eadf838ae08b | ABEL IGNACIO      | MORAGA           | MENA             | 22.501.642-9 | 3° MEDIO A  | 2025-05-04
+  d73f2215-6695-4d6d-822d-04c47a81190d | ISIDORA VALENTINA | SANTELICES       | MEZA             | 23.205.149-9 | 2° MEDIO A  | 2025-12-15
+  87f94f56-7e24-4038-8c05-f27b9a896054 | ISIDORA VALENTINA | SANTELICES       | MEZA             | 23.205.714-9 | 2° MEDIO A  | 2025-05-06
+  4c6d362f-df1a-4e4b-a340-6881d3913207 | FRANCO ALLEN      | THOMAS           | BASAURE          | 2.504.174-0  | 4° BASICO A | 2025-12-15
+  b3048060-34e7-4510-885c-73d1e0e239f5 | FRANCO ALLEN      | THOMAS           | BASAURE          | 25.041.974-0 | 4° BASICO A | 2025-05-06
+
+  4 registro(s):
+  id                                   | first_name      | last_name    | run          | email                                         | created_at
+  -------------------------------------+-----------------+--------------+--------------+-----------------------------------------------+-----------
+  5e1d6ac9-9dab-44f0-b37e-7f733cf5eea0 | JAVIERA IGNACIA | TERUEL SOLIS | 18.381.239-4 | javiera.teruel@hotmail.com                    | 2025-12-09
+  f1b66932-4397-41ad-a672-f2d740d14b78 | JAVIERA IGNACIA | TERUEL SOLIS | 499.999-9    | SECRETARIAADMINISTRATIVA@Winterhillenlinea.CL | 2025-12-08
+  bbe8b32b-535e-4ba7-a0f4-155a73a16c0e | nuevo           | testing      | 44.444.333-3 | tetss@gege.cl                                 | 2025-11-17
+  075c7fb6-0f33-43be-81ef-a7f605f277c7 | nuevo           | testing      | 55.234.234-3 | test@test.cl                                  | 2025-11-17
+
+  1 registro(s):
+  id                                   | first_name | last_name     | run          | email                   
+  -------------------------------------+------------+---------------+--------------+-------------------------
+  7db6bc08-3f52-46ef-a3e7-535d47709959 | ANA MARÍA  | JERIA ZÁRRAGA | 12.604.418-6 | zarragaanamaria@gmailcom
+
+  1 registro(s):
+  id                                   | guardian_id                          | nombre_guardian                  | year | status | created_at
+  -------------------------------------+--------------------------------------+----------------------------------+------+--------+-----------
+  de896d5b-9c73-42b6-ab09-1921199b7361 | 710099a5-4820-40ec-a4fd-538497d666ec | BETZABETH DAYSI VÁSQUEZ DROGUETT | 2023 | draft  | 2026-01-06
+
+  3 registro(s):
+  id                                   | first_name        | apellido_paterno | run          | nom_curso   | created_at
+  -------------------------------------+-------------------+------------------+--------------+-------------+-----------
+  4a5b6c7d-4e8f-492a-9b0c-1d2e3f4a5b6c | GASPAR ALONSO     | AROS             | 23.111.722-9 | 2° MEDIO A  | 2025-05-04
+  02562175-9b34-4673-9965-6a1be9892fce | AMARO MAURICIO    | LEIVA            | 25.038.237-5 | 3° BASICO B | 2025-05-04
+  767398c2-6ea4-423d-9508-e10c55d1b2d4 | SANTIAGO RAIMUNDO | LÓPEZ            | 23.519.459-7 | 1° MEDIO A  | 2025-05-06
+
+  ✅ 0 registros encontrados

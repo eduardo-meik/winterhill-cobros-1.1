@@ -7,7 +7,7 @@ import { StudentFormModal } from './StudentFormModal';
 import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
-import { useQueryClient } from '@tanstack/react-query';
+import { useStudentMutations } from '../../hooks/mutations/useStudentMutations';
 import { isRutFormatValid, formatRut } from '../../utils/rut';
 import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 
@@ -21,7 +21,7 @@ const formatDate = (dateString) => {
 };
 
 export function StudentDetailsModal({ student, onClose, onSuccess }) { 
-  const queryClient = useQueryClient();
+  const { updateStudent } = useStudentMutations();
   if (!student) return null;
 
   const [isEditing, setIsEditing] = useState(false);
@@ -218,17 +218,8 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
 
     setIsSavingField(true);
     try {
-      const updateData = { [fieldKey]: fieldEditValue };
-      
-      const { error } = await supabase
-        .from('students')
-        .update(updateData)
-        .eq('id', student.id);
-
-      if (error) throw error;
-
+      await updateStudent.mutateAsync({ id: student.id, data: { [fieldKey]: fieldEditValue } });
       toast.success(`${label} actualizado exitosamente.`);
-      queryClient.invalidateQueries({ queryKey: ['students'] });
       onSuccess?.(); 
       handleFieldCancel();
     } catch (error) {

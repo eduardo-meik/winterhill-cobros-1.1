@@ -1,0 +1,732 @@
+﻿[
+    {
+        "id":  "012385ae-072e-41a9-9e53-225c48d66464",
+        "year_academico":  2026,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "2Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3102B"
+    },
+    {
+        "id":  "0878f87c-3f2e-4710-9628-d294e1bf56e6",
+        "year_academico":  2025,
+        "cod_curso":  8,
+        "descripcion_curso":  "8Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "8Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1108B"
+    },
+    {
+        "id":  "0c9b690f-5d84-4d54-a7d6-299914e557f7",
+        "year_academico":  2025,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "3Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3103A"
+    },
+    {
+        "id":  "0d85085b-7955-4be1-a957-f965f84246e7",
+        "year_academico":  2025,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "4Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3104A"
+    },
+    {
+        "id":  "0edaf3bf-47b4-477a-9b3d-60370cc1d129",
+        "year_academico":  2026,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "4Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3104A"
+    },
+    {
+        "id":  "10910181-6348-4352-a6a6-d016ead9479e",
+        "year_academico":  2024,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "3Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1103A"
+    },
+    {
+        "id":  "124481b0-b29d-401b-8124-ebbfafee1bc2",
+        "year_academico":  2026,
+        "cod_curso":  5,
+        "descripcion_curso":  "5Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "5Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1105B"
+    },
+    {
+        "id":  "1b761071-34ba-4179-b2a6-3756f2d283ac",
+        "year_academico":  2024,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "1Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1101B"
+    },
+    {
+        "id":  "1ed2e768-a76e-44c1-98b6-53fa0a7bb36f",
+        "year_academico":  2026,
+        "cod_curso":  7,
+        "descripcion_curso":  "7Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "7Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1107B"
+    },
+    {
+        "id":  "249fab7d-3f8d-4fa1-8b99-5d58fafd55d2",
+        "year_academico":  2025,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "4Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3104B"
+    },
+    {
+        "id":  "26af9190-4252-4fe0-9568-943440707da0",
+        "year_academico":  2025,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "3Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1103A"
+    },
+    {
+        "id":  "28a73783-d5ba-4e22-99d6-f9a58216ef27",
+        "year_academico":  2025,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "2Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1102B"
+    },
+    {
+        "id":  "33d159d8-1a7e-4542-b987-da53be867295",
+        "year_academico":  2024,
+        "cod_curso":  8,
+        "descripcion_curso":  "8Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "8Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1108B"
+    },
+    {
+        "id":  "342e9b46-f29d-40d0-acda-990244c4f7bf",
+        "year_academico":  2024,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "4Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1104B"
+    },
+    {
+        "id":  "3af73794-edfc-45c5-9f11-b11a61e9db84",
+        "year_academico":  2026,
+        "cod_curso":  8,
+        "descripcion_curso":  "8Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "8Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1108B"
+    },
+    {
+        "id":  "3ce1a816-0eb4-435b-8752-c121c2478f13",
+        "year_academico":  2024,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "4Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1104A"
+    },
+    {
+        "id":  "43825f6d-879e-42d3-8739-47fd8bedd014",
+        "year_academico":  2024,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "2Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1102B"
+    },
+    {
+        "id":  "47d6f8b7-7628-407d-bda5-890ddd55027e",
+        "year_academico":  2024,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "3Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1103B"
+    },
+    {
+        "id":  "495d9aa2-86da-4223-a359-bcb6cd3c7e49",
+        "year_academico":  2024,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "4Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3104A"
+    },
+    {
+        "id":  "49f154db-9335-402f-adb6-0fb226b1937a",
+        "year_academico":  2025,
+        "cod_curso":  6,
+        "descripcion_curso":  "6Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "6Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1106B"
+    },
+    {
+        "id":  "4bfff412-a62f-4fa3-9d13-589343c4a6b5",
+        "year_academico":  2025,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "2Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3102A"
+    },
+    {
+        "id":  "4d97fc02-570e-4ad5-8056-d6c5256ad995",
+        "year_academico":  2024,
+        "cod_curso":  6,
+        "descripcion_curso":  "6Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "6Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1106A"
+    },
+    {
+        "id":  "4e17c5ae-416d-47b6-9604-df4b9688fe80",
+        "year_academico":  2025,
+        "cod_curso":  6,
+        "descripcion_curso":  "6Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "6Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1106A"
+    },
+    {
+        "id":  "518544ee-0bdb-4111-8891-5105ce993d34",
+        "year_academico":  2025,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "4Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1104B"
+    },
+    {
+        "id":  "51ec09dc-50cb-4389-8690-298aa322d36c",
+        "year_academico":  2025,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "3Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3103B"
+    },
+    {
+        "id":  "58e5d9ee-c4de-4083-822a-038a5580c59f",
+        "year_academico":  2025,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "4Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1104A"
+    },
+    {
+        "id":  "5b74f0fa-e16b-439f-b0fe-02ea79727e89",
+        "year_academico":  2024,
+        "cod_curso":  6,
+        "descripcion_curso":  "6Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "6Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1106B"
+    },
+    {
+        "id":  "5bedae50-c46e-4a1d-bc67-6500e264fa2b",
+        "year_academico":  2025,
+        "cod_curso":  7,
+        "descripcion_curso":  "7Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "7Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1107A"
+    },
+    {
+        "id":  "5eb8af45-e865-4b42-9474-c6bf883e8fbe",
+        "year_academico":  2026,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "3Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1103B"
+    },
+    {
+        "id":  "5f046bea-f8fc-48f6-b529-389b1a61da3e",
+        "year_academico":  2025,
+        "cod_curso":  7,
+        "descripcion_curso":  "7Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "7Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1107B"
+    },
+    {
+        "id":  "607d315d-5c3b-43bd-8975-92d6c27eef07",
+        "year_academico":  2026,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "4Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1104A"
+    },
+    {
+        "id":  "6a09cd35-c2c3-4b14-ae59-cffe19586bcd",
+        "year_academico":  2025,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "2Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3102B"
+    },
+    {
+        "id":  "7560f56a-5a14-4d07-8134-35d26ba3fdfc",
+        "year_academico":  2026,
+        "cod_curso":  null,
+        "descripcion_curso":  null,
+        "letra_curso":  null,
+        "nom_curso":  null,
+        "nivel":  null,
+        "codigo_curso_matricula":  "2024-test"
+    },
+    {
+        "id":  "77a83b56-d949-4cbb-8964-1427dbf8766d",
+        "year_academico":  2024,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "1Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3101B"
+    },
+    {
+        "id":  "7b745222-ebdf-4988-b70d-b4dfebb26ace",
+        "year_academico":  2024,
+        "cod_curso":  7,
+        "descripcion_curso":  "7Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "7Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1107A"
+    },
+    {
+        "id":  "7f10b304-a4ca-46a5-92c6-e9af80ca80cb",
+        "year_academico":  2025,
+        "cod_curso":  5,
+        "descripcion_curso":  "5Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "5Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1105A"
+    },
+    {
+        "id":  "800403ec-60bd-451a-b583-f4ec15251a52",
+        "year_academico":  2026,
+        "cod_curso":  5,
+        "descripcion_curso":  "5Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "5Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1105A"
+    },
+    {
+        "id":  "852d3ee5-35cd-44be-9a78-84d578ae133f",
+        "year_academico":  2025,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "1Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1101B"
+    },
+    {
+        "id":  "882481dc-a945-4bce-98d7-2c8434ea509a",
+        "year_academico":  2026,
+        "cod_curso":  8,
+        "descripcion_curso":  "8Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "8Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1108A"
+    },
+    {
+        "id":  "8a761064-a599-481f-b71b-e3230e13230d",
+        "year_academico":  2025,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "1Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3101A"
+    },
+    {
+        "id":  "8ed97e8f-7d39-4597-bf22-2356d96a5b54",
+        "year_academico":  2025,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "3Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1103B"
+    },
+    {
+        "id":  "91bbbe4d-3032-4f5f-b979-bee45130f0bf",
+        "year_academico":  2024,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "4Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3104B"
+    },
+    {
+        "id":  "94782d32-0dd5-43e4-8427-ea867ec3585e",
+        "year_academico":  2026,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "3Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1103A"
+    },
+    {
+        "id":  "951c0006-03e6-4bb8-9f22-c2b6f8177e5b",
+        "year_academico":  2024,
+        "cod_curso":  7,
+        "descripcion_curso":  "7Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "7Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1107B"
+    },
+    {
+        "id":  "9972dccb-64cc-407e-82fe-317792b69953",
+        "year_academico":  2026,
+        "cod_curso":  7,
+        "descripcion_curso":  "7Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "7Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1107A"
+    },
+    {
+        "id":  "9c444e98-f267-446c-b972-34e7730ccdc4",
+        "year_academico":  2025,
+        "cod_curso":  8,
+        "descripcion_curso":  "8Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "8Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1108A"
+    },
+    {
+        "id":  "a29b5768-537a-4cfd-a161-27e69a47e3a9",
+        "year_academico":  2024,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "2Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3102A"
+    },
+    {
+        "id":  "a3b3ea64-e429-45a2-8f1c-e967a2464f19",
+        "year_academico":  2024,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "3Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3103A"
+    },
+    {
+        "id":  "a440af2d-7ca6-4014-8c43-e8d77ad7182d",
+        "year_academico":  2025,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "1Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1101A"
+    },
+    {
+        "id":  "a6bea2ea-c852-4e39-a676-1161f76c45d1",
+        "year_academico":  2026,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "1Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1101A"
+    },
+    {
+        "id":  "b612036f-efa8-4572-b4a6-c15cf0bff934",
+        "year_academico":  2024,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "2Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3102B"
+    },
+    {
+        "id":  "b757abe4-9251-490e-ad5f-d3c879afd2af",
+        "year_academico":  2024,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "2Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1102A"
+    },
+    {
+        "id":  "bc041b6e-a253-4074-9bf8-acd4b235fb9b",
+        "year_academico":  2026,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "2Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1102B"
+    },
+    {
+        "id":  "c3589804-f0d5-4e9a-ba29-4698bd800d9b",
+        "year_academico":  2026,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "2Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1102A"
+    },
+    {
+        "id":  "c8dc9638-7c75-4054-a18a-9c6491d71228",
+        "year_academico":  2026,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "2Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3102A"
+    },
+    {
+        "id":  "ca018d17-1dc8-4af9-a834-08ba6b177939",
+        "year_academico":  2024,
+        "cod_curso":  8,
+        "descripcion_curso":  "8Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "8Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1108A"
+    },
+    {
+        "id":  "cbb1029f-07db-49ac-ab27-56cc3ff879c3",
+        "year_academico":  2026,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "1Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3101A"
+    },
+    {
+        "id":  "cca50b73-6f00-4d49-8593-c8f720aee981",
+        "year_academico":  2026,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "1Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3101B"
+    },
+    {
+        "id":  "cd244b03-3015-4de5-a092-3d0d74b2260c",
+        "year_academico":  2026,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "3Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3103A"
+    },
+    {
+        "id":  "d51eaf61-114c-452a-97ec-4c4d25a470e8",
+        "year_academico":  2026,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "3Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3103B"
+    },
+    {
+        "id":  "db7f65fc-8c20-420e-aa5f-609612fdf54c",
+        "year_academico":  2025,
+        "cod_curso":  5,
+        "descripcion_curso":  "5Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "5Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1105B"
+    },
+    {
+        "id":  "e167e8c1-35d0-408f-8be4-b2f9acee938d",
+        "year_academico":  2025,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "1Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2025-3101B"
+    },
+    {
+        "id":  "e3cfc604-321e-446c-ac5f-88d9a7f7e778",
+        "year_academico":  2024,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "1Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1101A"
+    },
+    {
+        "id":  "e62b2a99-15f6-4599-a75c-10eb747c7b05",
+        "year_academico":  2026,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "1Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1101B"
+    },
+    {
+        "id":  "e9040663-b175-4add-b59c-56d314e1a571",
+        "year_academico":  2026,
+        "cod_curso":  6,
+        "descripcion_curso":  "6Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "6Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1106A"
+    },
+    {
+        "id":  "e9683d89-de0e-4163-9f63-5cf7e0b175b1",
+        "year_academico":  2024,
+        "cod_curso":  5,
+        "descripcion_curso":  "5Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "5Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1105B"
+    },
+    {
+        "id":  "eabef978-d73a-4259-9ca6-2dbe78a6efc5",
+        "year_academico":  2025,
+        "cod_curso":  2,
+        "descripcion_curso":  "2Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "2Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2025-1102A"
+    },
+    {
+        "id":  "ec12516d-cc00-4af4-8152-a001c30095c5",
+        "year_academico":  2024,
+        "cod_curso":  1,
+        "descripcion_curso":  "1Â° MEDIO",
+        "letra_curso":  "A",
+        "nom_curso":  "1Â° MEDIO A",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3101A"
+    },
+    {
+        "id":  "f0ddacc2-9993-4d74-8fd6-4d9f5d18c807",
+        "year_academico":  2026,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "4Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1104B"
+    },
+    {
+        "id":  "f4ea39eb-ef3d-4cd8-a89d-7498214cb3db",
+        "year_academico":  2024,
+        "cod_curso":  5,
+        "descripcion_curso":  "5Â° BASICO",
+        "letra_curso":  "A",
+        "nom_curso":  "5Â° BASICO A",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2024-1105A"
+    },
+    {
+        "id":  "f981cff8-b83a-42e4-9f95-d03bbe6f16b8",
+        "year_academico":  2026,
+        "cod_curso":  4,
+        "descripcion_curso":  "4Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "4Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2026-3104B"
+    },
+    {
+        "id":  "f9ddbf0b-c215-4a4d-b334-b6e0f248e1f3",
+        "year_academico":  2026,
+        "cod_curso":  6,
+        "descripcion_curso":  "6Â° BASICO",
+        "letra_curso":  "B",
+        "nom_curso":  "6Â° BASICO B",
+        "nivel":  110,
+        "codigo_curso_matricula":  "2026-1106B"
+    },
+    {
+        "id":  "fd8d1cf6-4368-4d36-92d9-98597641d43c",
+        "year_academico":  2024,
+        "cod_curso":  3,
+        "descripcion_curso":  "3Â° MEDIO",
+        "letra_curso":  "B",
+        "nom_curso":  "3Â° MEDIO B",
+        "nivel":  310,
+        "codigo_curso_matricula":  "2024-3103B"
+    }
+]

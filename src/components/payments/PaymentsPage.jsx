@@ -23,7 +23,7 @@ export function PaymentsPage() {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [filters, setFilters] = useState({
     search: '',
-    status: 'all',
+    status: 'por_cobrar',
     curso: 'all',
     month: 'all',
     paymentMethod: 'all',
@@ -31,6 +31,7 @@ export function PaymentsPage() {
     startDate: '',
     endDate: ''
   });
+  const [onePerStudent, setOnePerStudent] = useState(true);
 
   // Sort by created_at desc (server query used to do this)
   const payments = useMemo(() =>
@@ -72,7 +73,11 @@ export function PaymentsPage() {
         // Early returns for better performance
         
         // Status filter
-        if (filters.status !== 'all' && payment.status !== filters.status) {
+        if (filters.status === 'por_cobrar') {
+          if (payment.status !== 'pending' && payment.status !== 'overdue') {
+            return false;
+          }
+        } else if (filters.status !== 'all' && payment.status !== filters.status) {
           return false;
         }
         
@@ -142,6 +147,42 @@ export function PaymentsPage() {
     });
   }, [payments, filters]);
 
+  // One-per-student dedup: keep only the oldest pending/overdue cuota per student
+  const displayPayments = useMemo(() => {
+    if (!onePerStudent) return filteredPayments;
+
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-indexed
+    const currentYear = now.getFullYear();
+
+    // Only include cuotas with due_date <= end of current month
+    const eligible = filteredPayments.filter(p => {
+      if (!p.due_date) return false;
+      const d = new Date(p.due_date);
+      // due_date in current month or earlier
+      return d.getFullYear() < currentYear || 
+        (d.getFullYear() === currentYear && d.getMonth() <= currentMonth);
+    });
+
+    // Group by student, keep the one with smallest numero_cuota (oldest)
+    const byStudent = new Map();
+    eligible.forEach(p => {
+      const sid = p.student_id;
+      if (!byStudent.has(sid)) {
+        byStudent.set(sid, p);
+      } else {
+        const existing = byStudent.get(sid);
+        const existingCuota = existing.numero_cuota ?? Infinity;
+        const currentCuota = p.numero_cuota ?? Infinity;
+        if (currentCuota < existingCuota) {
+          byStudent.set(sid, p);
+        }
+      }
+    });
+
+    return Array.from(byStudent.values());
+  }, [filteredPayments, onePerStudent]);
+
   // Pagination
   const {
     currentPage,
@@ -150,7 +191,7 @@ export function PaymentsPage() {
     totalPages,
     paginatedItems,
     handlePageChange
-  } = usePagination(filteredPayments);
+  } = usePagination(displayPayments);
 
   // loadMorePayments function removed since we now load all records at once
 
@@ -161,7 +202,7 @@ export function PaymentsPage() {
   const handleClearFilters = () => {
     setFilters({
       search: '',
-      status: 'all',
+      status: 'por_cobrar',
       curso: 'all',
       month: 'all',
       paymentMethod: 'all',
@@ -169,6 +210,7 @@ export function PaymentsPage() {
       startDate: '',
       endDate: ''
     });
+    setOnePerStudent(true);
   };
 
   const handleExportExcel = async (exportAll = false) => {
@@ -176,7 +218,7 @@ export function PaymentsPage() {
       setExporting(true);
       toast.loading('Exportando Excel...', { id: 'payments-export' });
       
-      const dataToExport = exportAll ? payments : filteredPayments;
+      const dataToExport = exportAll ? payments : displayPayments;
       
       const excelData = dataToExport.map(payment => ({
         'Estudiante': payment.student?.whole_name || 
@@ -266,7 +308,7 @@ export function PaymentsPage() {
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => handleExportExcel(false)}
-                disabled={exporting || filteredPayments.length === 0}
+                disabled={exporting || displayPayments.length === 0}
                 variant="outline" /* Changed from secondary to outline */
                 className="flex items-center gap-2"
               >
@@ -306,6 +348,8 @@ export function PaymentsPage() {
                 onFiltersChange={handleFiltersChange}
                 onClearFilters={handleClearFilters}
                 filterOptions={filterOptions}
+                onePerStudent={onePerStudent}
+                onOnePerStudentChange={setOnePerStudent}
               />
             </CardHeader>
             <CardContent>
@@ -324,7 +368,7 @@ export function PaymentsPage() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
-                totalRecords={filteredPayments.length}
+                totalRecords={displayPayments.length}
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
               />
@@ -350,7 +394,7 @@ export function PaymentsPage() {
               {/* Performance info for debugging */}
               {import.meta.env.DEV && (
                 <div className="text-xs text-gray-500 mt-2 text-center">
-                  Mostrando todos los {payments.length} registros (filtros aplicados: {filteredPayments.length})
+                  Mostrando todos los {payments.length} registros (filtros aplicados: {displayPayments.length})
                 </div>
               )}
             </CardContent>

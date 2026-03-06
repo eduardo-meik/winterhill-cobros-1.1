@@ -1,0 +1,675 @@
+﻿[*] Obteniendo access token de Supabase...
+[OK] Token obtenido (44 chars)
+[*] Conectando al proyecto yeotpplgerfpxviqazrn...
+
+
+======================================================================
+[RUN] Ejecutando: database_audit.sql
+======================================================================
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [INFO] 22 tabla(s):
+  tabla                        | total
+  -----------------------------+------
+  audit_logs                   | 9517 
+  auth_logs                    | 2565 
+  cheques                      | 790  
+  cursos                       | 73   
+  document_templates           | 1    
+  email_logs                   | 0    
+  enrollment_document_receipts | 0    
+  enrollment_documents         | 1391 
+  enrollments                  | 422  
+  enrollment_students          | 443  
+  fee                          | 2921 
+  guardian_claim_logs          | 1    
+  guardian_intake_surveys      | 109  
+  guardians                    | 491  
+  invoices                     | 0    
+  matriculas_detalle           | 0    
+  pre_receipts                 | 0    
+  profiles                     | 8    
+  signatures                   | 0    
+  student_academic_records     | 1001 
+  student_guardian             | 553  
+  students                     | 516  
+
+======================================================================
+[RUN] Ejecutando: database_audit_part2.sql
+======================================================================
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 26 registro(s) encontrado(s):
+  student_id                           | numero_cuota | year_academico | cnt | ids                                     
+  -------------------------------------+--------------+----------------+-----+-----------------------------------------
+  ff66c43d-8f12-4921-aa9d-5a306a9234e6 | NULL         | 2025           | 5   | 549ad21f-d5b5-4726-a530-0754d535f6e0,...
+  c83e3529-7b89-4593-9883-c8f943b427e0 | NULL         | 2025           | 4   | fd963e21-bccb-4466-bfd7-e79d5f7d0e7c,...
+  9ab65ad9-98f6-4a20-912c-83bbc820627e | NULL         | 2025           | 4   | ac493ec7-3638-4e67-adfe-5622949a5f76,...
+  05ad76c9-d992-4e64-a5d6-5fd12a889bf5 | NULL         | 2025           | 4   | 96cd5df4-eb53-45e0-a19b-dfb139375d28,...
+  425352c4-bce2-428f-b059-c2814c6ca211 | NULL         | 2025           | 4   | 98621b8e-11a7-441a-8e45-d3eba4b1e86c,...
+  6812c399-a2ac-4f08-9a56-289848c655be | NULL         | 2025           | 4   | ec406711-fe8c-4508-af79-2d06bbeadb97,...
+  08c6255b-fe62-40ab-aa34-56fc90aa795c | NULL         | 2025           | 3   | 12fb1282-9f94-4d53-a9ce-2b5e776bde9e,...
+  719fba12-9be5-486c-9906-9c26418eefe7 | NULL         | 2025           | 3   | 8abe995e-e074-4a6f-97ef-082f2074084a,...
+  a263a78f-b79c-44f5-8364-07724f9a6dcc | NULL         | 2025           | 3   | a2557ec0-a6ca-4ff7-8ef1-38bdce709f62,...
+  6735741a-aeb4-4afb-8b5b-3fe0b4381857 | NULL         | 2025           | 3   | 6b1611f2-7adb-4e60-91ac-84b3bfafc643,...
+  3a283002-2d43-4568-bd8c-d0fa2463cc81 | NULL         | 2025           | 3   | b9263cfb-bb61-4869-8efe-ae508e7d37b8,...
+  b4719a36-da47-4bbd-9950-8755d3c195b7 | NULL         | 2025           | 3   | b26e6b4e-b0bf-4fe6-8b59-3a9bd7af446f,...
+  5763ca64-76fd-47b2-a04c-8ae1b0a1b246 | NULL         | 2025           | 3   | cd98bd9c-c1bb-4618-98a9-da54876c433d,...
+  feb6954d-6ad9-4ab7-b2c9-e8fd2d5297f2 | NULL         | 2025           | 3   | a2426094-ad85-4ee3-8229-d91cc559ca3d,...
+  bbe90cf5-82f7-4f44-89dd-195d6c975410 | NULL         | 2025           | 2   | 15c6fb84-2227-461a-8cda-e30b5e5bd93a,...
+  0ef5a530-568a-4273-b6d3-3b0197dab343 | NULL         | 2025           | 2   | 4132fb0b-ebc7-4684-8d37-de3d3e69c1ea,...
+  bee53ec4-59a0-4c46-8d49-580ade54eb3a | NULL         | 2025           | 2   | 3278055a-73ec-4b31-8c22-66699d83e0bf,...
+  0a4d7d11-a499-4ebe-acca-fc0027c37a6e | NULL         | 2025           | 2   | d4ea568a-83d7-43bb-b6c7-e72d56709bf6,...
+  ecd96b60-7831-48c1-b607-249193b22c9d | NULL         | 2025           | 2   | 311b4e65-c0ca-4d3a-b743-b1f4a5d54814,...
+  6abb71d3-386c-4388-b2bb-91671eb45694 | NULL         | 2025           | 2   | ba6c8e96-8e13-43a1-80aa-c360c1c320a7,...
+  143b34e2-5d22-4e48-9754-3208f33ee30e | NULL         | 2025           | 2   | 4b219876-4cf8-4a2a-a694-85013423485f,...
+  3d811053-ed05-41cd-8782-f6a5486e7395 | NULL         | 2025           | 2   | 411a5038-aa3d-49d4-80e2-177bc49245e4,...
+  51892dfc-81b3-46c2-beb8-001dff623129 | NULL         | 2025           | 2   | 84033448-1cde-4561-9e6c-19f68a9a1d4b,...
+  9993d3a3-d88a-43c9-836b-bd117db74552 | NULL         | 2025           | 2   | b61f1d23-6f8e-4bcd-8c80-034a00a71c9f,...
+  e39adfa3-0574-46d2-aaf8-3dbd992d4eab | NULL         | 2025           | 2   | d7f523ea-5405-4977-8bf6-03429a558d19,...
+  ... y 1 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 100 registro(s) encontrado(s):
+  numero_serie | cnt | ids                                     
+  -------------+-----+-----------------------------------------
+  2746834      | 2   | 089325e7-64b6-4892-b9f2-c2981563ef19,...
+  5914649      | 32  | 1fe2c081-7c6d-4e0b-b92b-726ab0e82380,...
+  2278607      | 16  | 0e70e8da-1269-43d7-852c-67cd0b08a649,...
+  0000041      | 2   | d94dd658-930d-4a00-a44a-a2053f9a5b67,...
+  0000036      | 2   | f349340a-bc7a-4838-a3f5-dfe2db6290be,...
+  5914651      | 32  | 1bae23a9-1722-4c64-864a-72e18a7686d6,...
+  0000212      | 3   | 90a267ce-5f78-4af1-abf0-c3364f9c5aff,...
+  4882635      | 4   | e03a8503-8539-4c54-a716-259d8ab563ef,...
+  5914656      | 32  | 81ec9620-54bf-4900-8bc3-580481495597,...
+  hco0000031   | 12  | d6331928-1f05-41ed-bc82-d1f7251be3d4,...
+  0000215      | 3   | 2965f3af-3452-4c25-bb4b-89424125bb0f,...
+  5914655      | 32  | 14dbd2de-162e-4b1d-a25f-8d59ed40bad0,...
+  1919388      | 2   | 39ee77e7-80c5-4889-a38d-5705c916cbee,...
+  5914654      | 32  | d8f03e65-eb59-47e5-a1dc-509f5794a94c,...
+  5914648      | 32  | daf9d51d-3779-4bcb-b8a2-f1e0a0d9a358,...
+  2746830      | 2   | 81977752-644d-498e-9e50-71783808b12b,...
+  4884635      | 2   | a3993f0f-800b-4c1c-a883-c94108ca607e,...
+  4882636      | 4   | 819c1ddf-3457-46d8-a855-61cc04878630,...
+  1919383      | 2   | eb111fd2-f262-49f0-bdd8-34e5c99b92d2,...
+  0000045      | 2   | ebb09de0-5169-447f-86bf-9e09bfed9967,...
+  4882630      | 4   | a6edc9a2-b770-4adf-870c-b9f18a942c0d,...
+  2746829      | 2   | 4f0038c8-cbe9-431d-808a-ad360f012928,...
+  hco0000028   | 12  | dd9aa84c-bfa6-489f-901c-2f64089669f5,...
+  1919381      | 2   | bc5a1b92-6353-42f3-bfe5-660cbcb56d14,...
+  09           | 2   | 0c27c175-c1f5-4686-b80a-72b0f73b8201,...
+  ... y 75 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 368 registro(s) encontrado(s):
+  enrollment_id                        | type        | cnt | ids                                     
+  -------------------------------------+-------------+-----+-----------------------------------------
+  c35c3982-2596-45f5-ae24-686b49a54215 | PRESTACION  | 3   | 65249228-4106-4513-9e9f-1fd8b10f232a,...
+  e47e19b6-75ea-4ff6-9d8d-40a97e56b53a | PRESTACION  | 3   | 7b9050d0-97cc-47e2-b9af-3dc275356890,...
+  5e356055-b05c-4672-b660-a215c2ac4c87 | PRESTACION  | 3   | e4e6adda-de04-455e-a06e-3aa06997990d,...
+  ae5db068-3438-463a-9b3a-f8f91191b5c1 | PRESTACION  | 2   | eda56427-da36-47dc-8925-c7cc956c733c,...
+  2367dc5d-7acc-4e84-913c-9ed0e58f6892 | PRESTACION  | 4   | 92a06ed7-3fb4-44fa-83fa-bcf9384b431a,...
+  b4cbb9cf-f7c8-44b6-ba35-c7c0842049d3 | PRESTACION  | 2   | f8d7d770-bf0d-4286-8825-c8036fb34bae,...
+  c1538293-107a-44c3-9637-59c645eb1237 | PRESTACION  | 4   | 9e7f689e-a6aa-4bbd-99d1-3540f6a78145,...
+  daf72670-be8a-41e6-9833-ec8845510073 | PRESTACION  | 2   | 0c161f87-0b1e-46cd-bb80-33dda1a56f90,...
+  d407e4ba-fb8e-4c6e-b547-46448ee4a06d | PRESTACION  | 4   | 4e9d82bd-4380-4aa2-83c1-8c26373214f9,...
+  3a8a2063-c803-4b9c-83ae-e5689dfb466a | PRESTACION  | 3   | b7471772-62e2-4762-b76e-63da21448724,...
+  44e90b36-0dc8-4426-bf01-1ea374b1fb12 | PRESTACION  | 2   | 4619f342-a24a-4e45-9f25-962e0303b2d0,...
+  50bebbba-c6bd-448f-b073-1cd3cee89d78 | PRESTACION  | 2   | bd351d1f-b16b-4075-ae69-b64a45e7e42a,...
+  d1bbc2be-96d5-4585-bd0d-b7140282e120 | PRESTACION  | 2   | 0a344081-5568-4b2e-a3c1-b540afc19fca,...
+  f8fc5beb-0848-4473-9131-fd8c0fb189fe | PRESTACION  | 2   | 26255af2-4156-4c39-a402-a3c311df2667,...
+  81a62c92-0b2b-47c3-a1c1-125a71194e80 | PRESTACION  | 2   | f801487a-5223-40ba-bffa-157b86a5ec5b,...
+  25966a52-fcb2-4117-aba2-a0a2514cc98a | PRESTACION  | 3   | 821f705e-47b4-4e3d-b024-ac37330c719d,...
+  570445da-0dbd-4aa8-bf7c-2a63b89e55b8 | PRESTACION  | 3   | e266c731-9bb4-46a2-86d9-10191f29e9a5,...
+  b1d0af20-49f4-46ec-93c3-f1b943b39e40 | PRESTACION  | 3   | b530d7d9-f634-4632-9ac0-7e7265b8aaf9,...
+  e7829e3e-6340-462f-9965-426314b2086e | PRESTACION  | 3   | f2f7e5f2-d67f-40c5-9e5a-a1031ff0dc7f,...
+  9e6e28b7-6247-4093-804a-8fbbc172b8bc | PRESTACION  | 3   | 0bd6f527-2821-4c47-93ba-3d23fbec2197,...
+  b97bdcd8-576d-4f9f-b2df-853bf6e0cf22 | PRESTACION  | 2   | 23ec5074-2144-495c-af87-cb25304ff1ef,...
+  275d41c7-1374-4d16-a443-4fb524bb4038 | PRIORITARIO | 2   | 591ed1c4-dad1-4ca1-a37d-83949d6e76dd,...
+  05ea6c8e-8a3b-48df-ad7b-d7ce88b05865 | PRESTACION  | 3   | e146de78-51fb-4e41-936b-f4e4a584d77a,...
+  95ecb732-be07-40e7-8610-508226a47705 | PRESTACION  | 5   | a749213a-0d22-4758-87d0-d243c5dcfd63,...
+  be4d9f50-3681-4b3b-8bf7-4875b78eb7c0 | PRESTACION  | 3   | f203b4cb-5977-4825-a2d4-71ba83bbc6f4,...
+  ... y 343 mas
+
+======================================================================
+[RUN] Ejecutando: database_audit_part3.sql
+======================================================================
+
+======================================================================
+[RUN] Ejecutando: database_audit_part4.sql
+======================================================================
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 7 registro(s) encontrado(s):
+  id                                   | student_id                           | amount    | status | payment_date | year_academico | numero_cuota
+  -------------------------------------+--------------------------------------+-----------+--------+--------------+----------------+-------------
+  9dcea296-dba0-4df4-b3d3-83e91e6a8ac0 | 76efd3a1-8586-46f6-ab08-96ba11ef3334 | 99324.00  | paid   | NULL         | 2025           | 4           
+  a72693bf-6aa0-4136-b4be-771d717ed5f1 | a86ead86-a4d2-404a-90f4-6735f2538e8d | 99324.00  | paid   | NULL         | 2025           | 10          
+  eafd51b1-5355-4176-8960-b20d96cb0871 | 02fd7937-561a-4a53-ae18-0a3dc8e4517f | 24831.00  | paid   | NULL         | 2025           | 6           
+  dbe3f083-e0f2-4855-b2a9-0b6dfeaeccff | 2ac75f25-4813-4c83-b5e2-b9a843fbd704 | 34763.00  | paid   | NULL         | 2025           | 8           
+  d8eddc62-742f-4bb4-baf2-cafb33c43e65 | a69bf1eb-c487-4e3c-8a35-8c9e62bad84f | 99324.00  | paid   | NULL         | 2025           | 8           
+  0ab3b118-d3f9-4ae2-bc75-7bf83a7357fe | d86a1d56-f3f8-4b1b-a1c6-9e116cc9f2ab | 128532.00 | paid   | NULL         | 2025           | 1           
+  0db16624-f93c-4679-a5e8-b8db9fd4c496 | d6bcbe6f-1807-45f2-8e99-922d1c7ce8a5 | 99324.00  | paid   | NULL         | 2025           | 9           
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 100 registro(s) encontrado(s):
+  id                                   | student_id                           | amount | status  | year_academico | numero_cuota
+  -------------------------------------+--------------------------------------+--------+---------+----------------+-------------
+  d1c998af-4bd2-4b92-bfe7-5a05e9fe8820 | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 2           
+  aa0d91fc-56a3-4889-a047-52f1005b5289 | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 3           
+  626c44c4-f7aa-47c8-82a2-0845a7d50698 | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 4           
+  58721b5c-6710-43e5-820e-e1f2537d5f0a | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 5           
+  70dc1b9c-c50f-4498-90c7-bfe2cc31f771 | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 6           
+  81701379-aa77-4e1d-b789-15563f493392 | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 7           
+  7feae012-9463-4fdd-b9d9-0fbbd24f9eee | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 8           
+  8da28405-7848-450f-a39c-842514b1a77d | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 9           
+  6c3985bf-0d83-4a33-946d-236d3b5ace9a | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 10          
+  bfeb256a-0cf7-43b6-b488-4bea28265a7e | 40812bca-c859-4aab-b744-e017cd94d974 | 0.00   | pending | 2026           | 8           
+  ef101a26-9928-42b1-b618-1b044fccf7bc | 40812bca-c859-4aab-b744-e017cd94d974 | 0.00   | pending | 2026           | 9           
+  d4796cb3-e44a-4182-995a-e3d04ef238d3 | 40812bca-c859-4aab-b744-e017cd94d974 | 0.00   | pending | 2026           | 10          
+  9512d8c6-acd9-4594-b57f-0cb3757f4607 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 1           
+  0b8f6082-4171-420a-9bc4-ac57bd203e84 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 2           
+  8ae9a682-6b52-4ad7-9e7e-17442e11b6ab | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 3           
+  d05a86b4-587c-4e87-835e-2443702bccb0 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 4           
+  1172ad79-48a0-4d6c-8877-c3f9759f5093 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 5           
+  7124e7e7-4107-4c91-83c2-1ef856a7cb56 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 6           
+  ac89c87e-f76d-43cf-9ff3-d413382e53d1 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 7           
+  b46cd542-7a4b-4015-9e46-9662a3223319 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 8           
+  aaa255bb-bb46-424b-86b3-79f9a6a3b762 | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 9           
+  3dc65134-9757-4b47-af6c-ab3e6675fe0e | bf024ee2-4e96-4c70-97c3-584d5669ddb1 | 0.00   | pending | 2026           | 10          
+  7c90c274-1478-405c-a646-11bbc9f5e01d | 83ea7cec-45c4-4b60-b89e-f141671108ed | 0.00   | pending | 2026           | 1           
+  139e6499-7548-4e3f-b0ba-dab76394f7e7 | 8100f568-89d1-4330-acb0-5ead711d631d | 0.00   | pending | 2026           | 1           
+  b79bb9c8-5f9e-4664-8ff2-22cd095e7cce | 8100f568-89d1-4330-acb0-5ead711d631d | 0.00   | pending | 2026           | 2           
+  ... y 75 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 5 registro(s) encontrado(s):
+  id                                   | student_id                           | amount    | due_date   | payment_date | dias_diferencia
+  -------------------------------------+--------------------------------------+-----------+------------+--------------+----------------
+  55743c79-38f4-4e51-ac86-a740d8c27560 | 915f0761-37b4-4ed2-b182-0c02888607da | 128532.00 | 2025-09-10 | 1496-07-08   | -193277        
+  8a5d1d18-3ff2-4f51-beed-e07676b83b10 | bc1b0a93-e1fb-4698-b172-e8545e59a43c | 77119.00  | 2025-10-10 | 0025-12-14   | -730420        
+  1a458eaa-ecb7-46fd-a4c8-8a67d7947f31 | 36cf3295-ded7-4f74-8955-efca896e4f25 | 51413.00  | 2025-10-10 | 0025-12-21   | -730413        
+  46c5aa17-e343-4ebb-b6ec-b21df1b6dcbf | 36cf3295-ded7-4f74-8955-efca896e4f25 | 51413.00  | 2025-12-10 | 0025-12-21   | -730474        
+  b7630a34-97db-4182-847f-1745c6d70c42 | 915f0761-37b4-4ed2-b182-0c02888607da | 128532.00 | 2025-08-10 | 0205-12-03   | -664627        
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 3 registro(s) encontrado(s):
+  id                                   | first_name        | apellido_paterno | run         
+  -------------------------------------+-------------------+------------------+-------------
+  4a5b6c7d-4e8f-492a-9b0c-1d2e3f4a5b6c | GASPAR ALONSO     | AROS             | 23.111.722-9
+  02562175-9b34-4673-9965-6a1be9892fce | AMARO MAURICIO    | LEIVA            | 25.038.237-5
+  767398c2-6ea4-423d-9508-e10c55d1b2d4 | SANTIAGO RAIMUNDO | L├ôPEZ            | 23.519.459-7
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 41 registro(s) encontrado(s):
+  id                                   | first_name      | last_name        | run         
+  -------------------------------------+-----------------+------------------+-------------
+  c6910368-e030-4f05-9ee2-cf5681d50391 | mama            | test             | 22.222.333-5
+  83977c87-ef00-4a72-bb9f-0c783991c4e4 | nnnnnnnnn       | nnnnnn           | 12.123.123-5
+  075c7fb6-0f33-43be-81ef-a7f605f277c7 | nuevo           | testing          | 55.234.234-3
+  d30c8d62-91c9-46e8-ab0e-270e3347ef0d | KATHERIN        | ARAVENA ORTEGA   | 18.034.996-0
+  25f9cd77-e23e-4855-a1da-b29e154a0018 | NICOL           | GODOY AGUILERA   | 17.479.974-1
+  14226aa3-ee36-45a9-9211-e64ed855ed4f | ELIZABETH       | ARAVENA BEN├ìTEZ  | 16.234.065-4
+  a855b5d1-9b7f-4b51-a03b-b93276ca91a0 | NUEVO TEST      | TEST             | 99.888.777-6
+  2aee1cf8-7df0-43d7-8666-a006e2dc01eb | GEMA            | GODOY            | 7.077.178-0 
+  cecf88c5-acf1-4204-b3b8-2abc848a2f14 | Test PRUEBA Uno | dos              | 12.658.784-2
+  ebef4ac9-4dee-4bdf-971a-d201efe7d1d8 | falso           | borquez          | 7.777.188-0 
+  ae6b0d59-2486-4a25-baff-6279d6be7319 | CAROLA          | GONGORA ALVAREZ  | 14.617.455-8
+  494dcfde-37d0-41d0-9b24-55c7da6affb7 | CARMEN          | FALSO            | 8.999.777-0 
+  90d398c5-308b-470f-b8ee-86f63302c118 | NO DISPONIBLE   | MU├æOZ            | 33.333.333-3
+  8f6f0840-b2e1-425d-8d94-15b61c906394 | nuevo           | test             | 11.111.456-7
+  1af61a51-9c86-4986-8b6f-b5fde62358b9 | APODERADO TEST  | APELLIDO TEST    | 99.888.999-9
+  fcd0d20c-62d6-404a-9465-a5e175e310e9 | JAVIERA         | SU├üREZ           | 20.010.967-8
+  7fc3ed9b-cd5a-48f3-8268-9e3f3fdc09f9 | JAVIERA PAZ     | ROJAS RODR├ìGUEZ  | 18.802.594-3
+  f66a86a4-da01-48c3-9df6-bd67bfb61b39 | NUEVA           | PRUEBA           | 11.666.222-9
+  bbe8b32b-535e-4ba7-a0f4-155a73a16c0e | nuevo           | testing          | 44.444.333-3
+  b777b865-4dde-43d7-8606-bcf484d7650c | Segundo         | Falso            | 11.444.222-5
+  cab259d5-f02c-44dc-85e0-713730e497e7 | M├ôNICA          | GONZ├üLES R├ìOS    | 25.597.063-1
+  b82d95a1-0a47-4b8c-a996-d708a4b3bd1a | FALSO           | FALSO            | 77.777.777-7
+  a7c6e18f-bd8c-4f71-a68e-90358dee07c8 | papa            | nuevo test       | 65.345.345-4
+  3f20e85d-5cb6-4ac7-9407-4f790e3d15b4 | LILIAN          | NAVARRO ORTEGA   | 12.229.032-8
+  d9353be9-fedb-4fb4-b3aa-106f29b6ff89 | NO DISPONIBLE   | LOPEZ            | 22.222.222-2
+  ... y 16 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 4 registro(s) encontrado(s):
+  id                                   | first_name | apellido_paterno | run          | fecha_retiro | motivo_retiro
+  -------------------------------------+------------+------------------+--------------+--------------+--------------
+  ab458138-974a-48d9-97d5-27a17940fbf3 | FABIAN     | JAVIER           | 27.560.978-1 | 2025-06-18   | NULL         
+  442dec88-9c76-4aa1-a17d-f21e600cd109 | DARIO      | AGUIRRE          | 25.183.187-4 | 2025-06-18   | NULL         
+  ecd96b60-7831-48c1-b607-249193b22c9d | JULIAN     | AGUST├ìN          | 25362507-4   | 2025-04-16   | NULL         
+  fb0bab10-7632-4b9f-8ea3-c2e0679db7bc | MART├ìN     | MU├æOZ            | 23821526-9   | 2025-05-08   | NULL         
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 60 registro(s) encontrado(s):
+  id                                   | first_name        | apellido_paterno | run           | date_of_birth | edad  
+  -------------------------------------+-------------------+------------------+---------------+---------------+-------
+  9bfb0faa-44be-499c-8b97-06e82dd36ac3 | SERGIO ISMAEL     | VIDAL            | 22.398.005-8  | 1900-12-31    | 125   
+  aa8c800f-ae77-454e-9c52-2a38208b6190 | SALVADOR EMILIANO | ESPINOZA         | 25.767.658-7  | 2025-12-05    | 0     
+  dfb5dd30-be80-4b9d-b755-8348b0581a0d | LE├ôN IGNACIO      | TORRES           | 23.051.527-1  | 2025-12-07    | 0     
+  d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9 | NICANOR           | (Sin apellido)   | 26.845.290-7  | 20019-05-18   | -17993
+  a7997e1c-29c7-47dc-a645-21e664bcb585 | ELENA FRANCISCA   | EGA├æA            | 24.386.397-K  | 2025-12-07    | 0     
+  0af6d393-9a14-4979-a721-0c5e903cd654 | DAVIAN EMMANUELLE | FEREDA           | 26.476.798-9  | 2025-12-07    | 0     
+  233d5ab3-4b74-486f-a703-9f9e623e68e8 | CHRISTOPHER       | CORT├ëS           | 27.016.431-5  | 2025-09-13    | 0     
+  ec5a30f5-0787-4d8e-885a-53cc5b20fd0c | VALENTINA         | ISIDORA          | 23621077-4    | 2025-11-12    | 0     
+  42f7c90e-4104-46ad-a53d-db691ec22e17 | CATALINA ISIDORA  | MART├ìNEZ         | 24.682.795-8  | 2025-12-07    | 0     
+  b107a4f0-ea87-479d-a605-d831ff9957cd | AINHOA BEL├ëN      | PONCE            | 2.454.730-6   | 2025-12-07    | 0     
+  8100f568-89d1-4330-acb0-5ead711d631d | LUCIANO TRIST├üN   | RAM├ìREZ          | 25.839.458-5  | 2024-07-18    | 1     
+  05855245-38ee-44eb-90ca-7b8c81e58784 | TRINIDAD IGNACIA  | BERTEINS         | 23.578.484-K  | 2025-12-07    | 0     
+  c9056283-35fa-4bcd-8b63-d0b1eae3d75e | JOAQU├ìN ALONSO    | MIRANDA          | 25.821.721-7  | 2025-12-07    | 0     
+  6fb76534-e07e-4d31-8acf-4844a2fc2795 | FRANCISCO TOM├üS   | VIZCARRA         | 23.470.102-9  | 2025-12-07    | 0     
+  757b4b99-525f-4297-8d00-fc5457163bcc | ARACELY           | CHICA            | 22210063-1    | 2025-11-13    | 0     
+  ddddd93b-730a-4d20-b3b7-34cc53ed591f | ISIDORA IGNACIA   | SPIGETTH         | 26.057.653-4  | 2025-12-07    | 0     
+  f58fe5ef-4868-4203-9c67-f890f3ffd43c | ANTONIO OSVALDO   | NEIRA            | 23.622.725-1  | 2025-12-07    | 0     
+  5ec89816-98d5-4d29-baab-973cb0b5a849 | IGNACIA           | MIA              | 23.157.963-K  | 2025-12-08    | 0     
+  e0bf1072-fbec-4732-aa38-4b892db92a9f | AGUSTINA          | ALARC├ôN          | 23.420.668-0  | 2025-12-05    | 0     
+  cd235a94-9927-4ce7-811f-deb993f6800b | LUKAS             | ANDR├ëS           | 23.886.325-2  | 2025-12-05    | 0     
+  5119bc74-34e2-47b8-a8d5-aebef948a271 | FELICIA CONSTANZA | ELDREDGE         | 26.140.643-8  | 2025-12-07    | 0     
+  2a9e7d8d-1cda-4d4c-a836-9fdd64fc11db | M├üXIMO            | LEONIDAS         | 23.705.014-2  | 2025-12-06    | 0     
+  b25243bb-c96f-4de3-8806-05d1384f0e02 | MAT├ìAS            | ALONSO           | 22.599.890-6  | 2025-12-08    | 0     
+  fcad561e-dc87-451f-b026-9b7ea774b602 | ANDR├ëS OMAR       | BARRIA           | 23.711.586-4  | 2025-12-07    | 0     
+  08b2dd2d-0739-46fc-8a4d-19e9013ca0de | FLORENCIA         | AYELEN           | 100.589.843-5 | 2025-12-05    | 0     
+  ... y 35 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 8 registro(s) encontrado(s):
+  id                                   | email                                    | role     | first_name | last_name    
+  -------------------------------------+------------------------------------------+----------+------------+--------------
+  bd72b98b-e2e7-43a1-a225-21c0fbbbf918 | frigio@gmail.com                         | ADMIN    | EDUARDO    | CISTERNAS    
+  a984cf7a-1c5c-4c4b-b8e0-66a5b6819d7a | ester.estay.winterhill@gmail.com         | GUARDIAN | ESTER      | ESTAY        
+  f4bb5599-a34c-4500-a338-365b6907bd88 | e.cisternas.g@gmail.com                  | ASIST    | ED         | CISTERNAS    
+  78ccbff0-3d92-48a5-ac05-1d0de4c6378c | perezarevalo@gmail.com                   | GUARDIAN | CLAUDIA    | PEREZ AREVALO
+  23daf698-8cfb-4697-ad90-1966c4e4de0a | gestionadministrativa@winterhillenlin... | ADMIN    | ESTER      | ESTAY        
+  93233551-5fe7-43b0-8b23-58dbed485d73 | secretariaacademica@winterhillenlinea.cl | ASIST    | ARACELY    | UBEDA        
+  03d90378-00ac-4c6f-9044-93568479b26b | gemagodoyma@winterhillenlinea.cl         | ASIST    | GEMA       | GODOY        
+  cca2d2ee-dffd-4ba2-9e87-0825730e00ce | secretariaadministrativa@winterhillen... | ADMIN    | Paula      | Tolosa       
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 1 registro(s) encontrado(s):
+  id                                   | guardian_id                          | year | status
+  -------------------------------------+--------------------------------------+------+-------
+  de896d5b-9c73-42b6-ab09-1921199b7361 | 710099a5-4820-40ec-a4fd-538497d666ec | 2023 | draft 
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 1 registro(s) encontrado(s):
+  id                                   | first_name | last_name      | email                   
+  -------------------------------------+------------+----------------+-------------------------
+  7db6bc08-3f52-46ef-a3e7-535d47709959 | ANA MAR├ìA  | JERIA Z├üRRAGA  | zarragaanamaria@gmailcom
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 41 registro(s) encontrado(s):
+  id                                   | first_name  | apellido_paterno | run          | run_numero
+  -------------------------------------+-------------+------------------+--------------+-----------
+  ec5a30f5-0787-4d8e-885a-53cc5b20fd0c | VALENTINA   | ISIDORA          | 23621077-4   | NULL      
+  233d5ab3-4b74-486f-a703-9f9e623e68e8 | CHRISTOPHER | CORT├ëS           | 27.016.431-5 | NULL      
+  613cc43a-5a69-4136-a98f-6813c7186388 | FIORELLA    | PAZ              | 23.669.732-0 | NULL      
+  ecd96b60-7831-48c1-b607-249193b22c9d | JULIAN      | AGUST├ìN          | 25362507-4   | NULL      
+  fb0bab10-7632-4b9f-8ea3-c2e0679db7bc | MART├ìN      | MU├æOZ            | 23821526-9   | NULL      
+  2f1db604-3118-49ed-ab11-b153a2e3d73a | PASCUALA    | ANTONIA          | 27.024.214-6 | NULL      
+  31c0848b-5e70-4280-8a03-6bf32b8f4a4b | AMELIA      | (Sin apellido)   | 27.231.851-4 | NULL      
+  7bdeb573-3d3d-4111-a03e-21630f6f8d03 | DOMINIQUE   | PAOLA            | 27.047.648-1 | NULL      
+  757b4b99-525f-4297-8d00-fc5457163bcc | ARACELY     | CHICA            | 22210063-1   | NULL      
+  5ec89816-98d5-4d29-baab-973cb0b5a849 | IGNACIA     | MIA              | 23.157.963-K | NULL      
+  e0bf1072-fbec-4732-aa38-4b892db92a9f | AGUSTINA    | ALARC├ôN          | 23.420.668-0 | NULL      
+  cd235a94-9927-4ce7-811f-deb993f6800b | LUKAS       | ANDR├ëS           | 23.886.325-2 | NULL      
+  2a9e7d8d-1cda-4d4c-a836-9fdd64fc11db | M├üXIMO      | LEONIDAS         | 23.705.014-2 | NULL      
+  46045c21-4a42-4ab0-9089-f94bc14b2729 | SALVADOR    | GASPAR           | 26.838.566-5 | NULL      
+  b25243bb-c96f-4de3-8806-05d1384f0e02 | MAT├ìAS      | ALONSO           | 22.599.890-6 | NULL      
+  b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1 | EIDAN       | ALEXANDER        | 23.802.098-0 | NULL      
+  ddec83ec-d790-4aa8-a1a4-9688904049ef | LEON        | IGNACIO          | 25441930-3   | NULL      
+  65e180f8-0182-4ebd-9469-c017e7c1f2f4 | VICENTE     | ANTONIO          | 25720765-K   | NULL      
+  84ff81f8-d76e-490e-9b85-07f1113a121f | LUCAS       | PABLO            | 23.051.150-0 | NULL      
+  f0493125-30c0-4b2d-bf0c-a9bbcd715434 | DANTE       | NICOL├üS          | 23694069-1   | NULL      
+  c74a4818-aba2-4d58-9bf3-24306841c153 | LU          | BENITEZ          | 27.120.870-7 | NULL      
+  59f4eb2d-f113-480d-bfc8-fa52ffb43d47 | LEONOR      | AMANDA           | 23858726-3   | NULL      
+  96d4511a-e956-425f-a8b6-ab356720fa6b | DIEGO       | VALET├ìN          | 26.920.280-1 | NULL      
+  09a8896b-0dd1-475f-94ed-747144cd2672 | AMANDA      | CAROLINA         | 24051700-0   | NULL      
+  3feb629d-4480-4bd2-a611-10637eb2c15d | BRIANA      | ANTONELLA        | 27.167.338-8 | NULL      
+  ... y 16 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 4 registro(s) encontrado(s):
+  first_name        | apellido_paterno | apellido_materno | cnt | ids                                      | runs                     
+  ------------------+------------------+------------------+-----+------------------------------------------+--------------------------
+  ABEL IGNACIO      | MORAGA           | MENA             | 2   | 55ca7ca8-81fb-4566-a603-eadf838ae08b,... | 22.501.642-9,2.250.142-9 
+  FACUNDO           | AQUEVEQUE        | SOLANO           | 2   | 1592bb2f-4e35-4e4f-b89a-23e1ce4812c3,... | 2.712.604-7,27.126.104-7 
+  FRANCO ALLEN      | THOMAS           | BASAURE          | 2   | 4c6d362f-df1a-4e4b-a340-6881d3913207,... | 2.504.174-0,25.041.974-0 
+  ISIDORA VALENTINA | SANTELICES       | MEZA             | 2   | 87f94f56-7e24-4038-8c05-f27b9a896054,... | 23.205.714-9,23.205.149-9
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 1 registro(s) encontrado(s):
+  first_name | last_name | cnt | ids                                      | runs                     
+  -----------+-----------+-----+------------------------------------------+--------------------------
+  nuevo      | testing   | 2   | bbe8b32b-535e-4ba7-a0f4-155a73a16c0e,... | 44.444.333-3,55.234.234-3
+
+======================================================================
+[RUN] Ejecutando: database_audit_part5.sql
+======================================================================
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 2 registro(s) encontrado(s):
+  student_id                           | enrollment_id                        | year | nombre                   
+  -------------------------------------+--------------------------------------+------+--------------------------
+  05855245-38ee-44eb-90ca-7b8c81e58784 | 18c67367-5268-4d51-8c56-5a0d7a91a1fc | 2024 | TRINIDAD IGNACIA BERTEINS
+  46045c21-4a42-4ab0-9089-f94bc14b2729 | c16095a1-8bc3-439a-b8f7-79958dfb5735 | 2025 | SALVADOR GASPAR          
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 8 registro(s) encontrado(s):
+  student_id                           | nombre                   | total_cuotas | cuotas_existentes 
+  -------------------------------------+--------------------------+--------------+-------------------
+  6952432f-f7ab-4774-9ef6-1d9d050f1892 | LETICIA COLOMBA          | 1            | 1                 
+  6c1e2c95-9d30-4eba-a4bc-a3dd5454bb17 | AMANDA FRANCISCA SALINAS | 1            | 10                
+  40cdc5ba-cac8-40a6-8add-c33b1850a6f2 | SALVADOR TOMAS           | 1            | 7                 
+  a0395e3e-326e-4ebc-adb9-273122e6bf24 | AGUST├ìN IGNACIO ZAMORA   | 2            | 9,10              
+  174c1a80-07db-4fb5-b9ae-0d38466b1140 | GAEL EMILIANO            | 5            | 6,7,8,9,10        
+  66bf4d83-cb55-4acc-8658-c714f82c5f0e | VIOLETA BEATRIZ GUERRERO | 7            | 4,5,6,7,8,9,10    
+  7847e1bc-90a2-45a7-98ce-236f1dd845da | LEONOR ALEXANDRA BARRERA | 9            | 2,3,4,5,6,7,8,9,10
+  5945ab89-9c94-4cd6-95ab-5a5767d2bb47 | MAT├ìAS ANKATU CASTRO     | 9            | 2,3,4,5,6,7,8,9,10
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 11 registro(s) encontrado(s):
+  id                                   | nombre             | curso_students                       | curso_academic                       | nom_curso_student | nom_curso_academic | year_academico
+  -------------------------------------+--------------------+--------------------------------------+--------------------------------------+-------------------+--------------------+---------------
+  6812c399-a2ac-4f08-9a56-289848c655be | SILVIO DARIO       | 5eb8af45-e865-4b42-9474-c6bf883e8fbe | 28a73783-d5ba-4e22-99d6-f9a58216ef27 | 3┬░ BASICO B       | 2┬░ BASICO B        | 2025          
+  8b3e7d87-6755-447e-a893-ce158df21115 | SANTIAGO MATTIA    | a6bea2ea-c852-4e39-a676-1161f76c45d1 | a440af2d-7ca6-4014-8c43-e8d77ad7182d | 1┬░ BASICO A       | 1┬░ BASICO A        | 2025          
+  fc9488b5-7c2c-46cb-a125-26a100f86897 | FACUNDO RODRIGO    | b757abe4-9251-490e-ad5f-d3c879afd2af | a440af2d-7ca6-4014-8c43-e8d77ad7182d | 2┬░ BASICO A       | 1┬░ BASICO A        | 2025          
+  26585428-490b-4450-8591-10c583a4f9eb | MARTINA ALARCON    | 94782d32-0dd5-43e4-8427-ea867ec3585e | eabef978-d73a-4259-9ca6-2dbe78a6efc5 | 3┬░ BASICO A       | 2┬░ BASICO A        | 2025          
+  b1f87e41-a351-4103-aea3-0713766c64ec | ELOISA ANAIS       | f4ea39eb-ef3d-4cd8-a89d-7498214cb3db | 7f10b304-a4ca-46a5-92c6-e9af80ca80cb | 5┬░ BASICO A       | 5┬░ BASICO A        | 2025          
+  e908fc55-e626-4978-a0f4-89ca8d90eb3f | VICENTE ALESSANDRO | 0878f87c-3f2e-4710-9628-d294e1bf56e6 | 4e17c5ae-416d-47b6-9604-df4b9688fe80 | 8┬░ BASICO B       | 6┬░ BASICO A        | 2025          
+  05ad76c9-d992-4e64-a5d6-5fd12a889bf5 | PHILIP ANTONIO     | 51ec09dc-50cb-4389-8690-298aa322d36c | 6a09cd35-c2c3-4b14-ae59-cffe19586bcd | 3┬░ MEDIO B        | 2┬░ MEDIO B         | 2025          
+  fd553b9a-4aeb-48c4-8725-80c8ad65eeb2 | GRACE ABIGAIL      | 51ec09dc-50cb-4389-8690-298aa322d36c | 0c9b690f-5d84-4d54-a7d6-299914e557f7 | 3┬░ MEDIO B        | 3┬░ MEDIO A         | 2025          
+  719fba12-9be5-486c-9906-9c26418eefe7 | AMANDA ANTONIA     | cd244b03-3015-4de5-a092-3d0d74b2260c | 51ec09dc-50cb-4389-8690-298aa322d36c | 3┬░ MEDIO A        | 3┬░ MEDIO B         | 2025          
+  680a21a7-a3f9-4208-b425-8a388147cbd5 | MAITE ALMENDRA     | d51eaf61-114c-452a-97ec-4c4d25a470e8 | 6a09cd35-c2c3-4b14-ae59-cffe19586bcd | 3┬░ MEDIO B        | 2┬░ MEDIO B         | 2025          
+  9a3e4488-fb61-4fda-a3a2-67e162cd74a7 | ANA├ìS ILLARI       | 49f154db-9335-402f-adb6-0fb226b1937a | 4e17c5ae-416d-47b6-9604-df4b9688fe80 | 6┬░ BASICO B       | 6┬░ BASICO A        | 2025          
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 26 registro(s) encontrado(s):
+  student_id                           | primary_count | guardian_ids                            
+  -------------------------------------+---------------+-----------------------------------------
+  a23b162c-a255-4e48-a5a5-8a7fcacece00 | 2             | b3e060f6-02a0-493f-8f31-d71d1d809587,...
+  fc9488b5-7c2c-46cb-a125-26a100f86897 | 2             | efad2536-0155-4a3d-9e02-6e50fad52fe1,...
+  c67349dd-bdc1-4e34-ad07-b011f9ededf6 | 2             | 093cb346-9377-4276-8363-52a1e292952a,...
+  76efd3a1-8586-46f6-ab08-96ba11ef3334 | 2             | 5ce035f3-741e-4fdd-b1c7-3e424a40ec07,...
+  d746d6cc-a5d6-452a-bcce-6c076d957938 | 2             | 2f1274d0-5b87-4f33-bdd7-a0b961e50198,...
+  b57e2273-d378-44ca-ac6b-ef263df10836 | 2             | 2e7bd612-2097-4c47-99b9-5976712c95f5,...
+  55e0c792-a2b9-4712-a4d7-a4ae4cd2d4d4 | 2             | dbd0bcca-4f76-4778-9220-fb41754856ed,...
+  99cbbebd-9d24-4463-a67e-ed6201e32e84 | 2             | 6bd2b78e-ad78-47bf-a63c-49c6e9d81f2a,...
+  8ba0280c-188a-44b0-99b5-94380a2b5537 | 2             | 7c5764c4-48a9-445a-ab1f-07cf13f6098c,...
+  f4081dc8-7388-4fbd-ad9f-62289f6350d9 | 2             | 71e9fae8-2b75-4353-94e4-5d8c192448a9,...
+  619af5d7-1b32-42fd-9dfe-2a9e054ffbdb | 2             | 1a62d8f3-e1df-4dda-a8ba-27d385c581dc,...
+  e1c25140-61d3-485d-90b6-c286c06813dc | 2             | bba9a454-a058-46aa-bdd2-5f1d42e23479,...
+  04a8b591-5846-485c-8bbc-24ae165f7669 | 2             | 49883c15-b2bf-4990-befa-6e8436e943bc,...
+  3cdbeff9-d011-46d3-b0b5-3cb18970e29e | 2             | 2f1274d0-5b87-4f33-bdd7-a0b961e50198,...
+  9a8f981d-d318-41ec-93a4-03eb6f1e94ec | 2             | 812ba9b0-691f-47b0-9242-950ad70baa01,...
+  7e81d144-6448-46bf-911e-9993e8cce163 | 2             | ddb025d7-4f41-4354-8b1c-df4b23adbce2,...
+  05003706-267c-4616-8b3e-b928e9f099b3 | 2             | 812ba9b0-691f-47b0-9242-950ad70baa01,...
+  813ea7df-6966-4340-99bd-10cd12d57fca | 2             | fc9a39b3-eafe-45e0-ba13-928cb6f17b50,...
+  17fa1e9c-f791-4fda-87bf-35d3dd36df1a | 2             | 34c475a5-f902-4088-9dca-b96fd7f6b4d8,...
+  6952432f-f7ab-4774-9ef6-1d9d050f1892 | 2             | 9745ccf4-c37a-4069-8f05-ba875c18557a,...
+  b3048060-34e7-4510-885c-73d1e0e239f5 | 2             | 99431a0a-f183-4eed-9845-763af6f442f9,...
+  333c02fc-08d9-4ca6-bb93-ff11ebaa785c | 2             | 9e09eaa9-93b3-4d74-b8d6-1c68bab38e7f,...
+  feb6954d-6ad9-4ab7-b2c9-e8fd2d5297f2 | 3             | 7566d766-5092-44af-a936-5d1e8b09665d,...
+  b6b51637-05bb-43ee-81d6-898336e5e906 | 2             | cdbaaaf2-9b22-413d-9294-f6c64afbb2a2,...
+  55ca7ca8-81fb-4566-a603-eadf838ae08b | 2             | 08df7ad7-5113-472e-a729-bbfc84e0b02e,...
+  ... y 1 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 6 registro(s) encontrado(s):
+  id                                   | nombre                 | run         
+  -------------------------------------+------------------------+-------------
+  c0ad9473-8d8b-46a2-83d0-603c93fe9af6 | ALONSO ESTEBAN GODOY   | 23.348.985-9
+  b0079618-fd0b-4b1d-8467-3475652ff41d | CATALINA PAZ CONTRERAS | 22.908.888-2
+  ba291d0f-a75c-4b64-855e-494df05244de | JOAQU├ìN GONZALO GODOY  | 26.363.527-2
+  bb2c6214-6875-424e-b6e2-8023f48e36c5 | ENZO MARIO             | 24.265.772-1
+  a49fa76d-24d2-4891-8910-16e10f60144f | EMILIA IGNACIA PERALTA | 22.862.722-4
+  613cc43a-5a69-4136-a98f-6813c7186388 | FIORELLA PAZ           | 23.669.732-0
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 32 registro(s) encontrado(s):
+  id                                   | nom_curso   | letra_curso | year_academico
+  -------------------------------------+-------------+-------------+---------------
+  1b761071-34ba-4179-b2a6-3756f2d283ac | 1┬░ BASICO B | B           | 2024          
+  77a83b56-d949-4cbb-8964-1427dbf8766d | 1┬░ MEDIO B  | B           | 2024          
+  43825f6d-879e-42d3-8739-47fd8bedd014 | 2┬░ BASICO B | B           | 2024          
+  a29b5768-537a-4cfd-a161-27e69a47e3a9 | 2┬░ MEDIO A  | A           | 2024          
+  b612036f-efa8-4572-b4a6-c15cf0bff934 | 2┬░ MEDIO B  | B           | 2024          
+  47d6f8b7-7628-407d-bda5-890ddd55027e | 3┬░ BASICO B | B           | 2024          
+  a3b3ea64-e429-45a2-8f1c-e967a2464f19 | 3┬░ MEDIO A  | A           | 2024          
+  fd8d1cf6-4368-4d36-92d9-98597641d43c | 3┬░ MEDIO B  | B           | 2024          
+  342e9b46-f29d-40d0-acda-990244c4f7bf | 4┬░ BASICO B | B           | 2024          
+  91bbbe4d-3032-4f5f-b979-bee45130f0bf | 4┬░ MEDIO B  | B           | 2024          
+  e9683d89-de0e-4163-9f63-5cf7e0b175b1 | 5┬░ BASICO B | B           | 2024          
+  5b74f0fa-e16b-439f-b0fe-02ea79727e89 | 6┬░ BASICO B | B           | 2024          
+  951c0006-03e6-4bb8-9f22-c2b6f8177e5b | 7┬░ BASICO B | B           | 2024          
+  33d159d8-1a7e-4542-b987-da53be867295 | 8┬░ BASICO B | B           | 2024          
+  852d3ee5-35cd-44be-9a78-84d578ae133f | 1┬░ BASICO B | B           | 2025          
+  e167e8c1-35d0-408f-8be4-b2f9acee938d | 1┬░ MEDIO B  | B           | 2025          
+  518544ee-0bdb-4111-8891-5105ce993d34 | 4┬░ BASICO B | B           | 2025          
+  249fab7d-3f8d-4fa1-8b99-5d58fafd55d2 | 4┬░ MEDIO B  | B           | 2025          
+  db7f65fc-8c20-420e-aa5f-609612fdf54c | 5┬░ BASICO B | B           | 2025          
+  5f046bea-f8fc-48f6-b529-389b1a61da3e | 7┬░ BASICO B | B           | 2025          
+  bc041b6e-a253-4074-9bf8-acd4b235fb9b | 2┬░ BASICO B | B           | 2026          
+  012385ae-072e-41a9-9e53-225c48d66464 | 2┬░ MEDIO B  | B           | 2026          
+  f0ddacc2-9993-4d74-8fd6-4d9f5d18c807 | 4┬░ BASICO B | B           | 2026          
+  f981cff8-b83a-42e4-9f95-d03bbe6f16b8 | 4┬░ MEDIO B  | B           | 2026          
+  800403ec-60bd-451a-b583-f4ec15251a52 | 5┬░ BASICO A | A           | 2026          
+  ... y 7 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 100 registro(s) encontrado(s):
+  id                                   | nombre                    | nom_curso   | total_fees | monto_total | total_pagado | total_pendiente
+  -------------------------------------+---------------------------+-------------+------------+-------------+--------------+----------------
+  f1fa9589-cce4-4ef0-adb0-1fde475373d8 | LEONOR CAROLINA CARVAJAL  | 4┬░ MEDIO A  | 10         | 13312600.00 | 0            | 13312600.00    
+  5945ab89-9c94-4cd6-95ab-5a5767d2bb47 | MAT├ìAS ANKATU CASTRO      | 1┬░ MEDIO A  | 9          | 11981340.00 | 0            | 11981340.00    
+  b26b9156-4ca0-4810-b76b-a7bc53c0227d | CATALINA ANTONIA Y├ü├æEZ    | 8┬░ BASICO A | 10         | 2359960.00  | 0            | 2359960.00     
+  d40e5b97-dea2-4de5-bf0a-8f04c182812c | LE├ôN EMILIO Y├ü├æEZ         | 6┬░ BASICO A | 10         | 2359960.00  | 0            | 2359960.00     
+  b4719a36-da47-4bbd-9950-8755d3c195b7 | FLORENCIA GALAZ           | 5┬░ BASICO A | 10         | 2171700.00  | 0            | 2171700.00     
+  ca93a0df-bf84-42c3-95ae-3ad84eedab47 | ELOISA IZADI              | 1┬░ BASICO A | 10         | 2170360.00  | 0            | 2170360.00     
+  143b34e2-5d22-4e48-9754-3208f33ee30e | DANTE LE├ôN ARENAS         | 3┬░ BASICO B | 10         | 2170360.00  | 0            | 2170360.00     
+  51892dfc-81b3-46c2-beb8-001dff623129 | OCTAVIO ANDR├ëS ARENAS     | 8┬░ BASICO A | 10         | 2170360.00  | 0            | 2170360.00     
+  05003706-267c-4616-8b3e-b928e9f099b3 | SAMUEL SIM├ôN VALD├ëS       | 1┬░ BASICO A | 10         | 2057400.00  | 0            | 2057400.00     
+  fc9488b5-7c2c-46cb-a125-26a100f86897 | FACUNDO RODRIGO           | 2┬░ BASICO A | 10         | 2057400.00  | 0            | 2057400.00     
+  42f7c90e-4104-46ad-a53d-db691ec22e17 | CATALINA ISIDORA MART├ìNEZ | 6┬░ BASICO A | 10         | 2057400.00  | 0            | 2057400.00     
+  9a8f981d-d318-41ec-93a4-03eb6f1e94ec | SANTIAGO VALD├ëS           | 6┬░ BASICO A | 10         | 2057400.00  | 0            | 2057400.00     
+  66bf4d83-cb55-4acc-8658-c714f82c5f0e | VIOLETA BEATRIZ GUERRERO  | 1┬░ MEDIO A  | 7          | 1921139.00  | 257064.00    | 1664075.00     
+  3fc598e2-bbd9-45f0-8490-57ebb94b13b4 | ARIEL EMILIO BARR├ìA       | 2┬░ MEDIO A  | 10         | 1331260.00  | 0            | 1331260.00     
+  fb2b948d-6e42-4ce8-9034-c2991c3d3145 | SALVADOR ALONSO MORENO    | 2┬░ MEDIO B  | 10         | 1331260.00  | 0            | 1331260.00     
+  8a9b0c1d-4e5f-4873-9a2b-3d4e5f6a7b8c | MARTIN ALONSO             | 3┬░ MEDIO B  | 10         | 1331260.00  | 0            | 1331260.00     
+  6fb76534-e07e-4d31-8acf-4844a2fc2795 | FRANCISCO TOM├üS VIZCARRA  | 1┬░ MEDIO A  | 10         | 1331260.00  | 0            | 1331260.00     
+  6735741a-aeb4-4afb-8b5b-3fe0b4381857 | FIORELLA SOF├ìA D├üVILA     | 8┬░ BASICO A | 10         | 1331260.00  | 0            | 1331260.00     
+  1c77583e-addc-4a68-a2ab-76a79b74e81a | JOAQU├ìN ALONSO FICA       | 8┬░ BASICO A | 10         | 1331260.00  | 0            | 1331260.00     
+  8131019a-9414-471a-95d2-65087f949cb7 | GONZALO IGNACIO ESPINOZA  | 2┬░ MEDIO B  | 10         | 1331260.00  | 0            | 1331260.00     
+  0526f4dc-e705-4e59-90cc-e35dd1eaf65e | AGUST├ìN ANDR├ëS            | 8┬░ BASICO B | 10         | 1331260.00  | 0            | 1331260.00     
+  eef2faa0-d445-4f9e-8ba0-20818dfa09be | LE├ôN REVECO               | 1┬░ MEDIO A  | 10         | 1331260.00  | 0            | 1331260.00     
+  e1c25140-61d3-485d-90b6-c286c06813dc | FERNANDA EMILIA VIDAL     | 8┬░ BASICO A | 10         | 1331260.00  | 0            | 1331260.00     
+  c01829d9-0463-49c7-b92f-fb6f2326eebb | FACUNDO LE├ôN PAREDES      | 1┬░ MEDIO A  | 10         | 1331260.00  | 0            | 1331260.00     
+  4cd02657-7ac9-4df7-b543-1cbf6f30d449 | MAGDALENA BEATRIZ SOL├ìS   | 3┬░ MEDIO A  | 10         | 1331260.00  | 0            | 1331260.00     
+  ... y 75 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 319 registro(s) encontrado(s):
+  id                                   | run          | first_name_check        | last_name_check         
+  -------------------------------------+--------------+-------------------------+-------------------------
+  9b4fcefe-ed57-4840-847d-481b4eb6f81f | 16.502.522-7 | >DANIELA ANDREA <       | >PEDRAZA ROBLES<        
+  9ee5df72-89a0-4798-b4b9-4d75f8ceda70 | 18.784.091-0 | >CAMILA <               | >HIGUERAS PREISLER<     
+  0ef25848-d1a7-4aff-8c4a-970d41c5ae78 | 18.568.646-9 | >YENYI<                 | >AGUILERA ARAVENA <     
+  472417d8-1f39-4eb8-a9ce-a0d89b4c1801 | 13.191.421-0 | >HEIDIE<                | >DARWIT PARRA <         
+  c9743d03-3492-47dd-ae54-21fa3bce85f2 | 13.635.417-5 | >CAROLINA <             | >B├ôRQUEZ GAMBOA <       
+  a4d19cbb-1037-436d-8a91-a23817258751 | 16.198.703-4 | >VERONICA ANDREA <      | >PAZ PAZ<               
+  d0ee528a-26f8-4f08-8482-0592b5c804f0 | 14.166.202-3 | >CAROLINA <             | >KOENIG DUFFAU<         
+  7545bcae-e3a8-41b2-9fa1-6dd302ce7b71 | 8.953.537-9  | >MAR├ìA DE LOS ANGELES < | >CARTES FUENTES <       
+  c1286b52-a1d9-49fc-b9c7-fa82ef274735 | 18.583.823-4 | >ROC├ìO<                 | >CARVALLO FUNES <       
+  61affd34-78ad-42e1-907a-2edb14bb74ea | 15.098.407-6 | >DAFNE <                | >SALAZAR D├ìAZ <         
+  bf4b526d-e956-4fab-a5d0-1c4b4c87ee61 | 16.035.327-9 | >GERALDINE <            | >LOAIZA PAREDES <       
+  86bcda4e-7870-49e1-b612-d2258acae8c3 | 18.592.452-1 | >MACARENA <             | >FERN├üNDEZ DONOSO<      
+  434470d8-d3b6-4558-9370-1b714abb058e | 12.847.089-1 | >CRYSLER<               | >CAJALES  BERNAL<       
+  659676b7-8a9d-4b94-a28c-3df57b6d1eb2 | 15.974.181-8 | >MAR├ìA <                | >BOHORQUEZ VERGARA <    
+  39e3fc96-25e4-403d-aee0-75b999d74a16 | 13.652.734-7 | >PAOLA <                | >YUSTE CARVAJAL<        
+  14226aa3-ee36-45a9-9211-e64ed855ed4f | 16.234.065-4 | >ELIZABETH  <           | >ARAVENA BEN├ìTEZ<       
+  40fdd01c-05be-467f-8a9e-0abc0b5eb0cd | 17.132.312-6 | >ALEXANDRA <            | >LOBOS LAZO <           
+  59d3b22f-2e94-4a55-9a91-ec46b42c6282 | 15.740.637-K | >TANIA<                 | >ALLENDES TOLEDO <      
+  6f2cb67d-a16b-40a3-b98f-fe72de422bb8 | 15.327.807-5 | >YAEL <                 | >L├ôPEZ CEBALLO<         
+  c10d8613-0cad-4293-bf05-1ceffecba0c4 | 10.989.462-1 | >IRINA<                 | >DUR├üN MART├ìNEZ <       
+  6b328e52-369a-4700-8261-608a13d6a37b | 15.768.753-0 | >NOHELIA SABRINA<       | >HERRERA YERE <         
+  17c6f74e-13b2-414b-9e78-9b6a5cbe38c5 | 13.045.204-3 | >SANDRA <               | > SAGREDO HORMAZ├üBAL<   
+  6b2edb34-5f4b-4236-8c0a-c84cc0ab3263 | 15.974.588-0 | >DIANA <                | > CABEZAS HENRIQUEZ<    
+  13286ebd-5a09-4cac-ba44-73913c03754c | 14.131.323-1 | >CAROLINA <             | >GALLEGUILLOS ALDAY <   
+  630ab36f-b962-4a89-9d96-b61da22d2701 | 18.301.641-5 | >MAR├ìA PAULA<           | >GALLEGUILLOS FIGUEROA <
+  ... y 294 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 496 registro(s) encontrado(s):
+  id                                   | first_name           | apellido_paterno | run         
+  -------------------------------------+----------------------+------------------+-------------
+  aaca0235-1659-4bd0-9d69-35b52e9aa287 | SIMONE ANTONIA       | FLORES           | 2.547.943-5 
+  f3e9be8d-d451-45d3-a1e5-3b14dccf40b1 | BENITO EDUARDO       | ARRIAGADA        | 22.695.195-4
+  52156587-cb14-42a2-85d7-d93db3b5d748 | AMARO ANTONIO        | CRESPO           | 22.269.017-K
+  a320e83d-14c6-4561-9592-80ec591952ed | BEL├ëN NATALIA        | CRESPO           | 22.269.021-8
+  6dabf815-5c83-4e56-a207-fa48d73700c5 | EMMA PAZ             | CRESPO           | 22.269.011-0
+  e685b69f-27f9-4e7e-ae58-3e3996ef1e83 | PABLO ANDR├ëS         | D├ìAZ             | 22.684.772-3
+  1bde8700-f914-415e-859a-1b6ae44bb10b | MATEO                | SALAZAR          | 2.374.338-5 
+  bf024ee2-4e96-4c70-97c3-584d5669ddb1 | LUCAS MIGUEL         | CARRE├æO          | 24.805.440-9
+  735e186f-e63e-443d-b0e7-117cc58f6d15 | CHARLOTTE            | ANDREA           | 26.559.159-0
+  ab458138-974a-48d9-97d5-27a17940fbf3 | FABIAN               | JAVIER           | 27.560.978-1
+  61f6587a-1efd-44f8-ad64-d3c4fa001df8 | MART├ìN IGNACIO SAMIR | MARDONES         | 22.558.548-2
+  c9ce76b0-0509-40e2-8930-359411fc4fbf | GABRIEL EDUARDO      | OYARZ├ÜN          | 22.578.661-5
+  2fc33735-3b29-4bfc-8000-8a811ee44737 | DEAVIN NICKO AGUST├ìN | RAM├ìREZ          | 22.408.057-3
+  3e4c3212-bfee-4b18-b259-480db6cbcad6 | ZDRAVKO MIODRAG      | NOVAKOVICH       | 24.010.124-6
+  a20c742e-8da1-4e8c-9fba-4e2103f91429 | CLAUDIO ANDR├ëS       | RIQUELME         | 22.663.470-3
+  c94db085-e465-4a7c-a1d4-7ac61e4d5954 | MAXIMILIANO TOM├üS    | SOTO             | 22.387.523-8
+  9bfb0faa-44be-499c-8b97-06e82dd36ac3 | SERGIO ISMAEL        | VIDAL            | 22.398.005-8
+  e0fb9baf-658b-402f-8443-2fb6f0484458 | VICENTE SALVADOR     | SALINAS          | 25.924.270-3
+  1bcf03fc-71b0-4766-a8de-ea9a36627a28 | JOSEFA RENATA        | RODR├ìGUEZ        | 22.878.786-8
+  aa8c800f-ae77-454e-9c52-2a38208b6190 | SALVADOR EMILIANO    | ESPINOZA         | 25.767.658-7
+  613cc43a-5a69-4136-a98f-6813c7186388 | FIORELLA             | PAZ              | 23.669.732-0
+  442dec88-9c76-4aa1-a17d-f21e600cd109 | DARIO                | AGUIRRE          | 25.183.187-4
+  dfb5dd30-be80-4b9d-b755-8348b0581a0d | LE├ôN IGNACIO         | TORRES           | 23.051.527-1
+  d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9 | NICANOR              | (Sin apellido)   | 26.845.290-7
+  2f1db604-3118-49ed-ab11-b153a2e3d73a | PASCUALA             | ANTONIA          | 27.024.214-6
+  ... y 471 mas
+
+----------------------------------------------------------------------
+Query
+----------------------------------------------------------------------
+  [WARN] 490 registro(s) encontrado(s):
+  id                                   | first_name            | last_name          | run         
+  -------------------------------------+-----------------------+--------------------+-------------
+  9b4fcefe-ed57-4840-847d-481b4eb6f81f | DANIELA ANDREA        | PEDRAZA ROBLES     | 16.502.522-7
+  9ee5df72-89a0-4798-b4b9-4d75f8ceda70 | CAMILA                | HIGUERAS PREISLER  | 18.784.091-0
+  0ef25848-d1a7-4aff-8c4a-970d41c5ae78 | YENYI                 | AGUILERA ARAVENA   | 18.568.646-9
+  472417d8-1f39-4eb8-a9ce-a0d89b4c1801 | HEIDIE                | DARWIT PARRA       | 13.191.421-0
+  bc923b2d-8411-44ee-a932-c0e2791cb209 | NO DISPONIBLE         | C├ëSPEDES           | 99.321.123-9
+  c9743d03-3492-47dd-ae54-21fa3bce85f2 | CAROLINA              | B├ôRQUEZ GAMBOA     | 13.635.417-5
+  a4d19cbb-1037-436d-8a91-a23817258751 | VERONICA ANDREA       | PAZ PAZ            | 16.198.703-4
+  d0ee528a-26f8-4f08-8482-0592b5c804f0 | CAROLINA              | KOENIG DUFFAU      | 14.166.202-3
+  ae6b0d59-2486-4a25-baff-6279d6be7319 | CAROLA                | GONGORA ALVAREZ    | 14.617.455-8
+  7545bcae-e3a8-41b2-9fa1-6dd302ce7b71 | MAR├ìA DE LOS ANGELES  | CARTES FUENTES     | 8.953.537-9 
+  35609702-67c2-4303-a879-cf43ead3df40 | ANGIE                 | VIDELA SANGURIMA   | 20.342.335-7
+  c1286b52-a1d9-49fc-b9c7-fa82ef274735 | ROC├ìO                 | CARVALLO FUNES     | 18.583.823-4
+  61affd34-78ad-42e1-907a-2edb14bb74ea | DAFNE                 | SALAZAR D├ìAZ       | 15.098.407-6
+  bf4b526d-e956-4fab-a5d0-1c4b4c87ee61 | GERALDINE             | LOAIZA PAREDES     | 16.035.327-9
+  86bcda4e-7870-49e1-b612-d2258acae8c3 | MACARENA              | FERN├üNDEZ DONOSO   | 18.592.452-1
+  434470d8-d3b6-4558-9370-1b714abb058e | CRYSLER               | CAJALES  BERNAL    | 12.847.089-1
+  659676b7-8a9d-4b94-a28c-3df57b6d1eb2 | MAR├ìA                 | BOHORQUEZ VERGARA  | 15.974.181-8
+  39e3fc96-25e4-403d-aee0-75b999d74a16 | PAOLA                 | YUSTE CARVAJAL     | 13.652.734-7
+  14226aa3-ee36-45a9-9211-e64ed855ed4f | ELIZABETH             | ARAVENA BEN├ìTEZ    | 16.234.065-4
+  395f13be-97a3-4ec0-84b3-08606e60c9a8 | MOIRA                 | EVANS ARANCIBIA    | 15.077.451-9
+  40fdd01c-05be-467f-8a9e-0abc0b5eb0cd | ALEXANDRA             | LOBOS LAZO         | 17.132.312-6
+  59d3b22f-2e94-4a55-9a91-ec46b42c6282 | TANIA                 | ALLENDES TOLEDO    | 15.740.637-K
+  6f2cb67d-a16b-40a3-b98f-fe72de422bb8 | YAEL                  | L├ôPEZ CEBALLO      | 15.327.807-5
+  c10d8613-0cad-4293-bf05-1ceffecba0c4 | IRINA                 | DUR├üN MART├ìNEZ     | 10.989.462-1
+  6b328e52-369a-4700-8261-608a13d6a37b | NOHELIA SABRINA       | HERRERA YERE       | 15.768.753-0
+  ... y 465 mas
+
+======================================================================
+[SUMMARY] 2260 hallazgo(s) total(es) encontrados
+======================================================================
+
+[FILE] database_audit.sql:
+   [WARN] Query: 22 registro(s)
+
+[FILE] database_audit_part2.sql:
+   [WARN] Query: 26 registro(s)
+   [WARN] Query: 100 registro(s)
+   [WARN] Query: 368 registro(s)
+
+[FILE] database_audit_part4.sql:
+   [WARN] Query: 7 registro(s)
+   [WARN] Query: 100 registro(s)
+   [WARN] Query: 5 registro(s)
+   [WARN] Query: 3 registro(s)
+   [WARN] Query: 41 registro(s)
+   [WARN] Query: 4 registro(s)
+   [WARN] Query: 60 registro(s)
+   [WARN] Query: 8 registro(s)
+   [WARN] Query: 1 registro(s)
+   [WARN] Query: 1 registro(s)
+   [WARN] Query: 41 registro(s)
+   [WARN] Query: 4 registro(s)
+   [WARN] Query: 1 registro(s)
+
+[FILE] database_audit_part5.sql:
+   [WARN] Query: 2 registro(s)
+   [WARN] Query: 8 registro(s)
+   [WARN] Query: 11 registro(s)
+   [WARN] Query: 26 registro(s)
+   [WARN] Query: 6 registro(s)
+   [WARN] Query: 32 registro(s)
+   [WARN] Query: 100 registro(s)
+   [WARN] Query: 319 registro(s)
+   [WARN] Query: 496 registro(s)
+   [WARN] Query: 490 registro(s)
+
+[DONE] Auditoria completada.

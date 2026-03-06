@@ -23,7 +23,9 @@ export function PaymentsFilters({
   filters,
   onFiltersChange,
   onClearFilters,
-  filterOptions = { cursos: [], years: [], cuotas: [] }
+  filterOptions = { cursos: [], years: [], cuotas: [] },
+  onePerStudent = false,
+  onOnePerStudentChange
 }) {
   const handleFilterChange = (filterName, value) => {
     // For date changes, ensure endDate is not before startDate
@@ -45,6 +47,7 @@ export function PaymentsFilters({
         className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
       >
         <option value="all">Todos los Estados</option>
+        <option value="por_cobrar">Por Cobrar</option>
         <option value="paid">Pagado</option>
         <option value="pending">Pendiente</option>
         <option value="overdue">Vencido</option>
@@ -144,6 +147,17 @@ export function PaymentsFilters({
       >
         Limpiar Filtros
       </Button>
+
+      {/* One per student toggle */}
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={onePerStudent}
+          onChange={(e) => onOnePerStudentChange(e.target.checked)}
+          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary/20"
+        />
+        <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Una cuota por estudiante</span>
+      </label>
     </div>
   );
 }

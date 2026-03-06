@@ -9,7 +9,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf, buildReceiptEmailHtml } from '../../services/receiptGenerator';
 import { sendEmailViaFunction } from '../../services/email';
 import { friendlyError } from '../../utils/friendlyError';
-import { useQueryClient } from '@tanstack/react-query';
+import { useFeeMutations } from '../../hooks/mutations/useFeeMutations';
 
 /** Extract year safely from a date string, fallback to current year */
 function safeYearFromDate(dateStr) {
@@ -43,13 +43,12 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     mov_bancario: payment?.mov_bancario || '',
     notes: payment?.notes || ''
   });
-  const [loading, setLoading] = useState(false);
   const permissions = usePermissions();
-  const queryClient = useQueryClient();
+  const { updateFee, deleteFee } = useFeeMutations();
+  const loading = updateFee.isPending || deleteFee.isPending;
 
   // Registrar pago (ASIST) state
   const [isRegistering, setIsRegistering] = useState(false);
-  const [registerLoading, setRegisterLoading] = useState(false);
   const [sendingReceipt, setSendingReceipt] = useState(false);
   const [registerData, setRegisterData] = useState({
     amount: payment?.amount ?? 0,
@@ -112,27 +111,21 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         toast.error('Método de pago inválido');
         return;
       }
-      
-      setLoading(true);
-      
-      const { error } = await supabase
-        .from('fee')
-        .update({
-          // student_id is not updated to prevent data conflicts
+
+      await updateFee.mutateAsync({
+        id: payment.id,
+        data: {
           amount: parseFloat(formData.amount),
           payment_date: formData.payment_date,
-          payment_method: formData.payment_method || null, // Ensure null if empty
+          payment_method: formData.payment_method || null,
           status: formData.status,
           num_boleta: formData.num_boleta,
           mov_bancario: formData.mov_bancario,
           notes: formData.notes,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', payment.id);
+        }
+      });
 
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast.success('Pago actualizado exitosamente');
       // If ADMIN (or any role) changed status to paid, offer printing the receipt
       if (becamePaid) {
@@ -141,9 +134,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           const cashierName = permissions?.user?.user_metadata?.full_name 
             || permissions?.user?.email 
             || 'Usuario';
-          const year = (() => {
-            return safeYearFromDate(formData.payment_date);
-          })();
+          const year = safeYearFromDate(formData.payment_date);
           await generateReceiptPdf({
             feeId: payment.id,
             studentName: `${payment.student.first_name} ${payment.student.last_name}`,
@@ -164,8 +155,6 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al actualizar el pago');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -174,24 +163,13 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     if (!confirmed) return;
 
     try {
-      setLoading(true);
-      
-      const { error } = await supabase
-        .from('fee')
-        .delete()
-        .eq('id', payment.id);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      await deleteFee.mutateAsync(payment.id);
       toast.success('Pago eliminado exitosamente');
       onSuccess?.();
       onClose();
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al eliminar el pago');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -229,25 +207,19 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         }
       })();
 
-      const updatePayload = {
-        amount: amountNum,
-        payment_date: registerData.payment_date,
-        payment_method: registerData.payment_method,
-        status: 'paid',
-        mov_bancario: registerData.mov_bancario || null,
-        notes: registerData.notes || null,
-        year_academico: year
-      };
+      await updateFee.mutateAsync({
+        id: payment.id,
+        data: {
+          amount: amountNum,
+          payment_date: registerData.payment_date,
+          payment_method: registerData.payment_method,
+          status: 'paid',
+          mov_bancario: registerData.mov_bancario || null,
+          notes: registerData.notes || null,
+          year_academico: year
+        }
+      });
 
-      setRegisterLoading(true);
-      const { error } = await supabase
-        .from('fee')
-        .update(updatePayload, { returning: 'minimal' })
-        .eq('id', payment.id);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast.success('Pago registrado exitosamente');
       setIsRegistering(false);
       // Offer receipt printing for ASIST (and any role using this flow)
@@ -275,8 +247,6 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     } catch (err) {
       console.error('Registrar pago error:', err);
       toast.error(friendlyError(err, 'Error al registrar el pago.'));
-    } finally {
-      setRegisterLoading(false);
     }
   };
 
@@ -720,7 +690,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                   <button
                     type="button"
                     onClick={() => setIsRegistering(false)}
-                    disabled={registerLoading}
+                    disabled={updateFee.isPending}
                     className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors"
                   >
                     Cancelar
@@ -728,10 +698,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                   <button
                     type="button"
                     onClick={handleRegisterPay}
-                    disabled={registerLoading}
+                    disabled={updateFee.isPending}
                     className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors disabled:opacity-50"
                   >
-                    {registerLoading ? 'Registrando...' : 'Confirmar Pago'}
+                    {updateFee.isPending ? 'Registrando...' : 'Confirmar Pago'}
                   </button>
                 </>
               ) : (
