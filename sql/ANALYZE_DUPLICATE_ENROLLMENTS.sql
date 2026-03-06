@@ -32,7 +32,7 @@ SELECT
     e.status as estado_enrollment,
     e.year as año_enrollment,
     -- Apoderado de cada enrollment
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado,
     g.email as apoderado_email,
     g.run as apoderado_run,
     -- Análisis
@@ -74,7 +74,7 @@ SELECT
     MAX(e.created_at) as ultima_matricula,
     -- Apoderados diferentes
     COUNT(DISTINCT e.guardian_id) as apoderados_diferentes,
-    STRING_AGG(DISTINCT CONCAT(g.first_name, ' ', g.apellido_paterno, ' (', g.email, ')'), ' | ' ORDER BY CONCAT(g.first_name, ' ', g.apellido_paterno, ' (', g.email, ')')) as lista_apoderados,
+    STRING_AGG(DISTINCT CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' (', g.email, ')'), ' | ' ORDER BY CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' (', g.email, ')')) as lista_apoderados,
     -- Estados
     STRING_AGG(DISTINCT e.status, ', ') as estados_enrollments,
     -- Años
@@ -124,7 +124,7 @@ SELECT
     ed.estudiante_run,
     DATE(e.created_at) as fecha,
     g.id as guardian_id,
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado,
     g.email as apoderado_email,
     COUNT(*) as enrollments_mismo_dia,
     STRING_AGG(e.id::TEXT, ' | ' ORDER BY e.created_at) as enrollment_ids,
@@ -139,7 +139,7 @@ FROM estudiantes_duplicados ed
 INNER JOIN enrollment_students es ON es.student_id = ed.student_id
 INNER JOIN enrollments e ON e.id = es.enrollment_id
 INNER JOIN guardians g ON g.id = e.guardian_id
-GROUP BY ed.student_id, ed.estudiante_nombre, ed.estudiante_run, DATE(e.created_at), g.id, g.first_name, g.apellido_paterno, g.email
+GROUP BY ed.student_id, ed.estudiante_nombre, ed.estudiante_run, DATE(e.created_at), g.id, g.first_name, split_part(COALESCE(g.last_name, ''), ' ', 1), g.email
 HAVING COUNT(*) > 1
 ORDER BY COUNT(*) DESC, ed.estudiante_nombre, fecha;
 
@@ -240,7 +240,7 @@ SELECT
     MIN(e.created_at) as primera_matricula,
     MAX(e.created_at) as ultima_matricula,
     COUNT(DISTINCT e.guardian_id) as apoderados_diferentes,
-    STRING_AGG(DISTINCT CONCAT(g.first_name, ' ', g.apellido_paterno), ' | ') as lista_apoderados
+    STRING_AGG(DISTINCT CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)), ' | ') as lista_apoderados
 FROM students s
 INNER JOIN enrollment_students es ON es.student_id = s.id
 INNER JOIN enrollments e ON e.id = es.enrollment_id

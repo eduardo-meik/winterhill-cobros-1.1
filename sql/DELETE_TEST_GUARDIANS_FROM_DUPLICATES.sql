@@ -19,7 +19,7 @@ BEGIN;
 SELECT 
     'VISTA PREVIA' as tipo,
     g.id,
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as nombre_completo,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as nombre_completo,
     g.email,
     COUNT(DISTINCT e.id) as total_enrollments,
     STRING_AGG(DISTINCT e.id::TEXT, ' | ') as enrollment_ids
@@ -28,10 +28,10 @@ LEFT JOIN enrollments e ON e.guardian_id = g.id
 WHERE 
     -- Nombres de prueba (case insensitive)
     LOWER(g.first_name) ~ 'test|ttest|mama|papa|nnnnnnnnn|apoderado|prueb|nuevo|falso|diego'
-    OR LOWER(g.apellido_paterno) ~ 'test|prueba|apoderado'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) ~ 'test|prueba|apoderado'
     -- Emails de prueba
     OR LOWER(g.email) ~ '@test\.(cl|com)|test@|@tses\.lc|@falson\.cl|@gmail\.com.*falso'
-GROUP BY g.id, g.first_name, g.apellido_paterno, g.email
+GROUP BY g.id, g.first_name, split_part(COALESCE(g.last_name, ''), ' ', 1), g.email
 ORDER BY g.email;
 
 -- =====================================================
@@ -45,7 +45,7 @@ WHERE enrollment_id IN (
     INNER JOIN guardians g ON g.id = e.guardian_id
     WHERE 
         LOWER(g.first_name) ~ 'test|ttest|mama|papa|nnnnnnnnn|apoderado|prueb|nuevo|falso|diego'
-        OR LOWER(g.apellido_paterno) ~ 'test|prueba|apoderado'
+        OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) ~ 'test|prueba|apoderado'
         OR LOWER(g.email) ~ '@test\.(cl|com)|test@|@tses\.lc|@falson\.cl|@gmail\.com.*falso'
 );
 
@@ -59,7 +59,7 @@ WHERE guardian_id IN (
     FROM guardians g
     WHERE 
         LOWER(g.first_name) ~ 'test|ttest|mama|papa|nnnnnnnnn|apoderado|prueb|nuevo|falso|diego'
-        OR LOWER(g.apellido_paterno) ~ 'test|prueba|apoderado'
+        OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) ~ 'test|prueba|apoderado'
         OR LOWER(g.email) ~ '@test\.(cl|com)|test@|@tses\.lc|@falson\.cl|@gmail\.com.*falso'
 );
 
@@ -73,7 +73,7 @@ WHERE guardian_id IN (
     FROM guardians g
     WHERE 
         LOWER(g.first_name) ~ 'test|ttest|mama|papa|nnnnnnnnn|apoderado|prueb|nuevo|falso|diego'
-        OR LOWER(g.apellido_paterno) ~ 'test|prueba|apoderado'
+        OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) ~ 'test|prueba|apoderado'
         OR LOWER(g.email) ~ '@test\.(cl|com)|test@|@tses\.lc|@falson\.lc|@gmail\.com.*falso'
 );
 

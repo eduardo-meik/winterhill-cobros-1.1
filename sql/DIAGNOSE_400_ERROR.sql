@@ -68,7 +68,7 @@ BEGIN
       s.run,
       s.whole_name,
       g.run as guardian_run,
-      g.nombre_completo as guardian_name,
+      TRIM(CONCAT_WS(' ', g.first_name, g.last_name)) as guardian_name,
       COUNT(f.id) as fee_count,
       array_agg(f.numero_cuota ORDER BY f.numero_cuota) as cuotas
     FROM public.enrollment_students es
@@ -79,7 +79,7 @@ BEGIN
       AND f.guardian_id = g.id 
       AND f.year_academico = (SELECT year_academico FROM enrollments WHERE id = v_enrollment_id)
     WHERE es.enrollment_id = v_enrollment_id
-    GROUP BY s.id, s.run, s.whole_name, g.id, g.run, g.nombre_completo
+    GROUP BY s.id, s.run, s.whole_name, g.id, g.run, TRIM(CONCAT_WS(' ', g.first_name, g.last_name))
   LOOP
     IF v_enrollment.fee_count > 0 THEN
       RAISE NOTICE '⚠️  Student: % (%) has % existing fees with guardian % (%)',

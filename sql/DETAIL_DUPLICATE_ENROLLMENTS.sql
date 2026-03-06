@@ -50,7 +50,7 @@ SELECT
     '---' as separador2,
     -- APODERADO
     g.id as guardian_id,
-    CONCAT(g.first_name, ' ', g.apellido_paterno, ' ', COALESCE(g.apellido_materno, '')) as apoderado_nombre_completo,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' ', COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '')) as apoderado_nombre_completo,
     g.run as apoderado_run,
     g.email as apoderado_email,
     g.phone as apoderado_telefono,
@@ -118,9 +118,9 @@ SELECT
     -- Apoderados
     COUNT(DISTINCT e.guardian_id) as apoderados_diferentes,
     STRING_AGG(
-        DISTINCT CONCAT(g.first_name, ' ', g.apellido_paterno, ' (', g.email, ')'), 
+        DISTINCT CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' (', g.email, ')'), 
         ' | ' 
-        ORDER BY CONCAT(g.first_name, ' ', g.apellido_paterno, ' (', g.email, ')')
+        ORDER BY CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' (', g.email, ')')
     ) as lista_apoderados,
     -- Estados
     STRING_AGG(DISTINCT e.status, ', ') as estados,
@@ -186,7 +186,7 @@ SELECT
     ed.estudiante_nombre,
     ed.fecha,
     ed.enrollments_mismo_dia,
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado,
     g.email as apoderado_email,
     -- Enrollments
     STRING_AGG(e.id::TEXT, ' | ' ORDER BY e.created_at) as enrollment_ids,
@@ -209,7 +209,7 @@ FROM enrollments_duplicados ed
 INNER JOIN enrollment_students es ON es.student_id = ed.student_id
 INNER JOIN enrollments e ON e.id = es.enrollment_id AND DATE(e.created_at) = ed.fecha AND e.guardian_id = ed.guardian_id
 INNER JOIN guardians g ON g.id = ed.guardian_id
-GROUP BY ed.student_id, ed.estudiante_nombre, ed.fecha, ed.enrollments_mismo_dia, g.first_name, g.apellido_paterno, g.email
+GROUP BY ed.student_id, ed.estudiante_nombre, ed.fecha, ed.enrollments_mismo_dia, g.first_name, split_part(COALESCE(g.last_name, ''), ' ', 1), g.email
 ORDER BY ed.enrollments_mismo_dia DESC, ed.estudiante_nombre;
 
 -- =====================================================
@@ -240,7 +240,7 @@ SELECT
         CONCAT(
             TO_CHAR(e.created_at, 'YYYY-MM-DD HH24:MI'), 
             ' - ',
-            g.first_name, ' ', g.apellido_paterno,
+            g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1),
             ' (', e.id, ')'
         ),
         ' | '

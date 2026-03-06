@@ -528,7 +528,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           direccion,
           comuna,
           institucion_procedencia,
-          convive_con,
+          con_quien_vive,
           cursos:curso (
             id,
             nom_curso,
@@ -565,7 +565,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           direccion: s.direccion || null,
           comuna: s.comuna || null,
           institucion_procedencia: s.institucion_procedencia || null,
-          convive_con: s.convive_con || null
+          convive_con: s.con_quien_vive || null
         };
       });
   } catch (e) {

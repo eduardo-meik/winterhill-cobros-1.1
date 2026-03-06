@@ -12,7 +12,8 @@ import {
 export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly = false }) {
   const { deleteStudent } = useStudentMutations();
   const handleDelete = async (student) => {
-    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al estudiante ${student.first_name} ${student.last_name}?`);
+    const studentName = student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''} ${student.apellido_materno || ''}`.trim();
+    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al estudiante ${studentName}?`);
     if (!confirmed) return;
 
     try {

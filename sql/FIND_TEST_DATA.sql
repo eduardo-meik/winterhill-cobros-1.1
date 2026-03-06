@@ -43,8 +43,8 @@ SELECT
     ROW_NUMBER() OVER (ORDER BY g.created_at DESC) as num,
     g.id,
     g.first_name as nombre,
-    g.apellido_paterno,
-    g.apellido_materno,
+    split_part(COALESCE(g.last_name, ''), ' ', 1),
+    NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''),
     g.run,
     g.email,
     g.phone,
@@ -55,12 +55,12 @@ WHERE
     LOWER(g.first_name) LIKE '%falso%'
     OR LOWER(g.first_name) LIKE '%test%'
     OR LOWER(g.first_name) LIKE '%prueba%'
-    OR LOWER(g.apellido_paterno) LIKE '%falso%'
-    OR LOWER(g.apellido_paterno) LIKE '%test%'
-    OR LOWER(g.apellido_paterno) LIKE '%prueba%'
-    OR LOWER(g.apellido_materno) LIKE '%falso%'
-    OR LOWER(g.apellido_materno) LIKE '%test%'
-    OR LOWER(g.apellido_materno) LIKE '%prueba%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%falso%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%test%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%prueba%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%falso%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%test%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%prueba%'
     OR LOWER(g.email) LIKE '%test%'
     OR LOWER(g.email) LIKE '%fake%'
     OR LOWER(g.email) LIKE '%falso%'
@@ -75,8 +75,8 @@ SELECT
     e.year as año,
     e.status,
     g.first_name as guardian_nombre,
-    g.apellido_paterno as guardian_apellido_paterno,
-    g.apellido_materno as guardian_apellido_materno,
+    split_part(COALESCE(g.last_name, ''), ' ', 1) as guardian_apellido_paterno,
+    NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '') as guardian_apellido_materno,
     g.email as guardian_email,
     TO_CHAR(e.created_at, 'DD/MM/YYYY HH24:MI') as fecha_creacion,
     (SELECT COUNT(*) FROM enrollment_students es WHERE es.enrollment_id = e.id) as estudiantes_asociados
@@ -86,12 +86,12 @@ WHERE
     LOWER(g.first_name) LIKE '%falso%'
     OR LOWER(g.first_name) LIKE '%test%'
     OR LOWER(g.first_name) LIKE '%prueba%'
-    OR LOWER(g.apellido_paterno) LIKE '%falso%'
-    OR LOWER(g.apellido_paterno) LIKE '%test%'
-    OR LOWER(g.apellido_paterno) LIKE '%prueba%'
-    OR LOWER(g.apellido_materno) LIKE '%falso%'
-    OR LOWER(g.apellido_materno) LIKE '%test%'
-    OR LOWER(g.apellido_materno) LIKE '%prueba%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%falso%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%test%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%prueba%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%falso%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%test%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%prueba%'
     OR LOWER(g.email) LIKE '%test%'
     OR LOWER(g.email) LIKE '%fake%'
     OR LOWER(g.email) LIKE '%falso%'
@@ -131,7 +131,7 @@ ORDER BY s.created_at DESC;
 SELECT 
     '👤 APODERADO' as tipo,
     g.id,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as nombre_completo,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as nombre_completo,
     g.run,
     g.email,
     g.phone as telefono,
@@ -141,12 +141,12 @@ WHERE
     LOWER(g.first_name) LIKE '%falso%'
     OR LOWER(g.first_name) LIKE '%test%'
     OR LOWER(g.first_name) LIKE '%prueba%'
-    OR LOWER(g.apellido_paterno) LIKE '%falso%'
-    OR LOWER(g.apellido_paterno) LIKE '%test%'
-    OR LOWER(g.apellido_paterno) LIKE '%prueba%'
-    OR LOWER(g.apellido_materno) LIKE '%falso%'
-    OR LOWER(g.apellido_materno) LIKE '%test%'
-    OR LOWER(g.apellido_materno) LIKE '%prueba%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%falso%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%test%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%prueba%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%falso%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%test%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%prueba%'
     OR LOWER(g.email) LIKE '%test%'
     OR LOWER(g.email) LIKE '%fake%'
     OR LOWER(g.email) LIKE '%falso%'
@@ -158,7 +158,7 @@ SELECT
     e.id,
     e.year as año,
     e.status,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') as apoderado,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') as apoderado,
     g.email as apoderado_email,
     (SELECT COUNT(*) FROM enrollment_students es WHERE es.enrollment_id = e.id) as cant_estudiantes,
     TO_CHAR(e.created_at, 'DD/MM/YYYY HH24:MI') as fecha_creacion
@@ -168,12 +168,12 @@ WHERE
     LOWER(g.first_name) LIKE '%falso%'
     OR LOWER(g.first_name) LIKE '%test%'
     OR LOWER(g.first_name) LIKE '%prueba%'
-    OR LOWER(g.apellido_paterno) LIKE '%falso%'
-    OR LOWER(g.apellido_paterno) LIKE '%test%'
-    OR LOWER(g.apellido_paterno) LIKE '%prueba%'
-    OR LOWER(g.apellido_materno) LIKE '%falso%'
-    OR LOWER(g.apellido_materno) LIKE '%test%'
-    OR LOWER(g.apellido_materno) LIKE '%prueba%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%falso%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%test%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%prueba%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%falso%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%test%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%prueba%'
     OR LOWER(g.email) LIKE '%test%'
     OR LOWER(g.email) LIKE '%fake%'
     OR LOWER(g.email) LIKE '%falso%'
@@ -210,12 +210,12 @@ WHERE
     LOWER(g.first_name) LIKE '%falso%'
     OR LOWER(g.first_name) LIKE '%test%'
     OR LOWER(g.first_name) LIKE '%prueba%'
-    OR LOWER(g.apellido_paterno) LIKE '%falso%'
-    OR LOWER(g.apellido_paterno) LIKE '%test%'
-    OR LOWER(g.apellido_paterno) LIKE '%prueba%'
-    OR LOWER(g.apellido_materno) LIKE '%falso%'
-    OR LOWER(g.apellido_materno) LIKE '%test%'
-    OR LOWER(g.apellido_materno) LIKE '%prueba%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%falso%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%test%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%prueba%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%falso%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%test%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%prueba%'
     OR LOWER(g.email) LIKE '%test%'
     OR LOWER(g.email) LIKE '%fake%'
     OR LOWER(g.email) LIKE '%falso%'
@@ -231,12 +231,12 @@ WHERE
     LOWER(g.first_name) LIKE '%falso%'
     OR LOWER(g.first_name) LIKE '%test%'
     OR LOWER(g.first_name) LIKE '%prueba%'
-    OR LOWER(g.apellido_paterno) LIKE '%falso%'
-    OR LOWER(g.apellido_paterno) LIKE '%test%'
-    OR LOWER(g.apellido_paterno) LIKE '%prueba%'
-    OR LOWER(g.apellido_materno) LIKE '%falso%'
-    OR LOWER(g.apellido_materno) LIKE '%test%'
-    OR LOWER(g.apellido_materno) LIKE '%prueba%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%falso%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%test%'
+    OR LOWER(split_part(COALESCE(g.last_name, ''), ' ', 1)) LIKE '%prueba%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%falso%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%test%'
+    OR LOWER(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '')) LIKE '%prueba%'
     OR LOWER(g.email) LIKE '%test%'
     OR LOWER(g.email) LIKE '%fake%'
     OR LOWER(g.email) LIKE '%falso%';

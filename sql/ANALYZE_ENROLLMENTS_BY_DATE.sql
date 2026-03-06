@@ -51,7 +51,7 @@ SELECT
     EXTRACT(YEAR FROM e.created_at)::INTEGER as año_timestamp,
     TO_CHAR(e.created_at, 'DD/MM/YYYY HH24:MI') as fecha_creacion,
     e.status,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') as apoderado,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') as apoderado,
     (SELECT COUNT(*) FROM enrollment_students es WHERE es.enrollment_id = e.id) as cant_estudiantes
 FROM public.enrollments e
 LEFT JOIN public.guardians g ON e.guardian_id = g.id

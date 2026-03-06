@@ -251,6 +251,7 @@ async function fetchGuardianStudentsList(guardianId: string): Promise<GuardianLi
           direccion,
           comuna,
           institucion_procedencia,
+          con_quien_vive,
           cursos:curso (
             id,
             nom_curso,
@@ -285,7 +286,7 @@ async function fetchGuardianStudentsList(guardianId: string): Promise<GuardianLi
           nacionalidad: student.nacionalidad || null,
           direccion: student.direccion || null,
           comuna: student.comuna || null,
-          convive_con: student.convive_con ?? null,
+          convive_con: student.con_quien_vive ?? null,
         };
         return linked;
       })

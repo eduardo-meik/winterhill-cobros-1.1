@@ -82,7 +82,7 @@ WHERE run IN ('13.333.444-5', '7.777.188-0', '8.999.777-0', '7.888.999-6');
 SELECT 
     'VERIFICACIÓN: ENZO y MARIO conservados' as tipo,
     g.id,
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as nombre,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as nombre,
     g.run,
     g.email,
     g.phone,
@@ -103,7 +103,7 @@ SELECT
 SELECT 
     '===== APODERADOS REALES CON EMAIL FALSO =====' as tipo,
     g.id as guardian_id,
-    CONCAT(g.first_name, ' ', g.apellido_paterno, ' ', COALESCE(g.apellido_materno, '')) as nombre_completo,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' ', COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '')) as nombre_completo,
     g.run,
     g.email as email_falso_actual,
     g.phone as telefono_contacto,

@@ -17,9 +17,9 @@ SELECT
     -- Guardian info
     g.id as guardian_id,
     g.first_name as apoderado_nombre,
-    g.apellido_paterno as apoderado_apellido_paterno,
-    g.apellido_materno as apoderado_apellido_materno,
-    CONCAT(g.first_name, ' ', g.apellido_paterno, ' ', COALESCE(g.apellido_materno, '')) as apoderado_nombre_completo,
+    split_part(COALESCE(g.last_name, ''), ' ', 1) as apoderado_apellido_paterno,
+    NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '') as apoderado_apellido_materno,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' ', COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '')) as apoderado_nombre_completo,
     g.run as apoderado_run,
     g.email as apoderado_email,
     g.telefono as apoderado_telefono

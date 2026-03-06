@@ -158,7 +158,7 @@ begin
             st.nacionalidad,
             st.direccion,
             st.comuna,
-            NULL::text AS convive_con,
+            st.con_quien_vive AS convive_con,
             st.curso as curso_id,
             coalesce(c.nom_curso, st.curso::text) as curso_label
           from student_guardian sg

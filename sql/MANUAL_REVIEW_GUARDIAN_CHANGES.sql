@@ -19,7 +19,7 @@ SELECT
     '1. ALONDRA SOFÍA GUEICO GAETE' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email,
     g.telefono,
@@ -52,7 +52,7 @@ SELECT
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
     TO_CHAR(e.created_at, 'HH24:MI:SS') as hora_creacion,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email,
     g.run
@@ -80,7 +80,7 @@ SELECT
     '3. EMILIO GAEL CONTRERAS VERGARA' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es
@@ -107,7 +107,7 @@ SELECT
     '4. FACUNDO RODRIGO MARTÍNEZ LUCERO' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email,
     CASE 
@@ -133,7 +133,7 @@ SELECT
     '5. FLORENCIA AYELEN TERUEL' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.run,
     g.email,
@@ -157,7 +157,7 @@ SELECT
     '6. GASPAR ANDRÉS ARAYA LARA' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es
@@ -184,7 +184,7 @@ SELECT
     '7. GASPAR MENDOZA DAZA' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es
@@ -211,7 +211,7 @@ SELECT
     '8. LEONOR CAROLINA CARVAJAL GUAJARDO' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es
@@ -238,7 +238,7 @@ SELECT
     '9. LUCAS LEÓN GÓMEZ PERALTA' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es
@@ -265,7 +265,7 @@ SELECT
     '10. MAXIMILIANO VICENTE PIÑA BOMBAL' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es
@@ -292,7 +292,7 @@ SELECT
     '11. TRINIDAD ANTONIA JIMÉNEZ ZEGERS' as caso,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') || ' ' || COALESCE(g.apellido_materno, '') as apoderado_nombre,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') || ' ' || COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '') as apoderado_nombre,
     g.id as guardian_id,
     g.email
 FROM enrollment_students es

@@ -12,7 +12,7 @@
 WITH apoderados_sospechosos AS (
     SELECT 
         g.id as guardian_id,
-        CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado_nombre,
+        CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado_nombre,
         g.run as apoderado_run,
         g.email as apoderado_email
     FROM guardians g
@@ -65,7 +65,7 @@ ORDER BY eds.estudiante_nombre, sg.is_primary DESC, sg.guardian_role;
 WITH apoderados_sospechosos AS (
     SELECT 
         g.id as guardian_id,
-        CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado_nombre,
+        CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado_nombre,
         g.run as apoderado_run
     FROM guardians g
     WHERE g.run IN ('7.888.999-6', '13.029.569-K', '123.321.123-2')
@@ -123,7 +123,7 @@ ORDER BY eds.apoderado_nombre, eds.estudiante_nombre;
 WITH apoderados_sospechosos AS (
     SELECT 
         g.id as guardian_id,
-        CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado_nombre,
+        CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado_nombre,
         g.run as apoderado_run
     FROM guardians g
     WHERE g.run IN ('7.888.999-6', '13.029.569-K', '123.321.123-2')
@@ -177,7 +177,7 @@ ORDER BY eds.estudiante_nombre, sg.is_primary DESC;
 WITH apoderados_sospechosos AS (
     SELECT 
         g.id as guardian_id,
-        CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado_nombre,
+        CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado_nombre,
         g.run as apoderado_run,
         g.email
     FROM guardians g

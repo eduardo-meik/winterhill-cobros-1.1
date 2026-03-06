@@ -13,7 +13,7 @@ SELECT
     '===== APODERADO Y SUS ESTUDIANTES =====' as tipo_registro,
     -- Datos del apoderado
     g.id as guardian_id,
-    CONCAT(g.first_name, ' ', g.apellido_paterno, ' ', COALESCE(g.apellido_materno, '')) as apoderado_nombre_completo,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' ', COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '')) as apoderado_nombre_completo,
     g.run as apoderado_run,
     g.email as apoderado_email,
     g.phone as apoderado_telefono,
@@ -72,7 +72,7 @@ ORDER BY g.email, s.apellido_paterno, s.apellido_materno, s.first_name;
 
 SELECT 
     '===== RESUMEN POR APODERADO =====' as tipo,
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado,
     g.run as apoderado_run,
     g.email as apoderado_email,
     g.phone as apoderado_telefono,
@@ -112,7 +112,7 @@ WHERE
     OR (LOWER(g.first_name) = 'mario' AND LOWER(g.email) LIKE '%no_disponible%')
     OR (LOWER(g.first_name) = 'enzo' AND LOWER(g.email) LIKE '%no_disponible%')
     OR (LOWER(g.first_name) = 'diego' AND LOWER(g.email) LIKE '%falso%')
-GROUP BY g.id, g.first_name, g.apellido_paterno, g.email, g.run, g.phone, g.created_at
+GROUP BY g.id, g.first_name, split_part(COALESCE(g.last_name, ''), ' ', 1), g.email, g.run, g.phone, g.created_at
 ORDER BY g.email;
 
 -- =====================================================
@@ -122,7 +122,7 @@ ORDER BY g.email;
 SELECT 
     '===== DETALLE INDIVIDUAL DE ESTUDIANTES =====' as tipo,
     -- Apoderado
-    CONCAT(g.first_name, ' ', g.apellido_paterno) as apoderado,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1)) as apoderado,
     g.email as email_apoderado,
     g.run as run_apoderado,
     -- Estudiante completo
@@ -167,9 +167,9 @@ ORDER BY g.email, num_hijo;
 SELECT 
     '===== ANÁLISIS PARA DECISIÓN =====' as tipo,
     g.first_name as nombre_apoderado,
-    g.apellido_paterno as apellido_paterno_apoderado,
-    g.apellido_materno as apellido_materno_apoderado,
-    CONCAT(g.first_name, ' ', g.apellido_paterno, ' ', COALESCE(g.apellido_materno, '')) as apoderado_nombre_completo,
+    split_part(COALESCE(g.last_name, ''), ' ', 1) as apellido_paterno_apoderado,
+    NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), '') as apellido_materno_apoderado,
+    CONCAT(g.first_name, ' ', split_part(COALESCE(g.last_name, ''), ' ', 1), ' ', COALESCE(NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), '')) as apoderado_nombre_completo,
     g.email,
     -- Indicadores de registro real
     CASE WHEN g.run IS NOT NULL AND g.run != '' THEN '✅ SÍ' ELSE '❌ NO' END as tiene_run,
@@ -202,5 +202,5 @@ WHERE
     OR (LOWER(g.first_name) = 'mario' AND LOWER(g.email) LIKE '%no_disponible%')
     OR (LOWER(g.first_name) = 'enzo' AND LOWER(g.email) LIKE '%no_disponible%')
     OR (LOWER(g.first_name) = 'diego' AND LOWER(g.email) LIKE '%falso%')
-GROUP BY g.id, g.first_name, g.apellido_paterno, g.apellido_materno, g.email, g.run, g.phone, g.date_of_birth, g.profesion
+GROUP BY g.id, g.first_name, split_part(COALESCE(g.last_name, ''), ' ', 1), NULLIF(regexp_replace(COALESCE(g.last_name, ''), '^\S+\s*', ''), ''), g.email, g.run, g.phone, g.date_of_birth, g.profesion
 ORDER BY accion_recomendada, g.email;

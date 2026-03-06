@@ -14,7 +14,7 @@ SELECT
     c.nom_curso as curso,
     COUNT(DISTINCT es.enrollment_id) as veces_matriculado,
     STRING_AGG(DISTINCT TO_CHAR(e.created_at, 'DD/MM/YYYY HH24:MI'), ' | ' ORDER BY TO_CHAR(e.created_at, 'DD/MM/YYYY HH24:MI')) as fechas_matriculas,
-    STRING_AGG(DISTINCT g.first_name || ' ' || COALESCE(g.apellido_paterno, ''), ' | ') as apoderados
+    STRING_AGG(DISTINCT g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), ''), ' | ') as apoderados
 FROM public.students s
 INNER JOIN public.enrollment_students es ON s.id = es.student_id
 INNER JOIN public.enrollments e ON es.enrollment_id = e.id
@@ -41,7 +41,7 @@ SELECT
     TO_CHAR(e.created_at, 'DD/MM/YYYY HH24:MI') as fecha_matricula,
     e.status as enrollment_status,
     e.year as año_enrollment,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') as apoderado,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') as apoderado,
     g.email as apoderado_email,
     ROW_NUMBER() OVER (PARTITION BY s.id ORDER BY e.created_at DESC) as orden
 FROM duplicados d
@@ -118,13 +118,13 @@ FROM (
 -- ENROLLMENTS CON MISMO APODERADO Y MISMA FECHA (posibles duplicados)
 -- ══════════════════════════════════════════════════════════════════════
 SELECT 
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') as apoderado,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') as apoderado,
     g.email,
     DATE(e.created_at) as fecha,
     COUNT(*) as enrollments_mismo_dia,
     STRING_AGG(e.id::TEXT, ' | ') as enrollment_ids
 FROM public.enrollments e
 JOIN public.guardians g ON e.guardian_id = g.id
-GROUP BY g.id, g.first_name, g.apellido_paterno, g.email, DATE(e.created_at)
+GROUP BY g.id, g.first_name, split_part(COALESCE(g.last_name, ''), ' ', 1), g.email, DATE(e.created_at)
 HAVING COUNT(*) > 1
 ORDER BY enrollments_mismo_dia DESC, fecha DESC;

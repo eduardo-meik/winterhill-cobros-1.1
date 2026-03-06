@@ -22,6 +22,11 @@ function safeYearFromDate(dateStr) {
   }
 }
 
+function getStudentDisplayName(student) {
+  return student?.whole_name
+    || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim();
+}
+
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
     <dt className="text-sm text-gray-500 dark:text-gray-400">{label}</dt>
@@ -137,7 +142,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           const year = safeYearFromDate(formData.payment_date);
           await generateReceiptPdf({
             feeId: payment.id,
-            studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+            studentName: getStudentDisplayName(payment.student),
             courseName: payment.student?.cursos?.nom_curso || null,
             numeroCuota: payment.numero_cuota || null,
             yearAcademico: year,
@@ -230,7 +235,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           || 'Usuario';
         await generateReceiptPdf({
           feeId: payment.id,
-          studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+          studentName: getStudentDisplayName(payment.student),
           courseName: payment.student?.cursos?.nom_curso || null,
           numeroCuota: payment.numero_cuota || null,
           yearAcademico: year,
@@ -263,7 +268,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       })();
       await generateReceiptPdf({
         feeId: payment.id,
-        studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+        studentName: getStudentDisplayName(payment.student),
         courseName: payment.student?.cursos?.nom_curso || null,
         numeroCuota: payment.numero_cuota || null,
         yearAcademico: year,
@@ -299,7 +304,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       })();
       const html = buildReceiptEmailHtml({
         feeId: payment.id,
-        studentName: `${payment.student.first_name} ${payment.student.last_name}`,
+        studentName: getStudentDisplayName(payment.student),
         courseName: payment.student?.cursos?.nom_curso || null,
         numeroCuota: payment.numero_cuota || null,
         yearAcademico: year,
@@ -346,7 +351,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                   Detalles del Pago
                 </Dialog.Title>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {payment.student.first_name} {payment.student.last_name}
+                  {getStudentDisplayName(payment.student)}
                 </p>
               </div>
               <button
@@ -565,7 +570,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                      <div className="grid grid-cols-2 gap-4">
                        <DetailItem 
                          label="Nombre Completo" 
-                         value={`${payment.student.first_name} ${payment.student.last_name}`}
+                         value={getStudentDisplayName(payment.student)}
                        />
                        <DetailItem 
                          label="Curso" 

@@ -14,7 +14,7 @@ SELECT
     s.first_name || ' ' || COALESCE(s.apellido_paterno, '') || ' ' || COALESCE(s.apellido_materno, '') as estudiante,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') as apoderado,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') as apoderado,
     g.id as guardian_id,
     '❌ BORRAR (antigua)' as accion
 FROM enrollment_students es
@@ -73,7 +73,7 @@ SELECT
     s.first_name || ' ' || COALESCE(s.apellido_paterno, '') || ' ' || COALESCE(s.apellido_materno, '') as estudiante,
     e.id as enrollment_id,
     e.created_at::date as fecha_matricula,
-    g.first_name || ' ' || COALESCE(g.apellido_paterno, '') as apoderado,
+    g.first_name || ' ' || COALESCE(split_part(COALESCE(g.last_name, ''), ' ', 1), '') as apoderado,
     '✅ CONSERVAR (más reciente)' as accion
 FROM enrollment_students es
 JOIN students s ON es.student_id = s.id
