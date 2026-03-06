@@ -7,15 +7,6 @@ const STORAGE_KEY = 'winterhill_academic_year';
  * Uses localStorage if available, otherwise defaults to current calendar year.
  */
 function getDefaultYear() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = parseInt(stored, 10);
-      if (!isNaN(parsed) && parsed >= 2020 && parsed <= 2100) return parsed;
-    }
-  } catch {
-    // ignore storage errors
-  }
   return new Date().getFullYear();
 }
 
