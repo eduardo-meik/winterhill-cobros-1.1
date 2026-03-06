@@ -275,14 +275,14 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
             // Fetch student basic info for the receipt
             const { data: studentRows } = await supabase
               .from('students')
-              .select('first_name,last_name,cursos(nom_curso)')
+              .select('first_name,apellido_paterno,apellido_materno,whole_name,cursos(nom_curso)')
               .eq('id', data.student_id)
               .limit(1);
             const student = studentRows?.[0];
             const cashierName = (permissions?.user?.user_metadata?.full_name) || permissions?.user?.email || 'Usuario';
             await generateReceiptPdf({
               feeId: existing.id,
-              studentName: `${student?.first_name || ''} ${student?.last_name || ''}`.trim(),
+              studentName: student?.whole_name || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim(),
               courseName: student?.cursos?.nom_curso || null,
               numeroCuota: cuotaNumber,
               yearAcademico: paymentData.year_academico,
@@ -318,14 +318,14 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
         const feeId = insertedRows?.[0]?.id || '';
         const { data: studentRows } = await supabase
           .from('students')
-          .select('first_name,last_name,cursos(nom_curso)')
+          .select('first_name,apellido_paterno,apellido_materno,whole_name,cursos(nom_curso)')
           .eq('id', data.student_id)
           .limit(1);
         const student = studentRows?.[0];
         const cashierName = (permissions?.user?.user_metadata?.full_name) || permissions?.user?.email || 'Usuario';
         await generateReceiptPdf({
           feeId,
-          studentName: `${student?.first_name || ''} ${student?.last_name || ''}`.trim(),
+          studentName: student?.whole_name || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim(),
           courseName: student?.cursos?.nom_curso || null,
           numeroCuota: isFreePayment ? (data.numero_cuota ? parseInt(data.numero_cuota) : null) : parseInt(data.numero_cuota),
           yearAcademico: paymentData.year_academico,
