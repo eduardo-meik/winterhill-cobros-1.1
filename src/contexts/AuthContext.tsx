@@ -8,6 +8,7 @@ import { LogCode } from '../types/logging';
 import { AuthContextType, AuthState, User as LocalUser } from '../types/auth';
 import { useIdleSessionTimeout } from '../hooks/useIdleSessionTimeout';
 import { clearGuardianCaches } from '../services/matricula';
+import { friendlyError } from '../utils/friendlyError';
 
 const ENABLE_IDLE_TIMEOUT = import.meta.env.PROD;
 
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_LOGIN_FAILED, `Error signing in for ${email}: ${error.message}`, undefined, 'signIn', { level: 'ERROR', area: 'AUTH', email, error });
-        toast.error(error.message || 'Error al iniciar sesión.');
+        toast.error(friendlyError(error, 'Error al iniciar sesión.'));
         throw error;
       }
       if (!data.session || !data.user) {
@@ -146,7 +147,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!error.message?.includes('Error signing in') && !error.message?.includes('No session or user data')) {
         Logger.getInstance().log(LogCode.AUTH_LOGIN_FAILED, `SignIn catch block for ${email}: ${error.message}`, userIdOnError, 'signInCatch', { level: 'ERROR', area: 'AUTH', email, error });
       }
-      toast.error(error.message || 'Error al iniciar sesión.');
+      toast.error(friendlyError(error, 'Error al iniciar sesión.'));
       throw error; 
     }
   };
@@ -164,7 +165,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_SIGNUP_FAILED, `Error signing up for ${email}: ${error.message}`, undefined, 'signUp', { level: 'ERROR', area: 'AUTH', email, error });
-        toast.error(error.message || 'Error al registrar la cuenta.');
+        toast.error(friendlyError(error, 'Error al registrar la cuenta.'));
         throw error;
       }
       userIdForLog = data.user?.id;
@@ -181,7 +182,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!error.message?.includes('Error signing up')) {
          Logger.getInstance().log(LogCode.AUTH_SIGNUP_FAILED, `SignUp catch block for ${email}: ${error.message}`, userIdForLog, 'signUpCatch', { level: 'ERROR', area: 'AUTH', email, error });
       }
-      toast.error(error.message || 'Error al registrar la cuenta.');
+      toast.error(friendlyError(error, 'Error al registrar la cuenta.'));
       throw error;
     }
   };
@@ -193,7 +194,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.signOut();
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_LOGOUT_FAILED, `Error signing out: ${error.message}`, userIdForLog, 'signOut', { level: 'ERROR', area: 'AUTH', error });
-        toast.error(error.message || 'Error al cerrar sesión.');
+        toast.error(friendlyError(error, 'Error al cerrar sesión.'));
         throw error;
       }
       Logger.getInstance().log(LogCode.AUTH_LOGOUT_SUCCESS, 'User signed out successfully', userIdForLog, 'signOut', { level: 'INFO', area: 'AUTH' });
@@ -203,7 +204,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!error.message?.includes('Error signing out')) {
         Logger.getInstance().log(LogCode.AUTH_LOGOUT_FAILED, `SignOut catch block: ${error.message}`, userIdForLog, 'signOutCatch', { level: 'ERROR', area: 'AUTH', error });
       }
-      toast.error(error.message || 'Error al cerrar sesión.');
+      toast.error(friendlyError(error, 'Error al cerrar sesión.'));
       throw error; 
     }
   }, [state.user?.id]);
@@ -262,7 +263,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_PASSWORD_UPDATE_FAILED, `Error updating password: ${error.message}`, userIdForLog, 'updatePassword', { level: 'ERROR', area: 'AUTH', error });
-        toast.error(error.message || 'Error al actualizar la contraseña.');
+        toast.error(friendlyError(error, 'Error al actualizar la contraseña.'));
         throw error;
       }
       Logger.getInstance().log(LogCode.AUTH_PASSWORD_UPDATE_SUCCESS, 'Password updated successfully', userIdForLog, 'updatePassword', { level: 'INFO', area: 'AUTH' });
@@ -273,7 +274,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!errorMessage.includes('Error updating password')) {
          Logger.getInstance().log(LogCode.AUTH_PASSWORD_UPDATE_FAILED, `AuthContext updatePassword catch block: ${errorMessage}`, userIdForLog, 'updatePasswordCatch', { level: 'ERROR', area: 'AUTH', errorDetails: error.message });
       }
-      toast.error(errorMessage);
+      toast.error(friendlyError(error, 'Error al actualizar la contraseña.'));
     } finally {
       setState(prev => ({ ...prev, loading: false }));
     }

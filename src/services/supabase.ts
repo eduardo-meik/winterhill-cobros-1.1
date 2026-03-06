@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import toast from 'react-hot-toast';
+import { friendlyError } from '../utils/friendlyError';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -50,7 +51,6 @@ export const supabase = createClient(
 export const signInWithGoogle = async () => {
   if (!googleClientId) {
     const errorMsg = 'Google OAuth no está configurado. Verifique las variables de entorno.';
-    console.error('Google OAuth configuration missing');
     toast.error(errorMsg);
     throw new Error(errorMsg);
   }
@@ -59,12 +59,6 @@ export const signInWithGoogle = async () => {
     // Use the configured site URL or fallback to window.location.origin
     const redirectUrl = siteUrl || window.location.origin;
     const callbackUrl = `${redirectUrl}/auth/callback`;
-    
-    console.log('🔄 Initiating Google OAuth with:', {
-      provider: 'google',
-      redirectTo: callbackUrl,
-      clientId: googleClientId ? 'Present' : 'Missing'
-    });
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -78,15 +72,12 @@ export const signInWithGoogle = async () => {
     });
 
     if (error) {
-      console.error('Google Auth error:', error);
-      toast.error(`Error al iniciar sesión con Google: ${error.message}`);
+      toast.error(friendlyError(error, 'Error al iniciar sesión con Google.'));
       throw error;
     }
 
-    console.log('✅ Google OAuth initiated successfully');
     return data;
   } catch (error) {
-    console.error('An unexpected error occurred during Google sign-in:', error);
     toast.error('Ocurrió un error inesperado. Por favor, intenta nuevamente.');
     throw error;
   }
@@ -117,6 +108,6 @@ export const handleSupabaseError = (error: any) => {
     return;
   }
 
-  console.error('Supabase error:', error);
+  if (import.meta.env.DEV) console.error('Supabase error:', error);
   toast.error('Error del servidor. Por favor, intenta nuevamente');
 };

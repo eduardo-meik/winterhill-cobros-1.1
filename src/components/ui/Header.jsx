@@ -8,6 +8,7 @@ export function Header({ onMenuClick, onNavigate }) {
         <div className="flex items-center gap-4">
           <button
             onClick={onMenuClick}
+            aria-label="Abrir menú"
             className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">

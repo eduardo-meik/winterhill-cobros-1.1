@@ -3,9 +3,11 @@ import { Outlet } from 'react-router-dom';
 import { Header } from '../ui/Header';
 import Sidebar from '../Sidebar';
 import { MobileMenu } from '../ui/MobileMenu';
+import { Breadcrumbs } from '../ui/Breadcrumbs';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
+import { isGuardianRole } from '../../constants/roles';
 
 export function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,19 +16,19 @@ export function MainLayout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { checking } = useGuardianIntakeGate();
-  const normalizedRole = (user?.role ?? 'guardian').toLowerCase();
+  const guardianUser = isGuardianRole(user?.role);
 
   const restrictedForGuardian = new Set(['students','guardians','reporting','assistant']);
 
   useEffect(() => {
-    if (normalizedRole === 'guardian' && restrictedForGuardian.has(currentPage)) {
+    if (guardianUser && restrictedForGuardian.has(currentPage)) {
       navigate('/apoderado/bienvenido', { replace: true });
       setCurrentPage('dashboard');
     }
-  }, [normalizedRole, currentPage, navigate]);
+  }, [guardianUser, currentPage, navigate]);
 
   const handleMenuItemClick = (page: string) => {
-    if (normalizedRole === 'guardian') {
+    if (guardianUser) {
       if (restrictedForGuardian.has(page)) {
         page = 'dashboard';
       }
@@ -75,7 +77,10 @@ export function MainLayout() {
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : (
-            <Outlet />
+            <div className="flex-1 flex flex-col overflow-auto">
+              <Breadcrumbs />
+              <Outlet />
+            </div>
           )}
         </div>
       </div>

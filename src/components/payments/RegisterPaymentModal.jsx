@@ -8,6 +8,7 @@ import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf } from '../../services/receiptGenerator';
+import { friendlyError } from '../../utils/friendlyError';
 
 const defaultValues = {
   student_id: '',
@@ -78,11 +79,13 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
     try {
       setIsLoadingCuotas(true);
       
+      const currentYear = new Date().getFullYear();
       // Fetch existing fee records for this student to identify cuotas
       const { data: fees, error } = await supabase
         .from('fee')
         .select('numero_cuota, amount, status, due_date, payment_date')
         .eq('student_id', selectedStudentId)
+        .eq('year_academico', currentYear)
         .order('numero_cuota', { ascending: true });
 
       if (error) throw error;
@@ -231,6 +234,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
           .select('id, status')
           .eq('student_id', data.student_id)
           .eq('numero_cuota', cuotaNumber)
+          .eq('year_academico', paymentData.year_academico)
           .neq('status', 'paid')
           .limit(1);
 
@@ -334,11 +338,8 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
       onSuccess();
       onClose();
     } catch (error) {
-      // Improve error visibility
-      const message = error?.message || 'Error desconocido';
-      const details = error?.details || error?.hint || '';
-      console.error('Error al registrar el pago:', { message, details, error });
-      toast.error(`Error al registrar el pago${details ? `: ${details}` : ''}`);
+      console.error('Error al registrar el pago:', error);
+      toast.error(friendlyError(error, 'Error al registrar el pago.'));
     }
   };
 
@@ -536,7 +537,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
                         valueAsNumber: true, // Ensure value is treated as number
                         min: { value: 0.01, message: 'El monto debe ser mayor a 0' },
                         // --- Add max validation ---
-                        max: { value: 5000000, message: 'El monto máximo es 99,999,999.99' }
+                        max: { value: 5000000, message: 'El monto máximo es $5.000.000' }
                         // --- End max validation ---
                       })}
                       className={`w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary ${

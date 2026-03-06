@@ -106,7 +106,6 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
           .maybeSingle();
 
         if (checkError) {
-          console.error('Error checking for existing guardian:', checkError);
           toast.error('Error al verificar el RUN');
           setIsSaving(false); // Ensure saving state is reset
           return;
@@ -129,7 +128,6 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
           .eq('id', guardian.id);
         
         if (updateError) {
-          console.error('Error updating guardian:', updateError);
           throw updateError;
         }
         toast.success('Apoderado actualizado exitosamente');
@@ -137,7 +135,6 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
       } else { // Otherwise, create a new guardian
         const { data: authUser, error: authError } = await supabase.auth.getUser();
         if (authError) {
-          console.error('Error fetching auth user:', authError);
           throw authError;
         }
         const ownerId = authUser?.user?.id || user?.id || null;
@@ -156,7 +153,6 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
           .single();
 
         if (insertError) {
-          console.error('Error creating guardian:', insertError);
           throw insertError;
         }
 
@@ -251,6 +247,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
               </Dialog.Title>
               <button
                 onClick={onClose}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">

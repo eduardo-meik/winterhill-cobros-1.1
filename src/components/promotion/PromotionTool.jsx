@@ -174,6 +174,7 @@ export function PromotionTool() {
     setProcessing(true);
     setPreviewResult(null);
     setConfirmResult(null);
+    toast.loading('Calculando vista previa...', { id: 'promotion' });
     try {
       const planPayload = paymentPlan.monto_cuota > 0 ? paymentPlan : null;
       const { data, error } = await supabase.rpc('promote_and_enroll_batch', {
@@ -184,10 +185,10 @@ export function PromotionTool() {
       });
       if (error) throw error;
       setPreviewResult(data);
-      toast.success(`Vista previa: ${data.promoted} estudiantes serán promovidos`);
+      toast.success(`Vista previa: ${data.promoted} estudiantes serán promovidos`, { id: 'promotion' });
     } catch (err) {
       console.error('Preview error:', err);
-      toast.error('Error en la vista previa');
+      toast.error('Error en la vista previa', { id: 'promotion' });
     } finally {
       setProcessing(false);
     }
@@ -198,6 +199,7 @@ export function PromotionTool() {
     if (selectedIds.size === 0) return;
     setProcessing(true);
     setConfirmResult(null);
+    toast.loading('Promoviendo estudiantes...', { id: 'promotion' });
     try {
       const planPayload = paymentPlan.monto_cuota > 0 ? paymentPlan : null;
       const { data, error } = await supabase.rpc('promote_and_enroll_batch', {
@@ -212,13 +214,14 @@ export function PromotionTool() {
       setSelectedIds(new Set());
       toast.success(
         `✅ ${data.promoted} estudiantes promovidos, ${data.enrollments_created} matrículas creadas` +
-        (data.fees_created > 0 ? `, ${data.fees_created} cuotas generadas` : '')
+        (data.fees_created > 0 ? `, ${data.fees_created} cuotas generadas` : ''),
+        { id: 'promotion' }
       );
       // Refresh the list
       fetchStudents();
     } catch (err) {
       console.error('Confirm error:', err);
-      toast.error('Error al confirmar promoción');
+      toast.error('Error al confirmar promoción', { id: 'promotion' });
     } finally {
       setProcessing(false);
     }

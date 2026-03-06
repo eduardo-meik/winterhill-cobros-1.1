@@ -15,7 +15,8 @@ import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
-  const { academicYear } = useAcademicYear();
+  const { academicYear, setAcademicYear } = useAcademicYear();
+  const isReadOnly = academicYear < new Date().getFullYear();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -327,6 +328,7 @@ export function PaymentsPage() {
   const handleExportExcel = async (exportAll = false) => {
     try {
       setExporting(true);
+      toast.loading('Exportando Excel...', { id: 'payments-export' });
       
       const dataToExport = exportAll ? payments : filteredPayments;
       
@@ -383,10 +385,10 @@ export function PaymentsPage() {
       link.click();
       window.URL.revokeObjectURL(url);
       
-      toast.success('Archivo Excel exportado exitosamente');
+      toast.success('Archivo Excel exportado exitosamente', { id: 'payments-export' });
     } catch (error) {
       console.error('Error al exportar:', error);
-      toast.error('Error al exportar el archivo Excel');
+      toast.error('Error al exportar el archivo Excel', { id: 'payments-export' });
     } finally {
       setExporting(false);
     }
@@ -395,6 +397,23 @@ export function PaymentsPage() {
   return (
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
+        {academicYear < new Date().getFullYear() && (
+          <div className="mx-4 mt-4 flex items-center gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <svg className="h-5 w-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Estás viendo aranceles del año <strong>{academicYear}</strong>. Estos datos son solo de consulta.
+            </p>
+            <button
+              onClick={() => setAcademicYear(new Date().getFullYear())}
+              className="ml-auto text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 whitespace-nowrap"
+            >
+              Volver a {new Date().getFullYear()} →
+            </button>
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center justify-between gap-4 p-4 mb-4">
           <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Aranceles</h1>
           <div className="flex items-center gap-4">
@@ -422,12 +441,14 @@ export function PaymentsPage() {
                 {exporting ? 'Exportando...' : 'Exportar Todo'}
               </Button>
             </div>
-            <Button onClick={() => setIsRegisterModalOpen(true)} className="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,144H32V64H224V192ZM64,104a8,8,0,0,1,8-8H96a8,8,0,0,1,0,16H72A8,8,0,0,1,64,104Zm128,48a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H184A8,8,0,0,1,192,152Z" />
-              </svg>
-              Registrar Pago
-            </Button>
+            {!isReadOnly && (
+              <Button onClick={() => setIsRegisterModalOpen(true)} className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,144H32V64H224V192ZM64,104a8,8,0,0,1,8-8H96a8,8,0,0,1,0,16H72A8,8,0,0,1,64,104Zm128,48a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H184A8,8,0,0,1,192,152Z" />
+                </svg>
+                Registrar Pago
+              </Button>
+            )}
           </div>
         </div>
 

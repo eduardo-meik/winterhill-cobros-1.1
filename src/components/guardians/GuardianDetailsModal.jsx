@@ -21,6 +21,8 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [editingFieldKey, setEditingFieldKey] = useState(null); // null | 'run' | 'email' | etc.
   const [fieldEditValue, setFieldEditValue] = useState('');
   const [isSavingField, setIsSavingField] = useState(false);
+  const [enrollmentStatuses, setEnrollmentStatuses] = useState({}); // { studentId: status }
+  const [debtSummary, setDebtSummary] = useState(null); // { studentId: { paid, pending, overdue, total } }
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -30,13 +32,86 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   useEffect(() => {
     if (guardian?.id) {
       fetchAssociatedStudents();
+      fetchEnrollmentStatuses();
     }
   }, [guardian?.id]);
+
+  const fetchEnrollmentStatuses = async () => {
+    if (!guardian?.id) return;
+    try {
+      const currentYear = new Date().getFullYear();
+      const { data: enrollments, error } = await supabase
+        .from('enrollments')
+        .select(`
+          id,
+          status,
+          enrollment_students ( student_id )
+        `)
+        .eq('guardian_id', guardian.id)
+        .eq('year', currentYear);
+
+      if (error) throw error;
+
+      const statusMap = {};
+      (enrollments || []).forEach(e => {
+        (e.enrollment_students || []).forEach(es => {
+          statusMap[es.student_id] = e.status;
+        });
+      });
+      setEnrollmentStatuses(statusMap);
+    } catch (err) {
+      console.error('Error fetching enrollment statuses:', err);
+    }
+  };
 
   const handleCancel = () => {
     setIsEditing(false);
     reset(guardianData);
   };
+
+  // MJ-02: Fetch debt summary per associated student
+  useEffect(() => {
+    if (associatedStudents.length === 0) {
+      setDebtSummary(null);
+      return;
+    }
+    const fetchDebt = async () => {
+      try {
+        const studentIds = associatedStudents.map(s => s.id);
+        const currentYear = new Date().getFullYear();
+        const { data: fees, error } = await supabase
+          .from('fee')
+          .select('student_id, amount, status, due_date')
+          .in('student_id', studentIds)
+          .eq('year_academico', currentYear);
+
+        if (error) throw error;
+
+        const summary = {};
+        studentIds.forEach(id => {
+          summary[id] = { paid: 0, pending: 0, overdue: 0, total: 0 };
+        });
+        const today = new Date();
+        (fees || []).forEach(f => {
+          const sid = f.student_id;
+          if (!summary[sid]) summary[sid] = { paid: 0, pending: 0, overdue: 0, total: 0 };
+          const amt = Number(f.amount) || 0;
+          summary[sid].total += amt;
+          if (f.status === 'paid') {
+            summary[sid].paid += amt;
+          } else if (new Date(f.due_date) < today) {
+            summary[sid].overdue += amt;
+          } else {
+            summary[sid].pending += amt;
+          }
+        });
+        setDebtSummary(summary);
+      } catch (err) {
+        console.error('Error fetching debt summary:', err);
+      }
+    };
+    fetchDebt();
+  }, [associatedStudents]);
 
   const onSubmit = async (data) => {
     try {
@@ -295,7 +370,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 autoFocus
               />
             )}
-            <button onClick={() => handleFieldSave(fieldKey)} disabled={isSavingField} className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50">
+            <button onClick={() => handleFieldSave(fieldKey)} disabled={isSavingField} aria-label="Guardar campo" className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50">
               {isSavingField ? 
                 <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -305,7 +380,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
               }
             </button>
-            <button onClick={handleFieldCancel} disabled={isSavingField} className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50">
+            <button onClick={handleFieldCancel} disabled={isSavingField} aria-label="Cancelar edición" className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
@@ -375,6 +450,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
               </div>
               <button
                 onClick={onClose}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -608,6 +684,28 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               {student.run ? `RUT: ${student.run} • ` : ''}{student.nom_curso}
                             </p>
+                            {(() => {
+                              const status = enrollmentStatuses[student.id];
+                              const currentYear = new Date().getFullYear();
+                              if (status === 'completed') return (
+                                <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                  Matrícula {currentYear}
+                                </span>
+                              );
+                              if (status === 'pending' || status === 'draft') return (
+                                <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                  Matrícula {currentYear} pendiente
+                                </span>
+                              );
+                              return (
+                                <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                  Sin matrícula {currentYear}
+                                </span>
+                              );
+                            })()}
                           </div>
                           <button
                             type="button"
@@ -623,6 +721,40 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                           </button>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+                {/* MJ-02: Detalle de deuda por estudiante */}
+                {debtSummary && associatedStudents.length > 0 && (
+                  <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                      Resumen de Deuda {new Date().getFullYear()}
+                    </h4>
+                    <div className="space-y-2">
+                      {associatedStudents.map(student => {
+                        const d = debtSummary[student.id];
+                        if (!d || d.total === 0) return null;
+                        const fmt = (n) => `$${n.toLocaleString('es-CL')}`;
+                        return (
+                          <div key={`debt-${student.id}`} className="p-3 rounded-lg bg-gray-50 dark:bg-dark-hover">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">{student.whole_name}</p>
+                            <div className="grid grid-cols-3 gap-2 text-xs">
+                              <div className="text-center p-1.5 rounded bg-green-50 dark:bg-green-900/20">
+                                <p className="text-green-700 dark:text-green-400 font-semibold">{fmt(d.paid)}</p>
+                                <p className="text-green-600 dark:text-green-500">Pagado</p>
+                              </div>
+                              <div className="text-center p-1.5 rounded bg-yellow-50 dark:bg-yellow-900/20">
+                                <p className="text-yellow-700 dark:text-yellow-400 font-semibold">{fmt(d.pending)}</p>
+                                <p className="text-yellow-600 dark:text-yellow-500">Pendiente</p>
+                              </div>
+                              <div className="text-center p-1.5 rounded bg-red-50 dark:bg-red-900/20">
+                                <p className="text-red-700 dark:text-red-400 font-semibold">{fmt(d.overdue)}</p>
+                                <p className="text-red-600 dark:text-red-500">Vencido</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

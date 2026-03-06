@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useGuardianData } from '../../contexts/GuardianContext';
 import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
-import GuardianCompletionNotice from '../../components/guardian/GuardianCompletionNotice';
+import GuardianCompletionNotice from '../../components/guardian-portal/GuardianCompletionNotice';
 import { sendGuardianCompletionEmail } from '../../services/guardianNotifications';
 
 // Simple status chips
@@ -96,6 +96,7 @@ export const GuardianWelcomePage = () => {
     }
     try {
       setSendingCompletionEmail(true);
+      toast.loading('Enviando confirmación...', { id: 'completion-email' });
       const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/matricula` : undefined;
       await sendGuardianCompletionEmail({
         guardian: data.guardian,
@@ -105,11 +106,11 @@ export const GuardianWelcomePage = () => {
         year: currentYear,
         portalUrl,
       });
-      toast.success('Reenviamos la confirmación a tu correo.');
+      toast.success('Reenviamos la confirmación a tu correo.', { id: 'completion-email' });
     } catch (error) {
       console.error('Error enviando confirmación', error);
       const message = error?.message || 'No pudimos enviar el correo de confirmación.';
-      toast.error(message);
+      toast.error(message, { id: 'completion-email' });
     } finally {
       setSendingCompletionEmail(false);
     }

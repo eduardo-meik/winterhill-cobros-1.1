@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useGuardianData } from '../contexts/GuardianContext';
 import { House, UsersThree, ChatDots, Money, ChartPie, Guardian, ClipboardCheck, ArrowsRepeat, GraduationCap } from './Icons';
 import { YearSelector } from './ui/YearSelector';
+import { ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN, isGuardianRole } from '../constants/roles';
 import clsx from 'clsx';
 
 /**
@@ -10,20 +11,20 @@ import clsx from 'clsx';
  * Each item defines an id, icon component, and display text
  */
 const baseMenuItems = [
-  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'asist', 'guardian'] },
-  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: ['admin', 'asist'] },
-  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin', 'asist'] },
-  { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'asist', 'guardian'] },
-  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin', 'asist'] },
+  { id: 'dashboard', icon: House, text: 'Inicio', roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN] },
+  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'payments', icon: Money, text: 'Aranceles', roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN] },
+  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: [ROLE_ADMIN, ROLE_ASIST] },
   {
     id: 'matricula',
     icon: ClipboardCheck,
     text: 'Matrícula',
-    roles: ['admin', 'asist', 'guardian'],
-    condition: ({ role, guardianReady }) => role !== 'guardian' || guardianReady
+    roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN],
+    condition: ({ role, guardianReady }) => !isGuardianRole(role) || guardianReady
   },
-  { id: 'promocion', icon: GraduationCap, text: 'Promoción', roles: ['admin'] },
-  { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: ['admin', 'asist'] }
+  { id: 'promocion', icon: GraduationCap, text: 'Promoción', roles: [ROLE_ADMIN] },
+  { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: [ROLE_ADMIN, ROLE_ASIST] }
   // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   
 ];

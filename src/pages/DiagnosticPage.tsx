@@ -1,4 +1,12 @@
 export function DiagnosticPage() {
+  if (!import.meta.env.DEV) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Página no disponible.</p>
+      </div>
+    );
+  }
+
   const envStatus = {
     VITE_SUPABASE_URL: !!import.meta.env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY: !!import.meta.env.VITE_SUPABASE_ANON_KEY,

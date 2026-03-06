@@ -16,10 +16,12 @@ export function MobileMenu({ isOpen, onClose, currentPage, onNavigate }) {
       
       <div className="fixed inset-y-0 left-0 w-full max-w-xs">
         <Dialog.Panel className="h-full bg-white dark:bg-dark-card shadow-xl">
+          <Dialog.Title className="sr-only">Menú de navegación</Dialog.Title>
           <div className="flex h-16 items-center justify-between px-4 border-b border-gray-100 dark:border-gray-800">
             {/* Removed legacy Bolt CRM branding */}
             <button
               onClick={onClose}
+              aria-label="Cerrar menú"
               className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">

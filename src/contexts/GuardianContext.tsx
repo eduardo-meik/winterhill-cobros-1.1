@@ -2,6 +2,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import toast from 'react-hot-toast';
 import { useAuth } from './AuthContext';
 import { fetchGuardianBootstrap, GuardianBootstrapData } from '../services/guardianBootstrap';
+import { friendlyError } from '../utils/friendlyError';
 
 export interface GuardianContextValue {
   loading: boolean;
@@ -64,7 +65,7 @@ export function GuardianProvider({ children }: GuardianProviderProps) {
         return result;
       })
       .catch((err) => {
-        const message = err?.message || 'No se pudo cargar la información del apoderado.';
+        const message = friendlyError(err, 'No se pudo cargar la información del apoderado.');
         setError(message);
         toast.error(message);
         return null;

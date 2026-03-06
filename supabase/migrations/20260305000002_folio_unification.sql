@@ -1,11 +1,87 @@
--- Migration: Support per-student payment plans in finalize_enrollment
--- Problem: When a family has multiple siblings with different tuition amounts
---          (e.g., different grade levels or scholarships), the system was using
---          a single averaged cuota amount for ALL students.
--- Fix:     Accept optional per_student_plans in p_options. When present, each
---          student gets their own cuotas with individually calculated amounts.
+-- ============================================================================
+-- Migration: Folio Matrícula Unification
+-- 
+-- Problem: Pagaré and cheques use a UUID substring as folio_number, while the
+--          real enrollment folio (ENR-YYYY-NNNNNN) is only generated at
+--          finalization time. The school archives physical expedientes by
+--          folio number, so all documents must share the same folio.
+--
+-- Changes:
+--   1. New RPC  assign_enrollment_folio(uuid)  — pre-assigns a sequential
+--      folio to an enrollment so the pagaré can show it before finalization.
+--   2. Fix  finalize_enrollment  — reuses existing folio (instead of
+--      overwriting with a timestamp-based one), restores sequential format,
+--      and updates cheques.folio_number after finalization.
+--
+-- Existing signed pagarés are NOT affected. Only new enrollments will
+-- receive the pre-assigned folio in their pagaré.
 -- ============================================================================
 
+-- 1. Create the assign_enrollment_folio RPC
+-- -------------------------------------------
+CREATE OR REPLACE FUNCTION public.assign_enrollment_folio(p_enrollment_id uuid)
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_is_staff boolean := public.is_staff();
+  v_enrollment RECORD;
+  v_existing_folio text;
+  v_folio_seq bigint;
+  v_folio text;
+BEGIN
+  IF v_uid IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- Fetch enrollment
+  SELECT e.*, g.owner_id AS guardian_owner
+    INTO v_enrollment
+    FROM public.enrollments e
+    JOIN public.guardians g ON g.id = e.guardian_id
+   WHERE e.id = p_enrollment_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Enrollment % not found', p_enrollment_id;
+  END IF;
+
+  -- Authorization check
+  IF NOT (v_is_staff OR v_enrollment.guardian_owner = v_uid) THEN
+    RAISE EXCEPTION 'RLS_DENIED: you are not allowed to access this enrollment';
+  END IF;
+
+  -- Check if folio already exists
+  v_existing_folio := v_enrollment.meta->>'folio';
+  IF v_existing_folio IS NOT NULL AND v_existing_folio <> '' THEN
+    RETURN v_existing_folio;
+  END IF;
+
+  -- Assign new sequential folio
+  v_folio_seq := nextval('public.enrollment_folio_seq');
+  v_folio := 'ENR-' || v_enrollment.year || '-' || to_char(v_folio_seq, 'FM000000');
+
+  -- Store in enrollment meta
+  UPDATE public.enrollments
+     SET meta = COALESCE(meta, '{}'::jsonb) || jsonb_build_object('folio', v_folio),
+         updated_at = now()
+   WHERE id = p_enrollment_id;
+
+  RETURN v_folio;
+END;
+$$;
+
+COMMENT ON FUNCTION public.assign_enrollment_folio(uuid) IS
+  'Assigns a sequential folio (ENR-YYYY-NNNNNN) to an enrollment. Returns existing folio if already assigned. Idempotent.';
+
+REVOKE ALL ON FUNCTION public.assign_enrollment_folio(uuid) FROM public;
+GRANT EXECUTE ON FUNCTION public.assign_enrollment_folio(uuid) TO authenticated;
+
+
+-- 2. Fix finalize_enrollment: reuse existing folio + sequential format + update cheques
+-- --------------------------------------------------------------------------------------
 DROP FUNCTION IF EXISTS public.finalize_enrollment(uuid, jsonb) CASCADE;
 CREATE OR REPLACE FUNCTION public.finalize_enrollment(p_enrollment_id uuid, p_options jsonb DEFAULT '{}'::jsonb)
 RETURNS jsonb
@@ -27,6 +103,7 @@ DECLARE
   v_students int := 0;
   v_summary jsonb := '[]'::jsonb;
   v_folio text;
+  v_folio_seq bigint;
   r_es RECORD;
   r_cuota RECORD;
 BEGIN
@@ -72,9 +149,8 @@ BEGIN
     RAISE EXCEPTION 'NO_STUDENTS: enrollment has no students';
   END IF;
 
-  -- Load per-student plans (new: individual cuotas per student)
+  -- Load per-student plans (individual cuotas per student)
   v_per_student_plans := p_options->'per_student_plans';
-  -- Also check enrollment.meta for per_student_plans
   IF v_per_student_plans IS NULL THEN
     SELECT e.meta->'per_student_plans' INTO v_per_student_plans
       FROM public.enrollments e WHERE e.id = p_enrollment_id;
@@ -138,17 +214,14 @@ BEGIN
       v_student_cuotas jsonb;
       v_student_plan jsonb;
     BEGIN
-      -- Try to get per-student cuotas first, fall back to global cuotas
       v_student_cuotas := NULL;
       IF v_per_student_plans IS NOT NULL AND v_per_student_plans ? r_es.student_id::text THEN
         v_student_plan := v_per_student_plans->r_es.student_id::text;
         v_student_cuotas := v_student_plan->'cuotas';
-        -- If student plan has payment_method, use it
         IF v_student_plan->>'payment_method' IS NOT NULL THEN
           v_method := v_student_plan->>'payment_method';
         END IF;
       END IF;
-      -- Fall back to global cuotas if per-student not available
       IF v_student_cuotas IS NULL OR jsonb_typeof(v_student_cuotas) <> 'array' THEN
         v_student_cuotas := v_cuotas;
       END IF;
@@ -179,7 +252,8 @@ BEGIN
             r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'pending', v_method,
             v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment')
           )
-          ON CONFLICT (student_id, guardian_id, numero_cuota) DO NOTHING;
+          -- FIX: Match the actual unique index ux_fee_student_year_cuota
+          ON CONFLICT (student_id, year_academico, numero_cuota) DO NOTHING;
 
           IF FOUND THEN
             v_created := v_created + 1;
@@ -196,15 +270,24 @@ BEGIN
   END LOOP;
 
   IF NOT v_dry_run THEN
-    -- Generate folio
-    v_folio := 'ENR-' || v_year || '-' || to_char(now(), 'YYYYMMDDHH24MISS') || '-' || substring(p_enrollment_id::text, 1, 8);
-    
-    -- Update enrollment with folio
+    -- Reuse existing folio if pre-assigned, otherwise generate sequential one
+    v_folio := v_enrollment.meta->>'folio';
+    IF v_folio IS NULL OR v_folio = '' THEN
+      v_folio_seq := nextval('public.enrollment_folio_seq');
+      v_folio := 'ENR-' || v_year || '-' || to_char(v_folio_seq, 'FM000000');
+    END IF;
+
+    -- Update enrollment status + folio
     UPDATE public.enrollments 
        SET status = 'completed', 
            updated_at = now(),
            meta = COALESCE(meta, '{}'::jsonb) || jsonb_build_object('folio', v_folio)
      WHERE id = p_enrollment_id;
+
+    -- Update cheques.folio_number to match the real enrollment folio
+    UPDATE public.cheques
+       SET folio_number = v_folio
+     WHERE enrollment_id = p_enrollment_id;
 
     -- Update student.curso + insert academic record
     FOR r_es IN
@@ -231,7 +314,7 @@ BEGIN
             updated_by = v_uid;
     END LOOP;
 
-    -- Also update students without curso_id in enrollment_students (legacy path)
+    -- Update students without curso_id (legacy path)
     UPDATE public.students
        SET estado_std = 'MATRICULADO'
      WHERE id IN (
@@ -256,7 +339,7 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.finalize_enrollment(uuid, jsonb) IS 
-'Finalize an enrollment: generates fees (with per-student amounts when available), updates student.curso, creates academic records, marks enrollment completed.';
+'Finalize an enrollment: generates fees (with per-student amounts when available), updates student.curso, creates academic records, marks enrollment completed. Reuses pre-assigned folio if available, otherwise generates sequential one. Updates cheques.folio_number to match.';
 
 REVOKE ALL ON FUNCTION public.finalize_enrollment(uuid, jsonb) FROM public;
 GRANT EXECUTE ON FUNCTION public.finalize_enrollment(uuid, jsonb) TO authenticated;

@@ -1,10 +1,6 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { format, parseISO } from 'date-fns';
-import toast from 'react-hot-toast';
-import { supabase } from '../../services/supabase';
-import { PDFReport } from './PDFReport';
 import { TabsContainer, TabButton } from "../ui/Tabs";
 import { GuardianReportTable } from "./tables/GuardianReportTable";
 import { StudentReportTable } from "./tables/StudentReportTable";
@@ -12,759 +8,36 @@ import { ReportFilters } from './ReportFilters';
 import { PaymentsOverview } from './graphs/PaymentsOverview';
 import { PaymentStatusChart } from './graphs/PaymentStatusChart';
 import { PaymentMethodsChart } from './graphs/PaymentMethodsChart';
-import { PaymentsTable } from './tables/PaymentsTable'; // Import from the correct location
-import { generateLibroMatriculaReport, generateFiconReport, generateChequesReport } from '../../services/reporting';
+import { PaymentsTable } from './tables/PaymentsTable';
+import { useReportData } from '../../hooks/reporting/useReportData';
+import { useReportExport } from '../../hooks/reporting/useReportExport';
 
 export function ReportingPage() {
-  const [filters, setFilters] = useState({
-    status: 'all',
-    guardians: [],
-    courses: [],
-    students: [],
-    startDate: '',
-    endDate: '',
-    month: 'all',
-    year: 'all'
-  });
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [guardians, setGuardians] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [exporting, setExporting] = useState(false);
-  const [activeTab, setActiveTab] = useState('payments');
-
   // Refs for charts to capture for PDF export
   const paymentsOverviewRef = useRef(null);
   const paymentStatusRef = useRef(null);
   const paymentMethodsRef = useRef(null);
 
-  useEffect(() => {
-    fetchReferenceData();
-    // Initial data fetch with default filters
-    fetchData(filters);
-  }, []);
+  const {
+    filters, setFilters, loading, data, filteredData,
+    guardians, courses, students, guardianDebtMap,
+    activeTab, setActiveTab,
+    getFilteredData, handleApplyFilters, handleResetFilters,
+  } = useReportData();
 
-  // Memoized filtered data — computed once per data/filters change instead of 8-11× per render
-  const filteredData = useMemo(() => {
-    const validData = data.filter(payment => payment && payment.student);
-    return validData.filter(payment =>
-      (filters.status === 'all' || payment.status === filters.status) &&
-      (!filters.students.length ||
-        (payment.student && filters.students.some(id => String(payment.student.id) === String(id)))) &&
-      (!filters.courses.length ||
-        filters.courses.includes(payment.student?.curso))
-    );
-  }, [data, filters.status, filters.students, filters.courses]);
+  const {
+    exporting, handleExport,
+    handleExportLibroMatricula, handleExportFicon, handleExportCheques,
+  } = useReportExport({
+    data, filters, guardians, courses, getFilteredData,
+    chartRefs: {
+      paymentsOverview: paymentsOverviewRef,
+      paymentStatus: paymentStatusRef,
+      paymentMethods: paymentMethodsRef,
+    },
+  });
 
-  // Keep getFilteredData as a thin wrapper for the export handler (which passes a different dataset)
-  const getFilteredData = (dataToFilter) => {
-    if (dataToFilter === data) return filteredData; // reuse memo
-    const validData = dataToFilter.filter(payment => payment && payment.student);
-    return validData.filter(payment =>
-      (filters.status === 'all' || payment.status === filters.status) &&
-      (!filters.students.length ||
-        (payment.student && filters.students.some(id => String(payment.student.id) === String(id)))) &&
-      (!filters.courses.length ||
-        filters.courses.includes(payment.student?.curso))
-    );
-  };
-
-  const fetchData = async (filters) => {
-    try {
-      setLoading(true);
-      
-      if (import.meta.env.DEV) console.log("Fetching data with filters:", JSON.stringify(filters, null, 2));
-      
-      // Start building the query
-      let query = supabase.from('fee').select(`
-        *,
-        student:students (
-          id,
-          first_name,
-          apellido_paterno,
-          apellido_materno,
-          whole_name,
-          run,
-          curso,
-          cursos:curso (
-            id,
-            nom_curso,
-            nivel
-          )
-        )
-      `);
-      
-      // Apply direct filters
-      if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
-      }
-      
-      // Date filters
-      if (filters.startDate) {
-        query = query.gte('due_date', filters.startDate);
-      }
-      
-      if (filters.endDate) {
-        query = query.lte('due_date', filters.endDate);
-      }
-      
-      // Direct student filter
-      if (filters.students && filters.students.length > 0) {
-        // Log the raw student IDs from the filters
-        if (import.meta.env.DEV) console.log("Raw student IDs from filters:", filters.students);
-        
-        try {
-          // Approach 1: Use in() with string IDs
-          const studentIdsAsString = filters.students.map(id => String(id));
-          if (import.meta.env.DEV) console.log("Applying student filter to query:", {
-            originalIds: filters.students,
-            normalizedIds: studentIdsAsString
-          });
-          
-          // Apply the filter to the database query - ensure consistent string format
-          query = query.in('student_id', studentIdsAsString);
-          
-        } catch (filterError) {
-          if (import.meta.env.DEV) console.error("Error normalizing student IDs:", filterError);
-        }
-      }
-      
-      // Execute the base query with all possible database filters
-      const { data: feesData, error: feesError } = await query;
-      
-      if (feesError) throw feesError;
-      
-      if (import.meta.env.DEV) console.log(`Initial query returned ${feesData?.length} records`);
-      
-      // Always log if the query returned no records when filtering by students
-      if (filters.students && filters.students.length > 0 && (!feesData || feesData.length === 0)) {
-        if (import.meta.env.DEV) console.warn('No records found for selected students! Student IDs:', filters.students);
-      }
-      
-      // Log a sample record to examine its structure
-      if (import.meta.env.DEV && feesData && feesData.length > 0) {
-        console.log('Sample fee record structure:', {
-          studentId: feesData[0].student?.id,
-          feeStudentId: feesData[0].student_id,
-        });
-      }
-      
-      // Apply post-query filters
-      let filteredData = [...feesData];
-      
-      // Apply month filter if specified
-      if (filters.month && filters.month !== 'all') {
-        filteredData = filteredData.filter(fee => {
-          if (!fee.due_date) return false;
-          const dueDate = new Date(fee.due_date);
-          const month = (dueDate.getMonth() + 1).toString(); // JavaScript months are 0-indexed
-          return month === filters.month;
-        });
-      }
-      
-      // Apply year filter if specified
-      if (filters.year && filters.year !== 'all') {
-        filteredData = filteredData.filter(fee => {
-          if (!fee.due_date) return false;
-          const dueDate = new Date(fee.due_date);
-          const year = dueDate.getFullYear().toString();
-          return year === filters.year;
-        });
-      }
-
-      // Apply guardian filter - we need to filter by students related to selected guardians
-      if (filters.guardians && filters.guardians.length > 0) {
-        try {
-          if (import.meta.env.DEV) console.log("Filtering by guardians:", filters.guardians);
-          
-          // Query the student_guardian table to get students for the selected guardians
-          let { data: guardianStudents, error: guardianStudentsError } = await supabase
-            .from('student_guardian')
-            .select('student_id')
-            .in('guardian_id', filters.guardians);
-          
-          if (guardianStudentsError) {
-            console.error("Error querying student_guardian table:", guardianStudentsError);
-            toast.error('Error al obtener la relación estudiante-apoderado');
-            // Continue with existing data
-          } else if (guardianStudents && guardianStudents.length > 0) {
-            // Extract the student IDs from the result and ensure they are strings
-            const studentIdsFromGuardians = guardianStudents.map(gs => String(gs.student_id));
-            console.log(`Found ${studentIdsFromGuardians.length} students related to selected guardians. IDs:`, studentIdsFromGuardians);
-            
-            // Filter the data to only include fees for these students
-            filteredData = filteredData.filter(fee => {
-              // Ensure fee.student and fee.student.id exist before trying to convert to string
-              if (!fee.student || typeof fee.student.id === 'undefined') return false;
-              const feeStudentIdAsString = String(fee.student.id);
-              return studentIdsFromGuardians.includes(feeStudentIdAsString);
-            });
-            
-            if (import.meta.env.DEV) console.log(`After guardian filtering: ${filteredData.length} records remain`);
-          } else {
-            // No students found for these guardians - empty result
-            if (import.meta.env.DEV) console.log('No students found for selected guardians');
-            filteredData = [];
-          }
-        } catch (error) {
-          console.error("Error in guardian filtering:", error);
-          toast.error('Error al filtrar por apoderados');
-          // Keep the current data instead of clearing it completely
-        }
-      }
-      
-      // Apply course filter - need to concatenate with previous filters
-      if (filters.courses && filters.courses.length > 0) {
-        // Need to check if the student's curso matches any of the selected courses
-        filteredData = filteredData.filter(fee => {
-          if (!fee.student || !fee.student.curso) return false;
-          return filters.courses.includes(fee.student.curso);
-        });
-        
-        if (import.meta.env.DEV) console.log(`After course filtering: ${filteredData.length} records`);
-      }
-      
-      // Search filter has been removed
-
-      if (import.meta.env.DEV) console.log(`After filtering: ${filteredData.length} records`);
-      setData(filteredData);
-      
-    } catch (error) {
-      console.error('Error fetching fees:', error);
-      
-      // Provide more specific error messages based on the error type
-      if (error.message && error.message.includes('network')) {
-        toast.error('Error de conexión. Verifique su conexión a internet.');
-      } else if (error.code === 'PGRST116') {
-        toast.error('Error en los filtros aplicados. Por favor revise e intente nuevamente.');
-      } else {
-        toast.error('Error al cargar los aranceles');
-      }
-      
-      // Return empty data on error
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchReferenceData = async () => {
-    try {
-      if (import.meta.env.DEV) console.log("Fetching reference data...");
-      
-      // Fetch guardians separately for better error handling
-      const guardiansResponse = await supabase
-        .from('guardians')
-        .select('id, first_name, last_name, run')
-        .order('last_name', { ascending: true });
-      
-      if (guardiansResponse.error) {
-        console.error("Error loading guardians:", guardiansResponse.error);
-        throw guardiansResponse.error;
-      }
-      
-      if (import.meta.env.DEV) console.log(`Found ${guardiansResponse.data?.length || 0} guardians`);
-      
-      // Fetch courses and students in parallel
-      const [coursesResponse, studentsResponse] = await Promise.all([
-        supabase.from('cursos').select('id, nom_curso, nivel'),
-        supabase.from('students').select('id, first_name, apellido_paterno, whole_name, run')
-      ]);
-
-      if (coursesResponse.error) throw coursesResponse.error;
-      if (studentsResponse.error) throw studentsResponse.error;
-
-      // Process guardian data
-      const processedGuardians = guardiansResponse.data.map(g => ({
-        id: g.id,
-        name: `${g.last_name || ''}, ${g.first_name || ''}`.trim(),
-        run: g.run
-      }));
-      
-      setGuardians(processedGuardians);
-      
-      // Courses
-      setCourses(coursesResponse.data);
-      
-      // Students
-      const processedStudents = studentsResponse.data.map(s => ({
-        id: s.id,
-        name: s.whole_name || `${s.first_name || ''} ${s.apellido_paterno || ''}`.trim(),
-        run: s.run
-      }));
-      
-      setStudents(processedStudents);
-      
-      if (import.meta.env.DEV) console.log("Reference data loaded:", processedGuardians.length, "guardians,", coursesResponse.data.length, "courses,", processedStudents.length, "students");
-      
-    } catch (error) {
-      console.error('Error fetching reference data:', error);
-      toast.error('Error al cargar los datos de referencia');
-    }
-  };
-
-  const calculateSummaryData = (data) => {
-    if (!data || data.length === 0) {
-      return {
-        totalPaid: 0,
-        totalPending: 0,
-        totalOverdue: 0,
-        paymentCount: 0,
-        delinquencyRate: "0.0"
-      };
-    }
-    
-    const totalPaid = data
-      .filter(item => item.status === 'paid')
-      .reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-      
-    const totalPending = data
-      .filter(item => item.status === 'pending')
-      .reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-      
-    const totalOverdue = data
-      .filter(item => item.status === 'overdue')
-      .reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-      
-    const overdueFees = data.filter(item => item.status === 'overdue').length;
-    const delinquencyRate = data.length > 0 
-      ? ((overdueFees / data.length) * 100).toFixed(1)
-      : "0.0";
-      
-    return {
-      totalPaid,
-      totalPending,
-      totalOverdue,
-      paymentCount: data.length,
-      delinquencyRate
-    };
-  };
-
-  const handleExport = async (type) => {
-    try {
-      setExporting(true);
-      
-      // Ensure we have data - if no data returned from filters but filters are active, 
-      // let's show a specific message
-      if (filters.students?.length > 0 && data.length === 0) {
-        toast.error('No se encontraron aranceles para el estudiante seleccionado');
-        setExporting(false);
-        return;
-      }
-      
-      // Apply all active filters to data
-      const filteredExportData = getFilteredData(data);
-      
-      if (import.meta.env.DEV) console.log('Export preparation:', {
-        totalRecords: data.length,
-        filteredRecords: filteredExportData.length,
-      });
-      
-      // Then filter out data with missing required fields
-      const validData = filteredExportData.filter(item => 
-        item && item.student && 
-        (item.student.first_name || item.student.whole_name)
-      );
-      
-      if (validData.length === 0) {
-        if (import.meta.env.DEV) console.warn('No valid data for export after filtering');
-        toast.error('No hay datos válidos para exportar');
-        setExporting(false);
-        return;
-      }
-      
-      // Create descriptive titles based on applied filters
-      let reportTitle = 'Informe de Aranceles';
-      if (filters.guardians && filters.guardians.length > 0) {
-        const guardianNames = filters.guardians
-          .map(id => guardians.find(g => g.id === id)?.name || 'Apoderado')
-          .join(', ');
-        reportTitle += ` - Apoderados: ${guardianNames}`;
-      }
-      
-      if (filters.courses && filters.courses.length > 0) {
-        const courseNames = filters.courses
-          .map(id => courses.find(c => c.id === id)?.nom_curso || 'Curso')
-          .join(', ');
-        reportTitle += ` - Cursos: ${courseNames}`;
-      }
-      
-      if (filters.status !== 'all') {
-        const statusText = filters.status === 'paid' ? 'Pagado' : 
-                           filters.status === 'pending' ? 'Pendiente' : 'Vencido';
-        reportTitle += ` - Estado: ${statusText}`;
-      }
-      
-      // Generate formatted data with curso properly referenced
-      const formattedData = validData.map(item => ({
-        'Estudiante': item.student?.whole_name || `${item.student?.first_name || ''} ${item.student?.apellido_paterno || ''}`,
-        'Curso': item.student?.cursos?.nom_curso || 'Sin asignar',
-        'RUN': item.student?.run || 'N/A',
-        'Cuota N°': item.numero_cuota || 'N/A',
-        'Monto': parseInt(item.amount || 0).toLocaleString('es-CL'),
-        'Estado': item.status === 'paid' ? 'Pagado' : item.status === 'pending' ? 'Pendiente' : 'Vencido',
-        'Fecha Vencimiento': item.due_date ? format(new Date(item.due_date), 'dd/MM/yyyy') : 'N/A',
-        'Fecha Pago': item.payment_date ? format(new Date(item.payment_date), 'dd/MM/yyyy') : 'N/A',
-        'Método Pago': item.payment_method || 'N/A'
-      }));
-
-      // Generate human-readable filter descriptions
-      const readableFilters = {
-        'Período': filters.startDate && filters.endDate 
-          ? `${format(new Date(filters.startDate), 'dd/MM/yyyy')} - ${format(new Date(filters.endDate), 'dd/MM/yyyy')}`
-          : 'Todos',
-        'Estado': filters.status === 'all' ? 'Todos' 
-          : filters.status === 'paid' ? 'Pagado' 
-          : filters.status === 'pending' ? 'Pendiente' 
-          : 'Vencido',
-        'Apoderados': filters.guardians.length > 0
-          ? filters.guardians.map(id => guardians.find(g => g.id === id)?.name || id).join(', ')
-          : 'Todos',
-        'Cursos': filters.courses.length > 0
-          ? filters.courses.map(id => courses.find(c => c.id === id)?.nom_curso || id).join(', ')
-          : 'Todos',
-        'Mes': filters.month !== 'all' 
-          ? ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][parseInt(filters.month) - 1] || filters.month
-          : 'Todos',
-        'Año': filters.year !== 'all' ? filters.year : 'Todos'
-      };
-      
-      const summaryData = calculateSummaryData(validData);
-      
-      if (type === 'excel') {
-        try {
-          // Show loading toast
-          toast.loading('Generando Excel, por favor espere...');
-          
-          // Excel export with summary information and formatted filters
-          const ExcelJS = await import('exceljs');
-          const wb = new ExcelJS.Workbook();
-          
-          // Add info sheet with filter information
-          const filterWs = wb.addWorksheet('Información');
-          
-          const filterInfo = [
-            [reportTitle],
-            ['Generado el:', format(new Date(), 'dd/MM/yyyy HH:mm')],
-            [''],
-            ['Filtros aplicados:'],
-            ['Período:', readableFilters['Período']],
-            ['Estado:', readableFilters['Estado']],
-            ['Apoderados:', readableFilters['Apoderados']],
-            ['Cursos:', readableFilters['Cursos']],
-            ['Mes:', readableFilters['Mes']],
-            ['Año:', readableFilters['Año']],
-            [''],
-            ['Resumen:'],
-            ['Total Pagado:', `$${summaryData.totalPaid.toLocaleString('es-CL')}`],
-            ['Total Pendiente:', `$${summaryData.totalPending.toLocaleString('es-CL')}`],
-            ['Total Vencido:', `$${summaryData.totalOverdue.toLocaleString('es-CL')}`],
-            ['Cantidad de Pagos:', summaryData.paymentCount.toString()],
-            ['Tasa de Morosidad:', `${summaryData.delinquencyRate}%`]
-          ];
-          
-          // Add rows to filter sheet
-          filterInfo.forEach(row => {
-            filterWs.addRow(row);
-          });
-          
-          // Style the filter sheet
-          filterWs.getColumn(1).width = 25;
-          filterWs.getColumn(2).width = 50;
-          
-          // Add data sheet with all cuotas - ensure data formatting is consistent
-          const formattedForExcel = formattedData.map(item => ({
-            'Estudiante': item['Estudiante'] || 'N/A',
-            'Curso': item['Curso'] || 'N/A',
-            'RUN': item['RUN'] || 'N/A',
-            'Cuota N°': item['Cuota N°'] || 'N/A',
-            'Monto': item['Monto'] || '0',
-            'Estado': item['Estado'] || 'N/A',
-            'Fecha Vencimiento': item['Fecha Vencimiento'] || 'N/A',
-            'Fecha Pago': item['Fecha Pago'] || 'N/A',
-            'Método Pago': item['Método Pago'] || 'N/A'
-          }));
-          
-          // Create and add the data sheet
-          const ws = wb.addWorksheet('Aranceles');
-          
-          // Add headers
-          const headers = Object.keys(formattedForExcel[0] || {});
-          ws.addRow(headers);
-          
-          // Add data rows
-          formattedForExcel.forEach(row => {
-            ws.addRow(Object.values(row));
-          });
-          
-          // Set column widths
-          const columnWidths = [30, 15, 12, 10, 12, 10, 16, 16, 15];
-          columnWidths.forEach((width, index) => {
-            ws.getColumn(index + 1).width = width;
-          });
-          
-          const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-          const filename = `informe_aranceles_${timestamp}.xlsx`;
-          
-          // Write file
-          const buffer = await wb.xlsx.writeBuffer();
-          const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          link.click();
-          window.URL.revokeObjectURL(url);
-          
-          // Dismiss loading and show success
-          toast.dismiss();
-          toast.success('Datos exportados exitosamente a Excel');
-        } catch (excelError) {
-          toast.dismiss();
-          console.error('Error exporting to Excel:', excelError);
-          toast.error('Error al exportar a Excel');
-        }
-      } else if (type === 'pdf') {
-        // PDF export with updated title and data
-        try {
-          toast.loading('Generando PDF, por favor espere...');
-          
-          // Ensure charts are rendered before capturing
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          const report = new PDFReport(reportTitle, readableFilters);
-          report.addHeader();
-          report.addSummary(summaryData);
-          report.addPaymentsTable(validData);
-          
-          // Add charts if available - with proper error handling for each chart
-          if (paymentsOverviewRef.current) {
-            try {
-              await report.addChart(paymentsOverviewRef.current, 'Resumen de Pagos');
-            } catch (chartError) {
-              console.error('Error adding payments overview chart:', chartError);
-            }
-          }
-          
-          if (paymentStatusRef.current) {
-            try {
-              await report.addChart(paymentStatusRef.current, 'Estado de Pagos');
-            } catch (chartError) {
-              console.error('Error adding payment status chart:', chartError);
-            }
-          }
-          
-          if (paymentMethodsRef.current) {
-            try {
-              await report.addChart(paymentMethodsRef.current, 'Métodos de Pago');
-            } catch (chartError) {
-              console.error('Error adding payment methods chart:', chartError);
-            }
-          }
-          
-          report.addFooter();
-          
-          const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-          report.save(`informe_aranceles_${timestamp}.pdf`);
-          toast.dismiss();
-          toast.success('PDF generado exitosamente');
-        } catch (pdfError) {
-          toast.dismiss();
-          console.error('Error generating PDF:', pdfError);
-          toast.error('Error al generar el PDF');
-        }
-      }
-    } catch (error) {
-      console.error('Error exporting data:', error);
-      toast.error('Error al exportar los datos');
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleExportLibroMatricula = async () => {
-    try {
-      setExporting(true);
-      toast.loading('Generando Libro de Matrícula...', { id: 'export-libro' });
-      const blob = await generateLibroMatriculaReport();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Libro_Matricula_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      toast.success('Libro de Matrícula descargado', { id: 'export-libro' });
-    } catch (error) {
-      console.error('Error exporting Libro Matricula:', error);
-      toast.error('Error al generar reporte', { id: 'export-libro' });
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleExportFicon = async () => {
-    try {
-      setExporting(true);
-      toast.loading('Generando Reporte FICON...', { id: 'export-ficon' });
-      const blob = await generateFiconReport();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Reporte_FICON_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      toast.success('Reporte FICON descargado', { id: 'export-ficon' });
-    } catch (error) {
-      console.error('Error exporting FICON:', error);
-      toast.error('Error al generar reporte FICON', { id: 'export-ficon' });
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleExportCheques = async () => {
-    try {
-      setExporting(true);
-      toast.loading('Generando Reporte Cheques...', { id: 'export-cheques' });
-      const blob = await generateChequesReport();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Reporte_Cheques_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      toast.success('Reporte de Cheques descargado', { id: 'export-cheques' });
-    } catch (error) {
-      console.error('Error exporting Cheques:', error);
-      toast.error('Error al generar reporte de Cheques', { id: 'export-cheques' });
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleApplyFilters = async (newFilters) => {
-    // Special handling for guardian filters - make sure we have a deep copy
-    const safeNewFilters = {
-      ...newFilters,
-      guardians: Array.isArray(newFilters.guardians) ? [...newFilters.guardians] : [],
-      courses: Array.isArray(newFilters.courses) ? [...newFilters.courses] : [],
-      students: Array.isArray(newFilters.students) ? 
-        newFilters.students.map(id => String(id)) : [] // Ensure student IDs are strings
-    };
-    
-    // Debug student IDs
-    if (import.meta.env.DEV && safeNewFilters.students.length > 0) {
-      console.log("Student IDs after normalization:", safeNewFilters.students);
-    }
-    
-    // Update the filters state
-    setFilters(safeNewFilters);
-    
-    // Check if any filters have changed
-    const hasChanges = Object.keys(safeNewFilters).some(key => {
-      if (Array.isArray(safeNewFilters[key]) && Array.isArray(filters[key])) {
-        // Special handling for array comparisons (guardians, courses, students)
-        if (safeNewFilters[key].length !== filters[key].length) return true;
-        
-        // For arrays, we need to check each element
-        const newSet = new Set(safeNewFilters[key]);
-        const currentSet = new Set(filters[key]);
-        
-        // Check if any element exists in one set but not the other
-        for (const item of newSet) {
-          if (!currentSet.has(item)) return true;
-        }
-        
-        for (const item of currentSet) {
-          if (!newSet.has(item)) return true;
-        }
-        
-        return false;
-      }
-      
-      // Simple comparison for primitive values
-      return safeNewFilters[key] !== filters[key];
-    });
-    
-    if (import.meta.env.DEV) console.log("Has filter changes:", hasChanges);
-    
-    // Always fetch data, but with different toast messages
-    if (hasChanges) {
-      toast.promise(
-        fetchData(safeNewFilters),
-        {
-          loading: 'Aplicando filtros...',
-          success: `Filtros aplicados exitosamente`,
-          error: 'Error al aplicar filtros'
-        }
-      );
-    } else {
-      if (import.meta.env.DEV) console.log("No filter changes detected, fetching with current filters");
-      await fetchData(safeNewFilters);
-    }
-  };
-
-  const handleResetFilters = async () => {
-    // Create a fresh default filters object
-    const defaultFilters = {
-      status: 'all',
-      guardians: [],
-      courses: [],
-      students: [],
-      startDate: '',
-      endDate: '',
-      month: 'all',
-      year: 'all'
-    };
-    
-    if (import.meta.env.DEV) console.log("Resetting filters to defaults");
-    
-    // First update the filters state to ensure components are properly reset
-    setFilters(defaultFilters);
-    setLoading(true);
-    
-    try {
-      // Do a complete fresh data fetch with no filters
-      const { data: feesData, error: feesError } = await supabase
-        .from('fee')
-        .select(`
-          *,
-          student:students (
-            id,
-            first_name,
-            apellido_paterno,
-            apellido_materno,
-            whole_name,
-            run,
-            curso,
-            cursos:curso (
-              id,
-              nom_curso,
-              nivel
-            )
-          )
-        `)
-        .limit(500);
-        
-      if (feesError) {
-        throw feesError;
-      }
-      
-      // Set the fresh data
-      setData(feesData || []);
-      if (import.meta.env.DEV) console.log(`Reset successful. Loaded ${feesData?.length || 0} fee records`);
-      toast.success('Filtros restablecidos exitosamente');
-    } catch (error) {
-      console.error('Error resetting filters:', error);
-      toast.error('Error al restablecer los filtros');
-      // Still set empty data since reset is expected to clear the view
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const noStudentData = filters.students.length > 0 && data.length === 0;
 
   return (
     <main className="flex-1 min-w-0 overflow-auto">
@@ -848,7 +121,7 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Resumen de Pagos</h2>
               </CardHeader>
               <CardContent>
-                {filters.students.length > 0 && data.length === 0 ? (
+                {noStudentData ? (
                   <div className="py-6 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       No se encontraron datos para el estudiante seleccionado.
@@ -870,7 +143,7 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Estado de Pagos</h2>
               </CardHeader>
               <CardContent>
-                {filters.students.length > 0 && data.length === 0 ? (
+                {noStudentData ? (
                   <div className="py-6 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       No se encontraron datos para el estudiante seleccionado.
@@ -892,7 +165,7 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Métodos de Pago</h2>
               </CardHeader>
               <CardContent>
-                {filters.students.length > 0 && data.length === 0 ? (
+                {noStudentData ? (
                   <div className="py-6 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       No se encontraron datos para el estudiante seleccionado.
@@ -917,7 +190,7 @@ export function ReportingPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                {filters.students.length > 0 && data.length === 0 ? (
+                {noStudentData ? (
                   <div className="py-6 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       No se encontraron aranceles para el estudiante seleccionado.
@@ -1001,7 +274,7 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Estudiantes</h2>
               </CardHeader>
               <CardContent>
-                {filters.students.length > 0 && data.length === 0 ? (
+                {noStudentData ? (
                   <div className="py-6 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       No se encontraron aranceles para el estudiante seleccionado.
@@ -1013,19 +286,16 @@ export function ReportingPage() {
                 ) : (
                   <StudentReportTable 
                     data={
-                      // If specific students are selected, prioritize them
                       filters.students.length > 0
                         ? students
                             .filter(s => filters.students.includes(String(s.id)))
                             .map(student => {
-                              // Enrich with the full student data from fees
                               const feeWithStudent = data.find(fee => 
                                 fee.student && String(fee.student.id) === String(student.id)
                               );
                               return feeWithStudent?.student || student;
                             })
-                      : // Otherwise, get students from filtered data
-                        Array.from(new Set(data.map(item => item.student?.id)))
+                      : Array.from(new Set(data.map(item => item.student?.id)))
                           .map(id => {
                             const item = data.find(i => i.student?.id === id);
                             return item?.student;
@@ -1052,7 +322,7 @@ export function ReportingPage() {
                 <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Apoderados</h2>
               </CardHeader>
               <CardContent>
-                {filters.students.length > 0 && data.length === 0 ? (
+                {noStudentData ? (
                   <div className="py-6 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                       No se encontraron aranceles para el estudiante seleccionado.
@@ -1064,13 +334,12 @@ export function ReportingPage() {
                 ) : (
                   <GuardianReportTable 
                     data={
-                      // If specific guardians are selected, show only those
                       filters.guardians.length > 0 
                         ? guardians.filter(g => filters.guardians.includes(g.id))
-                        : // Show all guardians when no specific filters
-                          guardians
+                        : guardians
                     } 
                     loading={loading} 
+                    debtMap={guardianDebtMap}
                     filteredByStudents={filters.students.length > 0}
                     studentsSelected={filters.students.length > 0 ? 
                       students.filter(s => filters.students.includes(String(s.id))).map(s => s.name).join(", ") : 

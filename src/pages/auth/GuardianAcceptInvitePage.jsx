@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../services/supabase';
+import { friendlyError } from '../../utils/friendlyError';
 
 function useQuery() {
   const { search } = useLocation();
@@ -28,8 +29,8 @@ export const GuardianAcceptInvitePage = () => {
         const { data, error } = await supabase.rpc('accept_guardian_invite', { p_token: token });
         if (error) {
           console.error('accept_guardian_invite error', error);
-          toast.error(error.message || 'No se pudo aceptar la invitación');
-          if (active) setStatus({ status: 'error', message: error.message });
+          toast.error(friendlyError(error, 'No se pudo aceptar la invitación.'));
+          if (active) setStatus({ status: 'error', message: friendlyError(error, 'No se pudo aceptar la invitación.') });
           return;
         }
         if (active) setStatus(data);

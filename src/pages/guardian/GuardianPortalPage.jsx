@@ -62,6 +62,9 @@ export default function GuardianPortalPage() {
   const guardian = data?.guardian;
   const students = data?.students || [];
   const fees = data?.fees || [];
+  const enrollment = data?.enrollment;
+  const enrollmentStudentIds = data?.enrollmentStudentIds || [];
+  const enrollmentDocs = data?.enrollmentDocuments || [];
 
   const filteredFees = useMemo(() => {
     let rows = fees.filter((fee) => {
@@ -145,6 +148,52 @@ export default function GuardianPortalPage() {
       {error && (
         <div className="border border-red-300 bg-red-50 dark:bg-red-900/30 text-sm text-red-700 rounded p-3 mb-4">
           {error}
+        </div>
+      )}
+
+      {/* MP-02: Estado de matrícula */}
+      {enrollment && (
+        <div className="mb-6 p-4 rounded border bg-white dark:bg-gray-900 dark:border-gray-800">
+          <h2 className="text-lg font-semibold mb-3">Estado de Matrícula {enrollment.year || currentYear}</h2>
+          <div className="flex items-center gap-3 mb-3">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+              enrollment.status === 'completed'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                : enrollment.status === 'pending' || enrollment.status === 'draft'
+                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
+            }`}>
+              {enrollment.status === 'completed' ? '✓ Matrícula Finalizada'
+                : enrollment.status === 'pending' ? '⏳ Matrícula Pendiente'
+                : enrollment.status === 'draft' ? '📝 Matrícula en Borrador'
+                : enrollment.status}
+            </span>
+            {enrollment.meta?.folio && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">Folio: {enrollment.meta.folio}</span>
+            )}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-300">
+            <span className="font-medium">Estudiantes matriculados:</span>{' '}
+            {enrollmentStudentIds.length > 0
+              ? students.filter(s => enrollmentStudentIds.includes(s.id)).map(s => s.whole_name || s.run).join(', ')
+              : 'Ninguno'}
+          </div>
+          {enrollmentDocs.length > 0 && (
+            <div className="mt-3">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Documentos:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {enrollmentDocs.map((doc, i) => (
+                  <span key={i} className={`inline-flex items-center px-2 py-0.5 rounded text-xs ${
+                    doc.status === 'signed' || doc.status === 'completed'
+                      ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                      : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                  }`}>
+                    {doc.document_type || doc.type || 'Documento'}: {doc.status === 'signed' || doc.status === 'completed' ? '✓ Firmado' : '⏳ Pendiente'}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -43,7 +43,7 @@ export function GoogleAuthButton({
 
   // Don't render if Google OAuth is not configured
   if (!googleClientId) {
-    console.warn('GoogleAuthButton: Google Client ID not found - button will not be rendered');
+    if (isDev) console.warn('GoogleAuthButton: Google Client ID not found - button will not be rendered');
     
     // Show a warning in development
     if (isDev) {
@@ -92,11 +92,9 @@ export function GoogleAuthButton({
 
   const handleGoogleSignIn = async () => {
     try {
-      console.log('🚀 Google sign-in button clicked');
       await signInWithGoogle();
     } catch (error) {
       // Error is handled by the AuthContext
-      console.error('Google sign-in error:', error);
     }
   };
 

@@ -132,6 +132,7 @@ export async function saveIntakeDraft(payload: Record<string, any>) {
   const full = { ...processedPayload, year: CURRENT_YEAR, status: 'draft' };
   const { data, error } = await supabase.rpc('upsert_guardian_intake_survey', { payload: full });
   if (error) throw error;
+  clearGuardianIntakeCache(); // MJ-04: Clear cache so next fetch gets fresh data
   return data as GuardianIntakeRecord;
 }
 

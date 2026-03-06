@@ -9,7 +9,7 @@ import {
   getStudentStatusLabel
 } from '../../utils/studentStatus';
 
-export function StudentsTable({ students, onViewDetails, onSuccess }) {
+export function StudentsTable({ students, onViewDetails, onSuccess, isReadOnly = false }) {
   const handleDelete = async (student) => {
     const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al estudiante ${student.first_name} ${student.last_name}?`);
     if (!confirmed) return;
@@ -41,7 +41,43 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <>
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {students.map((student) => {
+          const canonicalStatus = deriveStudentStatusFromRecord(student);
+          const badgeClass = getStudentStatusBadgeClass(canonicalStatus);
+          const label = getStudentStatusLabel(canonicalStatus);
+          return (
+            <div key={student.id} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {student.whole_name || `${student.first_name} ${student.apellido_paterno}`}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{student.run}</p>
+                </div>
+                <span className={clsx('px-2 py-0.5 rounded-full text-xs font-medium', badgeClass)}>{label}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1 text-xs text-gray-600 dark:text-gray-300 mb-3">
+                <span>Curso: {student.cursos?.nom_curso || 'Sin asignar'}</span>
+                <span>Año: {student.cursos?.year_academico || '—'}</span>
+                <span>Convenio: {student.categoria_social || 'Sin convenio'}</span>
+                <span>Matrícula: {formatDate(student.fecha_matricula)}</span>
+              </div>
+              <div className="flex gap-2 justify-end">
+                {!isReadOnly && (
+                  <button onClick={() => handleDelete(student)} className="text-red-600 text-xs font-medium">Eliminar</button>
+                )}
+                <button onClick={() => onViewDetails(student)} className="text-primary text-xs font-medium">Ver Detalles</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
       <table className="w-full min-w-[800px]">
         <thead>
           <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -105,12 +141,14 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
                 </p>
               </td>
               <td className="py-3 px-4 text-right">
-                <button 
-                  onClick={() => handleDelete(student)}
-                  className="text-red-600 hover:text-red-700 text-sm font-medium mr-4"
-                >
-                  Eliminar
-                </button>
+                {!isReadOnly && (
+                  <button 
+                    onClick={() => handleDelete(student)}
+                    className="text-red-600 hover:text-red-700 text-sm font-medium mr-4"
+                  >
+                    Eliminar
+                  </button>
+                )}
                 <button 
                   onClick={() => onViewDetails(student)}
                   className="text-primary hover:text-primary-light text-sm font-medium"
@@ -122,6 +160,7 @@ export function StudentsTable({ students, onViewDetails, onSuccess }) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }

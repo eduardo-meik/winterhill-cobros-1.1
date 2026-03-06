@@ -182,15 +182,12 @@ export const generateFiconReport = async () => {
   });
 
   if (error) {
-    console.error('Error calling RPC for FICON:', error);
     throw error;
   }
 
   if (!records || records.length === 0) {
     throw new Error('No se encontraron datos para generar el reporte FICON');
   }
-
-  console.log(`📊 FICON: Processing ${records.length} student records`);
 
   // Get financial data from enrollments through enrollment_students relationship
   // IMPORTANT: Don't filter by year or status here - get ALL enrollments and let the RPC filter
@@ -208,8 +205,6 @@ export const generateFiconReport = async () => {
 
   if (enrollmentError) {
     console.error('Error fetching enrollment data:', enrollmentError);
-  } else {
-    console.log(`📊 FICON: Found ${(enrollmentData || []).length} enrollment records`);
   }
 
   // Also get student RUNs to map correctly
@@ -219,8 +214,6 @@ export const generateFiconReport = async () => {
 
   if (studentsError) {
     console.error('Error fetching students:', studentsError);
-  } else {
-    console.log(`📊 FICON: Found ${(students || []).length} students`);
   }
 
   // Create student_id -> RUN mapping (normalized)
@@ -270,23 +263,10 @@ export const generateFiconReport = async () => {
         financialDataMap.set(keyWithYear, financialData);
         financialDataMap.set(studentRun, financialData); // fallback
         mappedCount++;
-        
-        // Debug: log first few mappings
-        if (mappedCount <= 3) {
-          console.log(`💰 FICON Mapping ${mappedCount}:`, {
-            run: studentRun,
-            arancel: financialData.arancel,
-            medio_pago: financialData.medio_pago,
-            enrollment_year: enrollmentYear,
-            enrollment_status: item.enrollment.status
-          });
-        }
       }
     }
   });
   
-  console.log(`💰 FICON: Mapped ${mappedCount} students with financial data`);
-
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet('FICON');
 
@@ -323,25 +303,8 @@ export const generateFiconReport = async () => {
     
     if (financialData) {
       matchedCount++;
-      // Debug first few matches
-      if (matchedCount <= 3) {
-        console.log(`✅ Match ${matchedCount}:`, {
-          student_run: record.run_estudiante,
-          normalized: normalizedStudentRun,
-          arancel: financialData.arancel,
-          medio_pago: financialData.medio_pago
-        });
-      }
     } else {
       unmatchedCount++;
-      // Debug first few unmatched
-      if (unmatchedCount <= 3) {
-        console.log(`❌ No Match ${unmatchedCount}:`, {
-          student_run: record.run_estudiante,
-          normalized: normalizedStudentRun,
-          student_name: record.nombres
-        });
-      }
     }
     
     const dataToUse = financialData || {
@@ -370,8 +333,6 @@ export const generateFiconReport = async () => {
       folio_matricula: dataToUse.folio || ''
     });
   });
-  
-  console.log(`📊 FICON Summary: ${matchedCount} matched, ${unmatchedCount} unmatched out of ${records.length} total`);
 
   const buffer = await workbook.xlsx.writeBuffer();
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -404,7 +365,6 @@ export const generateChequesReport = async () => {
     `);
 
   if (error) {
-    console.error('Error fetching cheques:', error);
     throw error;
   }
 

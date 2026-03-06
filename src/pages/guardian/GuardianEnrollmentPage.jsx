@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { useGuardianData } from '../../contexts/GuardianContext';
 import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
 import { addStudentToEnrollment, removeStudentFromEnrollment, updateEnrollmentMeta, ensureEnrollmentDocuments, finalizeEnrollmentPreview, finalizeEnrollmentConfirm } from '../../services/matricula';
-import GuardianCompletionNotice from '../../components/guardian/GuardianCompletionNotice';
+import GuardianCompletionNotice from '../../components/guardian-portal/GuardianCompletionNotice';
 import { sendGuardianCompletionEmail } from '../../services/guardianNotifications';
 import FinalizeEnrollmentModal from '../../components/matricula/FinalizeEnrollmentModal';
 
@@ -296,6 +296,7 @@ export function GuardianEnrollmentPage() {
     }
     try {
       setSendingCompletionEmail(true);
+      toast.loading('Enviando confirmación...', { id: 'completion-email' });
       const portalUrl = typeof window !== 'undefined' ? `${window.location.origin}/matricula` : undefined;
       await sendGuardianCompletionEmail({
         guardian: data.guardian,
@@ -305,11 +306,11 @@ export function GuardianEnrollmentPage() {
         year: activeYearLabel,
         portalUrl,
       });
-      toast.success('Reenviamos la confirmación a tu correo.');
+      toast.success('Reenviamos la confirmación a tu correo.', { id: 'completion-email' });
     } catch (error) {
       console.error('Error enviando confirmación', error);
       const message = error?.message || 'No pudimos enviar el correo de confirmación.';
-      toast.error(message);
+      toast.error(message, { id: 'completion-email' });
     } finally {
       setSendingCompletionEmail(false);
     }

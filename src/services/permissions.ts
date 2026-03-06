@@ -138,16 +138,7 @@ export const requirePermission = (action: Action) => {
     }
     
     if (!hasPermission(userProfile, action)) {
-      // Log del intento de acción no permitida
-      console.warn(`🚫 Acción denegada: ${action} para perfil ${userProfile}`, {
-        userId: req.user?.id,
-        userEmail: req.user?.email,
-        action,
-        userProfile,
-        ip: req.ip,
-        userAgent: req.get('User-Agent'),
-        timestamp: new Date().toISOString()
-      });
+      // Denied action — do not log sensitive user details to browser console
       
       return res.status(403).json({ 
         error: `Acción no permitida para perfil ${userProfile}`,
@@ -156,13 +147,6 @@ export const requirePermission = (action: Action) => {
         code: 'FORBIDDEN'
       });
     }
-    
-    // Log de acción permitida (opcional, para auditoría)
-    console.log(`✅ Acción permitida: ${action} para perfil ${userProfile}`, {
-      userId: req.user?.id,
-      action,
-      userProfile
-    });
     
     next();
   };

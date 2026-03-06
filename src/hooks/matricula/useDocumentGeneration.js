@@ -6,6 +6,7 @@ import {
   buildEnrollmentPaymentPlan,
   saveChequesForEnrollment,
   ensureEnrollmentDocuments,
+  assignEnrollmentFolio,
 } from '../../services/matricula';
 import {
   finalizeEnrollmentPreview,
@@ -215,6 +216,12 @@ export function useDocumentGeneration({
 
     const prestacionPayload = _buildPayload();
 
+    // Pre-assign enrollment folio so pagaré shows the real folio number
+    const assignedFolio = await assignEnrollmentFolio(enrollment.id);
+    if (assignedFolio) {
+      prestacionPayload.folio_number = assignedFolio;
+    }
+
     const annex = prioritario ? null : descuentoPlanilla ? 'descuento' : paymentMethod.pagare ? 'pagare' : null;
     const html = renderPrestacionWithAnnex(prestacionPayload, { annex });
 
@@ -247,10 +254,10 @@ export function useDocumentGeneration({
     });
     setDocumentRecord(doc);
 
-    // Persist cheques with document_id
+    // Persist cheques with document_id — use the real enrollment folio
     if (paymentMethod?.cheques && Array.isArray(cheques) && cheques.length && doc?.id) {
       try {
-        const folioNumber = doc.id.substring(0, 8).toUpperCase();
+        const folioNumber = assignedFolio || doc.id.substring(0, 8).toUpperCase();
         await saveChequesForEnrollment({
           enrollmentId: enrollment.id,
           cheques: cheques.map((c, idx) => ({
@@ -373,9 +380,11 @@ export function useDocumentGeneration({
         paymentPlan: paymentPlan || null,
       });
 
-      const folioNumber = documentRecord?.id
-        ? documentRecord.id.substring(0, 8).toUpperCase()
-        : (enrollment?.id ? String(enrollment.id).slice(0, 8) : Date.now().toString().slice(-8)).toUpperCase();
+      const enrollmentFolioFromMeta = enrollment?.meta?.folio;
+      const folioNumber = enrollmentFolioFromMeta
+        || (documentRecord?.id
+          ? documentRecord.id.substring(0, 8).toUpperCase()
+          : (enrollment?.id ? String(enrollment.id).slice(0, 8) : Date.now().toString().slice(-8)).toUpperCase());
       payload.folio_number = folioNumber;
 
       const html = renderSingleDocument(payload, type);
@@ -446,6 +455,7 @@ export function useDocumentGeneration({
     try {
       setFinalizing(true);
       setFinalizeAlert(null);
+      toast.loading('Preparando finalización...', { id: 'finalize-enrollment' });
 
       const studentsCount = Array.isArray(students) ? students.length : 0;
       const useAggregated = aggregatedEconomicTotals.totalColegiatura > 0;
@@ -511,13 +521,14 @@ export function useDocumentGeneration({
       const preview = await finalizeEnrollmentPreview(enrollment.id, options);
       setFinalizePreview(preview);
       setFinalizeOpen(true);
+      toast.dismiss('finalize-enrollment');
     } catch (error) {
       console.error('Error previewing finalization:', error?.message || error);
       const errorMsg = error?.message || '';
       if (errorMsg.includes('PLAN_MISSING')) toast.error('Falta el plan de pagos. Por favor, complete los datos económicos y genere el contrato antes de finalizar.');
       else if (errorMsg.includes('NO_STUDENTS')) toast.error('Debe agregar al menos un estudiante para finalizar la matrícula.');
       else if (errorMsg.includes('MISSING_RELATION')) toast.error('Falta la relación entre estudiante y apoderado. Contacte a secretaría administrativa.');
-      else toast.error('Error al preparar la confirmación de matrícula. Verifique que haya completado todos los pasos.');
+      else toast.error('Error al preparar la confirmación de matrícula. Verifique que haya completado todos los pasos.', { id: 'finalize-enrollment' });
     } finally {
       setFinalizing(false);
     }
@@ -527,6 +538,7 @@ export function useDocumentGeneration({
     if (!enrollment?.id) return;
     try {
       setFinalizing(true);
+      toast.loading('Finalizando matrícula...', { id: 'finalize-enrollment' });
       // Pass per_student_plans so each student gets individual cuota amounts
       const confirmOptions = {};
       const perStudentPlans = enrollment?.meta?.per_student_plans;
@@ -538,7 +550,7 @@ export function useDocumentGeneration({
       setEnrollmentFolio(result.folio || null);
       setEnrollment(prev => ({ ...prev, status: 'completed' }));
       if (reloadEnrollmentStudents) await reloadEnrollmentStudents();
-      toast.success('Matrícula finalizada exitosamente');
+      toast.success('Matrícula finalizada exitosamente', { id: 'finalize-enrollment' });
     } catch (error) {
       console.error('Error finalizing enrollment:', error?.message || error);
       const rawMessage = error?.message || '';

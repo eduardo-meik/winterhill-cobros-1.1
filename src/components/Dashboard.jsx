@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAcademicYear } from '../contexts/AcademicYearContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/Button';
+import { isStaffRole } from '../constants/roles';
 import { StatCard } from './dashboard/StatCard';
 import { DebtTrendChart } from './dashboard/graphs/DebtTrendChart';
 import { DebtDistributionChart } from './dashboard/graphs/DebtDistributionChart';
 import { PaymentProjectionChart } from './dashboard/graphs/PaymentProjectionChart';
 import { DebtorsTable } from './dashboard/DebtorsTable';
+import { YearComparisonChart } from './dashboard/graphs/YearComparisonChart';
+import { StatCardSkeleton } from './ui/Skeleton';
 import { supabase } from '../services/supabase';
 import toast from 'react-hot-toast';
 import { format, subMonths } from 'date-fns';
@@ -25,6 +28,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchDashboardData();
+  }, [academicYear]);
+
+  // MJ-04: Auto-refresh when tab becomes visible (e.g., user returns from payments page)
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') fetchDashboardData();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [academicYear]);
 
   const fetchDashboardData = async () => {
@@ -104,34 +116,46 @@ export default function Dashboard() {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-          <StatCard 
-            title="Deudores Activos" 
-            value={loading ? '...' : metrics.activeDebtors} 
-            icon="users"
-          />
-          <StatCard 
-            title="Deuda Total" 
-            value={loading ? '...' : `$${Math.round(metrics.totalDebt).toLocaleString()}`}
-            icon="money"
-          />
-          <StatCard 
-            title="Ingresos Proyectados" 
-            value={loading ? '...' : `$${Math.round(metrics.projectedIncome).toLocaleString()}`}
-            icon="chart"
-          />
-          <StatCard 
-            title="Tasa de Morosidad" 
-            value={loading ? '...' : `${metrics.delinquencyRate.toFixed(1)}%`}
-            change={`${(metrics.delinquencyRate - metrics.previousDelinquencyRate).toFixed(1)}%`}
-            changeType={metrics.delinquencyRate < metrics.previousDelinquencyRate ? 'decrease' : 'increase'}
-            icon="alert"
-          />
+          {loading ? (
+            <>
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </>
+          ) : (
+            <>
+              <StatCard 
+                title="Deudores Activos" 
+                value={metrics.activeDebtors} 
+                icon="users"
+              />
+              <StatCard 
+                title="Deuda Total" 
+                value={`$${Math.round(metrics.totalDebt).toLocaleString()}`}
+                icon="money"
+              />
+              <StatCard 
+                title="Ingresos Proyectados" 
+                value={`$${Math.round(metrics.projectedIncome).toLocaleString()}`}
+                icon="chart"
+              />
+              <StatCard 
+                title="Tasa de Morosidad" 
+                value={`${metrics.delinquencyRate.toFixed(1)}%`}
+                change={`${(metrics.delinquencyRate - metrics.previousDelinquencyRate).toFixed(1)}%`}
+                changeType={metrics.delinquencyRate < metrics.previousDelinquencyRate ? 'decrease' : 'increase'}
+                icon="alert"
+              />
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
           <div className="lg:col-span-2 space-y-4">
             <DebtTrendChart academicYear={academicYear} />
             <PaymentProjectionChart academicYear={academicYear} />
+            <YearComparisonChart academicYear={academicYear} />
           </div>
           
           <div className="space-y-4">
@@ -147,9 +171,7 @@ export default function Dashboard() {
 function DashboardActions() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const role = user?.role?.toLowerCase();
-  const canMatricular = role === 'admin' || role === 'asist';
-  if (!canMatricular) return null;
+  if (!isStaffRole(user?.role)) return null;
   return (
     <div className="flex items-center gap-2">
       <Button

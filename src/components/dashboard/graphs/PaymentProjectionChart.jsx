@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
+import { ChartSkeleton } from '../../ui/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '../../../services/supabase';
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns';
@@ -45,9 +46,7 @@ export function PaymentProjectionChart({ academicYear }) {
         .select('amount, status, due_date, payment_date')
         .order('due_date', { ascending: true });
 
-      if (academicYear) {
-        query = query.eq('year_academico', academicYear);
-      }
+      query = query.eq('year_academico', academicYear || new Date().getFullYear());
 
       const { data: fees, error } = await query;
 
@@ -92,20 +91,7 @@ export function PaymentProjectionChart({ academicYear }) {
   };
 
   if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <h2 className="text-gray-900 dark:text-white text-lg font-semibold">
-            Proyección de Pagos
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <ChartSkeleton title="Proyección de Pagos" />;
   }
 
   return (

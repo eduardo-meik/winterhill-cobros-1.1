@@ -225,7 +225,7 @@ async function fetchGuardianIntake(guardianId: string): Promise<GuardianIntakeRe
     }
     return record;
   } catch (error) {
-    console.warn('[guardianBootstrap] intake fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] intake fetch failed', error);
     return null;
   }
 }
@@ -291,7 +291,7 @@ async function fetchGuardianStudentsList(guardianId: string): Promise<GuardianLi
       })
       .filter(Boolean) as GuardianLinkedStudent[];
   } catch (error) {
-    console.warn('[guardianBootstrap] students fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] students fetch failed', error);
     return [];
   }
 }
@@ -309,7 +309,7 @@ async function fetchGuardianEnrollment(guardianId: string): Promise<EnrollmentRe
     if (!data || !data.length) return null;
     return data[0] as EnrollmentRecord;
   } catch (error) {
-    console.warn('[guardianBootstrap] enrollment fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] enrollment fetch failed', error);
     return null;
   }
 }
@@ -323,7 +323,7 @@ async function fetchEnrollmentStudentIds(enrollmentId: string): Promise<string[]
     if (error) throw error;
     return (data || []).map((row: { student_id: string }) => row.student_id);
   } catch (error) {
-    console.warn('[guardianBootstrap] enrollment students fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] enrollment students fetch failed', error);
     return [];
   }
 }
@@ -350,7 +350,7 @@ async function fetchEnrollmentDocuments(enrollmentId: string): Promise<Enrollmen
     if (error) throw error;
     return (data || []) as EnrollmentDocumentRecord[];
   } catch (error) {
-    console.warn('[guardianBootstrap] enrollment documents fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] enrollment documents fetch failed', error);
     return [];
   }
 }
@@ -376,7 +376,7 @@ async function fetchGuardianFees(studentIds: string[]): Promise<GuardianFeeRecor
       numero_cuota: row.numero_cuota ?? null,
     }));
   } catch (error) {
-    console.warn('[guardianBootstrap] fee fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] fee fetch failed', error);
     return [];
   }
 }
@@ -393,7 +393,7 @@ export async function fetchGuardianBootstrap(userId: string, userEmail?: string 
       throw error;
     }
   } catch (error) {
-    console.warn('[guardianBootstrap] RPC guardian_portal_bootstrap failed, using fallback', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] RPC guardian_portal_bootstrap failed, using fallback', error);
   }
 
   const guardian = await fetchCurrentGuardian(userId, userEmail ?? undefined);
@@ -495,7 +495,7 @@ export async function fetchGuardianBootstrapForStaff(guardianId: string): Promis
       upcomingEnrollmentYear: null,
     });
   } catch (error) {
-    console.warn('[guardianBootstrap] staff fetch failed', error);
+    if (import.meta.env.DEV) console.warn('[guardianBootstrap] staff fetch failed', error);
     return null;
   }
 }

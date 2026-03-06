@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
+import { TableSkeleton } from '../ui/Skeleton';
 import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -33,9 +34,7 @@ export function DebtorsTable({ academicYear }) {
         `)
         .in('status', ['pending', 'overdue']);
 
-      if (academicYear) {
-        query = query.eq('year_academico', academicYear);
-      }
+      query = query.eq('year_academico', academicYear || new Date().getFullYear());
 
       const { data: fees, error } = await query;
 
@@ -83,9 +82,7 @@ export function DebtorsTable({ academicYear }) {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
+          <TableSkeleton rows={5} cols={2} />
         ) : (
           <div className="space-y-4">
             {debtors.map((debtor) => (

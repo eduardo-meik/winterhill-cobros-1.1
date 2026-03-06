@@ -79,6 +79,7 @@ export function ChequeDataModal({ isOpen, onClose, onSave, initialData = null })
             </h2>
             <button
               onClick={handleCancel}
+              aria-label="Cerrar"
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               ✕
@@ -102,7 +103,7 @@ export function ChequeDataModal({ isOpen, onClose, onSave, initialData = null })
                 placeholder="Ej: 123456789"
               />
               {errors.numero_serie && (
-                <p className="text-red-500 text-xs mt-1">{errors.numero_serie}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.numero_serie}</p>
               )}
             </div>
 
@@ -134,7 +135,7 @@ export function ChequeDataModal({ isOpen, onClose, onSave, initialData = null })
                 <option value="Otro">Otro</option>
               </select>
               {errors.banco && (
-                <p className="text-red-500 text-xs mt-1">{errors.banco}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.banco}</p>
               )}
             </div>
 
@@ -152,7 +153,7 @@ export function ChequeDataModal({ isOpen, onClose, onSave, initialData = null })
                 } dark:bg-gray-800 dark:text-white`}
               />
               {errors.fecha_emision && (
-                <p className="text-red-500 text-xs mt-1">{errors.fecha_emision}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.fecha_emision}</p>
               )}
             </div>
 
@@ -173,7 +174,7 @@ export function ChequeDataModal({ isOpen, onClose, onSave, initialData = null })
                 step="1"
               />
               {errors.monto && (
-                <p className="text-red-500 text-xs mt-1">{errors.monto}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.monto}</p>
               )}
             </div>
 

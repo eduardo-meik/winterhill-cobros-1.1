@@ -72,7 +72,9 @@ export async function fetchGuardianFees(
   const { data, error } = await supabase
     .from('fee')
     .select(`
-      *,
+      id, student_id, guardian_id, amount, due_date, payment_date,
+      status, payment_method, num_boleta, mov_bancario, notes,
+      fee_curso, numero_cuota, institucion_financiera, year, year_academico,
       students:student_id (
         id,
         first_name,
@@ -90,7 +92,7 @@ export async function fetchGuardianFees(
     .order('numero_cuota', { ascending: true });
 
   if (error) {
-    console.error('Error fetching guardian fees:', error);
+
     throw error;
   }
 
@@ -115,7 +117,9 @@ export async function fetchStudentFees(
   const { data, error } = await supabase
     .from('fee')
     .select(`
-      *,
+      id, student_id, guardian_id, amount, due_date, payment_date,
+      status, payment_method, num_boleta, mov_bancario, notes,
+      fee_curso, numero_cuota, institucion_financiera, year, year_academico,
       students:student_id (
         id,
         first_name,
@@ -133,7 +137,7 @@ export async function fetchStudentFees(
     .order('numero_cuota', { ascending: true });
 
   if (error) {
-    console.error('Error fetching student fees:', error);
+
     throw error;
   }
 
@@ -152,7 +156,9 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
   const { data, error } = await supabase
     .from('fee')
     .select(`
-      *,
+      id, student_id, guardian_id, amount, due_date, payment_date,
+      status, payment_method, num_boleta, mov_bancario, notes,
+      fee_curso, numero_cuota, institucion_financiera, year, year_academico,
       students:student_id (
         id,
         first_name,
@@ -169,7 +175,6 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
     .order('due_date', { ascending: true });
 
   if (error) {
-    console.error('Error fetching guardian fees (all years):', error);
     throw error;
   }
 

@@ -8,6 +8,18 @@ import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf, buildReceiptEmailHtml } from '../../services/receiptGenerator';
 import { sendEmailViaFunction } from '../../services/email';
+import { friendlyError } from '../../utils/friendlyError';
+
+/** Extract year safely from a date string, fallback to current year */
+function safeYearFromDate(dateStr) {
+  try {
+    const d = new Date(dateStr);
+    const y = d.getFullYear();
+    return Number.isFinite(y) ? y : new Date().getFullYear();
+  } catch {
+    return new Date().getFullYear();
+  }
+}
 
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
@@ -127,7 +139,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
             || permissions?.user?.email 
             || 'Usuario';
           const year = (() => {
-            try { const d = new Date(formData.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+            return safeYearFromDate(formData.payment_date);
           })();
           await generateReceiptPdf({
             feeId: payment.id,
@@ -256,10 +268,8 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       onSuccess?.();
       onClose();
     } catch (err) {
-      const message = err?.message || 'Error al registrar el pago';
-      const details = err?.details || err?.hint || '';
       console.error('Registrar pago error:', err);
-      toast.error(`${message}${details ? `: ${details}` : ''}`);
+      toast.error(friendlyError(err, 'Error al registrar el pago.'));
     } finally {
       setRegisterLoading(false);
     }
@@ -268,12 +278,13 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
   // Print receipt for already paid fees
   const handlePrintReceipt = async () => {
     try {
+      toast.loading('Generando recibo...', { id: 'print-receipt' });
       const cashierName = permissions?.user?.user_metadata?.full_name 
         || permissions?.user?.email 
         || 'Usuario';
       const year = (() => {
         if (payment.year_academico) return payment.year_academico;
-        try { const d = new Date(payment.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+        return safeYearFromDate(payment.payment_date);
       })();
       await generateReceiptPdf({
         feeId: payment.id,
@@ -288,9 +299,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         notes: payment.notes || null,
         cashierName,
       });
+      toast.success('Recibo generado', { id: 'print-receipt' });
     } catch (err) {
       console.error('Error al generar recibo:', err);
-      toast.error('No se pudo generar el recibo');
+      toast.error('No se pudo generar el recibo', { id: 'print-receipt' });
     }
   };
 
@@ -302,12 +314,13 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         return;
       }
       setSendingReceipt(true);
+      toast.loading('Enviando recibo...', { id: 'send-receipt' });
       const cashierName = permissions?.user?.user_metadata?.full_name 
         || permissions?.user?.email 
         || 'Usuario';
       const year = (() => {
         if (payment.year_academico) return payment.year_academico;
-        try { const d = new Date(payment.payment_date || formData.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+        return safeYearFromDate(payment.payment_date || formData.payment_date);
       })();
       const html = buildReceiptEmailHtml({
         feeId: payment.id,
@@ -330,17 +343,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         type: 'receipt',
         related_id: payment.id,
       });
-      toast.success('Recibo enviado por correo');
+      toast.success('Recibo enviado por correo', { id: 'send-receipt' });
     } catch (err) {
       console.error('Enviar recibo error:', err);
-      console.error('Error details:', {
-        message: err?.message,
-        status: err?.status,
-        context: err?.context,
-        full: err
-      });
-      const msg = err?.message || 'No se pudo enviar el recibo';
-      toast.error(`Error al enviar: ${msg}`);
+      toast.error(friendlyError(err, 'No se pudo enviar el recibo.'), { id: 'send-receipt' });
     } finally {
       setSendingReceipt(false);
     }
@@ -370,6 +376,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
               </div>
               <button
                 onClick={onClose}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">

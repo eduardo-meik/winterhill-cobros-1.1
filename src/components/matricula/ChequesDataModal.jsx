@@ -158,7 +158,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
         <CardHeader>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">🧾 Cheques por Cuota</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
+            <button onClick={onClose} aria-label="Cerrar" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
             Definiste {cantidadCuotas} cuotas. Completa los datos de cada cheque.
@@ -196,7 +196,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           className={`w-full px-2 py-1 border rounded ${errors[`${idx}.numero_serie`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-800 dark:text-white`}
                           placeholder="Ej: 123456789"
                         />
-                        {errors[`${idx}.numero_serie`] && <div className="text-red-500 text-xs">{errors[`${idx}.numero_serie`]}</div>}
+                        {errors[`${idx}.numero_serie`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.numero_serie`]}</p>}
                       </td>
                       <td className="px-3 py-2 min-w-[160px]">
                         <select
@@ -219,7 +219,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           <option value="BICE">BICE</option>
                           <option value="Otro">Otro</option>
                         </select>
-                        {errors[`${idx}.banco`] && <div className="text-red-500 text-xs">{errors[`${idx}.banco`]}</div>}
+                        {errors[`${idx}.banco`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.banco`]}</p>}
                       </td>
                       <td className="px-3 py-2 w-44">
                         <input
@@ -228,7 +228,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           onChange={(e) => setField(idx, 'fecha_emision', e.target.value)}
                           className={`w-full px-2 py-1 border rounded ${errors[`${idx}.fecha_emision`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-800 dark:text-white`}
                         />
-                        {errors[`${idx}.fecha_emision`] && <div className="text-red-500 text-xs">{errors[`${idx}.fecha_emision`]}</div>}
+                        {errors[`${idx}.fecha_emision`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.fecha_emision`]}</p>}
                       </td>
                       <td className="px-3 py-2 w-40">
                         <input
@@ -239,7 +239,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           onChange={(e) => setField(idx, 'monto', Number(e.target.value))}
                           className={`w-full px-2 py-1 border rounded ${errors[`${idx}.monto`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-800 dark:text-white`}
                         />
-                        {errors[`${idx}.monto`] && <div className="text-red-500 text-xs">{errors[`${idx}.monto`]}</div>}
+                        {errors[`${idx}.monto`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.monto`]}</p>}
                       </td>
                       <td className="px-3 py-2">
                         <input

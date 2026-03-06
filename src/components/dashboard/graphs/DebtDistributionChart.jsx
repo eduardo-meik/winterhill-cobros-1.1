@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
+import { ChartSkeleton } from '../../ui/Skeleton';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { supabase } from '../../../services/supabase';
 import toast from 'react-hot-toast';
@@ -50,9 +51,7 @@ export function DebtDistributionChart({ academicYear }) {
         `)
         .in('status', ['pending', 'overdue']);
 
-      if (academicYear) {
-        query = query.eq('year_academico', academicYear);
-      }
+      query = query.eq('year_academico', academicYear || new Date().getFullYear());
 
       const { data: fees, error } = await query;
 
@@ -89,20 +88,7 @@ export function DebtDistributionChart({ academicYear }) {
   };
 
   if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <h2 className="text-gray-900 dark:text-white text-lg font-semibold">
-            Distribución de Deuda
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <ChartSkeleton title="Distribución de Deuda" />;
   }
 
   return (

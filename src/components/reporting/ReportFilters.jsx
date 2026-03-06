@@ -197,6 +197,7 @@ export function ReportFilters({
                   {localFilters.guardians && localFilters.guardians.length > 0 && (
                     <button
                       type="button"
+                      aria-label="Limpiar filtro de apoderados"
                       className="absolute right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleFilterChange('guardians', [])}
                     >
@@ -273,6 +274,7 @@ export function ReportFilters({
                   {localFilters.courses && localFilters.courses.length > 0 && (
                     <button
                       type="button"
+                      aria-label="Limpiar filtro de cursos"
                       className="absolute right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleFilterChange('courses', [])}
                     >
@@ -362,6 +364,7 @@ export function ReportFilters({
                   {localFilters.students && localFilters.students.length > 0 && (
                     <button
                       type="button"
+                      aria-label="Limpiar filtro de estudiantes"
                       className="absolute right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleFilterChange('students', [])}
                     >
@@ -473,6 +476,7 @@ export function ReportFilters({
                         <span>Apoderado: {guardian.name}</span>
                         <button
                           type="button"
+                          aria-label="Quitar filtro de apoderado"
                           className="ml-1 p-0.5 rounded-full hover:bg-green-200 dark:hover:bg-green-700"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -500,6 +504,7 @@ export function ReportFilters({
                         <span>Curso: {course.nom_curso}</span>
                         <button
                           type="button"
+                          aria-label="Quitar filtro de curso"
                           className="ml-1 p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-700"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -527,6 +532,7 @@ export function ReportFilters({
                         <span>Estudiante: {student.name}</span>
                         <button
                           type="button"
+                          aria-label="Quitar filtro de estudiante"
                           className="ml-1 p-0.5 rounded-full hover:bg-yellow-200 dark:hover:bg-yellow-700"
                           onClick={(e) => {
                             e.stopPropagation();

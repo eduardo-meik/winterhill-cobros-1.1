@@ -14,6 +14,7 @@ import { ensureStudentFromIntake, fetchCourseCatalogLite } from '../../services/
 import { normalizeRun, formatRunDisplay, isRutFormatValid } from '../../utils/rut';
 import { useGuardianData } from '../../contexts/GuardianContext';
 import { fetchGuardianBootstrapForStaff } from '../../services/guardianBootstrap';
+import { isStaffProfile } from '../../constants/roles';
 
 // Basic required fields for validation before submit
 const REQUIRED_FIELDS = [
@@ -159,7 +160,7 @@ export const GuardianIntakePage = () => {
   const initializedRef = useRef(false);
   const [searchParams] = useSearchParams();
   const targetGuardianId = searchParams.get('guardianId');
-  const isStaffUser = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
+  const isStaffUser = isStaffProfile(user?.profile);
   const actingAsStaff = Boolean(targetGuardianId && isStaffUser);
   const [staffBootstrap, setStaffBootstrap] = useState(null);
   const [staffBootstrapLoading, setStaffBootstrapLoading] = useState(false);
@@ -557,7 +558,7 @@ export const GuardianIntakePage = () => {
           <h1 className="text-2xl font-semibold">Encuesta Anual de Ingreso</h1>
           <p className="text-sm text-gray-600">Año {new Date().getFullYear()} · Estado: <span className="font-medium capitalize">{status}</span></p>
           {status !== 'submitted' && missingRequired.length > 0 && (
-            <p className="text-xs text-red-600 mt-1">Faltan {missingRequired.length} campos obligatorios</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">Faltan {missingRequired.length} campos obligatorios</p>
           )}
           {actingAsStaff && guardianName && (
             <p className="text-xs text-amber-600 mt-1">
@@ -613,7 +614,7 @@ export const GuardianIntakePage = () => {
             className={`input ${errors.guardian_rut ? 'border-red-400' : ''}`}
             placeholder="12.345.678-9"
           />
-          {errors.guardian_rut && <span className="text-xs text-red-600">{errors.guardian_rut}</span>}
+          {errors.guardian_rut && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guardian_rut}</p>}
         </Field>
         <Field label="Nivel Educacional"><input value={form.guardian_education_level} onChange={e=>updateField('guardian_education_level', e.target.value)} className="input" /></Field>
         <Field label="Dirección"><input value={form.guardian_address} onChange={e=>updateField('guardian_address', e.target.value)} className="input" /></Field>
@@ -641,7 +642,7 @@ export const GuardianIntakePage = () => {
             }}
             className={`input ${errors.student_run ? 'border-red-400' : ''}`}
           />
-          {errors.student_run && <span className="text-xs text-red-600">{errors.student_run}</span>}
+          {errors.student_run && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.student_run}</p>}
         </Field>
         <Field label="Curso" required>
           <select
@@ -660,7 +661,7 @@ export const GuardianIntakePage = () => {
               </option>
             ))}
           </select>
-          {errors.student_course_id && <span className="text-xs text-red-600">Requerido</span>}
+          {errors.student_course_id && <p className="mt-1 text-sm text-red-600 dark:text-red-400">Requerido</p>}
         </Field>
         <Field label="Fecha Nacimiento" required><input type="date" value={form.student_birth_date || ''} onChange={e=>updateField('student_birth_date', e.target.value)} className="input" /></Field>
         <Field label="Nacionalidad"><input value={form.student_nationality} onChange={e=>updateField('student_nationality', e.target.value)} className="input" /></Field>

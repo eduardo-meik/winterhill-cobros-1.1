@@ -124,50 +124,41 @@ export function clearGuardianCaches(): void {
 
 // 1. Fetch guardian for current user (assuming one guardian per owner/user)
 export async function fetchCurrentGuardian(userId: string, userEmail?: string | null): Promise<GuardianRecord | null> {
-  console.log('🔍 fetchCurrentGuardian called with userId:', userId, 'userEmail:', userEmail);
   if (!userId) return null;
   if (_guardianCache[userId] !== undefined) {
-    console.log('🔍 fetchCurrentGuardian: Returning from cache:', _guardianCache[userId]);
     return _guardianCache[userId] || null;
   }
   if (Object.prototype.hasOwnProperty.call(_guardianFetchInFlight, userId) && _guardianFetchInFlight[userId]) {
-    console.log('🔍 fetchCurrentGuardian: Returning existing promise');
     return _guardianFetchInFlight[userId] as Promise<GuardianRecord | null>;
   }
 
   _guardianFetchInFlight[userId] = (async () => {
     try {
-      console.log('🔍 fetchCurrentGuardian: Querying database for owner_id:', userId);
       const { data, error } = await supabase
         .from('guardians')
         .select('*')
         .eq('owner_id', userId)
         .limit(1);
-      console.log('🔍 fetchCurrentGuardian: Query result - data:', data, 'error:', error);
       if (error) {
-        console.error('fetchCurrentGuardian error', error);
         toast.error('Error cargando apoderado');
         _guardianCache[userId] = null;
         return null;
       }
       let guardian = data?.[0] || null;
-      console.log('🔍 fetchCurrentGuardian: Guardian from query:', guardian);
 
       const normalizedEmail = userEmail?.trim().toLowerCase() || '';
 
       if (!guardian && normalizedEmail) {
-        console.log('🔍 fetchCurrentGuardian: Attempting email lookup for:', normalizedEmail);
         const { data: emailMatches, error: emailError } = await supabase
           .from('guardians')
           .select('*')
           .ilike('email', normalizedEmail)
           .limit(1);
         if (emailError) {
-          console.error('fetchCurrentGuardian email lookup error', emailError);
+          // email lookup failed — continue with guardian as null
         }
         guardian = emailMatches?.[0] || null;
         if (guardian) {
-          console.log('🔍 fetchCurrentGuardian: Found guardian by email:', guardian.id);
           if (!guardian.owner_id) {
             const { error: updateError } = await supabase
               .from('guardians')
@@ -175,7 +166,7 @@ export async function fetchCurrentGuardian(userId: string, userEmail?: string | 
               .eq('id', guardian.id)
               .is('owner_id', null);
             if (updateError) {
-              console.warn('🔍 fetchCurrentGuardian: Failed to attach owner_id via email lookup', updateError);
+              // Could not attach owner_id — non-fatal
             } else {
               guardian = { ...guardian, owner_id: userId };
             }
@@ -192,10 +183,8 @@ export async function fetchCurrentGuardian(userId: string, userEmail?: string | 
             // If 404 / PGRST202 function not found, mark so we don't retry
             if (rpcErr.code === 'PGRST202') {
               _missingEnsureGuardianFn = true;
-              // Silent after first detection
-              console.warn('[guardians] RPC ensure_guardian_for_user ausente. Omite auto-creación. Puedes crearla o desactivar este flujo.');
             } else {
-              console.error('RPC ensure_guardian_for_user error', rpcErr);
+              // RPC error — non-fatal
             }
           } else if (rpcRes) {
             // Re-query once if RPC succeeded
@@ -229,17 +218,15 @@ export async function fetchCurrentGuardian(userId: string, userEmail?: string | 
             .maybeSingle();
 
           if (insertError) {
-            console.warn('🔍 fetchCurrentGuardian: Manual guardian create failed', insertError);
+            // Manual create failed — guardian stays null
           } else if (inserted) {
             guardian = inserted as GuardianRecord;
-            console.log('🔍 fetchCurrentGuardian: Created guardian placeholder for user:', guardian.id);
           }
         } catch (creationError) {
-          console.warn('🔍 fetchCurrentGuardian: Exception during manual guardian create', creationError);
+          // Swallow — guardian stays null
         }
       }
       _guardianCache[userId] = guardian;
-      console.log('🔍 fetchCurrentGuardian: Final result - caching and returning:', guardian);
       return guardian;
     } finally {
       delete _guardianFetchInFlight[userId];
@@ -259,7 +246,6 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
     .eq('year', year)
     .limit(1);
   if (selError) {
-    console.error('getOrCreateEnrollment select error', selError);
     toast.error('No se pudo revisar matrícula existente');
     return null;
   }
@@ -277,7 +263,6 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
     const isDuplicate = code === '23505' || /duplicate/i.test(message) || /duplicate/i.test(details) || /enrollments_guardian_id_year_key/i.test(message + details);
 
     if (isDuplicate) {
-      console.warn('getOrCreateEnrollment detected duplicate, fetching existing row instead');
       const { data: dupeExisting, error: dupeError } = await supabase
         .from('enrollments')
         .select('*')
@@ -289,11 +274,10 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
         return dupeExisting;
       }
       if (dupeError) {
-        console.error('getOrCreateEnrollment duplicate fallback failed', dupeError);
+        // duplicate fallback failed
       }
     }
 
-    console.error('getOrCreateEnrollment insert error', error);
     toast.error('No se pudo crear matrícula');
     return null;
   }
@@ -462,6 +446,27 @@ export async function updateEnrollmentMeta(enrollmentId: string, patch: Record<s
     console.error('updateEnrollmentMeta error', e);
     toast.error('No se pudo actualizar los datos económicos');
     return false;
+  }
+}
+
+/**
+ * Assigns a sequential folio (ENR-YYYY-NNNNNN) to an enrollment via the
+ * assign_enrollment_folio RPC. Returns the existing folio if already assigned.
+ * Idempotent — safe to call multiple times.
+ */
+export async function assignEnrollmentFolio(enrollmentId: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.rpc('assign_enrollment_folio', {
+      p_enrollment_id: enrollmentId,
+    });
+    if (error) {
+      console.error('assignEnrollmentFolio RPC error', error);
+      return null;
+    }
+    return data as string;
+  } catch (e) {
+    console.error('assignEnrollmentFolio unexpected error', e);
+    return null;
   }
 }
 

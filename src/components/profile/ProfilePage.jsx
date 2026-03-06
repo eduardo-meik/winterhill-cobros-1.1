@@ -167,22 +167,24 @@ export function ProfilePage() {
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre *</label>
                         <input
                           type="text"
-                          {...register('first_name')}
+                          {...register('first_name', { required: 'El nombre es requerido' })}
                           defaultValue={profile?.first_name || ''}
                           className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                         />
+                        {errors.first_name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.first_name.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Apellido</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Apellido *</label>
                         <input
                           type="text"
-                          {...register('last_name')}
+                          {...register('last_name', { required: 'El apellido es requerido' })}
                           defaultValue={profile?.last_name || ''}
                           className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                         />
+                        {errors.last_name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.last_name.message}</p>}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>

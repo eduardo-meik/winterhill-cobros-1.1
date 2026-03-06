@@ -17,10 +17,7 @@ import toast from 'react-hot-toast';
  * @param {Object} props.debtInfo - { total, items }
  * @param {boolean} props.hasRegularized - has a regularization document
  * @param {boolean} props.regularizationSigned - regularization is signed
- * @param {Object|null} props.debtDoc - debt document record
- * @param {Function} props.setDebtDoc - setter for debtDoc
- * @param {Function} props.setHasRegularized - setter
- * @param {Function} props.setRegularizationSigned - setter
+ * @param {Function} props.onDebtRegularized - callback(doc) when a debt pagaré is generated
  * @param {boolean} props.debtLoading - debt verification loading
  * @param {boolean} props.refreshingState - refreshing state
  * @param {Function} props.refreshDebtAndRegularization - refresh handler
@@ -33,10 +30,7 @@ export function DebtGatingBanner({
   debtInfo,
   hasRegularized,
   regularizationSigned,
-  debtDoc,
-  setDebtDoc,
-  setHasRegularized,
-  setRegularizationSigned,
+  onDebtRegularized,
   debtLoading,
   refreshingState,
   refreshDebtAndRegularization,
@@ -54,7 +48,7 @@ export function DebtGatingBanner({
   return (
     <>
       {/* Blocked: debt + no regularization */}
-      {!hasRegularized && !debtDoc && (
+      {!hasRegularized && (
         <div className="mt-4 p-4 rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/30 dark:border-red-700">
           <div className="flex items-start gap-3">
             <span className="text-xl">🛑</span>
@@ -191,17 +185,13 @@ export function DebtGatingBanner({
                       contentHash: hash,
                     });
                     if (doc) {
-                      setDebtDoc(doc);
-                      setHasRegularized(true);
-                      setRegularizationSigned(false);
+                      onDebtRegularized(doc);
                       toast.success('Pagaré de deuda generado');
                       setShowDebtGenerator(false);
                     }
                   } catch (e) {
                     console.error('Debt pagare generation error:', e?.message || e);
                     toast.error('Error generando pagaré de deuda', { id: 'debt-gen' });
-                  } finally {
-                    toast.dismiss('debt-gen');
                   }
                 }}
               >

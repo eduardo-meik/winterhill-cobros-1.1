@@ -104,7 +104,7 @@ export function FinalizeEnrollmentModal({
                 <h2 className="text-lg font-semibold">Confirmar matrícula</h2>
               )}
             </div>
-            {!folio && <button onClick={onClose} className="text-gray-500 hover:text-gray-700 ml-4">✕</button>}
+            {!folio && <button onClick={onClose} aria-label="Cerrar" className="text-gray-500 hover:text-gray-700 ml-4">✕</button>}
           </div>
           {!folio && <p className="text-xs text-gray-600 mt-1">Revisa el resumen antes de confirmar. No se aplicarán cambios hasta que presiones "Confirmar".</p>}
         </CardHeader>

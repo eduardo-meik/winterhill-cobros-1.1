@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 
 /**
@@ -81,6 +81,13 @@ export function useAssistedMode({
     }
   }, []);
 
+  // Debounced wrapper – clears previous timer on each call (300ms)
+  const searchTimerRef = useRef(null);
+  const debouncedSearchGuardians = useCallback((q) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => searchGuardians(q), 300);
+  }, [searchGuardians]);
+
   const handleGuardianModalSuccess = useCallback(() => {
     setGuardianModalOpen(false);
     if (guardianSearch.trim().length >= 2) {
@@ -103,6 +110,7 @@ export function useAssistedMode({
     guardianResults,
     guardianSearchLoading,
     searchGuardians,
+    debouncedSearchGuardians,
     guardianModalOpen,
     setGuardianModalOpen,
     handleGuardianModalSuccess,

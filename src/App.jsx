@@ -16,6 +16,9 @@ import { GuardianAcceptInvitePage } from './pages/auth/GuardianAcceptInvitePage'
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { MainLayout } from './components/layouts/MainLayout';
 import { useAuth } from './contexts/AuthContext';
+import { PageSpinner } from './components/ui/Spinner';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { isGuardianRole } from './constants/roles';
 
 // Lazy-loaded route components — each becomes its own chunk
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -34,25 +37,13 @@ const GuardianWelcomePage = React.lazy(() => import('./pages/guardian/GuardianWe
 const GuardianPortalPage = React.lazy(() => import('./pages/guardian/GuardianPortalPage'));
 const GuardianEnrollmentPage = React.lazy(() => import('./pages/guardian/GuardianEnrollmentPage'));
 
-// Shared loading fallback
-const PageSpinner = () => (
-  <div className="flex h-full items-center justify-center py-20">
-    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
-  </div>
-);
-
 // Dynamic root redirect based on role
 export function RootRedirect() {
   const { user, loading } = useAuth();
   if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
-      </div>
-    );
+    return <PageSpinner />;
   }
-  const role = (user?.role ?? 'guardian').toLowerCase();
-  if (role === 'guardian') return <Navigate to="/apoderado/bienvenido" replace />;
+  if (isGuardianRole(user?.role)) return <Navigate to="/apoderado/bienvenido" replace />;
   return <Navigate to="/dashboard" replace />;
 }
 
@@ -92,7 +83,7 @@ export default function App() {
               path="dashboard"
               element={(
                 <StaffRoute>
-                  <Suspense fallback={<PageSpinner />}><Dashboard /></Suspense>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><Dashboard /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />
@@ -100,7 +91,7 @@ export default function App() {
               path="students"
               element={(
                 <StaffRoute>
-                  <Suspense fallback={<PageSpinner />}><StudentsPage /></Suspense>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><StudentsPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />
@@ -108,7 +99,7 @@ export default function App() {
               path="guardians"
               element={(
                 <StaffRoute>
-                  <Suspense fallback={<PageSpinner />}><GuardiansPage /></Suspense>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><GuardiansPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />
@@ -116,7 +107,7 @@ export default function App() {
               path="payments"
               element={(
                 <StaffRoute>
-                  <Suspense fallback={<PageSpinner />}><PaymentsPage /></Suspense>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><PaymentsPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />
@@ -124,7 +115,7 @@ export default function App() {
               path="reporting"
               element={(
                 <StaffRoute>
-                  <Suspense fallback={<PageSpinner />}><ReportingPage /></Suspense>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><ReportingPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />
@@ -132,19 +123,19 @@ export default function App() {
               path="assistant"
               element={(
                 <StaffRoute>
-                  <Suspense fallback={<PageSpinner />}><AssistantPage /></Suspense>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><AssistantPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />
-            <Route path="profile" element={<Suspense fallback={<PageSpinner />}><ProfilePage /></Suspense>} />
-            <Route path="settings" element={<Suspense fallback={<PageSpinner />}><SettingsPage /></Suspense>} />
-            <Route path="matricula" element={<StaffRoute><Suspense fallback={<PageSpinner />}><MatriculaWizard /></Suspense></StaffRoute>} />
-            <Route path="promocion" element={<StaffRoute><Suspense fallback={<PageSpinner />}><PromotionTool /></Suspense></StaffRoute>} />
-            <Route path="repactacion" element={<StaffRoute><Suspense fallback={<PageSpinner />}><RepactacionWizard /></Suspense></StaffRoute>} />
-            <Route path="apoderado/encuesta" element={<Suspense fallback={<PageSpinner />}><GuardianIntakePage /></Suspense>} />
-            <Route path="apoderado/bienvenido" element={<Suspense fallback={<PageSpinner />}><GuardianWelcomePage /></Suspense>} />
-            <Route path="apoderado/portal" element={<Suspense fallback={<PageSpinner />}><GuardianPortalPage /></Suspense>} />
-            <Route path="apoderado/matricula" element={<Suspense fallback={<PageSpinner />}><GuardianEnrollmentPage /></Suspense>} />
+            <Route path="profile" element={<ErrorBoundary><Suspense fallback={<PageSpinner />}><ProfilePage /></Suspense></ErrorBoundary>} />
+            <Route path="settings" element={<ErrorBoundary><Suspense fallback={<PageSpinner />}><SettingsPage /></Suspense></ErrorBoundary>} />
+            <Route path="matricula" element={<StaffRoute><ErrorBoundary><Suspense fallback={<PageSpinner />}><MatriculaWizard /></Suspense></ErrorBoundary></StaffRoute>} />
+            <Route path="promocion" element={<StaffRoute><ErrorBoundary><Suspense fallback={<PageSpinner />}><PromotionTool /></Suspense></ErrorBoundary></StaffRoute>} />
+            <Route path="repactacion" element={<StaffRoute><ErrorBoundary><Suspense fallback={<PageSpinner />}><RepactacionWizard /></Suspense></ErrorBoundary></StaffRoute>} />
+            <Route path="apoderado/encuesta" element={<ErrorBoundary><Suspense fallback={<PageSpinner />}><GuardianIntakePage /></Suspense></ErrorBoundary>} />
+            <Route path="apoderado/bienvenido" element={<ErrorBoundary><Suspense fallback={<PageSpinner />}><GuardianWelcomePage /></Suspense></ErrorBoundary>} />
+            <Route path="apoderado/portal" element={<ErrorBoundary><Suspense fallback={<PageSpinner />}><GuardianPortalPage /></Suspense></ErrorBoundary>} />
+            <Route path="apoderado/matricula" element={<ErrorBoundary><Suspense fallback={<PageSpinner />}><GuardianEnrollmentPage /></Suspense></ErrorBoundary>} />
           </Route>
         </Routes>
         <Toaster position="top-right" />

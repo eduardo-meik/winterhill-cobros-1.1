@@ -194,9 +194,10 @@ export function MatriculaWizard() {
                     onChange={e => {
                       const q = e.target.value;
                       assisted.setGuardianSearch(q);
-                      setTimeout(() => assisted.searchGuardians(q), 250);
+                      assisted.debouncedSearchGuardians(q);
                     }}
                     placeholder="Buscar por nombre, RUN o email..."
+                    aria-label="Buscar apoderado por nombre, RUN o email"
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                   <Button onClick={() => assisted.searchGuardians(assisted.guardianSearch)} disabled={assisted.guardianSearchLoading}>
@@ -318,10 +319,11 @@ export function MatriculaWizard() {
               debtInfo={debtInfo}
               hasRegularized={hasRegularized}
               regularizationSigned={regularizationSigned}
-              debtDoc={debtDoc}
-              setDebtDoc={setDebtDoc}
-              setHasRegularized={setHasRegularized}
-              setRegularizationSigned={setRegularizationSigned}
+              onDebtRegularized={(doc) => {
+                setDebtDoc(doc);
+                setHasRegularized(true);
+                setRegularizationSigned(false);
+              }}
               debtLoading={debtLoading}
               refreshingState={refreshingState}
               refreshDebtAndRegularization={refreshDebtAndRegularization}

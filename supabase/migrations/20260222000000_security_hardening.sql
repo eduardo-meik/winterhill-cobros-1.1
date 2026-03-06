@@ -67,7 +67,7 @@ SELECT
     f.updated_at,
     CASE
         WHEN f.status = 'overdue' AND f.due_date IS NOT NULL
-        THEN EXTRACT(days FROM (CURRENT_DATE - f.due_date))::integer
+        THEN (CURRENT_DATE - f.due_date::date)
         ELSE NULL
     END AS days_overdue,
     CASE f.status
@@ -286,6 +286,9 @@ END $$;
 -- ── 5.2.1  invoices: replace open ALL with staff-only ──
 
 DROP POLICY IF EXISTS "invoices_authenticated_policy" ON public.invoices;
+DROP POLICY IF EXISTS "invoices_staff_write" ON public.invoices;
+DROP POLICY IF EXISTS "invoices_staff_update" ON public.invoices;
+DROP POLICY IF EXISTS "invoices_staff_delete" ON public.invoices;
 
 CREATE POLICY invoices_staff_write ON public.invoices
   FOR INSERT
@@ -335,6 +338,9 @@ CREATE POLICY invoices_staff_delete ON public.invoices
 DROP POLICY IF EXISTS "matriculas_detalle_delete_policy" ON public.matriculas_detalle;
 DROP POLICY IF EXISTS "matriculas_detalle_insert_policy" ON public.matriculas_detalle;
 DROP POLICY IF EXISTS "matriculas_detalle_update_policy" ON public.matriculas_detalle;
+DROP POLICY IF EXISTS "matriculas_detalle_staff_insert" ON public.matriculas_detalle;
+DROP POLICY IF EXISTS "matriculas_detalle_staff_update" ON public.matriculas_detalle;
+DROP POLICY IF EXISTS "matriculas_detalle_staff_delete" ON public.matriculas_detalle;
 
 CREATE POLICY matriculas_detalle_staff_insert ON public.matriculas_detalle
   FOR INSERT
@@ -381,6 +387,7 @@ CREATE POLICY matriculas_detalle_staff_delete ON public.matriculas_detalle
 -- ── 5.2.3  student_guardian: replace open ALL with staff + owner ──
 
 DROP POLICY IF EXISTS "student_guardian_authenticated_policy" ON public.student_guardian;
+DROP POLICY IF EXISTS "student_guardian_owner_policy" ON public.student_guardian;
 
 CREATE POLICY student_guardian_owner_policy ON public.student_guardian
   FOR ALL

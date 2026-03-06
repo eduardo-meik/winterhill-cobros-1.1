@@ -133,6 +133,7 @@ export function PaymentsFilters({
         value={filters.search}
         onChange={(e) => handleFilterChange('search', e.target.value)}
         placeholder="Buscar por nombre..."
+        aria-label="Buscar pagos por nombre"
         className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
       />
 

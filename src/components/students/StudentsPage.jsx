@@ -9,8 +9,9 @@ import { SearchBar } from './SearchBar';
 import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
-import { deriveStudentStatusFromRecord } from '../../utils/studentStatus';
+import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
+import { format } from 'date-fns';
 
 export function StudentsPage() {
   const [students, setStudents] = useState([]);
@@ -25,7 +26,9 @@ export function StudentsPage() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const { academicYear } = useAcademicYear();
+  const { academicYear, setAcademicYear } = useAcademicYear();
+  const isReadOnly = academicYear < new Date().getFullYear();
+  const [exporting, setExporting] = useState(false);
 
   // Debounce search term
   useEffect(() => {
@@ -160,6 +163,56 @@ export function StudentsPage() {
     setFilters({ curso: 'all', status: 'all', convenio: 'all' });
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      toast.loading('Exportando Excel...', { id: 'students-export' });
+      const dataToExport = filteredStudents;
+      const excelData = dataToExport.map(student => ({
+        'Nombre': student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''}`,
+        'RUN': student.run || '-',
+        'Curso': student.cursos?.nom_curso || '-',
+        'A\u00f1o': student.cursos?.year_academico || '-',
+        'Estado': getStudentStatusLabel(deriveStudentStatusFromRecord(student)),
+        'Convenio': student.categoria_social || 'Sin convenio',
+        'G\u00e9nero': student.genero || '-',
+        'Nacionalidad': student.nacionalidad || '-',
+        'Direcci\u00f3n': student.direccion || '-',
+        'Comuna': student.comuna || '-',
+        'Fecha Matr\u00edcula': student.fecha_matricula ? format(new Date(student.fecha_matricula), 'dd/MM/yyyy') : '-',
+        'Fecha Incorporaci\u00f3n': student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'dd/MM/yyyy') : '-',
+      }));
+
+      const ExcelJS = await import('exceljs');
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Estudiantes');
+      const headers = Object.keys(excelData[0] || {});
+      ws.addRow(headers);
+      excelData.forEach(row => ws.addRow(Object.values(row)));
+      headers.forEach((header, index) => {
+        const column = ws.getColumn(index + 1);
+        const maxLength = Math.max(header.length, ...excelData.map(row => String(row[header] || '').length));
+        column.width = Math.min(maxLength + 2, 50);
+      });
+
+      const timestamp = format(new Date(), 'yyyyMMdd-HHmmss');
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `estudiantes_${academicYear}_${timestamp}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Archivo Excel exportado exitosamente', { id: 'students-export' });
+    } catch (error) {
+      console.error('Error al exportar:', error);
+      toast.error('Error al exportar el archivo Excel', { id: 'students-export' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
@@ -170,8 +223,35 @@ export function StudentsPage() {
               {academicYear}
             </span>
           </div>
-          <Button onClick={() => handleOpenFormModal(null)}>Agregar Estudiante</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleExportExcel}
+              disabled={exporting || filteredStudents.length === 0}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {exporting ? 'Exportando...' : 'Exportar Excel'}
+            </Button>
+            {!isReadOnly && <Button onClick={() => handleOpenFormModal(null)}>Agregar Estudiante</Button>}
+          </div>
         </div>
+
+        {isReadOnly && (
+          <div className="mx-4 mt-2 flex items-center gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <svg className="h-5 w-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Estás viendo estudiantes del año <strong>{academicYear}</strong>. Estos datos son solo de consulta.
+            </p>
+            <button
+              onClick={() => setAcademicYear(new Date().getFullYear())}
+              className="ml-auto text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 whitespace-nowrap"
+            >
+              Volver a {new Date().getFullYear()} →
+            </button>
+          </div>
+        )}
 
         <div className="p-4">
           <Card>
@@ -236,9 +316,10 @@ export function StudentsPage() {
               ) : (
                 <>
                   <StudentsTable
-                    students={paginatedItems} // Pass paginated items
+                    students={paginatedItems}
                     onViewDetails={handleViewDetails}
                     onSuccess={fetchStudents}
+                    isReadOnly={isReadOnly}
                   />
                   {/* --- Add Pagination Component --- */}
                   <Pagination

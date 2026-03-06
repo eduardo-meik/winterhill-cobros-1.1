@@ -31,6 +31,9 @@ export function YearSelector({ compact = false, className = '' }) {
     );
   }
 
+  const currentYear = new Date().getFullYear();
+  const isActive = academicYear >= currentYear;
+
   return (
     <div className={clsx('flex items-center gap-2', className)}>
       <label
@@ -47,10 +50,18 @@ export function YearSelector({ compact = false, className = '' }) {
       >
         {availableYears.map((y) => (
           <option key={y} value={y}>
-            {y}
+            {y}{y >= currentYear ? ' ● Activo' : ' ○ Consulta'}
           </option>
         ))}
       </select>
+      <span className={clsx(
+        'px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap',
+        isActive
+          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+          : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+      )}>
+        {isActive ? 'Activo' : 'Consulta'}
+      </span>
     </div>
   );
 }

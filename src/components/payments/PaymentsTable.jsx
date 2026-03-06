@@ -86,7 +86,42 @@ export const PaymentsTable = React.memo(function PaymentsTable({
   console.log('Cuota numbers in display:', cuotaNumbers);
 
   return (
-    <div className="overflow-x-auto">
+    <>
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {sortedPayments.map((payment) => (
+          <div key={payment.id} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover" onClick={() => onViewDetails(payment)}>
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{payment.student?.cursos?.nom_curso || 'Curso no asignado'}</p>
+              </div>
+              <span className={clsx(
+                'px-2 py-0.5 rounded-full text-xs font-medium',
+                payment.status === 'paid' && 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                payment.status === 'pending' && 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                payment.status === 'overdue' && 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                payment.status === 'cancelled' && 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+              )}>
+                {payment.status === 'paid' ? 'Pagado' : payment.status === 'pending' ? 'Pendiente' : payment.status === 'overdue' ? 'Vencido' : 'Anulado'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
+              <span>Cuota {payment.numero_cuota || 'N/A'}</span>
+              <span className="font-semibold text-sm text-gray-900 dark:text-white">${payment.amount ? Math.round(payment.amount).toLocaleString() : '0'}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <span>Vence: {payment.due_date ? format(new Date(payment.due_date), 'dd/MM/yyyy') : 'N/A'}</span>
+              <span className="capitalize">{payment.payment_method || ''}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
       <TableContainer>
         <TableHeader>
           <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -198,6 +233,7 @@ export const PaymentsTable = React.memo(function PaymentsTable({
           ))}
         </tbody>
       </TableContainer>
-    </div>
+      </div>
+    </>
   );
 });

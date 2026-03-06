@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { isStaffRole } from '../../constants/roles';
 
 export function StaffRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -14,10 +15,7 @@ export function StaffRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const role = (user?.role ?? 'guardian').toLowerCase();
-  const allowed = role === 'admin' || role === 'asist';
-
-  if (!allowed) {
+  if (!isStaffRole(user?.role)) {
     return <Navigate to="/apoderado/bienvenido" state={{ from: location }} replace />;
   }
 
