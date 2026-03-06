@@ -16,7 +16,7 @@ export function useStudentsQuery(options = {}) {
         .from('students')
         .select(`
           *,
-          cursos (
+          curso:cursos (
             id, nom_curso, nivel, year_academico
           )
         `)

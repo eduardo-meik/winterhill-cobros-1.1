@@ -91,7 +91,7 @@ export function useReportData() {
           whole_name,
           run,
           curso,
-          cursos (
+          curso:cursos (
             id,
             nom_curso,
             nivel
@@ -347,7 +347,7 @@ export function useReportData() {
             whole_name,
             run,
             curso,
-            cursos (
+            curso:cursos (
               id,
               nom_curso,
               nivel

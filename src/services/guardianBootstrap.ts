@@ -252,7 +252,7 @@ async function fetchGuardianStudentsList(guardianId: string): Promise<GuardianLi
           comuna,
           institucion_procedencia,
           con_quien_vive,
-          cursos (
+          curso:cursos (
             id,
             nom_curso,
             nivel,

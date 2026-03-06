@@ -81,7 +81,7 @@ export function PaymentsPage() {
         
         // Curso filter
         if (filters.curso !== 'all' && 
-            payment.student?.cursos?.nom_curso !== filters.curso) {
+            payment.student?.curso?.nom_curso !== filters.curso) {
           return false;
         }
         

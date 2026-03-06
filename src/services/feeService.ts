@@ -83,7 +83,7 @@ export async function fetchGuardianFees(
         whole_name,
         run,
         curso,
-        cursos(nom_curso)
+        curso:cursos(nom_curso)
       )
     `)
     .eq('guardian_id', guardianId)
@@ -128,7 +128,7 @@ export async function fetchStudentFees(
         whole_name,
         run,
         curso,
-        cursos(nom_curso)
+        curso:cursos(nom_curso)
       )
     `)
     .eq('student_id', studentId)
@@ -167,7 +167,7 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
         whole_name,
         run,
         curso,
-        cursos(nom_curso)
+        curso:cursos(nom_curso)
       )
     `)
     .eq('guardian_id', guardianId)
@@ -217,8 +217,8 @@ function processFeesWithStatus(fees: any[]): Fee[] {
       curso: fee.students.curso,
     } : undefined;
 
-    const curso = fee.students?.cursos ? {
-      nom_curso: fee.students.cursos.nom_curso
+    const curso = fee.students?.curso ? {
+      nom_curso: fee.students.curso.nom_curso
     } : undefined;
 
     const normalizedYear = fee.year ?? fee.year_academico ?? (fee.due_date ? new Date(fee.due_date).getFullYear() : null);

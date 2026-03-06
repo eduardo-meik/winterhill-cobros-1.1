@@ -52,7 +52,7 @@ export function PromotionTool() {
           run,
           estado_std,
           curso,
-          cursos (
+          curso:cursos (
             id,
             nom_curso,
             nivel,
