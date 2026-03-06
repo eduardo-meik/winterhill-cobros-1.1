@@ -518,7 +518,6 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           apellido_paterno,
           apellido_materno,
           run,
-          curso,
           date_of_birth,
           genero,
           nombre_social,

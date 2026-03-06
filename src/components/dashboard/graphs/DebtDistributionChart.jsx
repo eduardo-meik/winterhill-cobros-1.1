@@ -31,7 +31,7 @@ export function DebtDistributionChart({ academicYear }) {
   const { data: fees = [], isLoading: loading } = useFeesQuery();
 
   const data = useMemo(() => {
-    const pendingFees = fees.filter(f => f.status === 'pending' || f.status === 'overdue');
+    const pendingFees = fees.filter(f => (f.status === 'pending' || f.status === 'overdue') && f.student);
 
     const debtByStudent = pendingFees.reduce((acc, fee) => {
       const studentId = fee.student.id;

@@ -243,7 +243,6 @@ async function fetchGuardianStudentsList(guardianId: string): Promise<GuardianLi
           apellido_paterno,
           apellido_materno,
           run,
-          curso,
           date_of_birth,
           genero,
           nombre_social,

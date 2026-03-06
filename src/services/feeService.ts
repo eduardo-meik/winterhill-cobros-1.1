@@ -82,7 +82,6 @@ export async function fetchGuardianFees(
         apellido_materno,
         whole_name,
         run,
-        curso,
         curso:cursos(nom_curso)
       )
     `)

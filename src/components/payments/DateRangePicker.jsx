@@ -165,7 +165,7 @@ export function DateRangePicker({ onDateRangeChange, onStatusFilterChange }) {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {payment.student.whole_name || `${payment.student.first_name || ''} ${payment.student.apellido_paterno || ''} ${payment.student.apellido_materno || ''}`.trim()}
+                          {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''} ${payment.student?.apellido_materno || ''}`.trim() || 'Sin estudiante'}
                         </p>
                       </div>
                     </td>

@@ -63,37 +63,36 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     notes: ''
   });
 
+  useEffect(() => {
+    if (!payment?.student?.id) return;
+    const fetchGuardianInfo = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('student_guardian')
+          .select(`
+            guardian:guardians (
+              id,
+              first_name,
+              last_name,
+              email,
+              phone,
+              relationship_type
+            )
+          `)
+          .eq('student_id', payment.student.id)
+          .single();
+
+        if (error) throw error;
+        setGuardianInfo(data.guardian);
+      } catch (error) {
+        console.error('Error fetching guardian info:', error);
+      }
+    };
+    fetchGuardianInfo();
+  }, [payment?.student?.id]);
+
   // Early return AFTER all hooks
   if (!payment) return null;
-
-  useEffect(() => {
-    fetchGuardianInfo();
-  }, [payment.student.id]);
-
-  const fetchGuardianInfo = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('student_guardian')
-        .select(`
-          guardian:guardians (
-            id,
-            first_name,
-            last_name,
-            email,
-            phone,
-            relationship_type
-          )
-        `)
-        .eq('student_id', payment.student.id)
-        .single();
-
-      if (error) throw error;
-      setGuardianInfo(data.guardian);
-    } catch (error) {
-      console.error('Error fetching guardian info:', error);
-      toast.error('Error al cargar la información del apoderado');
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
