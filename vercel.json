@@ -1,4 +1,15 @@
 {
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Clear-Site-Data",
+          "value": "\"cache\""
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
