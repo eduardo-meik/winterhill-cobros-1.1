@@ -10,8 +10,9 @@ import { supabase } from '../../services/supabase';
  * @param {object} [options] - extra useQuery options (enabled, select, etc.)
  */
 export function useFeesQuery(academicYear, options = {}) {
+  // Ignoramos academicYear en el key para cachear un solo listado global
   return useQuery({
-    queryKey: ['fees', academicYear],
+    queryKey: ['fees'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('fee')
@@ -30,8 +31,7 @@ export function useFeesQuery(academicYear, options = {}) {
               nom_curso
             )
           )
-        `)
-        .eq('year_academico', academicYear);
+        `);
 
       if (error) throw error;
       return data ?? [];

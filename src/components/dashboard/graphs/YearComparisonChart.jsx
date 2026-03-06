@@ -26,12 +26,15 @@ const CustomTooltip = ({ active, payload, label }) => {
 export function YearComparisonChart({ academicYear }) {
   const previousYear = academicYear - 1;
 
-  const { data: currentFees = [], isLoading: loadingCurrent } = useFeesQuery(academicYear);
-  const { data: prevFees = [], isLoading: loadingPrev } = useFeesQuery(previousYear);
+  const { data: allFees = [], isLoading } = useFeesQuery(); // now fetches ALL
 
-  const loading = loadingCurrent || loadingPrev;
+  const loading = isLoading;
 
   const data = useMemo(() => {
+    // Filtrar client-side por año para que las métricas tengan sentido
+    const currentFees = allFees.filter(f => f.year_academico === academicYear);
+    const prevFees = allFees.filter(f => f.year_academico === previousYear);
+
     const summarize = (fees) => {
       const paid = fees.filter(f => f.status === 'paid').reduce((s, f) => s + parseFloat(f.amount), 0);
       const pending = fees.filter(f => f.status === 'pending').reduce((s, f) => s + parseFloat(f.amount), 0);

@@ -54,3 +54,4 @@ backup_*.py
 cruce_*.py
 detalle_*.py
 explore_schema.py
+.env*.local

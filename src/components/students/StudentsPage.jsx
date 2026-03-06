@@ -8,7 +8,6 @@ import { SearchBar } from './SearchBar';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
-import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import { format } from 'date-fns';
 import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
@@ -24,8 +23,7 @@ export function StudentsPage() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const { academicYear, setAcademicYear } = useAcademicYear();
-  const isReadOnly = academicYear < new Date().getFullYear();
+  const isReadOnly = false; // rollback de readonly para años pasados
   const [exporting, setExporting] = useState(false);
 
   // Debounce search term
@@ -34,11 +32,8 @@ export function StudentsPage() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Filter students by academic year (client-side, shared hook fetches all)
-  const students = useMemo(() =>
-    allStudents.filter(s => s.cursos?.year_academico === academicYear),
-    [allStudents, academicYear]
-  );
+  // No filtramos por academicYear a pedido del usuario (rollback de la feature de selector de año)
+  const students = useMemo(() => allStudents, [allStudents]);
 
   // Sync selectedStudent with latest data
   useEffect(() => {
@@ -166,7 +161,7 @@ export function StudentsPage() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `estudiantes_${academicYear}_${timestamp}.xlsx`;
+      link.download = `estudiantes_${timestamp}.xlsx`;
       link.click();
       window.URL.revokeObjectURL(url);
       toast.success('Archivo Excel exportado exitosamente', { id: 'students-export' });
@@ -184,9 +179,6 @@ export function StudentsPage() {
         <div className="flex flex-wrap items-center justify-between gap-4 p-4">
           <div className="flex items-center gap-3">
             <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Estudiantes</h1>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-              {academicYear}
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -200,23 +192,6 @@ export function StudentsPage() {
             {!isReadOnly && <Button onClick={() => handleOpenFormModal(null)}>Agregar Estudiante</Button>}
           </div>
         </div>
-
-        {isReadOnly && (
-          <div className="mx-4 mt-2 flex items-center gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-            <svg className="h-5 w-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-sm text-blue-700 dark:text-blue-300">
-              Estás viendo estudiantes del año <strong>{academicYear}</strong>. Estos datos son solo de consulta.
-            </p>
-            <button
-              onClick={() => setAcademicYear(new Date().getFullYear())}
-              className="ml-auto text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 whitespace-nowrap"
-            >
-              Volver a {new Date().getFullYear()} →
-            </button>
-          </div>
-        )}
 
         <div className="p-4">
           <Card>

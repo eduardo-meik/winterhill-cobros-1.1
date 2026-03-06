@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/services/supabase';
-import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Pagination } from '../ui/Pagination';
@@ -16,7 +15,8 @@ import toast from 'react-hot-toast';
  *   3. Preview (dry-run) → Confirm → calls `promote_and_enroll_batch` RPC.
  */
 export function PromotionTool() {
-  const { academicYear } = useAcademicYear();
+  const currentYearDate = new Date().getFullYear();
+  const academicYear = currentYearDate;
   const targetYear = academicYear + 1;
 
   // ── State ──────────────────────────────────────────────────────────────────

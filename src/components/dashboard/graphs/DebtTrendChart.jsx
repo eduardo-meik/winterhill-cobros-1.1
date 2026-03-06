@@ -27,7 +27,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function DebtTrendChart({ academicYear }) {
-  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear);
+  const { data: fees = [], isLoading: loading } = useFeesQuery();
 
   const data = useMemo(() => {
     const pendingFees = fees.filter(f => f.status === 'pending' || f.status === 'overdue');

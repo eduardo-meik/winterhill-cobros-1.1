@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useAcademicYear } from '../contexts/AcademicYearContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/Button';
 import { isStaffRole } from '../constants/roles';
@@ -15,7 +14,7 @@ import { useFeesQuery } from '../hooks/queries/useFeesQuery';
 import { subMonths } from 'date-fns';
 
 export default function Dashboard() {
-  const { academicYear } = useAcademicYear();
+  const academicYear = new Date().getFullYear(); // Fallback temporal para gráficas que lo necesiten
 
   // MJ-04: refetchOnWindowFocus replaces the manual visibilitychange listener
   const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear, {
@@ -58,9 +57,6 @@ export default function Dashboard() {
         <div className="flex flex-wrap justify-between gap-3 p-4">
           <div className="flex items-center gap-3">
             <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-              {academicYear}
-            </span>
           </div>
           <DashboardActions />
         </div>

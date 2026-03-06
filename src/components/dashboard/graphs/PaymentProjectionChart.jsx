@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function PaymentProjectionChart({ academicYear }) {
-  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear);
+  const { data: fees = [], isLoading: loading } = useFeesQuery();
 
   const data = useMemo(() => {
     const now = new Date();

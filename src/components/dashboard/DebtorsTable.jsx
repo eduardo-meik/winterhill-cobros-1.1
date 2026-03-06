@@ -5,7 +5,7 @@ import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
 import { format } from 'date-fns';
 
 export function DebtorsTable({ academicYear }) {
-  const { data: fees = [], isLoading: loading } = useFeesQuery(academicYear);
+  const { data: fees = [], isLoading: loading } = useFeesQuery();
 
   const debtors = useMemo(() => {
     const pendingFees = fees.filter(f => f.status === 'pending' || f.status === 'overdue');
