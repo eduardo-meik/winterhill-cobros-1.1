@@ -5,37 +5,38 @@ import { PaymentsTable } from './PaymentsTable';
 import { PaymentsFilters } from './PaymentsFilters';
 import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { supabase } from '@/services/supabase';
+import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
+import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
   const { academicYear, setAcademicYear } = useAcademicYear();
   const isReadOnly = academicYear < new Date().getFullYear();
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: rawFees = [], isLoading: loading } = useFeesQuery(academicYear);
   const [exporting, setExporting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [currentOffset, setCurrentOffset] = useState(0);
-  const searchTimerRef = useRef(null);
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
     curso: 'all',
     month: 'all',
     paymentMethod: 'all',
-    cuota: 'all', // Added filter for cuota
+    cuota: 'all',
     startDate: '',
     endDate: ''
   });
+
+  // Sort by created_at desc (server query used to do this)
+  const payments = useMemo(() =>
+    [...rawFees].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
+    [rawFees]
+  );
   // Optimize filter options calculation with useMemo and better data structure
   const filterOptions = useMemo(() => {
     if (payments.length === 0) return { cursos: [], cuotas: [] };
@@ -150,161 +151,6 @@ export function PaymentsPage() {
     paginatedItems,
     handlePageChange
   } = usePagination(filteredPayments);
-
-  useEffect(() => {
-    fetchPayments(true); // Refetch when academic year changes
-  }, [academicYear]);
-
-  // Refetch when status changes immediately; debounce search by 400ms
-  useEffect(() => {
-    fetchPayments(true);
-  }, [filters.status]);
-
-  useEffect(() => {
-    // Skip initial mount (handled above)
-    if (searchTimerRef.current === null && !filters.search) {
-      searchTimerRef.current = 'init';
-      return;
-    }
-    clearTimeout(searchTimerRef.current);
-    searchTimerRef.current = setTimeout(() => {
-      fetchPayments(true);
-    }, 400);
-    return () => clearTimeout(searchTimerRef.current);
-  }, [filters.search]);
-
-  const fetchPayments = async (reset = true) => {
-    try {
-      if (reset) {
-        setLoading(true);
-        setCurrentOffset(0);
-      }
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('No autenticado');
-      }
-
-      const startTime = performance.now();
-
-      // Get total count for the current academic year
-      const { count, error: countError } = await supabase
-        .from('fee')
-        .select('id', { count: 'exact', head: true })
-        .eq('year_academico', academicYear);
-      
-      if (countError) throw countError;
-      setTotalCount(count || 0);
-
-      // Build base query — includes year_academico and filters by academic year
-      let query = supabase
-        .from('fee')
-        .select(`
-          id,
-          student_id,
-          amount,
-          status,
-          due_date,
-          payment_date,
-          payment_method,
-          numero_cuota,
-          year_academico,
-          num_boleta,
-          mov_bancario,
-          notes,
-          created_at,
-          students (
-            id,
-            first_name,
-            apellido_paterno,
-            whole_name,
-            run,
-            curso,
-            cursos (
-              id,
-              nom_curso
-            )
-          )
-        `)
-        .eq('year_academico', academicYear);
-
-      // If searching by student text, narrow results server-side by matching student ids
-      if (filters.search && filters.search.trim()) {
-        const term = filters.search.trim();
-        const ilike = `%${term}%`;
-        const { data: stu, error: stuErr } = await supabase
-          .from('students')
-          .select('id')
-          .or(
-            `whole_name.ilike.${ilike},first_name.ilike.${ilike},apellido_paterno.ilike.${ilike},run.ilike.${ilike}`
-          )
-          .limit(1000);
-        if (stuErr) throw stuErr;
-        const ids = (stu || []).map(s => s.id);
-        if (ids.length === 0) {
-          setPayments([]);
-          setHasMore(false);
-          setLoading(false);
-          return;
-        }
-        query = query.in('student_id', ids);
-      }
-
-      // Apply server-side filters to reduce data transfer
-      if (filters.status !== 'all') {
-        query = query.eq('status', filters.status);
-      }
-
-      // Load records with a safety limit to prevent unbounded queries
-      const SERVER_LIMIT = 5000;
-      const { data: fees, error: feesError } = await query
-        .order('created_at', { ascending: false })
-        .limit(SERVER_LIMIT);
-
-      if (feesError) throw feesError;
-      
-      // Transform data to match expected structure
-      const transformedFees = (fees || []).map(fee => {
-        const student = fee.students ? {
-          ...fee.students,
-          cursos: fee.students?.cursos
-        } : undefined;
-        return {
-          ...fee,
-          student
-        };
-      });
-      
-      setPayments(transformedFees);
-      setHasMore(false); // No more records to load since we load all at once
-      
-      // Performance logging (development only)
-      if (import.meta.env.DEV) {
-        const endTime = performance.now();
-        const queryTime = endTime - startTime;
-        console.log(`✅ All records loaded: ${queryTime.toFixed(2)}ms for ${transformedFees.length} records`);
-        
-        // Debug numero_cuota values
-        const cuotaValues = transformedFees.map(f => ({ 
-          id: f.id, 
-          numero_cuota: f.numero_cuota, 
-          type: typeof f.numero_cuota 
-        })).slice(0, 5); // First 5 records
-        console.log('🔍 Debug numero_cuota values:', cuotaValues);
-        
-        console.log('📊 Performance stats:');
-        console.log(`   - Total records: ${transformedFees.length}`);
-        console.log(`   - Query time: ${queryTime.toFixed(2)}ms`);
-        console.log(`   - Records per ms: ${(transformedFees.length / queryTime).toFixed(2)}`);
-      }
-      
-    } catch (error) {
-      console.error('Error fetching payments:', error);
-      toast.error('Error al cargar los pagos');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // loadMorePayments function removed since we now load all records at once
 
@@ -516,14 +362,14 @@ export function PaymentsPage() {
         <PaymentDetailsModal
           payment={selectedPayment}
           onClose={() => setSelectedPayment(null)}
-          onSuccess={() => fetchPayments(true)}
+          onSuccess={() => setSelectedPayment(null)}
         />
       )}
       
       <RegisterPaymentModal
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
-        onSuccess={() => fetchPayments(true)}
+        onSuccess={() => setIsRegisterModalOpen(false)}
       />
     </main>
   );

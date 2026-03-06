@@ -20,8 +20,13 @@ export function useFeesQuery(academicYear, options = {}) {
           student:students (
             id,
             first_name,
+            last_name,
             apellido_paterno,
-            curso:cursos!students_curso_fkey(
+            whole_name,
+            run,
+            curso,
+            cursos:curso (
+              id,
               nom_curso
             )
           )

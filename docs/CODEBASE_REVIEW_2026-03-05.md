@@ -236,10 +236,16 @@ Performance, query, and rendering inefficiencies.
 | E-01 (ext.) | Widened `useStudentsQuery` select to `*` (all columns) for full compatibility with `StudentsPage` export and display. Converted `StudentMultiSelect` (guardian form multi-select) to `useStudentsQuery` — eliminates manual `useState`/`useEffect`/supabase fetch. Converted `StudentsPage` to `useStudentsQuery` — eliminates `useCallback`/`useEffect` fetch cycle; year filtering now client-side `useMemo`; `selectedStudent` auto-syncs via `useEffect`. Converted `GuardianDetailsModal` associated-students lookup to `useStudentsQuery` — eliminates 2 separate supabase calls (students + cursos) per guardian detail view. Converted `useEnrollmentData` cursos fetch to `useCursosQuery` — eliminates per-year `useEffect`/supabase fetch; now derives `availableYearCourses` via `useMemo` from cached data. | `useStudentsQuery.js`, `StudentMultiSelect.jsx`, `StudentsPage.jsx`, `GuardianDetailsModal.jsx`, `useEnrollmentData.js` |
 | E-04 (ext.) | Added student cache invalidation (`queryClient.invalidateQueries(['students'])`) to all 4 student mutation sites: `StudentsTable` (delete), `StudentFormModal` (insert + update), `StudentDetailsModal` (inline field edit). All consumers of `useStudentsQuery` now auto-refresh when students are created, edited, or deleted — eliminates stale data across StudentsPage, StudentSelect, StudentMultiSelect, and GuardianDetailsModal. | `StudentsTable.jsx`, `StudentFormModal.jsx`, `StudentDetailsModal.jsx` |
 
+### Session 8 — PaymentsPage → useFeesQuery Conversion (2026-03-06)
+
+| ID | Fix | Files |
+|----|-----|-------|
+| E-04 (core) | **Widened `useFeesQuery` student join** to include `last_name`, `whole_name`, `run`, `curso`, and full `cursos(id, nom_curso)` — supports PaymentsPage export, detail modal, and receipt display. **Converted `PaymentsPage` from manual supabase fetch to `useFeesQuery(academicYear)`** — eliminates `fetchPayments` function (~100 lines: count query, server-side student search, status filter, 5000-record limit, transform), removes 3 `useEffect` refetch triggers (year change, status filter, debounced search), removes `useRef`/`useCallback` imports. All filtering now fully client-side from cached data via existing `filteredPayments` useMemo. Search is instant (no 400ms debounce + network roundtrip). PaymentsPage shares the same `['fees', year]` cache as all 6 dashboard widgets — one query serves the whole app. Modal `onSuccess` callbacks simplified to close-only (cache invalidation already handled inside modals via `queryClient.invalidateQueries`). | `useFeesQuery.js`, `PaymentsPage.jsx` |
+
 ### Remaining Items
 
 Fixes **not yet applied** — still in the backlog:
 
 - **U-02**: Mixed .jsx/.tsx file extensions — requires multi-day migration
 - **U-12**: Test coverage for critical paths
-- **E-04** (remaining): Full optimistic updates with `useMutation` + rollback (requires converting PaymentsPage to React Query first)
+- **E-04** (remaining): Full optimistic updates with `useMutation` + rollback
