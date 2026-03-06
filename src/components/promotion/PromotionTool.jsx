@@ -63,8 +63,8 @@ export function PromotionTool() {
             is_primary,
             guardians (
               id,
-              nombre,
-              apellido
+              first_name,
+              last_name
             )
           )
         `)
@@ -231,7 +231,7 @@ export function PromotionTool() {
   const getPrimaryGuardian = (student) => {
     const sg = student.student_guardian?.find(sg => sg.is_primary) || student.student_guardian?.[0];
     if (!sg?.guardians) return '—';
-    return `${sg.guardians.nombre || ''} ${sg.guardians.apellido || ''}`.trim() || '—';
+    return `${sg.guardians.first_name || ''} ${sg.guardians.last_name || ''}`.trim() || '—';
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
