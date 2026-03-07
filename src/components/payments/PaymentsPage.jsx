@@ -5,6 +5,7 @@ import { PaymentsTable } from './PaymentsTable';
 import { PaymentsFilters } from './PaymentsFilters';
 import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
+import { StudentFeesModal } from './StudentFeesModal';
 import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -19,6 +20,7 @@ export function PaymentsPage() {
   const [exporting, setExporting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [studentFeesTarget, setStudentFeesTarget] = useState(null);
   const [filters, setFilters] = useState({
     search: '',
     status: 'por_cobrar',
@@ -344,6 +346,7 @@ export function PaymentsPage() {
                   payments={paginatedItems}
                   loading={loading}
                   onViewDetails={setSelectedPayment}
+                  onStudentClick={(id, name) => setStudentFeesTarget({ id, name })}
                 />
               )}
               <Pagination
@@ -389,6 +392,16 @@ export function PaymentsPage() {
           payment={selectedPayment}
           onClose={() => setSelectedPayment(null)}
           onSuccess={() => setSelectedPayment(null)}
+        />
+      )}
+
+      {studentFeesTarget && (
+        <StudentFeesModal
+          studentId={studentFeesTarget.id}
+          studentName={studentFeesTarget.name}
+          allFees={payments}
+          onClose={() => setStudentFeesTarget(null)}
+          onViewDetails={(fee) => { setStudentFeesTarget(null); setSelectedPayment(fee); }}
         />
       )}
       

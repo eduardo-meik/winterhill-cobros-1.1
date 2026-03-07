@@ -7,6 +7,7 @@ import { TableHeader } from '../ui/TableHeader';
 export const PaymentsTable = React.memo(function PaymentsTable({
   payments,
   onViewDetails,
+  onStudentClick,
   loading
 }) {
   const [sortField, setSortField] = useState('numero_cuota');
@@ -93,9 +94,13 @@ export const PaymentsTable = React.memo(function PaymentsTable({
           <div key={payment.id} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover" onClick={() => onViewDetails(payment)}>
             <div className="flex items-start justify-between mb-2">
               <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                <button
+                  type="button"
+                  className="text-sm font-semibold text-primary hover:text-primary-light hover:underline text-left cursor-pointer"
+                  onClick={(e) => { e.stopPropagation(); onStudentClick?.(payment.student_id, payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`); }}
+                >
                   {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
-                </p>
+                </button>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{payment.student?.curso?.nom_curso || 'Curso no asignado'}</p>
               </div>
               <span className={clsx(
@@ -174,9 +179,13 @@ export const PaymentsTable = React.memo(function PaymentsTable({
                 <div className="flex items-center gap-3">
                   <div>
                     <div className="flex flex-col">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <button
+                        type="button"
+                        className="text-sm font-medium text-primary hover:text-primary-light hover:underline text-left cursor-pointer"
+                        onClick={() => onStudentClick?.(payment.student_id, payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`)}
+                      >
                         {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
-                      </p>
+                      </button>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         {payment.student?.curso?.nom_curso || 'Curso no asignado'}
                       </p>
