@@ -917,3 +917,166 @@ console.log('Sesión cacheada:', !!rawSession);
 ```
 
 **Tiempo total estimado de diagnóstico completo: 30-40 minutos**
+
+---
+
+## ACTUALIZACIÓN 2026-03-07 (Post-deploy commit a5c276d)
+
+### Estado del Despliegue
+
+El commit `a5c276d` ("fix: corregir 6 bugs de crash JS…") fue commiteado localmente pero **el `git push` no alcanzó el remote** durante la sesión anterior. Se verificó con:
+
+```
+git fetch origin
+git log --oneline origin/html_pdf -1
+→ 42bba54 (origin/html_pdf)  ← código viejo, SIN los fixes
+```
+
+Esto significa que **todas las pruebas del usuario se ejecutaron contra el código viejo (42bba54)**, que aún contenía los 6 bugs de crash identificados.
+
+**Acción correctiva:** Se ejecutó `git push origin html_pdf` exitosamente:
+```
+42bba54..a5c276d  html_pdf -> html_pdf
+```
+
+El remote ahora apunta a `a5c276d`. Vercel debe redesplegar automáticamente.
+
+### Resultados de Prueba Manual (sobre código viejo 42bba54)
+
+El usuario probó la app en producción (https://gestion.colegiowinterhill.cl) **antes de que el push se completara**, obteniendo:
+
+| Módulo | Estado | Explicación |
+|--------|--------|-------------|
+| **Inicio (Dashboard)** | ❌ "Algo salió mal" | YearComparisonChart `ReferenceError` incondicional (Bug #1 — fix en a5c276d) |
+| **Estudiantes** | ❌ "Algo salió mal" | `toast` no importado → `ReferenceError` al renderizar (Bug #6 — fix en a5c276d) |
+| **Apoderados** | ❌ "Algo salió mal" | `isSearching` no declarado → `ReferenceError` (Bug #2 — fix en a5c276d) |
+| **Matrícula** | ❌ "Algo salió mal" | **No identificado en bugs #1-#6 — requiere investigación** |
+| Aranceles | ✅ Funciona | Sin bugs de crash |
+| Reportes | ✅ Funciona | Sin bugs de crash |
+| Repactación | ✅ Funciona | Sin bugs de crash |
+
+**Notas de consola del navegador:** Los mensajes `injected.js`, `content.js`, `TronLink`, `Provider initialised`, `SES Removing unpermitted intrinsics` son de una extensión de navegador (TronLink wallet) y **NO están relacionados con la aplicación**.
+
+### Análisis de Matrícula
+
+Se realizó auditoría exhaustiva del componente `MatriculaWizard.jsx` y sus 17 dependencias (hooks, steps, modals). **No se encontraron bugs de crash en render.** Todos los hooks se destructuran correctamente, los imports existen, y el JSX tiene validaciones null.
+
+El único issue potencial es un patrón de referencia adelantada:
+```javascript
+const assisted = useAssistedMode({
+  setGuardian: (g) => enrollment_.setGuardian(g),   // ← closure
+  setEnrollment: (e) => enrollment_.setEnrollment(e),
+});
+const enrollment_ = useEnrollmentData({...});  // ← declarado después
+```
+Esto **NO crashea en render** porque los callbacks son closures que capturan el binding de la variable, no su valor. Cuando se invocan (en interacción de usuario), `enrollment_` ya está inicializado. Solo podría fallar si `useAssistedMode` llamara `setGuardian()` sincrónicamente durante su propia ejecución, lo cual no hace.
+
+**Hipótesis para el crash de Matrícula en producción con código viejo (42bba54):**
+1. Un componente hijo importado por MatriculaWizard que usa una variable/módulo no disponible en 42bba54
+2. Un error de datos que solo se manifiesta con el estado actual de la BD
+3. Un error de chunk loading (lazy import) que el ErrorBoundary captura como crash genérico
+
+**Después del deploy de a5c276d**, Matrícula debería re-testearse. Si sigue fallando, se necesita capturar el **stack trace del ErrorBoundary** (texto en rojo del DEBUG box).
+
+### Commits Relevantes
+
+| Commit | Descripción | Estado |
+|--------|-------------|--------|
+| `f5b146e` | Último commit funcional (31/dic/2025) | Referencia |
+| `630931a` | Optimizaciones P1-P10 — introdujo bugs #1 y #2 | Causa |
+| `755a729` | React Query — introdujo bug #1 (useMemo deps) | Causa |
+| `42bba54` | HEAD anterior — código desplegado con bugs | Reemplazado |
+| **`a5c276d`** | **Fix de 6 bugs de crash JS** | **Desplegado** |
+
+---
+
+## Acciones Manuales para Encontrar el Problema Raíz
+
+Si después del deploy de `a5c276d` algún módulo sigue crasheando, ejecutar estas acciones en orden:
+
+### Acción 1: Verificar que Vercel desplegó el commit correcto
+1. Abrir el dashboard de Vercel del proyecto
+2. Verificar que el último deployment referencia commit `a5c276d`
+3. Si no hay deploy nuevo, hacer trigger manual desde Vercel Dashboard → Deployments → Redeploy
+4. Verificar que el deploy completó sin errores de build
+
+### Acción 2: Forzar limpieza de caché del navegador
+1. Abrir DevTools (F12) → Network → marcar **"Disable cache"**
+2. Hacer **Ctrl+Shift+R** (hard reload)
+3. Esto asegura que el navegador descarga los chunks JS nuevos y no usa los viejos cacheados
+4. Alternativa radical: abrir en ventana de incógnito
+
+### Acción 3: Capturar el stack trace del ErrorBoundary
+1. En la página que muestra "Algo salió mal", buscar texto en rojo debajo del mensaje (DEBUG box)
+2. Si el DEBUG box no aparece, abrir DevTools → Console → buscar errores rojos que digan `Uncaught Error` o `ReferenceError`
+3. Copiar el **stack trace completo** — este indica exactamente qué archivo y línea crashea
+4. El stack trace es la información más valiosa para diagnosticar; sin él, se trabaja a ciegas
+
+### Acción 4: Descartar extensiones del navegador como causa
+1. Los logs de consola `injected.js`, `content.js`, `TronLink` son de extensiones
+2. Abrir la app en **ventana de incógnito** (o en un navegador sin extensiones)
+3. Si el error desaparece en incógnito, una extensión está interfiriendo
+4. De lo contrario, el error es de la app misma
+
+### Acción 5: Probar cada módulo y documentar resultados
+1. Después del deploy, navegar a cada módulo uno por uno:
+   - `/dashboard` (Inicio)
+   - `/students` (Estudiantes)
+   - `/guardians` (Apoderados)
+   - `/fees` (Aranceles)
+   - `/matricula` (Matrícula)
+   - `/reporting` (Reportes)
+   - `/repactacion` (Repactación)
+   - `/settings` (Configuración)
+2. Para cada uno, anotar: ✅ funciona / ❌ "Algo salió mal" / ⚠️ funciona pero sin datos
+3. Para los que fallan, capturar el stack trace (Acción 3)
+
+### Acción 6: Verificar integridad de datos en Supabase
+Si las páginas cargan pero muestran datos vacíos o parciales:
+```sql
+-- Ejecutar en Supabase Dashboard → SQL Editor
+-- Verificar que hay datos y que los joins existen
+SELECT 'fees' as tabla, count(*) FROM fee
+UNION ALL SELECT 'students', count(*) FROM students
+UNION ALL SELECT 'guardians', count(*) FROM guardians
+UNION ALL SELECT 'cursos', count(*) FROM cursos
+UNION ALL SELECT 'enrollments', count(*) FROM enrollments;
+
+-- Verificar fees con due_date null (pueden causar crashes en gráficos)
+SELECT id, amount, status, due_date FROM fee WHERE due_date IS NULL LIMIT 10;
+
+-- Verificar RLS devuelve datos para admin autenticado
+SELECT get_current_user_role();  -- Debe retornar 'admin' (lowercase)
+```
+
+### Acción 7: Comparar comportamiento local vs producción
+Si `npm run dev` empieza a funcionar (actualmente falla con exit code 1):
+1. Probar la misma página en `localhost:5173` vs `gestion.colegiowinterhill.cl`
+2. Si local funciona y producción no → problema de deploy/caché
+3. Si ambos fallan igual → problema de código o datos
+
+### Acción 8: Investigar por qué `npm run dev` falla
+El servidor de desarrollo no arranca (exit code 1) en toda esta sesión de diagnóstico. Esto impide pruebas locales con console.log visible.
+```powershell
+# Capturar el error exacto del dev server
+npx vite 2>&1 | Out-String
+```
+Buscar el mensaje de error específico. Posibles causas:
+- Puerto ocupado (verificar con `netstat -ano | findstr ":5173"`)
+- Dependencia faltante (verificar con `npm install`)
+- Error de configuración en `vite.config.js`
+- Conflicto con `vite-plugin-inspect`
+
+### Acción 9: Revertir a commit funcional como último recurso
+Si después de todas las acciones el problema persiste:
+```powershell
+# Crear branch de backup del estado actual
+git branch backup-a5c276d
+
+# Revertir al último estado funcional conocido
+git checkout f5b146e
+
+# Desplegar la versión funcional
+git push origin HEAD:html_pdf --force
+```
+⚠️ **Esto descarta TODOS los cambios desde diciembre 2025.** Solo usar como medida de emergencia para restaurar el servicio, y después re-aplicar cambios selectivamente.
