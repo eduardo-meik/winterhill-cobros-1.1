@@ -226,7 +226,7 @@ export function useEnrollmentData({ user, year, assistedMode, assistedGuardian, 
   const availableYearCourses = useMemo(() =>
     allCursos
       .filter(c => c.year_academico === year)
-      .sort((a, b) => (a.nivel || '').localeCompare(b.nivel || '')),
+      .sort((a, b) => String(a.nivel ?? '').localeCompare(String(b.nivel ?? ''))),
     [allCursos, year]
   );
 
