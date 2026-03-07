@@ -102,6 +102,64 @@ Se auditó el código DESPLEGADO (commit 42bba54) archivo por archivo. Se encont
 - Esta mitigación apunta específicamente al patrón “login carga, pero todas las páginas lazy del sidebar caen”.
 - Estado después de aplicar la mitigación: **sin mejora confirmada por el usuario**.
 
+### 2026-03-07 — Despliegue y validación en producción
+
+- Se confirmó que `git push` no había llegado al remote — `origin/html_pdf` seguía en `42bba54` (código con los bugs). Se forzó push exitoso y se sincronizó `html_pdf` → `main` (fast-forward, 132 commits adelante) para activar el deploy de producción en Vercel.
+- **Resultado:** Dashboard, Apoderados, Estudiantes, Pagos, Aranceles, Reportes y Asistente cargan correctamente en producción. El usuario confirmó: "Role: asist | Profile: ASIST | Fees: 1000 | Error: none".
+
+### 2026-03-07 — Bug #7: `cursos.nivel` es integer, código usa `.localeCompare()` (Matrícula crash)
+
+**Root cause confirmado:**
+
+| Aspecto | Detalle |
+|---|---|
+| Causa | `cursos.nivel` es `integer` (int4) en la BD real (valores: 110, 310, null), pero el código en producción hace `(e.nivel \|\| "").localeCompare(...)` — los números no tienen `.localeCompare()` |
+| Origen | Las migraciones originales definían `nivel` como `text`, pero fue alterado a `integer` directamente en la BD en algún momento |
+| Comportamiento | PostgREST retorna `nivel` como número JS. `110 \|\| ""` evalúa a `110` (número), y `Number.prototype.localeCompare` no existe → `TypeError` |
+| Archivo | `src/hooks/matricula/useEnrollmentData.js:229` |
+| Fix | `String(a.nivel ?? '').localeCompare(String(b.nivel ?? ''))` — wrapping con `String()` |
+| Commit | `62b90fd` — desplegado a `main` y `html_pdf` |
+| Build | Exitoso, genera chunk `MatriculaWizard-CF91Vpwz.js` (el de producción que crasheaba era `MatriculaWizard-2Ihp3iO2.js`, hash diferente confirmando build antiguo) |
+| Estado | **RESUELTO** — Matrícula ya no crashea en producción |
+
+### 2026-03-07 — Bug #8: `get_student_promotion_suggestion` RPC retorna 400 (Promoción Masiva crash)
+
+**Root cause confirmado:**
+
+| Aspecto | Detalle |
+|---|---|
+| Causa | La función SQL `get_student_promotion_suggestion(uuid)` comparaba `nivel` (integer) contra strings (`'PRE-KINDER'`, `'KINDER'`, `'1B'`, etc.) en un `CASE` — type mismatch causa error PostgREST 400 |
+| Síntoma | ~40 POST 400 errors a `/rpc/get_student_promotion_suggestion` al abrir Promoción Masiva como admin |
+| Archivos que llaman | `src/components/promotion/PromotionTool.jsx:83`, `src/hooks/matricula/useEconomicData.js:219` |
+| Fix | Reescritura completa de la función SQL: parsea `nom_curso` (ej. "3° BASICO A") con `regexp_match` para determinar progresión (1-8° BASICO → 1-4° MEDIO → egresado), preservando letra (A/B) |
+| Modelo de datos verificado | `cursos.nivel`: 110 (básica), 310 (media). `nom_curso`: "1° BASICO A"…"4° MEDIO B". `letra_curso`: "A"/"B". `year_academico`: 2025, 2026 (no existe 2027) |
+| Aplicación | Directamente en BD de producción via `mcp_supabase_execute_sql` (efecto inmediato, no requiere redeploy de Vercel) |
+| Migración local | `supabase/migrations/20260307120000_fix_promotion_suggestion_nivel_type.sql` |
+| Commit | `c13457b` — desplegado a `main` y `html_pdf` |
+| Comportamiento esperado | Funciona correctamente para estudiantes en cursos 2026. Retorna `suggestion: null` con reason "No curso found for X in year 2027" porque los cursos 2027 aún no existen — esto es comportamiento correcto, no un error |
+| Estado | **RESUELTO** — 400 errors eliminados |
+
+### 2026-03-07 — Resumen acumulado de fixes desplegados
+
+| # | Bug | Archivo / Recurso | Commit | Estado |
+|---|-----|-------------------|--------|--------|
+| 1 | YearComparisonChart `useMemo` deps | `YearComparisonChart.jsx` | `a5c276d` | ✅ Desplegado |
+| 2 | GuardiansPage `isSearching` no definido | `GuardiansPage.jsx` | `a5c276d` | ✅ Desplegado |
+| 3 | DebtTrendChart `parseISO(null)` | `DebtTrendChart.jsx` | `a5c276d` | ✅ Desplegado |
+| 4 | PaymentProjectionChart `parseISO(null)` | `PaymentProjectionChart.jsx` | `a5c276d` | ✅ Desplegado |
+| 5 | DebtorsTable `lastDueDate` null | `DebtorsTable.jsx` | `a5c276d` | ✅ Desplegado |
+| 6 | StudentsPage `toast` no importado | `StudentsPage.jsx` | `a5c276d` | ✅ Desplegado |
+| 7 | `nivel` integer vs `.localeCompare()` | `useEnrollmentData.js:229` | `62b90fd` | ✅ Desplegado |
+| 8 | `get_student_promotion_suggestion` type mismatch | Función SQL en BD + migración | `c13457b` | ✅ Desplegado |
+| — | RLS functions UPPER→LOWER | 4 funciones SQL en BD producción | N/A (SQL directo) | ✅ Aplicado |
+
+### 2026-03-07 — Issues pendientes conocidos
+
+| Issue | Descripción | Prioridad |
+|---|---|---|
+| `npm run dev` falla (exit code 1) | El dev server local no arranca; `npx vite build` compila sin problemas. Causa desconocida. | Media |
+| Cursos 2027 no existen | Promoción Masiva muestra "No curso found for X in year 2027" — esperado hasta que se creen los cursos del año siguiente | Baja (no es bug) |
+
 ## Evaluación de Pertinencia
 
 El plan es **parcialmente pertinente** para este codebase.
