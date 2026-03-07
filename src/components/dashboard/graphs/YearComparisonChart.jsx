@@ -50,7 +50,7 @@ export function YearComparisonChart({ academicYear }) {
       { category: 'Pendiente', [academicYear]: current.pending, [previousYear]: prev.pending },
       { category: 'Vencido', [academicYear]: current.overdue, [previousYear]: prev.overdue },
     ];
-  }, [currentFees, prevFees, academicYear, previousYear]);
+  }, [allFees, academicYear, previousYear]);
 
   if (loading) {
     return <ChartSkeleton title={`Comparativa ${previousYear} vs ${academicYear}`} />;

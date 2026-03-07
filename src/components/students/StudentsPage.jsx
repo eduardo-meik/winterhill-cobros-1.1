@@ -9,6 +9,7 @@ import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
 export function StudentsPage() {

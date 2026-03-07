@@ -63,7 +63,7 @@ export function DebtorsTable({ academicYear }) {
                     ${Math.round(debtor.totalDebt).toLocaleString()}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Último vencimiento: {format(new Date(debtor.lastDueDate), 'dd/MM/yyyy')}
+                    Último vencimiento: {debtor.lastDueDate ? format(new Date(debtor.lastDueDate), 'dd/MM/yyyy') : 'Sin fecha'}
                   </p>
                 </div>
               </div>

@@ -20,23 +20,24 @@ import { useAuth } from './contexts/AuthContext';
 import { PageSpinner } from './components/ui/Spinner';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { isGuardianRole } from './constants/roles';
+import { lazyWithRetry } from './utils/lazyWithRetry';
 
 // Lazy-loaded route components — each becomes its own chunk
-const Dashboard = React.lazy(() => import('./components/Dashboard'));
-const StudentsPage = React.lazy(() => import('./components/students/StudentsPage').then(m => ({ default: m.StudentsPage })));
-const GuardiansPage = React.lazy(() => import('./components/guardians/GuardiansPage').then(m => ({ default: m.GuardiansPage })));
-const PaymentsPage = React.lazy(() => import('./components/payments/PaymentsPage').then(m => ({ default: m.PaymentsPage })));
-const ReportingPage = React.lazy(() => import('./components/reporting/ReportingPage.jsx').then(m => ({ default: m.ReportingPage })));
-const AssistantPage = React.lazy(() => import('./components/assistant/AssistantPage').then(m => ({ default: m.AssistantPage })));
-const ProfilePage = React.lazy(() => import('./components/profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
-const SettingsPage = React.lazy(() => import('./components/settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
-const MatriculaWizard = React.lazy(() => import('./components/matricula/MatriculaWizard').then(m => ({ default: m.MatriculaWizard })));
-const GuardianIntakePage = React.lazy(() => import('./pages/guardian/GuardianIntakePage').then(m => ({ default: m.GuardianIntakePage })));
-const RepactacionWizard = React.lazy(() => import('./components/repactacion/RepactacionWizard'));
-const PromotionTool = React.lazy(() => import('./components/promotion/PromotionTool'));
-const GuardianWelcomePage = React.lazy(() => import('./pages/guardian/GuardianWelcomePage').then(m => ({ default: m.GuardianWelcomePage })));
-const GuardianPortalPage = React.lazy(() => import('./pages/guardian/GuardianPortalPage'));
-const GuardianEnrollmentPage = React.lazy(() => import('./pages/guardian/GuardianEnrollmentPage'));
+const Dashboard = lazyWithRetry(() => import('./components/Dashboard'), 'dashboard');
+const StudentsPage = lazyWithRetry(() => import('./components/students/StudentsPage').then(m => ({ default: m.StudentsPage })), 'students');
+const GuardiansPage = lazyWithRetry(() => import('./components/guardians/GuardiansPage').then(m => ({ default: m.GuardiansPage })), 'guardians');
+const PaymentsPage = lazyWithRetry(() => import('./components/payments/PaymentsPage').then(m => ({ default: m.PaymentsPage })), 'payments');
+const ReportingPage = lazyWithRetry(() => import('./components/reporting/ReportingPage.jsx').then(m => ({ default: m.ReportingPage })), 'reporting');
+const AssistantPage = lazyWithRetry(() => import('./components/assistant/AssistantPage').then(m => ({ default: m.AssistantPage })), 'assistant');
+const ProfilePage = lazyWithRetry(() => import('./components/profile/ProfilePage').then(m => ({ default: m.ProfilePage })), 'profile');
+const SettingsPage = lazyWithRetry(() => import('./components/settings/SettingsPage').then(m => ({ default: m.SettingsPage })), 'settings');
+const MatriculaWizard = lazyWithRetry(() => import('./components/matricula/MatriculaWizard').then(m => ({ default: m.MatriculaWizard })), 'matricula');
+const GuardianIntakePage = lazyWithRetry(() => import('./pages/guardian/GuardianIntakePage').then(m => ({ default: m.GuardianIntakePage })), 'guardian-intake');
+const RepactacionWizard = lazyWithRetry(() => import('./components/repactacion/RepactacionWizard'), 'repactacion');
+const PromotionTool = lazyWithRetry(() => import('./components/promotion/PromotionTool'), 'promocion');
+const GuardianWelcomePage = lazyWithRetry(() => import('./pages/guardian/GuardianWelcomePage').then(m => ({ default: m.GuardianWelcomePage })), 'guardian-welcome');
+const GuardianPortalPage = lazyWithRetry(() => import('./pages/guardian/GuardianPortalPage'), 'guardian-portal');
+const GuardianEnrollmentPage = lazyWithRetry(() => import('./pages/guardian/GuardianEnrollmentPage'), 'guardian-enrollment');
 
 // Dynamic root redirect based on role
 export function RootRedirect() {

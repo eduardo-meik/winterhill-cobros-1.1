@@ -632,7 +632,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                    />
                    <DetailItem 
                      label="Fecha de Vencimiento" 
-                     value={format(new Date(payment.due_date), 'dd/MM/yyyy')}
+                     value={payment.due_date ? format(new Date(payment.due_date), 'dd/MM/yyyy') : 'No especificado'}
                    />
                    <DetailItem 
                      label="Método de Pago" 

@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import Inspect from 'vite-plugin-inspect';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
@@ -9,7 +10,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [react()],
+    plugins: [react(), Inspect()],
     build: {
       outDir: 'dist',
       // SECURITY FIX: Disable source maps in production to prevent source code exposure

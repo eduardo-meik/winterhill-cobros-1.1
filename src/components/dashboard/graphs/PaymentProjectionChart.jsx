@@ -46,6 +46,10 @@ export function PaymentProjectionChart({ academicYear }) {
     }
 
     fees.forEach(fee => {
+      if (!feeHasValidDueDate(fee)) {
+        return;
+      }
+
       const dueDate = parseISO(fee.due_date);
       const monthKey = startOfMonth(dueDate).toISOString();
       if (monthlyData[monthKey]) {
@@ -97,4 +101,8 @@ export function PaymentProjectionChart({ academicYear }) {
       </CardContent>
     </Card>
   );
+}
+
+function feeHasValidDueDate(fee) {
+  return typeof fee?.due_date === 'string' && fee.due_date.trim() !== '';
 }

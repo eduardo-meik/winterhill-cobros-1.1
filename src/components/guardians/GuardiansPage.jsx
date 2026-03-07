@@ -33,6 +33,8 @@ export function GuardiansPage() {
     return () => clearTimeout(debounceRef.current);
   }, [searchTerm]);
 
+  const isSearching = searchTerm !== debouncedSearch;
+
   // Memoized filtering — replaces dual state pattern
   const filteredGuardians = useMemo(() => {
     const normalizeText = (text = '') => text

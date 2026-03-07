@@ -30,7 +30,7 @@ export function DebtTrendChart({ academicYear }) {
   const { data: fees = [], isLoading: loading } = useFeesQuery();
 
   const data = useMemo(() => {
-    const pendingFees = fees.filter(f => f.status === 'pending' || f.status === 'overdue');
+    const pendingFees = fees.filter(f => (f.status === 'pending' || f.status === 'overdue') && feeHasValidDueDate(f));
 
     const monthlyData = pendingFees.reduce((acc, fee) => {
       const monthKey = startOfMonth(parseISO(fee.due_date)).toISOString();
@@ -116,4 +116,8 @@ export function DebtTrendChart({ academicYear }) {
       </CardContent>
     </Card>
   );
+}
+
+function feeHasValidDueDate(fee) {
+  return typeof fee?.due_date === 'string' && fee.due_date.trim() !== '';
 }
