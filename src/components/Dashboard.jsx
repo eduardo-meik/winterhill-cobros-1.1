@@ -11,20 +11,17 @@ import { DebtorsTable } from './dashboard/DebtorsTable';
 import { YearComparisonChart } from './dashboard/graphs/YearComparisonChart';
 import { StatCardSkeleton } from './ui/Skeleton';
 import { useFeesQuery } from '../hooks/queries/useFeesQuery';
+import { useAcademicYear } from '../contexts/AcademicYearContext';
 import { subMonths } from 'date-fns';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const academicYear = new Date().getFullYear(); // Fallback temporal para gráficas que lo necesiten
+  const { academicYear } = useAcademicYear();
 
   // MJ-04: refetchOnWindowFocus replaces the manual visibilitychange listener
   const { data: fees = [], isLoading: loading, error: feesError } = useFeesQuery(academicYear, {
     refetchOnWindowFocus: 'always',
   });
-
-  // DEBUG BANNER - remove after confirming it works
-  const debugInfo = `Role: ${user?.role || 'N/A'} | Profile: ${user?.profile || 'N/A'} | Fees: ${loading ? 'loading...' : fees.length} | Error: ${feesError?.message || 'none'}`;
-  console.log('[DASHBOARD]', debugInfo);
 
   const metrics = useMemo(() => {
     if (!fees.length) return { activeDebtors: 0, totalDebt: 0, projectedIncome: 0, delinquencyRate: 0, previousDelinquencyRate: 0 };
@@ -32,36 +29,36 @@ export default function Dashboard() {
     const now = new Date();
     const lastMonth = subMonths(now, 1);
 
+    // Filter fees to the selected academic year
+    const yearFees = fees.filter(f => f.year_academico === academicYear);
+    if (!yearFees.length) return { activeDebtors: 0, totalDebt: 0, projectedIncome: 0, delinquencyRate: 0, previousDelinquencyRate: 0 };
+
     const activeDebtors = new Set(
-      fees.filter(f => f.status !== 'paid').map(f => f.student_id)
+      yearFees.filter(f => f.status !== 'paid').map(f => f.student_id)
     ).size;
 
-    const totalDebt = fees
+    const totalDebt = yearFees
       .filter(f => f.status !== 'paid')
       .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
 
-    const projectedIncome = fees
+    const projectedIncome = yearFees
       .filter(f => f.status === 'pending')
       .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
 
-    const currentOverdue = fees.filter(f => f.status === 'overdue').length;
-    const previousOverdue = fees.filter(f =>
+    const currentOverdue = yearFees.filter(f => f.status === 'overdue').length;
+    const previousOverdue = yearFees.filter(f =>
       f.status === 'overdue' &&
       new Date(f.due_date) <= lastMonth
     ).length;
 
-    const delinquencyRate = (currentOverdue / fees.length) * 100;
-    const previousDelinquencyRate = (previousOverdue / fees.length) * 100;
+    const delinquencyRate = (currentOverdue / yearFees.length) * 100;
+    const previousDelinquencyRate = (previousOverdue / yearFees.length) * 100;
 
     return { activeDebtors, totalDebt, projectedIncome, delinquencyRate, previousDelinquencyRate };
-  }, [fees]);
+  }, [fees, academicYear]);
 
   return (
     <main className="flex-1 min-w-0 overflow-auto">
-      {/* DEBUG BANNER - remove after confirming */}
-      <div style={{background:'#fef08a',color:'#92400e',padding:'8px 16px',fontFamily:'monospace',fontSize:'13px',borderBottom:'2px solid #f59e0b'}}>
-        {debugInfo}
-      </div>
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap justify-between gap-3 p-4">
           <div className="flex items-center gap-3">

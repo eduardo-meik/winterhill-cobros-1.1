@@ -11,9 +11,12 @@ import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../util
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
 
 export function StudentsPage() {
   const { data: allStudents = [], isLoading: loading, refetch: fetchStudents } = useStudentsQuery();
+  const { academicYear } = useAcademicYear();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -33,8 +36,11 @@ export function StudentsPage() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // No filtramos por academicYear a pedido del usuario (rollback de la feature de selector de año)
-  const students = useMemo(() => allStudents, [allStudents]);
+  // Filter students by the global academic year
+  const students = useMemo(
+    () => allStudents.filter(s => s.curso?.year_academico === academicYear),
+    [allStudents, academicYear]
+  );
 
   // Sync selectedStudent with latest data
   useEffect(() => {
@@ -204,39 +210,57 @@ export function StudentsPage() {
                   isSearching={loading && debouncedSearchTerm !== ''}
                   placeholder="Buscar por nombre o RUN..."
                 />
-                <select
-                  value={filters.curso}
-                  onChange={(e) => setFilters({ ...filters, curso: e.target.value })}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="all">Todos los Cursos</option>
-                  {uniqueCursos.map(curso => (
-                    <option key={curso} value={curso}>{curso}</option>
-                  ))}
-                </select>
-                <select
-                  value={filters.status}
-                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="all">Todos los Estados</option>
-                  <option value="PENDIENTE">Pre-Matriculados</option>
-                  <option value="ACTIVO">Confirmados</option>
-                  <option value="RETIRADO">Retirados</option>
-                </select>
-                <select
-                  value={filters.convenio}
-                  onChange={(e) => setFilters({ ...filters, convenio: e.target.value })}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="all">Todos los Convenios</option>
-                  <option value="Sin convenio">Sin convenio</option>
-                  {uniqueConvenios.map(convenio => (
-                    <option key={convenio} value={convenio}>{convenio}</option>
-                  ))}
-                </select>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Curso</label>
+                  <select
+                    value={filters.curso}
+                    onChange={(e) => setFilters({ ...filters, curso: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="all">Todos</option>
+                    {uniqueCursos.map(curso => (
+                      <option key={curso} value={curso}>{curso}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Estado</label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="PENDIENTE">Pre-Matriculados</option>
+                    <option value="ACTIVO">Confirmados</option>
+                    <option value="RETIRADO">Retirados</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Convenio</label>
+                  <select
+                    value={filters.convenio}
+                    onChange={(e) => setFilters({ ...filters, convenio: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="Sin convenio">Sin convenio</option>
+                    {uniqueConvenios.map(convenio => (
+                      <option key={convenio} value={convenio}>{convenio}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </CardHeader>
+            <ActiveFiltersBar
+              yearLabel={String(academicYear)}
+              filters={[
+                filters.curso !== 'all' && { key: 'curso', label: 'Curso', value: filters.curso, onRemove: () => setFilters(f => ({ ...f, curso: 'all' })) },
+                filters.status !== 'all' && { key: 'status', label: 'Estado', value: filters.status === 'PENDIENTE' ? 'Pre-Matriculados' : filters.status === 'ACTIVO' ? 'Confirmados' : 'Retirados', onRemove: () => setFilters(f => ({ ...f, status: 'all' })) },
+                filters.convenio !== 'all' && { key: 'convenio', label: 'Convenio', value: filters.convenio, onRemove: () => setFilters(f => ({ ...f, convenio: 'all' })) },
+              ].filter(Boolean)}
+              onClearAll={handleResetFilters}
+            />
             <CardContent>
               {loading && paginatedItems.length === 0 ? ( // Check paginatedItems
                 <div className="flex items-center justify-center py-8">

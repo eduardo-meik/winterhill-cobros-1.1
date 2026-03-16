@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import debounce from 'lodash.debounce';
 import { Combobox } from '@headlessui/react';
 import { Card } from '../ui/Card';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 10 }, (_, i) => (currentYear - 5 + i).toString()); // Last 5 years + next 4 years
@@ -26,6 +27,7 @@ export function ReportFilters({
   onResetFilters,
   loading = false 
 }) {
+  const { academicYear } = useAcademicYear();
   const [localFilters, setLocalFilters] = useState(filters);
   const [guardianQuery, setGuardianQuery] = useState('');
   const [courseQuery, setCourseQuery] = useState('');
@@ -139,10 +141,13 @@ export function ReportFilters({
             </select>
           </div>
 
-          {/* Year Filter */}
+          {/* Year Filter — defaults to global academic year */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Año
+              {localFilters.year !== 'all' && String(localFilters.year) === String(academicYear) && (
+                <span className="ml-1 text-xs text-primary">(activo)</span>
+              )}
             </label>
             <select
               value={localFilters.year}

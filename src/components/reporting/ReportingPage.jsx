@@ -11,6 +11,8 @@ import { PaymentMethodsChart } from './graphs/PaymentMethodsChart';
 import { PaymentsTable } from './tables/PaymentsTable';
 import { useReportData } from '../../hooks/reporting/useReportData';
 import { useReportExport } from '../../hooks/reporting/useReportExport';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 export function ReportingPage() {
   // Refs for charts to capture for PDF export
@@ -37,7 +39,18 @@ export function ReportingPage() {
     },
   });
 
+  const { academicYear } = useAcademicYear();
   const noStudentData = filters.students.length > 0 && data.length === 0;
+
+  const statusLabels = { paid: 'Pagado', pending: 'Pendiente', overdue: 'Vencido' };
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const activeBarFilters = [
+    filters.status !== 'all' && { key: 'status', label: 'Estado', value: statusLabels[filters.status] || filters.status, onRemove: () => setFilters(f => ({ ...f, status: 'all' })) },
+    filters.month !== 'all' && { key: 'month', label: 'Mes', value: monthNames[parseInt(filters.month) - 1], onRemove: () => setFilters(f => ({ ...f, month: 'all' })) },
+    filters.guardians.length > 0 && { key: 'guardians', label: 'Apoderados', value: `${filters.guardians.length}`, onRemove: () => setFilters(f => ({ ...f, guardians: [] })) },
+    filters.courses.length > 0 && { key: 'courses', label: 'Cursos', value: `${filters.courses.length}`, onRemove: () => setFilters(f => ({ ...f, courses: [] })) },
+    filters.students.length > 0 && { key: 'students', label: 'Estudiantes', value: `${filters.students.length}`, onRemove: () => setFilters(f => ({ ...f, students: [] })) },
+  ].filter(Boolean);
 
   return (
     <main className="flex-1 min-w-0 overflow-auto">
@@ -80,6 +93,12 @@ export function ReportingPage() {
         </div>
 
         <div className="px-4">
+          <ActiveFiltersBar
+            yearLabel={filters.year !== 'all' ? filters.year : String(academicYear)}
+            filters={activeBarFilters}
+            onClearAll={() => handleResetFilters()}
+            className="rounded-lg mb-3"
+          />
           <TabsContainer>
             <TabButton
               isActive={activeTab === 'payments'}

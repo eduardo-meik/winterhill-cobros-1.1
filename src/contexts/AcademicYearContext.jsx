@@ -7,17 +7,24 @@ const STORAGE_KEY = 'winterhill_academic_year';
  * Uses localStorage if available, otherwise defaults to current calendar year.
  */
 function getDefaultYear() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = parseInt(stored, 10);
+      if (!isNaN(parsed) && parsed >= 2020 && parsed <= 2100) return parsed;
+    }
+  } catch { /* ignore */ }
   return new Date().getFullYear();
 }
 
 /**
  * Available academic years for the selector.
- * From 2025 up to current year + 1.
+ * From 2024 up to current year + 1 (descending).
  */
 function getAvailableYears() {
   const current = new Date().getFullYear();
   const years = [];
-  for (let y = current + 1; y >= 2025; y--) {
+  for (let y = current + 1; y >= 2024; y--) {
     years.push(y);
   }
   return years;

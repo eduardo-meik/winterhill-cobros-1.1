@@ -9,6 +9,8 @@ import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 export function GuardiansPage() {
   const [guardians, setGuardians] = useState([]);
@@ -19,6 +21,7 @@ export function GuardiansPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [relationshipType, setRelationshipType] = useState('all');
   const debounceRef = useRef(null);
+  const { academicYear } = useAcademicYear();
 
   useEffect(() => {
     fetchGuardians();
@@ -129,19 +132,34 @@ export function GuardiansPage() {
                   placeholder="Buscar por nombre o RUT del apoderado..."
                   aria-label="Buscar apoderados"
                 />
-                <select
-                  value={relationshipType}
-                  onChange={(e) => setRelationshipType(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  aria-label="Filtrar por tipo de relación"
-                >
-                  <option value="all">Todos los Tipos</option>
-                  <option value="PADRE">Padre</option>
-                  <option value="MADRE">Madre</option>
-                  <option value="TUTOR">Tutor</option>
-                </select>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Relación</label>
+                  <select
+                    value={relationshipType}
+                    onChange={(e) => setRelationshipType(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    aria-label="Filtrar por tipo de relación"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="PADRE">Padre</option>
+                    <option value="MADRE">Madre</option>
+                    <option value="TUTOR">Tutor</option>
+                  </select>
+                </div>
               </div>
             </CardHeader>
+            <ActiveFiltersBar
+              yearLabel={String(academicYear)}
+              filters={[
+                relationshipType !== 'all' && {
+                  key: 'rel',
+                  label: 'Relación',
+                  value: relationshipType === 'PADRE' ? 'Padre' : relationshipType === 'MADRE' ? 'Madre' : 'Tutor',
+                  onRemove: () => setRelationshipType('all'),
+                },
+              ].filter(Boolean)}
+              onClearAll={() => { setSearchTerm(''); setRelationshipType('all'); }}
+            />
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-8">

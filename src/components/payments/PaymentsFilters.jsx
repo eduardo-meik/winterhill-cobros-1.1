@@ -39,70 +39,85 @@ export function PaymentsFilters({
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 p-4 border-b border-gray-200 dark:border-gray-700"> {/* Adjusted xl:grid-cols-6 */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
       {/* Status Filter */}
-      <select
-        value={filters.status}
-        onChange={(e) => handleFilterChange('status', e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-      >
-        <option value="all">Todos los Estados</option>
-        <option value="por_cobrar">Por Cobrar</option>
-        <option value="paid">Pagado</option>
-        <option value="pending">Pendiente</option>
-        <option value="overdue">Vencido</option>
-        <option value="cancelled">Anulado</option>
-      </select>
+      <div>
+        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Estado</label>
+        <select
+          value={filters.status}
+          onChange={(e) => handleFilterChange('status', e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="all">Todos</option>
+          <option value="por_cobrar">Por Cobrar</option>
+          <option value="paid">Pagado</option>
+          <option value="pending">Pendiente</option>
+          <option value="overdue">Vencido</option>
+          <option value="cancelled">Anulado</option>
+        </select>
+      </div>
 
       {/* Month Filter */}
-      <select
-        value={filters.month}
-        onChange={(e) => handleFilterChange('month', e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-      >
-        <option value="all">Todos los Meses</option>
-        {months.map(month => (
-          <option key={month.value} value={month.value}>{month.label}</option>
-        ))}
-      </select>
+      <div>
+        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Mes</label>
+        <select
+          value={filters.month}
+          onChange={(e) => handleFilterChange('month', e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="all">Todos</option>
+          {months.map(month => (
+            <option key={month.value} value={month.value}>{month.label}</option>
+          ))}
+        </select>
+      </div>
 
-      {/* Year is now controlled by the global AcademicYear selector in the sidebar */}
+      {/* Year is now controlled by the global AcademicYear selector in the header */}
 
       {/* Payment Method Filter */}
-      <select
-        value={filters.paymentMethod}
-        onChange={(e) => handleFilterChange('paymentMethod', e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-      >
-        <option value="all">Todos los Métodos</option>
-        {paymentMethods.map(method => (
-          <option key={method.value} value={method.value}>{method.label}</option>
-        ))}
-      </select>
+      <div>
+        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Método de Pago</label>
+        <select
+          value={filters.paymentMethod}
+          onChange={(e) => handleFilterChange('paymentMethod', e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="all">Todos</option>
+          {paymentMethods.map(method => (
+            <option key={method.value} value={method.value}>{method.label}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Curso Filter */}
-      <select
-        value={filters.curso}
-        onChange={(e) => handleFilterChange('curso', e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-      >
-        <option value="all">Todos los Cursos</option>
-        {filterOptions.cursos.map(curso => (
-          <option key={curso} value={curso}>{curso}</option>
-        ))}
-      </select>
+      <div>
+        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Curso</label>
+        <select
+          value={filters.curso}
+          onChange={(e) => handleFilterChange('curso', e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="all">Todos</option>
+          {filterOptions.cursos.map(curso => (
+            <option key={curso} value={curso}>{curso}</option>
+          ))}
+        </select>
+      </div>
 
-      {/* Cuota Filter - NEW */}
-      <select
-        value={filters.cuota}
-        onChange={(e) => handleFilterChange('cuota', e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-      >
-        <option value="all">Todas las Cuotas</option>
-        {filterOptions.cuotas.map(cuota => (
-          <option key={cuota} value={cuota}>Cuota {cuota}</option>
-        ))}
-      </select>
+      {/* Cuota Filter */}
+      <div>
+        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Cuota</label>
+        <select
+          value={filters.cuota}
+          onChange={(e) => handleFilterChange('cuota', e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="all">Todas</option>
+          {filterOptions.cuotas.map(cuota => (
+            <option key={cuota} value={cuota}>Cuota {cuota}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Start Date Filter - NEW */}
       <div>

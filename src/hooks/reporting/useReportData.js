@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { supabase } from '../../services/supabase';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
-const DEFAULT_FILTERS = {
+const buildDefaultFilters = (year) => ({
   status: 'all',
   guardians: [],
   courses: [],
@@ -10,11 +11,14 @@ const DEFAULT_FILTERS = {
   startDate: '',
   endDate: '',
   month: 'all',
-  year: 'all'
-};
+  year: String(year),
+});
 
 export function useReportData() {
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const { academicYear } = useAcademicYear();
+  const prevYearRef = useRef(academicYear);
+
+  const [filters, setFilters] = useState(() => buildDefaultFilters(academicYear));
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [guardians, setGuardians] = useState([]);
@@ -25,8 +29,18 @@ export function useReportData() {
 
   useEffect(() => {
     fetchReferenceData();
-    fetchData(DEFAULT_FILTERS);
+    fetchData(buildDefaultFilters(academicYear));
   }, []);
+
+  // Re-fetch when the global academic year changes
+  useEffect(() => {
+    if (prevYearRef.current !== academicYear) {
+      prevYearRef.current = academicYear;
+      const updated = { ...filters, year: String(academicYear) };
+      setFilters(updated);
+      fetchData(updated);
+    }
+  }, [academicYear]);
 
   // Memoized filtered data — computed once per data/filters change instead of 8-11× per render
   const filteredData = useMemo(() => {
@@ -330,7 +344,8 @@ export function useReportData() {
 
   const handleResetFilters = async () => {
     if (import.meta.env.DEV) console.log("Resetting filters to defaults");
-    setFilters(DEFAULT_FILTERS);
+    const defaults = buildDefaultFilters(academicYear);
+    setFilters(defaults);
     setLoading(true);
 
     try {
@@ -352,7 +367,7 @@ export function useReportData() {
             )
           )
         `)
-        .eq('year_academico', new Date().getFullYear())
+        .eq('year_academico', academicYear)
         .limit(500);
 
       if (feesError) throw feesError;

@@ -12,11 +12,14 @@ import { format } from 'date-fns';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
 import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
   const isReadOnly = false; // rollback
   const { data: rawFees = [], isLoading: loading } = useFeesQuery();
+  const { academicYear } = useAcademicYear();
   const [exporting, setExporting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -34,9 +37,12 @@ export function PaymentsPage() {
   const [onePerStudent, setOnePerStudent] = useState(true);
 
   // Sort by created_at desc (server query used to do this)
+  // Also filter by selected academic year
   const payments = useMemo(() =>
-    [...rawFees].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
-    [rawFees]
+    [...rawFees]
+      .filter(f => f.year_academico === academicYear)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
+    [rawFees, academicYear]
   );
   // Optimize filter options calculation with useMemo and better data structure
   const filterOptions = useMemo(() => {
@@ -336,6 +342,17 @@ export function PaymentsPage() {
                 onOnePerStudentChange={setOnePerStudent}
               />
             </CardHeader>
+            <ActiveFiltersBar
+              yearLabel={String(academicYear)}
+              filters={[
+                filters.status !== 'por_cobrar' && { key: 'status', label: 'Estado', value: filters.status === 'all' ? 'Todos' : filters.status, onRemove: () => handleFiltersChange({ ...filters, status: 'por_cobrar' }) },
+                filters.month !== 'all' && { key: 'month', label: 'Mes', value: ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][parseInt(filters.month)] || filters.month, onRemove: () => handleFiltersChange({ ...filters, month: 'all' }) },
+                filters.paymentMethod !== 'all' && { key: 'method', label: 'Método', value: filters.paymentMethod, onRemove: () => handleFiltersChange({ ...filters, paymentMethod: 'all' }) },
+                filters.curso !== 'all' && { key: 'curso', label: 'Curso', value: filters.curso, onRemove: () => handleFiltersChange({ ...filters, curso: 'all' }) },
+                filters.cuota !== 'all' && { key: 'cuota', label: 'Cuota', value: `#${filters.cuota}`, onRemove: () => handleFiltersChange({ ...filters, cuota: 'all' }) },
+              ].filter(Boolean)}
+              onClearAll={handleClearFilters}
+            />
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-8">

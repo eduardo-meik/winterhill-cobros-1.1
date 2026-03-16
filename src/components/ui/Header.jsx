@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserMenu } from './UserMenu';
+import { YearSelector } from './YearSelector';
 
 export function Header({ onMenuClick, onNavigate }) {
   return (
@@ -19,7 +20,9 @@ export function Header({ onMenuClick, onNavigate }) {
             <span className="text-xl font-bold text-primary">Sistema de Cobros Escolares</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <YearSelector className="hidden sm:flex" />
+          <YearSelector compact className="sm:hidden" />
           <UserMenu onNavigate={onNavigate} />
         </div>
       </div>
