@@ -1,0 +1,313 @@
+﻿{
+    "summary":  {
+                    "csv_rows":  423,
+                    "csv_students":  423,
+                    "matched_students":  423,
+                    "missing_students":  0,
+                    "course_mismatches":  1,
+                    "course_mismatches_section_only":  0,
+                    "course_mismatches_major":  1,
+                    "status_mismatches":  0,
+                    "enrollment_2026_missing":  0,
+                    "enrollment_2026_not_completed":  0,
+                    "fee_2026_missing":  200,
+                    "fee_payment_method_mismatches":  0,
+                    "fee_monthly_mismatches":  1,
+                    "fee_installments_mismatches":  0,
+                    "fee_annual_mismatches":  1,
+                    "ok_full_match":  222
+                },
+    "aggregates":  {
+                       "fee_2026_missing_by_method":  {
+                                                          "PRIORITARIO":  185,
+                                                          "":  15
+                                                      },
+                       "enrollment_2026_missing_by_method":  {
+
+                                                             },
+                       "unexpected_fee_2026_missing":  0,
+                       "unexpected_fee_2026_missing_by_method":  {
+
+                                                                 }
+                   },
+    "method_distribution":  {
+                                "csv":  {
+                                            "TC":  6,
+                                            "TRANSFERENCIA":  9,
+                                            "SIN CHEQUE":  1,
+                                            "CHEQUE GARANTIA":  1,
+                                            "DESCUENTO PLANILLA":  6,
+                                            "PAGARE":  140,
+                                            "CHEQUES":  50,
+                                            "DESCUENTO":  6,
+                                            "PRIORITARIO":  189,
+                                            "":  15
+                                        },
+                                "fee_2026":  {
+                                                 "TC":  6,
+                                                 "TRANSFERENCIA":  9,
+                                                 "PAGARE":  140,
+                                                 "CHEQUES":  51,
+                                                 "DESCUENTO PLANILLA":  12
+                                             }
+                            },
+    "samples":  {
+                    "missing_students":  [
+
+                                         ],
+                    "course_mismatches":  [
+                                              {
+                                                  "run":  "22599890-6",
+                                                  "nombre":  "MATÍAS ALONSO NÚÑEZ ORELLANA",
+                                                  "curso_csv":  "BORRAR",
+                                                  "curso_bd":  "4° MEDIO A"
+                                              }
+                                          ],
+                    "course_mismatches_section_only":  [
+
+                                                       ],
+                    "course_mismatches_major":  [
+                                                    {
+                                                        "run":  "22599890-6",
+                                                        "nombre":  "MATÍAS ALONSO NÚÑEZ ORELLANA",
+                                                        "curso_csv":  "BORRAR",
+                                                        "curso_bd":  "4° MEDIO A"
+                                                    }
+                                                ],
+                    "status_mismatches":  [
+
+                                          ],
+                    "enrollment_2026_missing":  [
+
+                                                ],
+                    "enrollment_2026_not_completed":  [
+
+                                                      ],
+                    "fee_2026_missing":  [
+                                             {
+                                                 "run":  "27120870-7",
+                                                 "nombre":  "LU AMADOR BENÍTEZ ALCAIDE",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27167338-8",
+                                                 "nombre":  "BRIANA ANTONELLA CHACANA VEGA",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27016431-5",
+                                                 "nombre":  "CHRISTOPHER THOMAS CORTÉS GUZMÁN",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27249739-7",
+                                                 "nombre":  "SANTIAGO ALEJANDRO CANALES GODOY",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26838566-5",
+                                                 "nombre":  "SALVADOR GASPAR GODOY DIDIER",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27231851-4",
+                                                 "nombre":  "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27024214-6",
+                                                 "nombre":  "PASCUALA ANTONIA LABORDE SALINAS",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26888603-6",
+                                                 "nombre":  "PAZ LEONOR MICHELSEN MARTÍNEZ",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26845290-7",
+                                                 "nombre":  "NICANOR AUKAN NÚÑEZ JORQUERA",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27183790-9",
+                                                 "nombre":  "ISAAC GAEL PEÑA LÓPEZ",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26895736-7",
+                                                 "nombre":  "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27184747-5",
+                                                 "nombre":  "RODRIGO LEÓN VALDÉS MATURANA",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "27047648-1",
+                                                 "nombre":  "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "25938092-8",
+                                                 "nombre":  "DANTE ÁVALOS QUIÑONES",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26637910-2",
+                                                 "nombre":  "MIA SIMONNE BAVESTRELLO MARCHESINI",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26559159-0",
+                                                 "nombre":  "CHARLOTTE ANDREA BIEHL SALAZAR",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26790997-0",
+                                                 "nombre":  "ALEN PAULO LEÓN CARMONA NORAMBUENA",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26283582-0",
+                                                 "nombre":  "INÉS CONTRERAS RUBIO",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26620883-9",
+                                                 "nombre":  "AMARANTA MAIALEN FLORES GÓMEZ",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             },
+                                             {
+                                                 "run":  "26363527-2",
+                                                 "nombre":  "JOAQUÍN GONZALO GODOY INZULZA",
+                                                 "metodo_csv":  "PRIORITARIO",
+                                                 "enrollment_status":  "completed"
+                                             }
+                                         ],
+                    "fee_payment_method_mismatches":  [
+
+                                                      ],
+                    "fee_monthly_mismatches":  [
+                                                   {
+                                                       "run":  "23882043-K",
+                                                       "nombre":  "OCTAVIO ANDRÉS ARENAS LANDEROS",
+                                                       "cuota_csv":  266252,
+                                                       "cuotas_fee":  "239627"
+                                                   }
+                                               ],
+                    "fee_installments_mismatches":  [
+
+                                                    ],
+                    "fee_annual_mismatches":  [
+                                                  {
+                                                      "run":  "23882043-K",
+                                                      "nombre":  "OCTAVIO ANDRÉS ARENAS LANDEROS",
+                                                      "anual_csv":  1331260,
+                                                      "anual_fee":  1198135
+                                                  }
+                                              ],
+                    "ok_full_match":  [
+                                          {
+                                              "run":  "27126104-7",
+                                              "nombre":  "FACUNDO AQUEVEQUE SOLANO"
+                                          },
+                                          {
+                                              "run":  "27245224-5",
+                                              "nombre":  "ELOÍSA IZADI ARENAS LANDEROS"
+                                          },
+                                          {
+                                              "run":  "26793970-5",
+                                              "nombre":  "LORETO CATALINA CHÁVEZ RÍOS"
+                                          },
+                                          {
+                                              "run":  "26793920-9",
+                                              "nombre":  "IAN SALVADOR KARMY ELTIT"
+                                          },
+                                          {
+                                              "run":  "27233231-2",
+                                              "nombre":  "FARID RODRIGO NIELSEN FLORES"
+                                          },
+                                          {
+                                              "run":  "26863472-K",
+                                              "nombre":  "MAXIMILIANO VICENTE PIÑA BOMBAL"
+                                          },
+                                          {
+                                              "run":  "27171050-K",
+                                              "nombre":  "GASPAR LUCIANO RODRÍGUEZ ESTEFANÍA"
+                                          },
+                                          {
+                                              "run":  "26757037-K",
+                                              "nombre":  "ANOUK TABARÉ ROJAS VACCARO"
+                                          },
+                                          {
+                                              "run":  "26920280-7",
+                                              "nombre":  "DIEGO VALENTÍN SEPÚLVEDA BRAVO"
+                                          },
+                                          {
+                                              "run":  "26746827-3",
+                                              "nombre":  "ANAÍS MARIEN WILSON CÁRCAMO"
+                                          },
+                                          {
+                                              "run":  "26687709-9",
+                                              "nombre":  "SAMANTHA VICTORIA SIMONE ARAYA CORTEZ"
+                                          },
+                                          {
+                                              "run":  "26657060-0",
+                                              "nombre":  "ISIDORA ALINE BERROCAL ROA"
+                                          },
+                                          {
+                                              "run":  "26116316-0",
+                                              "nombre":  "SANTIAGO ALONSO CARRILLO BRIONES"
+                                          },
+                                          {
+                                              "run":  "26734177-K",
+                                              "nombre":  "RAMIRO PASCUAL FUENZALIDA ANDRADE"
+                                          },
+                                          {
+                                              "run":  "26464424-0",
+                                              "nombre":  "RENATA EMILIA IRARRÁZABAL BASÁEZ"
+                                          },
+                                          {
+                                              "run":  "26584136-8",
+                                              "nombre":  "FACUNDO RODRIGO MARTÍNEZ LUCERO"
+                                          },
+                                          {
+                                              "run":  "26211725-1",
+                                              "nombre":  "SANTIAGO MATTIA PAZ"
+                                          },
+                                          {
+                                              "run":  "26749660-9",
+                                              "nombre":  "SALVADOR IGNACIO NÚÑEZ RAMÍREZ"
+                                          },
+                                          {
+                                              "run":  "26677186-K",
+                                              "nombre":  "AMANDA AYELÉN PAREDES RÍOS"
+                                          },
+                                          {
+                                              "run":  "26340647-8",
+                                              "nombre":  "AUKAN AMARU PIÑONES RAMÍREZ"
+                                          }
+                                      ]
+                }
+}
