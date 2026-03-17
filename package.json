@@ -32,6 +32,7 @@
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
+    "@playwright/test": "^1.58.2",
     "@sparticuz/chromium": "^141.0.0",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "^6.6.4",

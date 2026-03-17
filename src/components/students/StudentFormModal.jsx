@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import { Card } from '../ui/Card';
@@ -48,6 +48,13 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
   const statusOptions = getStudentStatusOptions();
   const { data: cursos = [] } = useCursosQuery();
   const queryClient = useQueryClient();
+
+  // Filtrar cursos: mostrar solo los del año académico corriente
+  const currentYear = new Date().getFullYear();
+  const cursosDelAnio = useMemo(
+    () => cursos.filter(c => c.year_academico === currentYear),
+    [cursos, currentYear]
+  );
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -424,10 +431,10 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                     {...register('curso', { required: 'Este campo es requerido' })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
-                    <option value="">Seleccionar curso</option>
-                    {cursos.map(curso => (
+                    <option value="">Seleccionar curso ({currentYear})</option>
+                    {cursosDelAnio.map(curso => (
                       <option key={curso.id} value={curso.id}>
-                        {curso.nom_curso} ({curso.year_academico || 'Sin año'})
+                        {curso.nom_curso}
                       </option>
                     ))}
                   </select>

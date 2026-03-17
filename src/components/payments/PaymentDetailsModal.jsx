@@ -27,6 +27,56 @@ function getStudentDisplayName(student) {
     || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim();
 }
 
+const RECEIPT_GUARDIAN_ROLE_PRIORITY = ['ECONOMICO', 'AMBOS'];
+
+function normalizeGuardianRole(role) {
+  return typeof role === 'string' ? role.trim().toUpperCase() : '';
+}
+
+function selectReceiptGuardian(rows = []) {
+  const validRows = rows.filter((row) => row?.guardian && typeof row.guardian === 'object');
+  if (!validRows.length) return null;
+
+  for (const role of RECEIPT_GUARDIAN_ROLE_PRIORITY) {
+    const match = validRows.find(
+      (row) => normalizeGuardianRole(row.guardian_role) === role && row.guardian?.email
+    );
+    if (match) return match.guardian;
+  }
+
+  const primaryWithEmail = validRows.find((row) => Boolean(row.is_primary) && row.guardian?.email);
+  if (primaryWithEmail) return primaryWithEmail.guardian;
+
+  const firstWithEmail = validRows.find((row) => row.guardian?.email);
+  if (firstWithEmail) return firstWithEmail.guardian;
+
+  return validRows[0].guardian;
+}
+
+async function fetchPreferredGuardian(studentId) {
+  if (!studentId) return null;
+
+  const { data, error } = await supabase
+    .from('student_guardian')
+    .select(`
+      guardian_role,
+      is_primary,
+      guardian:guardians (
+        id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        relationship_type
+      )
+    `)
+    .eq('student_id', studentId)
+    .order('is_primary', { ascending: false });
+
+  if (error) throw error;
+  return selectReceiptGuardian(data || []);
+}
+
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
     <dt className="text-sm text-gray-500 dark:text-gray-400">{label}</dt>
@@ -67,23 +117,8 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     if (!payment?.student?.id) return;
     const fetchGuardianInfo = async () => {
       try {
-        const { data, error } = await supabase
-          .from('student_guardian')
-          .select(`
-            guardian:guardians (
-              id,
-              first_name,
-              last_name,
-              email,
-              phone,
-              relationship_type
-            )
-          `)
-          .eq('student_id', payment.student.id)
-          .single();
-
-        if (error) throw error;
-        setGuardianInfo(data.guardian);
+        const guardian = await fetchPreferredGuardian(payment.student.id);
+        setGuardianInfo(guardian);
       } catch (error) {
         console.error('Error fetching guardian info:', error);
       }
@@ -152,6 +187,43 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
             notes: formData.notes || null,
             cashierName,
           });
+        }
+
+        try {
+          const receiptGuardian = guardianInfo || await fetchPreferredGuardian(payment?.student?.id);
+          if (receiptGuardian?.email) {
+            const cashierName = permissions?.user?.user_metadata?.full_name
+              || permissions?.user?.email
+              || 'Usuario';
+            const year = safeYearFromDate(formData.payment_date || payment.payment_date || new Date().toISOString());
+            const html = buildReceiptEmailHtml({
+              feeId: payment.id,
+              studentName: getStudentDisplayName(payment.student),
+              courseName: payment.student?.curso?.nom_curso || null,
+              numeroCuota: payment.numero_cuota || null,
+              yearAcademico: year,
+              amount: Number(formData.amount || payment.amount),
+              paymentDate: formData.payment_date || payment.payment_date || new Date().toISOString(),
+              paymentMethod: formData.payment_method || payment.payment_method || '—',
+              movBancario: formData.mov_bancario || payment.mov_bancario || null,
+              notes: formData.notes || payment.notes || null,
+              cashierName,
+            });
+            const subject = `Comprobante de Pago - Colegio Winterhill - ${new Date().toLocaleDateString('es-CL')}`;
+            await sendEmailViaFunction({
+              to: receiptGuardian.email,
+              subject,
+              html,
+              type: 'receipt',
+              related_id: payment.id,
+            });
+            toast.success('Recibo enviado al correo del apoderado económico');
+          } else {
+            toast.error('Pago marcado como pagado, pero el apoderado económico no tiene correo registrado.');
+          }
+        } catch (emailError) {
+          console.error('Error sending automatic receipt email:', emailError);
+          toast.error(friendlyError(emailError, 'Pago guardado, pero no se pudo enviar el recibo por correo.'));
         }
       }
       onSuccess?.();
