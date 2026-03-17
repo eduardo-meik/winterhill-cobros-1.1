@@ -45,6 +45,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
   });
 
   const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
+  const [showOtherYears, setShowOtherYears] = useState(false);
   const statusOptions = getStudentStatusOptions();
   const { data: cursos = [] } = useCursosQuery();
   const queryClient = useQueryClient();
@@ -55,6 +56,20 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     () => cursos.filter(c => c.year_academico === currentYear),
     [cursos, currentYear]
   );
+
+  // Cursos de otros años, agrupados por año descendente
+  const cursosOtrosAnios = useMemo(() => {
+    const otros = cursos.filter(c => c.year_academico !== currentYear);
+    const grouped = {};
+    otros.forEach(c => {
+      const y = c.year_academico;
+      if (!grouped[y]) grouped[y] = [];
+      grouped[y].push(c);
+    });
+    return Object.keys(grouped)
+      .sort((a, b) => Number(b) - Number(a))
+      .map(y => ({ year: Number(y), courses: grouped[y] }));
+  }, [cursos, currentYear]);
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -425,21 +440,77 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Curso *
+                    Curso {currentYear} *
                   </label>
                   <select
                     {...register('curso', { required: 'Este campo es requerido' })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-2 rounded-lg border-2 border-primary bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
-                    <option value="">Seleccionar curso ({currentYear})</option>
+                    <option value="">— Seleccionar curso ({currentYear}) —</option>
                     {cursosDelAnio.map(curso => (
                       <option key={curso.id} value={curso.id}>
                         {curso.nom_curso}
                       </option>
                     ))}
                   </select>
+                  {cursosOtrosAnios.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOtherYears(true)}
+                      className="mt-1 text-xs text-primary hover:text-primary-light underline"
+                    >
+                      Ver cursos de otros años ({cursosOtrosAnios.map(g => g.year).join(', ')})
+                    </button>
+                  )}
                   {errors.curso && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.curso.message}</p>
+                  )}
+
+                  {/* Popup modal para seleccionar cursos de otros años */}
+                  {showOtherYears && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+                      <div className="bg-white dark:bg-dark-card rounded-xl shadow-xl p-6 max-w-md w-full max-h-[70vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Cursos de otros años</h3>
+                          <button
+                            type="button"
+                            onClick={() => setShowOtherYears(false)}
+                            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        {cursosOtrosAnios.map(group => (
+                          <div key={group.year} className="mb-4">
+                            <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 border-b pb-1">
+                              Año {group.year}
+                            </h4>
+                            <div className="space-y-1">
+                              {group.courses.map(curso => (
+                                <button
+                                  key={curso.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setValue('curso', curso.id, { shouldValidate: true, shouldDirty: true });
+                                    setShowOtherYears(false);
+                                  }}
+                                  className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-primary/10 text-gray-700 dark:text-gray-300 transition-colors"
+                                >
+                                  {curso.nom_curso}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setShowOtherYears(false)}
+                          className="mt-4 w-full py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium"
+                        >
+                          Cerrar
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
 
