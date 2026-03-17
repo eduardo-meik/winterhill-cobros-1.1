@@ -50,12 +50,14 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
   const { data: cursos = [] } = useCursosQuery();
   const queryClient = useQueryClient();
 
-  // Filtrar cursos: mostrar solo los del año académico corriente
   const currentYear = new Date().getFullYear();
-  const cursosDelAnio = useMemo(
-    () => cursos.filter(c => c.year_academico === currentYear),
-    [cursos, currentYear]
-  );
+  const selectedNivel = watch('nivel');
+
+  // Filtrar cursos: por nivel seleccionado + año académico corriente
+  const cursosFiltrados = useMemo(() => {
+    if (!selectedNivel) return [];
+    return cursos.filter(c => c.year_academico === currentYear && String(c.nivel) === String(selectedNivel));
+  }, [cursos, currentYear, selectedNivel]);
 
   // Cursos de otros años, agrupados por año descendente
   const cursosOtrosAnios = useMemo(() => {
@@ -81,8 +83,16 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
           fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : '', // Use '' if null
           fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : '', // Use '' if null
           curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
+          nivel: student.nivel ? String(student.nivel) : '',
           estado_std: student.estado_std || 'MATRICULADO'
         };
+        // Auto-detect nivel from course if not set
+        if (!studentDataForForm.nivel && studentDataForForm.curso && cursos.length > 0) {
+          const cursoObj = cursos.find(c => String(c.id) === String(studentDataForForm.curso));
+          if (cursoObj && cursoObj.nivel) {
+            studentDataForForm.nivel = String(cursoObj.nivel);
+          }
+        }
         reset(studentDataForForm);
         fetchStudentGuardianAssociations(student.id);
       } else {
@@ -106,28 +116,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     }
   };
 
-  // Auto-ajuste de nivel (110 Básica, 310 Media) según curso seleccionado
-  const selectedCursoId = watch('curso');
-  useEffect(() => {
-    if (!selectedCursoId || !Array.isArray(cursos) || cursos.length === 0) return;
-    const curso = cursos.find(c => String(c.id) === String(selectedCursoId));
-    if (!curso) return;
 
-    const nombre = (curso.nom_curso || '').toString().toLowerCase();
-    const nivelTexto = (curso.nivel || '').toString().toLowerCase();
-
-    // Heurística: si el curso es de Media => 310, si es Básica => 110
-    let nivelValue = '';
-    if (nombre.includes('media') || nivelTexto.includes('media')) {
-      nivelValue = '310';
-    } else if (nombre.includes('basica') || nombre.includes('básica') || nivelTexto.includes('basica') || nivelTexto.includes('básica')) {
-      nivelValue = '110';
-    }
-
-    if (nivelValue) {
-      setValue('nivel', nivelValue, { shouldValidate: true, shouldDirty: true });
-    }
-  }, [selectedCursoId, cursos, setValue]);
 
   const onSubmit = async (formData) => { // Renamed data to formData for clarity
     try {
@@ -440,14 +429,43 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Nivel *
+                  </label>
+                  {(() => {
+                    const { onChange, ...rest } = register('nivel', { required: 'Este campo es requerido' });
+                    return (
+                      <select
+                        {...rest}
+                        onChange={(e) => {
+                          onChange(e);
+                          setValue('curso', '', { shouldValidate: false });
+                        }}
+                        className="w-full px-4 py-2 rounded-lg border-2 border-primary bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      >
+                        <option value="">Seleccionar nivel</option>
+                        <option value="110">110 - Básica</option>
+                        <option value="310">310 - Media</option>
+                      </select>
+                    );
+                  })()}
+                  {errors.nivel && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nivel.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Curso {currentYear} *
                   </label>
                   <select
                     {...register('curso', { required: 'Este campo es requerido' })}
-                    className="w-full px-4 py-2 rounded-lg border-2 border-primary bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    disabled={!selectedNivel}
+                    className={`w-full px-4 py-2 rounded-lg border-2 border-primary bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary ${!selectedNivel ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <option value="">— Seleccionar curso ({currentYear}) —</option>
-                    {cursosDelAnio.map(curso => (
+                    <option value="">
+                      {selectedNivel ? `— Seleccionar curso (${currentYear}) —` : '— Primero seleccione un nivel —'}
+                    </option>
+                    {cursosFiltrados.map(curso => (
                       <option key={curso.id} value={curso.id}>
                         {curso.nom_curso}
                       </option>
@@ -491,6 +509,8 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                                   key={curso.id}
                                   type="button"
                                   onClick={() => {
+                                    const nivelVal = curso.nivel ? String(curso.nivel) : '';
+                                    if (nivelVal) setValue('nivel', nivelVal, { shouldValidate: true, shouldDirty: true });
                                     setValue('curso', curso.id, { shouldValidate: true, shouldDirty: true });
                                     setShowOtherYears(false);
                                   }}
@@ -514,38 +534,21 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                   )}
                 </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Estado de Matrícula *
-                    </label>
-                    <select
-                      {...register('estado_std', { required: 'Este campo es requerido' })}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    >
-                      {statusOptions.map(option => (
-                        <option key={option.value} value={option.value}>{option.label}</option>
-                      ))}
-                    </select>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pre-Matriculado (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Confirmado (valor ACTIVO) o Retirado cuando corresponda.</p>
-                    {errors.estado_std && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.estado_std.message}</p>
-                    )}
-                  </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nivel *
+                    Estado de Matrícula *
                   </label>
                   <select
-                    {...register('nivel', { required: 'Este campo es requerido' })}
+                    {...register('estado_std', { required: 'Este campo es requerido' })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
-                    <option value="">Seleccionar nivel</option>
-                    <option value="110">110 - Básica</option>
-                    <option value="310">310 - Media</option>
+                    {statusOptions.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
                   </select>
-                  {errors.nivel && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nivel.message}</p>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pre-Matriculado (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Confirmado (valor ACTIVO) o Retirado cuando corresponda.</p>
+                  {errors.estado_std && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.estado_std.message}</p>
                   )}
                 </div>
 
