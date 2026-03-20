@@ -114,9 +114,15 @@ export function MatriculaWizard() {
   });
 
   // ─── Wizard Navigation ──────────────────────────────────────
+  // Use aggregated per-student totals for validation instead of the global
+  // economic state, because the UI only edits per-student fields.
   const nav = useWizardNavigation({
     students,
-    economic: econ.economic,
+    economic: {
+      colegiatura_anual: econ.aggregatedEconomicTotals.totalColegiatura || econ.economic.colegiatura_anual,
+      cantidad_cuotas: econ.aggregatedEconomicTotals.cantidadCuotas || econ.economic.cantidad_cuotas,
+      dia_vencimiento: econ.aggregatedEconomicTotals.diaVencimiento || econ.economic.dia_vencimiento,
+    },
     prioritario: econ.prioritario,
     previewHtml: '', // Will be overridden below
     debtInfo,

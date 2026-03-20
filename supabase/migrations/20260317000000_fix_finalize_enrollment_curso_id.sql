@@ -182,10 +182,10 @@ BEGIN
         ELSE
           INSERT INTO public.fee(
             student_id, guardian_id, amount, due_date, status, payment_method,
-            owner_id, year_academico, numero_cuota, enrollment_id, meta
+            owner_id, year_academico, numero_cuota, enrollment_id, meta, year
           ) VALUES (
             r_es.student_id, v_guardian_id, r_cuota.amount, r_cuota.due_date, 'pending', v_method,
-            v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment')
+            v_owner, v_year, r_cuota.numero, p_enrollment_id, jsonb_build_object('source','finalize_enrollment'), v_year
           )
           -- FIX: Match the actual unique index ux_fee_student_year_cuota
           ON CONFLICT (student_id, year_academico, numero_cuota) DO NOTHING;
