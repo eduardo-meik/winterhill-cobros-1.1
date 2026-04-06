@@ -4,22 +4,24 @@ import { format } from 'date-fns';
 import clsx from 'clsx';
 
 /**
- * Modal that shows all fees for a specific student in the current academic year,
+ * Modal that shows all fees for a specific student in the selected academic year,
  * sorted by due_date descending (newest first).
  */
-export function StudentFeesModal({ studentId, studentName, allFees, onClose, onViewDetails }) {
-  const currentYear = new Date().getFullYear();
+export function StudentFeesModal({ studentId, studentName, allFees, academicYear, onClose, onViewDetails }) {
+  const selectedYear = Number.isFinite(Number(academicYear))
+    ? Number(academicYear)
+    : new Date().getFullYear();
 
   const studentFees = useMemo(() => {
     if (!allFees || !studentId) return [];
     return allFees
-      .filter(f => f.student_id === studentId && Number(f.year_academico) === currentYear)
+      .filter(f => f.student_id === studentId && Number(f.year_academico) === selectedYear)
       .sort((a, b) => {
         const da = a.due_date ? new Date(a.due_date).getTime() : 0;
         const db = b.due_date ? new Date(b.due_date).getTime() : 0;
         return db - da; // newest first
       });
-  }, [allFees, studentId, currentYear]);
+  }, [allFees, studentId, selectedYear]);
 
   const totals = useMemo(() => {
     let total = 0, paid = 0, pending = 0;
@@ -44,7 +46,7 @@ export function StudentFeesModal({ studentId, studentName, allFees, onClose, onV
                 Cuotas de {studentName}
               </Dialog.Title>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                Año académico {currentYear} &middot; {studentFees.length} cuota{studentFees.length !== 1 ? 's' : ''}
+                Año académico {selectedYear} &middot; {studentFees.length} cuota{studentFees.length !== 1 ? 's' : ''}
               </p>
             </div>
             <button
@@ -77,7 +79,7 @@ export function StudentFeesModal({ studentId, studentName, allFees, onClose, onV
           <div className="flex-1 overflow-y-auto">
             {studentFees.length === 0 ? (
               <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-                No hay cuotas registradas para el año {currentYear}.
+                No hay cuotas registradas para el año {selectedYear}.
               </p>
             ) : (
               <table className="w-full text-sm">

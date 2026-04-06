@@ -14,12 +14,16 @@ import { Pagination } from '../ui/Pagination';
 import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
+import { usePermissions } from '../../hooks/usePermissions';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
   const isReadOnly = false; // rollback
   const { data: rawFees = [], isLoading: loading } = useFeesQuery();
   const { academicYear } = useAcademicYear();
+  const permissions = usePermissions();
+  const currentCalendarYear = new Date().getFullYear();
+  const canManageSelectedYear = academicYear >= currentCalendarYear || permissions.isAdmin();
   const [exporting, setExporting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -319,7 +323,7 @@ export function PaymentsPage() {
                 {exporting ? 'Exportando...' : 'Exportar Todo'}
               </Button>
             </div>
-            {!isReadOnly && (
+            {!isReadOnly && canManageSelectedYear && (
               <Button onClick={() => setIsRegisterModalOpen(true)} className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                   <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,144H32V64H224V192ZM64,104a8,8,0,0,1,8-8H96a8,8,0,0,1,0,16H72A8,8,0,0,1,64,104Zm128,48a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H184A8,8,0,0,1,192,152Z" />
@@ -329,6 +333,14 @@ export function PaymentsPage() {
             )}
           </div>
         </div>
+
+        {!canManageSelectedYear && (
+          <div className="px-4 pb-2">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              Solo el perfil ADMIN puede registrar o modificar pagos de años académicos anteriores.
+            </div>
+          </div>
+        )}
 
         <div className="p-4">
           <Card>
@@ -417,6 +429,7 @@ export function PaymentsPage() {
           studentId={studentFeesTarget.id}
           studentName={studentFeesTarget.name}
           allFees={payments}
+          academicYear={academicYear}
           onClose={() => setStudentFeesTarget(null)}
           onViewDetails={(fee) => { setStudentFeesTarget(null); setSelectedPayment(fee); }}
         />
@@ -426,6 +439,7 @@ export function PaymentsPage() {
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
         onSuccess={() => setIsRegisterModalOpen(false)}
+        academicYear={academicYear}
       />
     </main>
   );

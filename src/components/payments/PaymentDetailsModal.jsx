@@ -85,6 +85,7 @@ const DetailItem = ({ label, value }) => (
 );
 
 export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
+  const currentCalendarYear = new Date().getFullYear();
   // All hooks MUST be called before any conditional return (Rules of Hooks)
   const [guardianInfo, setGuardianInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -109,6 +110,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     amount: payment?.amount ?? 0,
     payment_date: '',
     payment_method: '',
+    num_boleta: '',
     mov_bancario: '',
     notes: ''
   });
@@ -273,15 +275,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       }
 
       // Build update payload
-      const year = (() => {
-        try {
-          const d = new Date(registerData.payment_date);
-          const y = d.getFullYear();
-          return Number.isFinite(y) ? y : new Date().getFullYear();
-        } catch {
-          return new Date().getFullYear();
-        }
-      })();
+      const year = payment?.year_academico || safeYearFromDate(registerData.payment_date);
 
       await updateFee.mutateAsync({
         id: payment.id,
@@ -290,6 +284,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           payment_date: registerData.payment_date,
           payment_method: registerData.payment_method,
           status: 'paid',
+          num_boleta: registerData.num_boleta || null,
           mov_bancario: registerData.mov_bancario || null,
           notes: registerData.notes || null,
           year_academico: year
@@ -610,6 +605,16 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                       </select>
                     </div>
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folio Boleta</label>
+                      <input
+                        type="text"
+                        name="num_boleta"
+                        value={registerData.num_boleta}
+                        onChange={handleRegisterChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movimiento Bancario</label>
                       <input
                         type="text"
@@ -823,7 +828,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                     </button>
                   )}
                   {/* ASIST: Registrar pago si no está pagado */}
-                  {permissions.isAssistant() && payment.status !== 'paid' && (
+                  {permissions.isAssistant() && payment.status !== 'paid' && (payment.year_academico ?? currentCalendarYear) >= currentCalendarYear && (
                     <button
                       onClick={() => setIsRegistering(true)}
                       className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"

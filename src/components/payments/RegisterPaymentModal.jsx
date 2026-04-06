@@ -23,7 +23,7 @@ const defaultValues = {
   is_free_payment: false
 };
 
-export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
+export function RegisterPaymentModal({ isOpen, onClose, onSuccess, academicYear }) {
   const { 
     register, 
     handleSubmit, 
@@ -80,14 +80,16 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
   const fetchAvailableCuotas = async () => {
     try {
       setIsLoadingCuotas(true);
-      
-      const currentYear = new Date().getFullYear();
+
+      const targetAcademicYear = Number.isFinite(Number(academicYear))
+        ? Number(academicYear)
+        : new Date().getFullYear();
       // Fetch existing fee records for this student to identify cuotas
       const { data: fees, error } = await supabase
         .from('fee')
         .select('numero_cuota, amount, status, due_date, payment_date')
         .eq('student_id', selectedStudentId)
-        .eq('year_academico', currentYear)
+        .eq('year_academico', targetAcademicYear)
         .order('numero_cuota', { ascending: true });
 
       if (error) throw error;
@@ -205,15 +207,9 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
         num_boleta: data.num_boleta,
         mov_bancario: data.mov_bancario,
         // Ensure DB NOT NULL column is satisfied
-        year_academico: (() => {
-          try {
-            const d = new Date(data.payment_date);
-            const y = d.getFullYear();
-            return Number.isFinite(y) ? y : new Date().getFullYear();
-          } catch {
-            return new Date().getFullYear();
-          }
-        })()
+        year_academico: Number.isFinite(Number(academicYear))
+          ? Number(academicYear)
+          : new Date().getFullYear()
       };
 
       // Add numero_cuota if not a free payment
