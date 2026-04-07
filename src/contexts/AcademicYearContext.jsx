@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { getAvailableAcademicYears } from '../utils/academicYears';
 
 const STORAGE_KEY = 'winterhill_academic_year';
 
@@ -15,19 +16,6 @@ function getDefaultYear() {
     }
   } catch { /* ignore */ }
   return new Date().getFullYear();
-}
-
-/**
- * Available academic years for the selector.
- * From 2024 up to current year + 1 (descending).
- */
-function getAvailableYears() {
-  const current = new Date().getFullYear();
-  const years = [];
-  for (let y = current + 1; y >= 2024; y--) {
-    years.push(y);
-  }
-  return years;
 }
 
 const AcademicYearContext = createContext(undefined);
@@ -47,7 +35,7 @@ export function AcademicYearProvider({ children }) {
     }
   }, []);
 
-  const availableYears = getAvailableYears();
+  const availableYears = getAvailableAcademicYears();
 
   return (
     <AcademicYearContext.Provider value={{ academicYear, setAcademicYear, availableYears }}>

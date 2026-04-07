@@ -48,33 +48,21 @@ ORDER BY s.whole_name;
 -- - Cancelar cuotas 2026 pendientes/vencidas/parciales.
 -- - Cancelar la matricula 2026 asociada.
 
-UPDATE public.fee
-SET status = 'cancelled',
-    updated_at = now(),
-    notes = concat_ws(
-      ' | ',
-      NULLIF(notes, ''),
-      '[REG 2026-04-06] Deuda 2026 anulada: alumno no matriculado para 2026'
-    ),
-    meta = COALESCE(meta, '{}'::jsonb) || jsonb_build_object(
-      'regularization_source', 'sql/regularize_aranceles_cases_20260406.sql',
-      'regularization_date', '2026-04-06',
-      'regularization_action', 'cancel_fee_due_to_not_enrolled_2026'
-    )
+DELETE FROM public.fee
 WHERE student_id = '1d36e401-4922-47d9-8951-d063e423c6d5'
   AND year_academico = 2026
   AND status IN ('pending', 'overdue', 'partial');
 
 UPDATE public.enrollments
-SET status = 'cancelled',
+SET status = 'rejected',
     updated_at = now(),
     meta = COALESCE(meta, '{}'::jsonb) || jsonb_build_object(
       'regularization_source', 'sql/regularize_aranceles_cases_20260406.sql',
       'regularization_date', '2026-04-06',
-      'regularization_action', 'cancel_enrollment_due_to_not_enrolled_2026'
+      'regularization_action', 'reject_enrollment_due_to_not_enrolled_2026'
     )
 WHERE id = '59d9c8b8-32db-482d-9304-72652f943931'
-  AND COALESCE(status, '') <> 'cancelled';
+  AND COALESCE(status, '') <> 'rejected';
 
 UPDATE public.students
 SET estado_std = 'RETIRADO',

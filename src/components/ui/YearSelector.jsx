@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import clsx from 'clsx';
+import { isAcademicYearActive } from '../../utils/academicYears';
 
 /**
  * Year selector dropdown.
@@ -31,8 +32,7 @@ export function YearSelector({ compact = false, className = '' }) {
     );
   }
 
-  const currentYear = new Date().getFullYear();
-  const isActive = academicYear >= currentYear;
+  const isActive = isAcademicYearActive(academicYear);
 
   return (
     <div className={clsx('flex items-center gap-2', className)}>
@@ -50,7 +50,7 @@ export function YearSelector({ compact = false, className = '' }) {
       >
         {availableYears.map((y) => (
           <option key={y} value={y}>
-            {y}{y >= currentYear ? ' ● Activo' : ' ○ Consulta'}
+            {y}{isAcademicYearActive(y) ? ' ● Activo' : ' ○ Consulta'}
           </option>
         ))}
       </select>
