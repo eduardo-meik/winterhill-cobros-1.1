@@ -15,6 +15,7 @@ import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
 import { usePermissions } from '../../hooks/usePermissions';
+import { supabase } from '../../services/supabase';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
@@ -223,12 +224,58 @@ export function PaymentsPage() {
     setOnePerStudent(true);
   };
 
+  const fetchAllPaymentsForAcademicYear = async (year) => {
+    const batchSize = 1000;
+    let offset = 0;
+    let results = [];
+
+    while (true) {
+      const { data, error } = await supabase
+        .from('fee')
+        .select(`
+          *,
+          student:students (
+            id,
+            first_name,
+            apellido_paterno,
+            apellido_materno,
+            whole_name,
+            run,
+            curso:cursos (
+              id,
+              nom_curso
+            )
+          )
+        `)
+        .eq('year_academico', year)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + batchSize - 1);
+
+      if (error) {
+        throw error;
+      }
+
+      const batch = data ?? [];
+      results = [...results, ...batch];
+
+      if (batch.length < batchSize) {
+        break;
+      }
+
+      offset += batchSize;
+    }
+
+    return results;
+  };
+
   const handleExportExcel = async (exportAll = false) => {
     try {
       setExporting(true);
       toast.loading('Exportando Excel...', { id: 'payments-export' });
       
-      const dataToExport = exportAll ? payments : displayPayments;
+      const dataToExport = exportAll
+        ? await fetchAllPaymentsForAcademicYear(academicYear)
+        : displayPayments;
       
       const excelData = dataToExport.map(payment => ({
         'Estudiante': payment.student?.whole_name || 
