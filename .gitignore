@@ -38,7 +38,20 @@ python_tool/
 .copilot/
 
 # Contract documents
-contratos/
+#contratos/
 
 # Prompt engineering and schema files
 prompt/
+
+.vercel
+
+# One-time scripts and data files (should not be committed)
+*.csv
+temp-script.js
+fix_heroicons.ipynb
+analyze_*.py
+backup_*.py
+cruce_*.py
+detalle_*.py
+explore_schema.py
+.env*.local

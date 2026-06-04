@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { format } from 'date-fns';
 import debounce from 'lodash.debounce';
 import { Combobox } from '@headlessui/react';
 import { Card } from '../ui/Card';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 10 }, (_, i) => (currentYear - 5 + i).toString()); // Last 5 years + next 4 years
@@ -26,6 +27,7 @@ export function ReportFilters({
   onResetFilters,
   loading = false 
 }) {
+  const { academicYear } = useAcademicYear();
   const [localFilters, setLocalFilters] = useState(filters);
   const [guardianQuery, setGuardianQuery] = useState('');
   const [courseQuery, setCourseQuery] = useState('');
@@ -61,7 +63,7 @@ export function ReportFilters({
   // Update local filters when parent filters change (for reset)
   // This is critical for the reset filters functionality
   React.useEffect(() => {
-    console.log("Parent filters changed:", filters);
+    if (import.meta.env.DEV) console.log("Parent filters changed");
     // Deep copy of filters to ensure we break references
     const filtersCopy = JSON.parse(JSON.stringify(filters));
     setLocalFilters(filtersCopy);
@@ -71,16 +73,20 @@ export function ReportFilters({
     setCourseQuery('');
     setStudentQuery('');
   }, [filters]);
-  
+
+  // Use a ref to always point at the latest onFiltersChange to avoid stale closures
+  const onFiltersChangeRef = useRef(onFiltersChange);
+  onFiltersChangeRef.current = onFiltersChange;
+
   const debouncedFiltersChange = useCallback(
     debounce((newFilters) => {
-      onFiltersChange(newFilters);
+      onFiltersChangeRef.current(newFilters);
     }, 300),
     []
   );
 
   const handleFilterChange = (key, value) => {
-    console.log(`Filter change: ${key} =`, value);
+    if (import.meta.env.DEV) console.log(`Filter change: ${key} =`, value);
     
     // Special handling for student IDs to ensure they're strings
     if (key === 'students' && Array.isArray(value)) {
@@ -92,7 +98,7 @@ export function ReportFilters({
     debouncedFiltersChange(newFilters);
     
     // If it's students filter, log what was actually set
-    if (key === 'students') {
+    if (import.meta.env.DEV && key === 'students') {
       console.log("Updated students filter:", newFilters.students);
     }
   };
@@ -135,10 +141,13 @@ export function ReportFilters({
             </select>
           </div>
 
-          {/* Year Filter */}
+          {/* Year Filter — defaults to global academic year */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Año
+              {localFilters.year !== 'all' && String(localFilters.year) === String(academicYear) && (
+                <span className="ml-1 text-xs text-primary">(activo)</span>
+              )}
             </label>
             <select
               value={localFilters.year}
@@ -160,7 +169,7 @@ export function ReportFilters({
             <Combobox
               value={localFilters.guardians || []}
               onChange={(value) => {
-                console.log("Guardian selection changed to:", value);
+                if (import.meta.env.DEV) console.log("Guardian selection changed to:", value);
                 handleFilterChange('guardians', value);
               }}
               multiple
@@ -193,6 +202,7 @@ export function ReportFilters({
                   {localFilters.guardians && localFilters.guardians.length > 0 && (
                     <button
                       type="button"
+                      aria-label="Limpiar filtro de apoderados"
                       className="absolute right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleFilterChange('guardians', [])}
                     >
@@ -269,6 +279,7 @@ export function ReportFilters({
                   {localFilters.courses && localFilters.courses.length > 0 && (
                     <button
                       type="button"
+                      aria-label="Limpiar filtro de cursos"
                       className="absolute right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleFilterChange('courses', [])}
                     >
@@ -328,10 +339,8 @@ export function ReportFilters({
             <Combobox
               value={localFilters.students || []}
               onChange={(value) => {
-                console.log("Student selection changed to:", value);
-                console.log("Selection data type:", typeof value, Array.isArray(value));
-                if (Array.isArray(value)) {
-                  console.log("First selected ID type:", typeof value[0]);
+                if (import.meta.env.DEV) {
+                  console.log("Student selection changed to:", value);
                 }
                 handleFilterChange('students', value);
               }}
@@ -360,6 +369,7 @@ export function ReportFilters({
                   {localFilters.students && localFilters.students.length > 0 && (
                     <button
                       type="button"
+                      aria-label="Limpiar filtro de estudiantes"
                       className="absolute right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleFilterChange('students', [])}
                     >
@@ -471,6 +481,7 @@ export function ReportFilters({
                         <span>Apoderado: {guardian.name}</span>
                         <button
                           type="button"
+                          aria-label="Quitar filtro de apoderado"
                           className="ml-1 p-0.5 rounded-full hover:bg-green-200 dark:hover:bg-green-700"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -498,6 +509,7 @@ export function ReportFilters({
                         <span>Curso: {course.nom_curso}</span>
                         <button
                           type="button"
+                          aria-label="Quitar filtro de curso"
                           className="ml-1 p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-700"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -525,6 +537,7 @@ export function ReportFilters({
                         <span>Estudiante: {student.name}</span>
                         <button
                           type="button"
+                          aria-label="Quitar filtro de estudiante"
                           className="ml-1 p-0.5 rounded-full hover:bg-yellow-200 dark:hover:bg-yellow-700"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -569,7 +582,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={() => {
-              console.log("Reset filters button clicked");
+              if (import.meta.env.DEV) console.log("Reset filters button clicked");
               // Create a fresh default filters object
               const defaultFilters = {
                 status: 'all',

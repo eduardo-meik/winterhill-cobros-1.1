@@ -1,0 +1,98 @@
+﻿[
+    {
+        "id":  "03d90378-00ac-4c6f-9044-93568479b26b",
+        "email":  "gemagodoyma@winterhillenlinea.cl",
+        "role":  "ASIST",
+        "first_name":  "GEMA",
+        "last_name":  "GODOY",
+        "avatar_url":  null,
+        "created_at":  "2025-05-30 13:34:37.296544+00",
+        "updated_at":  "2025-11-17 12:37:04.651727+00",
+        "full_name":  "GEMA GODOY",
+        "phone":  null
+    },
+    {
+        "id":  "23daf698-8cfb-4697-ad90-1966c4e4de0a",
+        "email":  "gestionadministrativa@winterhillenlinea.cl",
+        "role":  "ADMIN",
+        "first_name":  "ESTER",
+        "last_name":  "ESTAY",
+        "avatar_url":  null,
+        "created_at":  "2025-11-12 14:23:00.580953+00",
+        "updated_at":  "2025-11-12 14:23:00.580953+00",
+        "full_name":  "ESTER ESTAY",
+        "phone":  null
+    },
+    {
+        "id":  "78ccbff0-3d92-48a5-ac05-1d0de4c6378c",
+        "email":  "perezarevalo@gmail.com",
+        "role":  "GUARDIAN",
+        "first_name":  "CLAUDIA",
+        "last_name":  "PEREZ AREVALO",
+        "avatar_url":  null,
+        "created_at":  "2025-11-12 12:47:46.076975+00",
+        "updated_at":  "2025-11-12 12:47:46.076975+00",
+        "full_name":  "CLAUDIA PEREZ AREVALO",
+        "phone":  null
+    },
+    {
+        "id":  "93233551-5fe7-43b0-8b23-58dbed485d73",
+        "email":  "secretariaacademica@winterhillenlinea.cl",
+        "role":  "ASIST",
+        "first_name":  "ARACELY",
+        "last_name":  "UBEDA",
+        "avatar_url":  null,
+        "created_at":  "2025-05-16 20:45:56.716429+00",
+        "updated_at":  "2025-11-12 14:32:42.174009+00",
+        "full_name":  "ARACELY UBEDA",
+        "phone":  null
+    },
+    {
+        "id":  "a984cf7a-1c5c-4c4b-b8e0-66a5b6819d7a",
+        "email":  "ester.estay.winterhill@gmail.com",
+        "role":  "GUARDIAN",
+        "first_name":  "ESTER",
+        "last_name":  "ESTAY",
+        "avatar_url":  null,
+        "created_at":  "2025-09-25 23:33:57.096119+00",
+        "updated_at":  "2025-10-29 18:11:53.996021+00",
+        "full_name":  "ESTER ESTAY",
+        "phone":  null
+    },
+    {
+        "id":  "bd72b98b-e2e7-43a1-a225-21c0fbbbf918",
+        "email":  "frigio@gmail.com",
+        "role":  "ADMIN",
+        "first_name":  "EDUARDO",
+        "last_name":  "CISTERNAS",
+        "avatar_url":  null,
+        "created_at":  "2025-05-04 14:11:43.579189+00",
+        "updated_at":  "2025-10-29 18:11:53.996021+00",
+        "full_name":  "EDUARDO CISTERNAS",
+        "phone":  null
+    },
+    {
+        "id":  "cca2d2ee-dffd-4ba2-9e87-0825730e00ce",
+        "email":  "secretariaadministrativa@winterhillenlinea.cl",
+        "role":  "ADMIN",
+        "first_name":  "Paula",
+        "last_name":  "Tolosa",
+        "avatar_url":  null,
+        "created_at":  "2025-05-22 15:08:18.38914+00",
+        "updated_at":  "2025-11-19 18:38:22.426818+00",
+        "full_name":  "Paula Tolosa",
+        "phone":  null
+    },
+    {
+        "id":  "f4bb5599-a34c-4500-a338-365b6907bd88",
+        "email":  "e.cisternas.g@gmail.com",
+        "role":  "ASIST",
+        "first_name":  "ED",
+        "last_name":  "CISTERNAS",
+        "avatar_url":  null,
+        "created_at":  "2025-10-29 13:05:59.708982+00",
+        "updated_at":  "2025-10-30 11:05:52.094145+00",
+        "full_name":  "ED CISTERNAS",
+        "phone":  null
+    }
+]

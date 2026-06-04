@@ -1,0 +1,514 @@
+[
+  {
+    "schema": "public",
+    "table_name": "profiles",
+    "policy_name": "profiles_own_record",
+    "command": "ALL",
+    "using_expression": "(id = auth.uid())",
+    "check_expression": "(id = auth.uid())"
+  },
+  {
+    "schema": "public",
+    "table_name": "profiles",
+    "policy_name": "profiles_admin_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "profiles",
+    "policy_name": "profiles_asist_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ASIST'::text)",
+    "check_expression": "(get_current_user_role() = 'ASIST'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_admin_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_asist_select",
+    "command": "SELECT",
+    "using_expression": "(get_current_user_role() = 'ASIST'::text)",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "invoices",
+    "policy_name": "All authenticated users can read invoices",
+    "command": "SELECT",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_asist_insert_specific",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "((get_current_user_role() = 'ASIST'::text) AND (numero_cuota IS NOT NULL) AND (student_id IS NOT NULL) AND ((owner_id IS NULL) OR (owner_id = auth.uid())))"
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollment_document_receipts",
+    "policy_name": "enrollment_document_receipts_staff_policy",
+    "command": "ALL",
+    "using_expression": "is_staff()",
+    "check_expression": "is_staff()"
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_asist_update_mark_paid",
+    "command": "UPDATE",
+    "using_expression": "((get_current_user_role() = 'ASIST'::text) AND (numero_cuota IS NOT NULL) AND (student_id IS NOT NULL) AND (status IS DISTINCT FROM 'paid'::text))",
+    "check_expression": "((get_current_user_role() = 'ASIST'::text) AND (numero_cuota IS NOT NULL) AND (student_id IS NOT NULL) AND (status = 'paid'::text) AND (payment_date IS NOT NULL) AND (amount IS NOT NULL))"
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_guardian_read",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM student_guardian sg\n  WHERE ((sg.guardian_id = auth.uid()) AND (sg.student_id = fee.student_id))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "students",
+    "policy_name": "students_admin_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "students",
+    "policy_name": "students_asist_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ASIST'::text)",
+    "check_expression": "(get_current_user_role() = 'ASIST'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "guardians",
+    "policy_name": "guardians_admin_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "guardians",
+    "policy_name": "guardians_asist_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ASIST'::text)",
+    "check_expression": "(get_current_user_role() = 'ASIST'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "student_guardian",
+    "policy_name": "student_guardian_admin_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": "(get_current_user_role() = 'ADMIN'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "student_guardian",
+    "policy_name": "student_guardian_asist_access",
+    "command": "ALL",
+    "using_expression": "(get_current_user_role() = 'ASIST'::text)",
+    "check_expression": "(get_current_user_role() = 'ASIST'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "auth_logs",
+    "policy_name": "auth_logs_admin_read",
+    "command": "SELECT",
+    "using_expression": "(get_current_user_role() = 'ADMIN'::text)",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "auth_logs",
+    "policy_name": "auth_logs_insert_all",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "true"
+  },
+  {
+    "schema": "public",
+    "table_name": "auth_logs",
+    "policy_name": "auth_logs_asist_read",
+    "command": "SELECT",
+    "using_expression": "(get_current_user_role() = 'ASIST'::text)",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollment_documents",
+    "policy_name": "enrollment_documents_admin_asist_access",
+    "command": "ALL",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'ASIST'::text])))))",
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'ASIST'::text])))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "email_logs",
+    "policy_name": "email_logs_select_admin_asist",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (lower(p.role) = ANY (ARRAY['admin'::text, 'asist'::text])))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollments",
+    "policy_name": "enrollments_admin_asist_access",
+    "command": "ALL",
+    "using_expression": "is_admin_or_asist()",
+    "check_expression": "is_admin_or_asist()"
+  },
+  {
+    "schema": "public",
+    "table_name": "guardians",
+    "policy_name": "guardians_staff_all",
+    "command": "ALL",
+    "using_expression": "is_admin_or_asist()",
+    "check_expression": "is_admin_or_asist()"
+  },
+  {
+    "schema": "public",
+    "table_name": "students",
+    "policy_name": "students_admin_asist_full_access",
+    "command": "ALL",
+    "using_expression": "is_admin_or_asist()",
+    "check_expression": "is_admin_or_asist()"
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollment_students",
+    "policy_name": "enrollment_students_admin_asist_access",
+    "command": "ALL",
+    "using_expression": "is_admin_or_asist()",
+    "check_expression": "is_admin_or_asist()"
+  },
+  {
+    "schema": "public",
+    "table_name": "cursos",
+    "policy_name": "Users can view all courses",
+    "command": "SELECT",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "matriculas_detalle",
+    "policy_name": "matriculas_detalle_read_policy",
+    "command": "SELECT",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "matriculas_detalle",
+    "policy_name": "matriculas_detalle_insert_policy",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "true"
+  },
+  {
+    "schema": "public",
+    "table_name": "matriculas_detalle",
+    "policy_name": "matriculas_detalle_update_policy",
+    "command": "UPDATE",
+    "using_expression": "true",
+    "check_expression": "true"
+  },
+  {
+    "schema": "public",
+    "table_name": "matriculas_detalle",
+    "policy_name": "matriculas_detalle_delete_policy",
+    "command": "DELETE",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "invoices",
+    "policy_name": "invoices_authenticated_policy",
+    "command": "ALL",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollments",
+    "policy_name": "enrollments_guardian_access",
+    "command": "ALL",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM guardians g\n  WHERE ((g.id = enrollments.guardian_id) AND (g.owner_id = auth.uid()))))",
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM guardians g\n  WHERE ((g.id = enrollments.guardian_id) AND (g.owner_id = auth.uid()))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollment_students",
+    "policy_name": "enrollment_students_guardian_access",
+    "command": "ALL",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM (enrollments e\n     JOIN guardians g ON ((g.id = e.guardian_id)))\n  WHERE ((e.id = enrollment_students.enrollment_id) AND (g.owner_id = auth.uid()))))",
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM (enrollments e\n     JOIN guardians g ON ((g.id = e.guardian_id)))\n  WHERE ((e.id = enrollment_students.enrollment_id) AND (g.owner_id = auth.uid()))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "document_templates",
+    "policy_name": "document_templates_read",
+    "command": "SELECT",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "document_templates",
+    "policy_name": "document_templates_admin_write",
+    "command": "ALL",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'ADMIN'::text))))",
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'ADMIN'::text))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollment_documents",
+    "policy_name": "enrollment_documents_guardian_access",
+    "command": "ALL",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM (enrollments e\n     JOIN guardians g ON ((g.id = e.guardian_id)))\n  WHERE ((e.id = enrollment_documents.enrollment_id) AND (g.owner_id = auth.uid()))))",
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM (enrollments e\n     JOIN guardians g ON ((g.id = e.guardian_id)))\n  WHERE ((e.id = enrollment_documents.enrollment_id) AND (g.owner_id = auth.uid()))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "signatures",
+    "policy_name": "signatures_guardian_access",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM ((enrollment_documents d\n     JOIN enrollments e ON ((e.id = d.enrollment_id)))\n     JOIN guardians g ON ((g.id = e.guardian_id)))\n  WHERE ((d.id = signatures.enrollment_document_id) AND (g.owner_id = auth.uid()))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "signatures",
+    "policy_name": "signatures_insert_guardian",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM ((enrollment_documents d\n     JOIN enrollments e ON ((e.id = d.enrollment_id)))\n     JOIN guardians g ON ((g.id = e.guardian_id)))\n  WHERE ((d.id = signatures.enrollment_document_id) AND (g.owner_id = auth.uid()))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "pre_receipts",
+    "policy_name": "pre_receipts_guardian_read",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM guardians g\n  WHERE ((g.owner_id = auth.uid()) AND (((pre_receipts.enrollment_id IS NOT NULL) AND (EXISTS ( SELECT 1\n           FROM enrollments e\n          WHERE ((e.id = pre_receipts.enrollment_id) AND (e.guardian_id = g.id))))) OR ((pre_receipts.student_id IS NOT NULL) AND (EXISTS ( SELECT 1\n           FROM student_guardian sg\n          WHERE ((sg.student_id = pre_receipts.student_id) AND (sg.guardian_id = g.id)))))))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "pre_receipts",
+    "policy_name": "pre_receipts_admin_all",
+    "command": "ALL",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))",
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'FINANCE_MANAGER'::text])))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "guardian_intake_surveys",
+    "policy_name": "select_own_intake",
+    "command": "SELECT",
+    "using_expression": "(guardian_id IN ( SELECT g.id\n   FROM guardians g\n  WHERE (g.owner_id = auth.uid())))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "guardian_intake_surveys",
+    "policy_name": "update_own_intake",
+    "command": "UPDATE",
+    "using_expression": "(guardian_id IN ( SELECT g.id\n   FROM guardians g\n  WHERE (g.owner_id = auth.uid())))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "cheques",
+    "policy_name": "Guardians can view their own cheques",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM (enrollments\n     JOIN guardians ON ((enrollments.guardian_id = guardians.id)))\n  WHERE ((enrollments.id = cheques.enrollment_id) AND (guardians.owner_id = auth.uid()))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "guardian_intake_surveys",
+    "policy_name": "insert_own_intake",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "(guardian_id IN ( SELECT g.id\n   FROM guardians g\n  WHERE (g.owner_id = auth.uid())))"
+  },
+  {
+    "schema": "public",
+    "table_name": "student_academic_records",
+    "policy_name": "sar_guardian_read",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM (student_guardian sg\n     JOIN guardians g ON ((g.id = sg.guardian_id)))\n  WHERE ((sg.student_id = student_academic_records.student_id) AND (g.owner_id = auth.uid()))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "student_academic_records",
+    "policy_name": "sar_student_read",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM students s\n  WHERE ((s.id = student_academic_records.student_id) AND (s.owner_id = auth.uid()))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "cheques",
+    "policy_name": "Guardians can insert cheques for own enrollments",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM (enrollments\n     JOIN guardians ON ((enrollments.guardian_id = guardians.id)))\n  WHERE ((enrollments.id = cheques.enrollment_id) AND (guardians.owner_id = auth.uid()))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "students",
+    "policy_name": "students_owner_policy",
+    "command": "ALL",
+    "using_expression": "(owner_id = auth.uid())",
+    "check_expression": "(owner_id = auth.uid())"
+  },
+  {
+    "schema": "public",
+    "table_name": "guardians",
+    "policy_name": "guardians_owner_policy",
+    "command": "ALL",
+    "using_expression": "(owner_id = auth.uid())",
+    "check_expression": "(owner_id = auth.uid())"
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_owner_policy",
+    "command": "ALL",
+    "using_expression": "(owner_id = auth.uid())",
+    "check_expression": "(owner_id = auth.uid())"
+  },
+  {
+    "schema": "public",
+    "table_name": "profiles",
+    "policy_name": "profiles_owner_policy",
+    "command": "ALL",
+    "using_expression": "(id = auth.uid())",
+    "check_expression": "(id = auth.uid())"
+  },
+  {
+    "schema": "public",
+    "table_name": "student_guardian",
+    "policy_name": "student_guardian_authenticated_policy",
+    "command": "ALL",
+    "using_expression": "true",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "cheques",
+    "policy_name": "ADMIN and ASIST can view all cheques",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'ASIST'::text])))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "cheques",
+    "policy_name": "ADMIN and ASIST can insert cheques",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'ASIST'::text])))))"
+  },
+  {
+    "schema": "public",
+    "table_name": "cheques",
+    "policy_name": "ADMIN and ASIST can update cheques",
+    "command": "UPDATE",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'ASIST'::text])))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "audit_logs",
+    "policy_name": "audit_logs_staff_read",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = ANY (ARRAY['ADMIN'::text, 'ASIST'::text])))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "audit_logs",
+    "policy_name": "audit_logs_postgres_insert",
+    "command": "INSERT",
+    "using_expression": null,
+    "check_expression": "true"
+  },
+  {
+    "schema": "public",
+    "table_name": "fee",
+    "policy_name": "fee_guardian_read_by_owner",
+    "command": "SELECT",
+    "using_expression": "(EXISTS ( SELECT 1\n   FROM (student_guardian sg\n     JOIN guardians g ON ((g.id = sg.guardian_id)))\n  WHERE ((sg.student_id = fee.student_id) AND (g.owner_id = auth.uid()))))",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "cursos",
+    "policy_name": "cursos_admin_full_access",
+    "command": "ALL",
+    "using_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ADMIN'::text)",
+    "check_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ADMIN'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "cursos",
+    "policy_name": "cursos_asist_full_access",
+    "command": "ALL",
+    "using_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ASIST'::text)",
+    "check_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ASIST'::text)"
+  },
+  {
+    "schema": "public",
+    "table_name": "matriculas_detalle",
+    "policy_name": "matriculas_detalle_admin_full_access",
+    "command": "ALL",
+    "using_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ADMIN'::text)",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "matriculas_detalle",
+    "policy_name": "matriculas_detalle_asist_full_access",
+    "command": "ALL",
+    "using_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ASIST'::text)",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollments",
+    "policy_name": "enrollments_admin_full_access",
+    "command": "ALL",
+    "using_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ADMIN'::text)",
+    "check_expression": null
+  },
+  {
+    "schema": "public",
+    "table_name": "enrollments",
+    "policy_name": "enrollments_asist_full_access",
+    "command": "ALL",
+    "using_expression": "(( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = ( SELECT auth.uid() AS uid))) = 'ASIST'::text)",
+    "check_expression": null
+  }
+]

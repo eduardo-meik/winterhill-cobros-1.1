@@ -5,58 +5,63 @@ import { PaymentsTable } from './PaymentsTable';
 import { PaymentsFilters } from './PaymentsFilters';
 import { RegisterPaymentModal } from './RegisterPaymentModal';
 import { PaymentDetailsModal } from './PaymentDetailsModal';
-import * as ExcelJS from 'exceljs';
-import { useEffect, useState, useMemo } from 'react';
-import { supabase } from '@/services/supabase';
+import { StudentFeesModal } from './StudentFeesModal';
+import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
+import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
+import { usePermissions } from '../../hooks/usePermissions';
+import { supabase } from '../../services/supabase';
 
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const isReadOnly = false; // rollback
+  const { data: rawFees = [], isLoading: loading } = useFeesQuery();
+  const { academicYear } = useAcademicYear();
+  const permissions = usePermissions();
+  const currentCalendarYear = new Date().getFullYear();
+  const canManageSelectedYear = academicYear >= currentCalendarYear || permissions.isAdmin();
   const [exporting, setExporting] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [currentOffset, setCurrentOffset] = useState(0);
-  const BATCH_SIZE = 250; // Optimized smaller batch for faster queries
+  const [studentFeesTarget, setStudentFeesTarget] = useState(null);
   const [filters, setFilters] = useState({
     search: '',
-    status: 'all',
+    status: 'por_cobrar',
     curso: 'all',
     month: 'all',
-    year: 'all',
     paymentMethod: 'all',
-    cuota: 'all', // Added filter for cuota
+    cuota: 'all',
     startDate: '',
     endDate: ''
   });
-  const [matchedStudentIds, setMatchedStudentIds] = useState(new Set());
+  const [onePerStudent, setOnePerStudent] = useState(true);
 
+  // Sort by created_at desc (server query used to do this)
+  // Also filter by selected academic year
+  const payments = useMemo(() =>
+    [...rawFees]
+      .filter(f => f.year_academico === academicYear)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
+    [rawFees, academicYear]
+  );
   // Optimize filter options calculation with useMemo and better data structure
   const filterOptions = useMemo(() => {
-    if (payments.length === 0) return { cursos: [], years: [], cuotas: [] };
+    if (payments.length === 0) return { cursos: [], cuotas: [] };
     
     // Use Set for O(1) lookups and better performance
     const cursosSet = new Set();
-    const yearsSet = new Set();
     const cuotasSet = new Set();
     
     // Single pass through data for all filter options
     payments.forEach(payment => {
       // Extract curso names
-      const cursoName = payment.student?.cursos?.nom_curso;
+      const cursoName = payment.student?.curso?.nom_curso;
       if (cursoName) cursosSet.add(cursoName);
-      
-      // Extract years from due_date
-      if (payment.due_date) {
-        const year = new Date(payment.due_date).getFullYear().toString();
-        yearsSet.add(year);
-      }
       
       // Extract cuota numbers - convert to string for consistent comparison
       if (payment.numero_cuota !== null && payment.numero_cuota !== undefined) {
@@ -66,7 +71,6 @@ export function PaymentsPage() {
     
     return { 
       cursos: Array.from(cursosSet).sort(),
-      years: Array.from(yearsSet).sort(),
       cuotas: Array.from(cuotasSet).sort((a, b) => parseInt(a) - parseInt(b))
     };
   }, [payments]);
@@ -80,13 +84,17 @@ export function PaymentsPage() {
         // Early returns for better performance
         
         // Status filter
-        if (filters.status !== 'all' && payment.status !== filters.status) {
+        if (filters.status === 'por_cobrar') {
+          if (payment.status !== 'pending' && payment.status !== 'overdue') {
+            return false;
+          }
+        } else if (filters.status !== 'all' && payment.status !== filters.status) {
           return false;
         }
         
         // Curso filter
         if (filters.curso !== 'all' && 
-            payment.student?.cursos?.nom_curso !== filters.curso) {
+            payment.student?.curso?.nom_curso !== filters.curso) {
           return false;
         }
         
@@ -109,12 +117,6 @@ export function PaymentsPage() {
           if (filters.month !== 'all') {
             const paymentMonth = (paymentDate.getMonth() + 1).toString();
             if (paymentMonth !== filters.month) return false;
-          }
-          
-          // Year filter
-          if (filters.year !== 'all') {
-            const paymentYear = paymentDate.getFullYear().toString();
-            if (paymentYear !== filters.year) return false;
           }
           
           // Date range filters
@@ -156,6 +158,42 @@ export function PaymentsPage() {
     });
   }, [payments, filters]);
 
+  // One-per-student dedup: keep only the oldest pending/overdue cuota per student
+  const displayPayments = useMemo(() => {
+    if (!onePerStudent) return filteredPayments;
+
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-indexed
+    const currentYear = now.getFullYear();
+
+    // Only include cuotas with due_date <= end of current month
+    const eligible = filteredPayments.filter(p => {
+      if (!p.due_date) return false;
+      const d = new Date(p.due_date);
+      // due_date in current month or earlier
+      return d.getFullYear() < currentYear || 
+        (d.getFullYear() === currentYear && d.getMonth() <= currentMonth);
+    });
+
+    // Group by student, keep the one with smallest numero_cuota (oldest)
+    const byStudent = new Map();
+    eligible.forEach(p => {
+      const sid = p.student_id;
+      if (!byStudent.has(sid)) {
+        byStudent.set(sid, p);
+      } else {
+        const existing = byStudent.get(sid);
+        const existingCuota = existing.numero_cuota ?? Infinity;
+        const currentCuota = p.numero_cuota ?? Infinity;
+        if (currentCuota < existingCuota) {
+          byStudent.set(sid, p);
+        }
+      }
+    });
+
+    return Array.from(byStudent.values());
+  }, [filteredPayments, onePerStudent]);
+
   // Pagination
   const {
     currentPage,
@@ -164,166 +202,7 @@ export function PaymentsPage() {
     totalPages,
     paginatedItems,
     handlePageChange
-  } = usePagination(filteredPayments);
-
-  useEffect(() => {
-    fetchPayments(true); // Initial load
-  }, []);
-
-  // Refetch when search changes to let the DB include rows even if embeds are null under RLS
-  useEffect(() => {
-    // Small debounce could be added if needed; for now, refetch on change
-    fetchPayments(true);
-  }, [filters.search]);
-
-  // When searching by student name/run, also fetch matching student ids to include rows
-  useEffect(() => {
-    const fetchMatchingStudents = async () => {
-      try {
-        if (!filters.search || !filters.search.trim()) {
-          setMatchedStudentIds(new Set());
-          return;
-        }
-        const term = filters.search.trim();
-        const ilike = `%${term}%`;
-        const { data, error } = await supabase
-          .from('students')
-          .select('id, whole_name, run, first_name, apellido_paterno')
-          .or(
-            `whole_name.ilike.${ilike},first_name.ilike.${ilike},apellido_paterno.ilike.${ilike},run.ilike.${ilike}`
-          )
-          .limit(500);
-        if (error) throw error;
-        setMatchedStudentIds(new Set((data || []).map(s => s.id)));
-      } catch (e) {
-        if (import.meta.env.DEV) console.warn('Student search fallback failed:', e);
-        setMatchedStudentIds(new Set());
-      }
-    };
-    fetchMatchingStudents();
-  }, [filters.search]);
-
-  const fetchPayments = async (reset = true) => {
-    try {
-      if (reset) {
-        setLoading(true);
-        setCurrentOffset(0);
-      }
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('No autenticado');
-      }
-
-      const startTime = performance.now();
-
-      // Get total count efficiently
-      const { count, error: countError } = await supabase
-        .from('fee')
-        .select('id', { count: 'exact', head: true });
-      
-      if (countError) throw countError;
-      setTotalCount(count || 0);
-
-      // Build base query
-      let query = supabase
-        .from('fee')
-        .select(`
-          id,
-          student_id,
-          amount,
-          status,
-          due_date,
-          payment_date,
-          payment_method,
-          numero_cuota,
-          num_boleta,
-          mov_bancario,
-          notes,
-          created_at,
-          students (
-            id,
-            first_name,
-            apellido_paterno,
-            whole_name,
-            run,
-            curso,
-            cursos (
-              id,
-              nom_curso
-            )
-          )
-        `);
-
-      // If searching by student text, narrow results server-side by matching student ids
-      if (filters.search && filters.search.trim()) {
-        const term = filters.search.trim();
-        const ilike = `%${term}%`;
-        const { data: stu, error: stuErr } = await supabase
-          .from('students')
-          .select('id')
-          .or(
-            `whole_name.ilike.${ilike},first_name.ilike.${ilike},apellido_paterno.ilike.${ilike},run.ilike.${ilike}`
-          )
-          .limit(1000);
-        if (stuErr) throw stuErr;
-        const ids = (stu || []).map(s => s.id);
-        if (ids.length === 0) {
-          setPayments([]);
-          setHasMore(false);
-          setLoading(false);
-          return;
-        }
-        query = query.in('student_id', ids);
-      }
-
-      // Load all matching records at once
-      const { data: fees, error: feesError } = await query.order('created_at', { ascending: false });
-
-      if (feesError) throw feesError;
-      
-      // Transform data to match expected structure
-      const transformedFees = (fees || []).map(fee => {
-        const student = fee.students ? {
-          ...fee.students,
-          cursos: fee.students?.cursos
-        } : undefined;
-        return {
-          ...fee,
-          student
-        };
-      });
-      
-      setPayments(transformedFees);
-      setHasMore(false); // No more records to load since we load all at once
-      
-      // Performance logging (development only)
-      if (import.meta.env.DEV) {
-        const endTime = performance.now();
-        const queryTime = endTime - startTime;
-        console.log(`✅ All records loaded: ${queryTime.toFixed(2)}ms for ${transformedFees.length} records`);
-        
-        // Debug numero_cuota values
-        const cuotaValues = transformedFees.map(f => ({ 
-          id: f.id, 
-          numero_cuota: f.numero_cuota, 
-          type: typeof f.numero_cuota 
-        })).slice(0, 5); // First 5 records
-        console.log('🔍 Debug numero_cuota values:', cuotaValues);
-        
-        console.log('📊 Performance stats:');
-        console.log(`   - Total records: ${transformedFees.length}`);
-        console.log(`   - Query time: ${queryTime.toFixed(2)}ms`);
-        console.log(`   - Records per ms: ${(transformedFees.length / queryTime).toFixed(2)}`);
-      }
-      
-    } catch (error) {
-      console.error('Error fetching payments:', error);
-      toast.error('Error al cargar los pagos');
-    } finally {
-      setLoading(false);
-    }
-  };
+  } = usePagination(displayPayments);
 
   // loadMorePayments function removed since we now load all records at once
 
@@ -334,28 +213,75 @@ export function PaymentsPage() {
   const handleClearFilters = () => {
     setFilters({
       search: '',
-      status: 'all',
+      status: 'por_cobrar',
       curso: 'all',
       month: 'all',
-      year: 'all',
       paymentMethod: 'all',
       cuota: 'all',
       startDate: '',
       endDate: ''
     });
+    setOnePerStudent(true);
+  };
+
+  const fetchAllPaymentsForAcademicYear = async (year) => {
+    const batchSize = 1000;
+    let offset = 0;
+    let results = [];
+
+    while (true) {
+      const { data, error } = await supabase
+        .from('fee')
+        .select(`
+          *,
+          student:students (
+            id,
+            first_name,
+            apellido_paterno,
+            apellido_materno,
+            whole_name,
+            run,
+            curso:cursos (
+              id,
+              nom_curso
+            )
+          )
+        `)
+        .eq('year_academico', year)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + batchSize - 1);
+
+      if (error) {
+        throw error;
+      }
+
+      const batch = data ?? [];
+      results = [...results, ...batch];
+
+      if (batch.length < batchSize) {
+        break;
+      }
+
+      offset += batchSize;
+    }
+
+    return results;
   };
 
   const handleExportExcel = async (exportAll = false) => {
     try {
       setExporting(true);
+      toast.loading('Exportando Excel...', { id: 'payments-export' });
       
-      const dataToExport = exportAll ? payments : filteredPayments;
+      const dataToExport = exportAll
+        ? await fetchAllPaymentsForAcademicYear(academicYear)
+        : displayPayments;
       
       const excelData = dataToExport.map(payment => ({
         'Estudiante': payment.student?.whole_name || 
           `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`,
         'RUN': payment.student?.run || '-',
-        'Curso': payment.student?.cursos?.nom_curso || '-',
+        'Curso': payment.student?.curso?.nom_curso || '-',
         'Cuota N°': payment.numero_cuota || '-',
         'Monto': payment.amount ? `$${Math.round(payment.amount).toLocaleString()}` : '-',
         'Estado': payment.status === 'paid' ? 'Pagado' : 
@@ -368,6 +294,7 @@ export function PaymentsPage() {
         'Notas': payment.notes || '-'
       }));
       
+      const ExcelJS = await import('exceljs');
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet('Pagos');
       
@@ -403,10 +330,10 @@ export function PaymentsPage() {
       link.click();
       window.URL.revokeObjectURL(url);
       
-      toast.success('Archivo Excel exportado exitosamente');
+      toast.success('Archivo Excel exportado exitosamente', { id: 'payments-export' });
     } catch (error) {
       console.error('Error al exportar:', error);
-      toast.error('Error al exportar el archivo Excel');
+      toast.error('Error al exportar el archivo Excel', { id: 'payments-export' });
     } finally {
       setExporting(false);
     }
@@ -415,13 +342,14 @@ export function PaymentsPage() {
   return (
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
+
         <div className="flex flex-wrap items-center justify-between gap-4 p-4 mb-4">
           <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Aranceles</h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => handleExportExcel(false)}
-                disabled={exporting || filteredPayments.length === 0}
+                disabled={exporting || displayPayments.length === 0}
                 variant="outline" /* Changed from secondary to outline */
                 className="flex items-center gap-2"
               >
@@ -442,14 +370,24 @@ export function PaymentsPage() {
                 {exporting ? 'Exportando...' : 'Exportar Todo'}
               </Button>
             </div>
-            <Button onClick={() => setIsRegisterModalOpen(true)} className="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,144H32V64H224V192ZM64,104a8,8,0,0,1,8-8H96a8,8,0,0,1,0,16H72A8,8,0,0,1,64,104Zm128,48a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H184A8,8,0,0,1,192,152Z" />
-              </svg>
-              Registrar Pago
-            </Button>
+            {!isReadOnly && canManageSelectedYear && (
+              <Button onClick={() => setIsRegisterModalOpen(true)} className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,144H32V64H224V192ZM64,104a8,8,0,0,1,8-8H96a8,8,0,0,1,0,16H72A8,8,0,0,1,64,104Zm128,48a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H184A8,8,0,0,1,192,152Z" />
+                </svg>
+                Registrar Pago
+              </Button>
+            )}
           </div>
         </div>
+
+        {!canManageSelectedYear && (
+          <div className="px-4 pb-2">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              Solo el perfil ADMIN puede registrar o modificar pagos de años académicos anteriores.
+            </div>
+          </div>
+        )}
 
         <div className="p-4">
           <Card>
@@ -459,8 +397,21 @@ export function PaymentsPage() {
                 onFiltersChange={handleFiltersChange}
                 onClearFilters={handleClearFilters}
                 filterOptions={filterOptions}
+                onePerStudent={onePerStudent}
+                onOnePerStudentChange={setOnePerStudent}
               />
             </CardHeader>
+            <ActiveFiltersBar
+              yearLabel={String(academicYear)}
+              filters={[
+                filters.status !== 'por_cobrar' && { key: 'status', label: 'Estado', value: filters.status === 'all' ? 'Todos' : filters.status, onRemove: () => handleFiltersChange({ ...filters, status: 'por_cobrar' }) },
+                filters.month !== 'all' && { key: 'month', label: 'Mes', value: ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][parseInt(filters.month)] || filters.month, onRemove: () => handleFiltersChange({ ...filters, month: 'all' }) },
+                filters.paymentMethod !== 'all' && { key: 'method', label: 'Método', value: filters.paymentMethod, onRemove: () => handleFiltersChange({ ...filters, paymentMethod: 'all' }) },
+                filters.curso !== 'all' && { key: 'curso', label: 'Curso', value: filters.curso, onRemove: () => handleFiltersChange({ ...filters, curso: 'all' }) },
+                filters.cuota !== 'all' && { key: 'cuota', label: 'Cuota', value: `#${filters.cuota}`, onRemove: () => handleFiltersChange({ ...filters, cuota: 'all' }) },
+              ].filter(Boolean)}
+              onClearAll={handleClearFilters}
+            />
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-8">
@@ -471,13 +422,14 @@ export function PaymentsPage() {
                   payments={paginatedItems}
                   loading={loading}
                   onViewDetails={setSelectedPayment}
+                  onStudentClick={(id, name) => setStudentFeesTarget({ id, name })}
                 />
               )}
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
-                totalRecords={filteredPayments.length}
+                totalRecords={displayPayments.length}
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
               />
@@ -503,7 +455,7 @@ export function PaymentsPage() {
               {/* Performance info for debugging */}
               {import.meta.env.DEV && (
                 <div className="text-xs text-gray-500 mt-2 text-center">
-                  Mostrando todos los {payments.length} registros (filtros aplicados: {filteredPayments.length})
+                  Mostrando todos los {payments.length} registros (filtros aplicados: {displayPayments.length})
                 </div>
               )}
             </CardContent>
@@ -515,14 +467,26 @@ export function PaymentsPage() {
         <PaymentDetailsModal
           payment={selectedPayment}
           onClose={() => setSelectedPayment(null)}
-          onSuccess={() => fetchPayments(true)}
+          onSuccess={() => setSelectedPayment(null)}
+        />
+      )}
+
+      {studentFeesTarget && (
+        <StudentFeesModal
+          studentId={studentFeesTarget.id}
+          studentName={studentFeesTarget.name}
+          allFees={payments}
+          academicYear={academicYear}
+          onClose={() => setStudentFeesTarget(null)}
+          onViewDetails={(fee) => { setStudentFeesTarget(null); setSelectedPayment(fee); }}
         />
       )}
       
       <RegisterPaymentModal
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
-        onSuccess={() => fetchPayments(true)}
+        onSuccess={() => setIsRegisterModalOpen(false)}
+        academicYear={academicYear}
       />
     </main>
   );

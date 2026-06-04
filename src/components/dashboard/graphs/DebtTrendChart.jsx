@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
+import { ChartSkeleton } from '../../ui/Skeleton';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '../../../services/supabase';
-import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
-import toast from 'react-hot-toast';
+import { useFeesQuery } from '../../../hooks/queries/useFeesQuery';
+import { format, parseISO, startOfMonth } from 'date-fns';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -26,70 +26,39 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export function DebtTrendChart() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function DebtTrendChart({ academicYear }) {
+  const { data: fees = [], isLoading: loading } = useFeesQuery();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const data = useMemo(() => {
+    const pendingFees = fees.filter(f => (f.status === 'pending' || f.status === 'overdue') && feeHasValidDueDate(f));
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+    const monthlyData = pendingFees.reduce((acc, fee) => {
+      const monthKey = startOfMonth(parseISO(fee.due_date)).toISOString();
+      if (!acc[monthKey]) {
+        acc[monthKey] = {
+          month: format(parseISO(fee.due_date), 'MMM yyyy'),
+          overdue: 0,
+          pending: 0
+        };
+      }
 
-      const { data: fees, error } = await supabase
-        .from('fee')
-        .select('amount, status, due_date')
-        .in('status', ['pending', 'overdue'])
-        .order('due_date', { ascending: true });
+      const amount = parseFloat(fee.amount);
+      if (fee.status === 'overdue') {
+        acc[monthKey].overdue += amount;
+      } else {
+        acc[monthKey].pending += amount;
+      }
 
-      if (error) throw error;
+      return acc;
+    }, {});
 
-      const monthlyData = fees.reduce((acc, fee) => {
-        const monthKey = startOfMonth(parseISO(fee.due_date)).toISOString();
-        if (!acc[monthKey]) {
-          acc[monthKey] = {
-            month: format(parseISO(fee.due_date), 'MMM yyyy'),
-            overdue: 0,
-            pending: 0
-          };
-        }
-        
-        const amount = parseFloat(fee.amount);
-        if (fee.status === 'overdue') {
-          acc[monthKey].overdue += amount;
-        } else {
-          acc[monthKey].pending += amount;
-        }
-        
-        return acc;
-      }, {});
-
-      setData(Object.values(monthlyData));
-    } catch (err) {
-      console.error('Error fetching debt trend data:', err);
-      toast.error('Error al cargar los datos de tendencia de deuda');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return Object.entries(monthlyData)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, v]) => v);
+  }, [fees]);
 
   if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <h2 className="text-gray-900 dark:text-white text-lg font-semibold">
-            Tendencia de Deuda
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <ChartSkeleton title="Tendencia de Deuda" />;
   }
 
   return (
@@ -147,4 +116,8 @@ export function DebtTrendChart() {
       </CardContent>
     </Card>
   );
+}
+
+function feeHasValidDueDate(fee) {
+  return typeof fee?.due_date === 'string' && fee.due_date.trim() !== '';
 }

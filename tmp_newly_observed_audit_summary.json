@@ -1,0 +1,784 @@
+{
+  "newly_observed_rows": 220,
+  "top_diff_signatures": [
+    {
+      "count": 155,
+      "signature": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "8cecb30b-ef0d-4678-8bf6-29dd7c3ef69e",
+          "ID Estudiante": "0408ed8e-d506-46e4-a206-f3914e887ec7",
+          "Estudiante": "ALMA AURORA BAEZ GONZALEZ",
+          "diffs": [
+            [
+              "Matrícula: N° Cuotas",
+              "",
+              "0"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "",
+              "0"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "",
+              "0"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+          "ID Estudiante": "04a8b591-5846-485c-8bbc-24ae165f7669",
+          "Estudiante": "ISIDORA MARTINA PIA OPAZO MELLA",
+          "diffs": [
+            [
+              "Matrícula: N° Cuotas",
+              "",
+              "0"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "",
+              "0"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "",
+              "0"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "a69e2d3e-6db3-4d53-894c-56896afcaaca",
+          "ID Estudiante": "05855245-38ee-44eb-90ca-7b8c81e58784",
+          "Estudiante": "TRINIDAD IGNACIA BERTEINS VÁSQUEZ",
+          "diffs": [
+            [
+              "Matrícula: N° Cuotas",
+              "",
+              "0"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "",
+              "0"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "",
+              "0"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 41,
+      "signature": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "3602cbaf-10c5-432a-a94d-142d8eb4abbe",
+          "ID Estudiante": "02fd7937-561a-4a53-ae18-0a3dc8e4517f",
+          "Estudiante": "ISIDORA ALINE BERROCAL ROA",
+          "diffs": [
+            [
+              "Matrícula: Monto por Cuota",
+              "25718",
+              "102870"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "257180",
+              "1028700"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "75620919-1d03-432a-b90a-8e6638712c22",
+          "ID Estudiante": "0751dd28-d0f2-42e8-bdf8-72582d6d0470",
+          "Estudiante": "STEFFANO JOAN MATURANA DIAZ",
+          "diffs": [
+            [
+              "Matrícula: Monto por Cuota",
+              "61722",
+              "102870"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "617220",
+              "1028700"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "c1538293-107a-44c3-9637-59c645eb1237",
+          "ID Estudiante": "08c6255b-fe62-40ab-aa34-56fc90aa795c",
+          "Estudiante": "RAFAEL ALONSO MARTINEZ PEREZ",
+          "diffs": [
+            [
+              "Matrícula: Monto por Cuota",
+              "25718",
+              "102870"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "257180",
+              "1028700"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 10,
+      "signature": [
+        "Matrícula: Forma de Pago",
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "2f93a4e9-b33c-44ec-b342-b0ed0a155bac",
+          "ID Estudiante": "0733da4d-1f39-4fda-8b68-e8506b6b0a7b",
+          "Estudiante": "ALLAN ALEJANDRO JIMENEZ ACUÑA",
+          "diffs": [
+            [
+              "Matrícula: Forma de Pago",
+              "PLANILLA",
+              "TRANSFERENCIA"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "25718",
+              "102870"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "257180",
+              "1028700"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "ed14da94-cfae-404e-afdd-7b875866b553",
+          "ID Estudiante": "11735527-e888-4f6b-a4a5-c0531744fa98",
+          "Estudiante": "ANOUK TABARÉ ROJAS VACCARO",
+          "diffs": [
+            [
+              "Matrícula: Forma de Pago",
+              "PLANILLA",
+              "TRANSFERENCIA"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "36005",
+              "102870"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "360050",
+              "1028700"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "32544798-ccc3-4f37-b63b-913c0794316e",
+          "ID Estudiante": "244a2c5e-c0bb-4acb-bf9e-9adfbdc5f804",
+          "Estudiante": "CRISTOBAL LEON ROMANI GUTIERREZ",
+          "diffs": [
+            [
+              "Matrícula: Forma de Pago",
+              "PAGARE",
+              "CHEQUE"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "79876",
+              "133126"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "798760",
+              "1331260"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 4,
+      "signature": [
+        "Matrícula: Total Anual"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "7e98cebd-bb7b-4d95-9869-5d25aec6c79d",
+          "ID Estudiante": "304f5987-becf-4eab-a17b-28fcc925517f",
+          "Estudiante": "AMANDA JESÚS CABEZAS VILLALOBOS ",
+          "diffs": [
+            [
+              "Matrícula: Total Anual",
+              "951550",
+              "951547"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "f11f542c-7b13-4fa0-aef3-322c0922d64e",
+          "ID Estudiante": "69ba4211-481e-430c-95c6-8d693f77c92b",
+          "Estudiante": "JULIETA HERRERA CARRASCO",
+          "diffs": [
+            [
+              "Matrícula: Total Anual",
+              "1065010",
+              "1065008"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "d21d96e9-c80c-424d-b393-484580f74c76",
+          "ID Estudiante": "aaca0235-1659-4bd0-9d69-35b52e9aa287",
+          "Estudiante": "SIMONE ANTONIA FLORES MUÑOZ",
+          "diffs": [
+            [
+              "Matrícula: Total Anual",
+              "1028700",
+              "1028699"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 3,
+      "signature": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+          "ID Estudiante": "143b34e2-5d22-4e48-9754-3208f33ee30e",
+          "Estudiante": "DANTE LEON ARENAS LANDEROS",
+          "diffs": [
+            [
+              "Matrícula: N° Cuotas",
+              "5",
+              "10"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "205740",
+              "102870"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+          "ID Estudiante": "51892dfc-81b3-46c2-beb8-001dff623129",
+          "Estudiante": "OCTAVIO ANDRES ARENAS LANDEROS",
+          "diffs": [
+            [
+              "Matrícula: N° Cuotas",
+              "5",
+              "10"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "266252",
+              "133126"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+          "ID Estudiante": "ca93a0df-bf84-42c3-95ae-3ad84eedab47",
+          "Estudiante": "ELOÍSA IZADI ARENAS LANDEROS",
+          "diffs": [
+            [
+              "Matrícula: N° Cuotas",
+              "5",
+              "10"
+            ],
+            [
+              "Matrícula: Monto por Cuota",
+              "205740",
+              "102870"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 3,
+      "signature": [
+        "Aranceles: Forma de Pago"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "2fea7dc0-3d86-45d2-91e6-2c4f1c01bebd",
+          "ID Estudiante": "1aaa6a65-c240-4a81-aadc-d6dba0afc44f",
+          "Estudiante": "SIMON TAIEL GARCIA GUERRERO",
+          "diffs": [
+            [
+              "Aranceles: Forma de Pago",
+              "PAGARE|TRANSFERENCIA",
+              "PAGARE"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "42c738ed-c879-4158-b5e5-b351857569ac",
+          "ID Estudiante": "6735741a-aeb4-4afb-8b5b-3fe0b4381857",
+          "Estudiante": "FIORELLA SOFIA DAVILA SEPULVEDA",
+          "diffs": [
+            [
+              "Aranceles: Forma de Pago",
+              "PAGARE|TRANSFERENCIA",
+              "PAGARE"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "64ac047b-d57e-48bc-8b5c-84022c16cf8c",
+          "ID Estudiante": "f7f8bc32-55a0-4ac4-8c44-2528eb3c8bfc",
+          "Estudiante": "JOAQUIN RAFAEL CORTES PARRA",
+          "diffs": [
+            [
+              "Aranceles: Forma de Pago",
+              "PAGARE|TRANSFERENCIA",
+              "PAGARE"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 2,
+      "signature": [
+        "Matrícula: Forma de Pago"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "a0421dcb-e14b-4ee4-901c-2ded703645ec",
+          "ID Estudiante": "7f30b18b-03e7-4b63-a9d0-7233f9529032",
+          "Estudiante": "ROBERTA ANAIS FONSECA GOLDENBERG",
+          "diffs": [
+            [
+              "Matrícula: Forma de Pago",
+              "CHEQUE",
+              "PAGARE"
+            ]
+          ]
+        },
+        {
+          "ID Matrícula": "e06706cc-a57f-407e-84ea-a3be618f0f07",
+          "ID Estudiante": "eea0021f-eaab-462c-b6bb-7d285c87f6a8",
+          "Estudiante": "SOFIA VAI MOANA SCHULZ GALLEGUILLOS",
+          "diffs": [
+            [
+              "Matrícula: Forma de Pago",
+              "CHEQUE",
+              "PAGARE"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "signature": [
+        "Aranceles: Forma de Pago",
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "68e7da22-0674-409c-92b6-908849214908",
+          "ID Estudiante": "1ea803cc-5607-4d5d-9b4d-80dd7a9a58be",
+          "Estudiante": "AGUSTINA ISIDORA HUERTA SILVA",
+          "diffs": [
+            [
+              "Matrícula: Monto por Cuota",
+              "92583",
+              "102870"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "925830",
+              "1028700"
+            ],
+            [
+              "Aranceles: Forma de Pago",
+              "PAGARE|TRANSFERENCIA",
+              "PAGARE"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "signature": [
+        "Matrícula: Forma de Pago",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ],
+      "examples": [
+        {
+          "ID Matrícula": "918c6611-d1af-4d87-842e-fb502ff3bef5",
+          "ID Estudiante": "dae969d6-dae3-451a-b305-77c908383ded",
+          "Estudiante": "FACUNDO AQUEVEQUE SOLANO",
+          "diffs": [
+            [
+              "Matrícula: Forma de Pago",
+              "TARJETA",
+              "TRANSFERENCIA"
+            ],
+            [
+              "Matrícula: N° Cuotas",
+              "1",
+              "10"
+            ],
+            [
+              "Matrícula: Total Anual",
+              "102870",
+              "1028700"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "top_monto_pairs": [
+    {
+      "count": 155,
+      "live_report": "",
+      "updated_csv": "0"
+    },
+    {
+      "count": 7,
+      "live_report": "25718",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 7,
+      "live_report": "61722",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 6,
+      "live_report": "79876",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 5,
+      "live_report": "93188",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 4,
+      "live_report": "36005",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 3,
+      "live_report": "72009",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 3,
+      "live_report": "92583",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 3,
+      "live_report": "53250",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 2,
+      "live_report": "41148",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 2,
+      "live_report": "205740",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 2,
+      "live_report": "106501",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 2,
+      "live_report": "51435",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 1,
+      "live_report": "86532",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 1,
+      "live_report": "266252",
+      "updated_csv": "133126"
+    }
+  ],
+  "top_total_pairs": [
+    {
+      "count": 155,
+      "live_report": "",
+      "updated_csv": "0"
+    },
+    {
+      "count": 7,
+      "live_report": "257180",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 7,
+      "live_report": "617220",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 6,
+      "live_report": "798760",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 5,
+      "live_report": "931880",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 4,
+      "live_report": "720090",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 4,
+      "live_report": "360050",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 3,
+      "live_report": "925830",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 3,
+      "live_report": "532500",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 2,
+      "live_report": "411480",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 2,
+      "live_report": "1065010",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 2,
+      "live_report": "514350",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 1,
+      "live_report": "865320",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 1,
+      "live_report": "951550",
+      "updated_csv": "951547"
+    },
+    {
+      "count": 1,
+      "live_report": "822760",
+      "updated_csv": "1331260"
+    }
+  ],
+  "top_cuotas_pairs": [
+    {
+      "count": 155,
+      "live_report": "",
+      "updated_csv": "0"
+    },
+    {
+      "count": 3,
+      "live_report": "5",
+      "updated_csv": "10"
+    },
+    {
+      "count": 1,
+      "live_report": "1",
+      "updated_csv": "10"
+    }
+  ],
+  "top_column_pairs": [
+    {
+      "count": 155,
+      "column": "Matrícula: N° Cuotas",
+      "live_report": "",
+      "updated_csv": "0"
+    },
+    {
+      "count": 155,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "",
+      "updated_csv": "0"
+    },
+    {
+      "count": 155,
+      "column": "Matrícula: Total Anual",
+      "live_report": "",
+      "updated_csv": "0"
+    },
+    {
+      "count": 7,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "25718",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 7,
+      "column": "Matrícula: Total Anual",
+      "live_report": "257180",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 7,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "61722",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 7,
+      "column": "Matrícula: Total Anual",
+      "live_report": "617220",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 6,
+      "column": "Matrícula: Forma de Pago",
+      "live_report": "PLANILLA",
+      "updated_csv": "TRANSFERENCIA"
+    },
+    {
+      "count": 6,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "79876",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 6,
+      "column": "Matrícula: Total Anual",
+      "live_report": "798760",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 5,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "93188",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 5,
+      "column": "Matrícula: Total Anual",
+      "live_report": "931880",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 4,
+      "column": "Matrícula: Total Anual",
+      "live_report": "720090",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 4,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "36005",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 4,
+      "column": "Matrícula: Total Anual",
+      "live_report": "360050",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 4,
+      "column": "Aranceles: Forma de Pago",
+      "live_report": "PAGARE|TRANSFERENCIA",
+      "updated_csv": "PAGARE"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "72009",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: N° Cuotas",
+      "live_report": "5",
+      "updated_csv": "10"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "92583",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: Total Anual",
+      "live_report": "925830",
+      "updated_csv": "1028700"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: Forma de Pago",
+      "live_report": "PAGARE",
+      "updated_csv": "TRANSFERENCIA"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "53250",
+      "updated_csv": "133126"
+    },
+    {
+      "count": 3,
+      "column": "Matrícula: Total Anual",
+      "live_report": "532500",
+      "updated_csv": "1331260"
+    },
+    {
+      "count": 2,
+      "column": "Matrícula: Monto por Cuota",
+      "live_report": "41148",
+      "updated_csv": "102870"
+    },
+    {
+      "count": 2,
+      "column": "Matrícula: Total Anual",
+      "live_report": "411480",
+      "updated_csv": "1028700"
+    }
+  ]
+}

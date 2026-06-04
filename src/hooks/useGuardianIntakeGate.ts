@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { needsIntakeCheck } from '../services/guardianIntake';
+import { useGuardianData } from '../contexts/GuardianContext';
 
 // Routes allowed without completed intake
 const ALLOWED_ROUTES = new Set([
@@ -13,47 +13,47 @@ const ALLOWED_ROUTES = new Set([
   '/login', '/forgot-password', '/reset-password', '/auth/callback'
 ]);
 
-// Simple module-level cache so multiple components don't trigger extra network calls
-let _intakeNeededCached: boolean | null = null;
-let _intakeCheckInFlight: Promise<boolean> | null = null;
-
 export function useGuardianIntakeGate() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { data, loading, refresh } = useGuardianData();
   const [checking, setChecking] = useState(false);
-  const [intakeNeeded, setIntakeNeeded] = useState<boolean | null>(_intakeNeededCached);
+  const [intakeNeeded, setIntakeNeeded] = useState<boolean | null>(null);
+  const [requestedBootstrap, setRequestedBootstrap] = useState(false);
+
+  const shouldEnforce = useMemo(() => {
+    if (!user || user.role !== 'guardian') return false;
+    return !ALLOWED_ROUTES.has(location.pathname);
+  }, [user, location.pathname]);
+
+  const computedNeed = useMemo(() => {
+    if (!data) return null;
+    return Boolean(data.needsIntake);
+  }, [data]);
+
   useEffect(() => {
-    let active = true;
-    const run = async () => {
-      if (!user || user.role !== 'guardian') return; // only guardians
-      if (ALLOWED_ROUTES.has(location.pathname)) return; // allowed free navigation
-      // If we already know and it's not needed, skip.
-      if (_intakeNeededCached === false) return;
+    if (!shouldEnforce) {
+      setChecking(false);
+      setIntakeNeeded(null);
+      setRequestedBootstrap(false);
+      return;
+    }
+
+    if (!data && !loading && !requestedBootstrap) {
+      setRequestedBootstrap(true);
+      refresh({ force: true });
       setChecking(true);
-      try {
-        let needed: boolean;
-        if (_intakeCheckInFlight) {
-          needed = await _intakeCheckInFlight;
-        } else if (_intakeNeededCached !== null) {
-          needed = _intakeNeededCached;
-        } else {
-          _intakeCheckInFlight = needsIntakeCheck();
-          needed = await _intakeCheckInFlight;
-          _intakeCheckInFlight = null;
-          _intakeNeededCached = needed;
-        }
-        if (active) setIntakeNeeded(needed);
-        if (!active) return;
-        if (needed) {
-          navigate('/apoderado/encuesta', { replace: true });
-        }
-      } finally {
-        if (active) setChecking(false);
-      }
-    };
-    run();
-    return () => { active = false; };
-  }, [user, location.pathname, navigate]);
+      return;
+    }
+
+    if (computedNeed === true) {
+      navigate('/apoderado/encuesta', { replace: true });
+    }
+
+    setIntakeNeeded(computedNeed);
+    setChecking(loading || computedNeed === null);
+  }, [shouldEnforce, computedNeed, data, loading, refresh, navigate, requestedBootstrap]);
+
   return { checking, intakeNeeded };
 }

@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../services/supabase';
 import { validateRun as validateRunLocal, formatRunDisplay } from '../../utils/rut';
 import toast from 'react-hot-toast';
+import { friendlyError } from '../../utils/friendlyError';
 
 interface RegisterGuardianForm {
   email: string;
@@ -52,7 +53,7 @@ export function GuardianRegisterPage() {
     try {
       const { data, error } = await supabase.rpc('claim_guardian_by_run', { input_run: normalized });
       if (error) {
-        toast.error(error.message || 'Error vinculando apoderado');
+        toast.error(friendlyError(error, 'Error vinculando apoderado.'));
         return;
       }
       switch (data?.status) {
@@ -103,7 +104,7 @@ export function GuardianRegisterPage() {
       await claimGuardian(v.clean!);
     } catch (error: any) {
       if (!error.message?.includes('Error al registrar')) {
-        toast.error(error.message || 'Error creando la cuenta');
+        toast.error(friendlyError(error, 'Error creando la cuenta.'));
       }
     }
   };

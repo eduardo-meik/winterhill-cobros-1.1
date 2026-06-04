@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anexo - Pagaré</title>
+  <style>
+    :root {
+      --font: 'Helvetica', Arial, sans-serif;
+      --text: #000;
+      --muted: #000;
+      --accent: #000;
+      --border: #000;
+    }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      counter-reset: page;
+    }
+
+    @page { 
+      size: A4; 
+      margin: 20mm;
+    }
+
+    .print-header, .print-footer {
+      display: none;
+    }
+
+    .print-header { 
+      top: calc(var(--header-height) * -1); 
+      height: var(--header-height);
+      border-bottom: 0.5px solid var(--border); 
+      align-items: flex-end;
+    }
+    .print-footer { 
+      bottom: calc(var(--footer-height) * -1); 
+      height: var(--footer-height);
+      border-top: 0.5px solid var(--border); 
+      padding: 2mm 12mm 4mm; 
+      align-items: flex-start;
+    }
+    .print-header .title { font-weight: 600; }
+    .page-number::after { content: "Página " counter(page); }
+    .has-total-pages .page-number::after { content: "Página " counter(page) " de " counter(pages); }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 0 12mm;
+      box-sizing: border-box;
+    }
+
+    @media screen {
+      .print-header, .print-footer { display: none; }
+      .page { padding: 12mm 12mm 16mm; }
+    }
+
+    @media print {
+      body { counter-reset: page; }
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      line-height: 1.2;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    h2 {
+      font-size: 11px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 3px 0;
+      line-height: 1.23;
+      font-size: 11px;
+      hyphens: auto;
+      word-break: break-word;
+      orphans: 2;
+      widows: 2;
+    }
+
+    ul, ol {
+      margin: 4px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 2px 0;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 4px 0 8px;
+      font-size: 11px;
+    }
+
+    .table th, .table td {
+      border: 0.75px solid var(--border);
+      padding: 3px 4px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .table thead th {
+      font-weight: 600;
+      background: transparent;
+    }
+
+    .muted { color: var(--muted); }
+    .lead { font-size: 13px; }
+
+    .clause {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+      break-inside: avoid;
+    }
+
+    .sigbox {
+      border-top: 0.75px solid var(--border);
+      padding-top: 4px;
+      font-size: 11px;
+    }
+
+    .table, .table tr, .table td, .table th { break-inside: avoid; }
+
+    /* NUEVO: Estilos para borde y folio */
+    .document-border {
+      border: 1px solid var(--border);
+      padding: 10mm;
+      min-height: 240mm;
+      position: relative;
+    }
+    .folio-box {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 11px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    try {
+      if (window.CSS && CSS.supports && CSS.supports('content', 'counter(pages)')) {
+        document.documentElement.classList.add('has-total-pages');
+      }
+    } catch (e) { /* noop */ }
+  </script>
+  <!-- Header y Footer eliminados del HTML para evitar duplicidad con el generador PDF -->
+  <section class="page">
+    <div class="document-border">
+      <!-- Folio en el cuerpo para referencia visual rápida, además del encabezado PDF -->
+      <div class="folio-box">FOLIO: {{folio_number}}</div>
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: bold;">CORPORACIÓN EDUCACIONAL WINTERHILL</div>
+        <div class="small">Año {{year}}</div>
+      </div>
+
+      <h1>Anexo - Pagaré</h1>
+      <p class="muted">Viña del Mar, a {{fecha_actual}}</p>
+
+      <p><strong>Monto:</strong> ${{monto_neto_anual}} (monto total de colegiatura anual, con descuento aplicado, correspondiente a la suma de la(s) colegiatura(s) de el/los estudiante(s) individualizado(s) más abajo; el valor de referencia sin descuento para dicha suma es ${{colegiatura_anual}})</p>
+      <p><strong>N° de Pagaré:</strong> {{folio_number}}</p>
+
+      <p class="clause">
+        <strong>Deudor.</strong>
+        Nombre: <strong>{{guardian_full_name}}</strong> · RUT: <strong>{{guardian_run}}</strong> · Profesión/Oficio: {{guardian_profesion}} · Estado civil: {{guardian_estado_civil}} · Domicilio: {{guardian_address}}{{guardian_comuna?}}
+      </p>
+
+      <p class="clause">
+        <strong>Acreedor.</strong>
+        <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong>, RUT 65.152.884-4, con domicilio en Pasaje Anwandter N° 31, Viña del Mar.
+      </p>
+
+      <p class="clause"><strong>Compromiso de pago.</strong> Yo, <strong>{{guardian_full_name}}</strong>, en mi calidad de deudor(a), debo y pagaré incondicionalmente a la orden de <strong>CORPORACIÓN EDUCACIONAL WINTERHILL</strong> la suma indicada, correspondiente a la colegiatura anual de los servicios educacionales del año académico {{year}}.</p>
+
+      <p class="clause"><strong>Estudiantes.</strong> El presente pagaré respalda los servicios educacionales prestados a el/los estudiante(s) individualizados a continuación:</p>
+      {{students_list}}
+
+      <p class="clause"><strong>Forma de pago.</strong> El monto total de ${{monto_neto_anual}}, que corresponde a la suma de la colegiatura anual de todos los estudiantes señalados en este pagaré, será pagado en {{cantidad_cuotas}} cuotas mensuales, iguales y sucesivas de ${{monto_cuota_neta}} cada una. La primera cuota vencerá el día {{dia_vencimiento}} de marzo de {{year}}, y las restantes el mismo día de cada mes calendario subsiguiente hasta diciembre de {{year}}. El pago se efectuará mediante transferencia bancaria a la cuenta informada por LA CORPORACIÓN.</p>
+
+      <p class="clause"><strong>Cláusula de aceleración.</strong> El simple retardo o mora en el pago íntegro y oportuno de cualquier cuota faculta al acreedor para exigir de inmediato el pago del saldo total adeudado.</p>
+
+      <p class="clause"><strong>Intereses.</strong> En caso de mora, el saldo insoluto devengará el interés máximo convencional permitido para operaciones de crédito de dinero no reajustables.</p>
+
+      <p class="clause"><strong>Cláusulas adicionales.</strong> El/La deudor(a) libera al acreedor de la obligación de protesto y de cualquier otra formalidad o aviso respecto de este pagaré.</p>
+
+      <p class="clause"><strong>Gastos.</strong> Todos los gastos e impuestos derivados del cobro del presente instrumento serán de cargo del/de la deudor(a).</p>
+
+      <p class="clause"><strong>Domicilio y jurisdicción.</strong> Las partes fijan su domicilio en Viña del Mar y se someten a los Tribunales Ordinarios de Justicia.</p>
+
+      <div class="signatures">
+        <div class="sigbox">
+          <div><strong>{{guardian_full_name}}</strong></div>
+          <div>RUT: {{guardian_run}}</div>
+          <div class="muted">DEUDOR(A)</div>
+        </div>
+      </div>
+    </div> <!-- End document-border -->
+  </section>
+</body>
+</html>

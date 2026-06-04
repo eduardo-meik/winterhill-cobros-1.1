@@ -7,9 +7,11 @@ export interface User {
   profile?: 'ADMIN' | 'ASIST' | 'READONLY'; // new profile field for permissions
 }
 
+import { Session } from '@supabase/supabase-js';
+
 export interface AuthState {
   user: User | null;
-  session: any | null;
+  session: Session | null;
   loading: boolean;
 }
 

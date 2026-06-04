@@ -1,0 +1,5098 @@
+{
+  "changed_row_count": 230,
+  "changed_cell_count": 635,
+  "changed_columns": {
+    "Matrícula: Monto por Cuota": 219,
+    "Matrícula: Total Anual": 221,
+    "Matrícula: Forma de Pago": 17,
+    "Matrícula: N° Cuotas": 168,
+    "Matrícula: Prioritario": 4,
+    "Aranceles: Monto Cuota Mínimo": 1,
+    "Aranceles: Monto Cuota Máximo": 1,
+    "Aranceles: N° Cuota Máxima": 2,
+    "Aranceles: Forma de Pago": 1,
+    "Aranceles: Total": 1
+  },
+  "changes": [
+    {
+      "ID Matrícula": "127eb37a-2702-4512-9626-e5be0c9d3db9",
+      "ID Estudiante": "baebae9a-d591-4b60-9a14-68bc69010563",
+      "Estudiante": "ANAIS MARIEN WILSON CARCAMO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "78060.00"
+    },
+    {
+      "ID Matrícula": "127eb37a-2702-4512-9626-e5be0c9d3db9",
+      "ID Estudiante": "baebae9a-d591-4b60-9a14-68bc69010563",
+      "Estudiante": "ANAIS MARIEN WILSON CARCAMO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "780600.00"
+    },
+    {
+      "ID Matrícula": "ed14da94-cfae-404e-afdd-7b875866b553",
+      "ID Estudiante": "11735527-e888-4f6b-a4a5-c0531744fa98",
+      "Estudiante": "ANOUK TABARÉ ROJAS VACCARO",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PLANILLA"
+    },
+    {
+      "ID Matrícula": "ed14da94-cfae-404e-afdd-7b875866b553",
+      "ID Estudiante": "11735527-e888-4f6b-a4a5-c0531744fa98",
+      "Estudiante": "ANOUK TABARÉ ROJAS VACCARO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "36005.00"
+    },
+    {
+      "ID Matrícula": "ed14da94-cfae-404e-afdd-7b875866b553",
+      "ID Estudiante": "11735527-e888-4f6b-a4a5-c0531744fa98",
+      "Estudiante": "ANOUK TABARÉ ROJAS VACCARO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "360050.00"
+    },
+    {
+      "ID Matrícula": "d34519c9-e0bc-4be4-8f1e-ecdabddc40ea",
+      "ID Estudiante": "3feb629d-4480-4bd2-a611-10637eb2c15d",
+      "Estudiante": "BRIANA ANTONELLA CHACANA VEGA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d34519c9-e0bc-4be4-8f1e-ecdabddc40ea",
+      "ID Estudiante": "3feb629d-4480-4bd2-a611-10637eb2c15d",
+      "Estudiante": "BRIANA ANTONELLA CHACANA VEGA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d34519c9-e0bc-4be4-8f1e-ecdabddc40ea",
+      "ID Estudiante": "3feb629d-4480-4bd2-a611-10637eb2c15d",
+      "Estudiante": "BRIANA ANTONELLA CHACANA VEGA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0a9ecf4b-76e3-41fd-b4d0-ecbb4da047b1",
+      "ID Estudiante": "233d5ab3-4b74-486f-a703-9f9e623e68e8",
+      "Estudiante": "CHRISTOPHER THOMAS CORTÉS GUZMÁN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0a9ecf4b-76e3-41fd-b4d0-ecbb4da047b1",
+      "ID Estudiante": "233d5ab3-4b74-486f-a703-9f9e623e68e8",
+      "Estudiante": "CHRISTOPHER THOMAS CORTÉS GUZMÁN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0a9ecf4b-76e3-41fd-b4d0-ecbb4da047b1",
+      "ID Estudiante": "233d5ab3-4b74-486f-a703-9f9e623e68e8",
+      "Estudiante": "CHRISTOPHER THOMAS CORTÉS GUZMÁN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+      "ID Estudiante": "ca93a0df-bf84-42c3-95ae-3ad84eedab47",
+      "Estudiante": "ELOÍSA IZADI ARENAS LANDEROS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "10",
+      "new_value": "5"
+    },
+    {
+      "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+      "ID Estudiante": "ca93a0df-bf84-42c3-95ae-3ad84eedab47",
+      "Estudiante": "ELOÍSA IZADI ARENAS LANDEROS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "205740.00"
+    },
+    {
+      "ID Matrícula": "918c6611-d1af-4d87-842e-fb502ff3bef5",
+      "ID Estudiante": "dae969d6-dae3-451a-b305-77c908383ded",
+      "Estudiante": "FACUNDO AQUEVEQUE SOLANO",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "TARJETA"
+    },
+    {
+      "ID Matrícula": "918c6611-d1af-4d87-842e-fb502ff3bef5",
+      "ID Estudiante": "dae969d6-dae3-451a-b305-77c908383ded",
+      "Estudiante": "FACUNDO AQUEVEQUE SOLANO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "10",
+      "new_value": "1"
+    },
+    {
+      "ID Matrícula": "918c6611-d1af-4d87-842e-fb502ff3bef5",
+      "ID Estudiante": "dae969d6-dae3-451a-b305-77c908383ded",
+      "Estudiante": "FACUNDO AQUEVEQUE SOLANO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "102870.00"
+    },
+    {
+      "ID Matrícula": "a53b63f2-792c-40f5-b8a7-ed67003dc5cc",
+      "ID Estudiante": "7575ae4f-7e6b-4fdb-905c-f4aac18a7c5a",
+      "Estudiante": "FLORENCIA ANELEY SABA ESCOBAR",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "102970.00"
+    },
+    {
+      "ID Matrícula": "a53b63f2-792c-40f5-b8a7-ed67003dc5cc",
+      "ID Estudiante": "7575ae4f-7e6b-4fdb-905c-f4aac18a7c5a",
+      "Estudiante": "FLORENCIA ANELEY SABA ESCOBAR",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "1029700.00"
+    },
+    {
+      "ID Matrícula": "dff87607-5263-49a4-9080-6bf5f3147a99",
+      "ID Estudiante": "46045c21-4a42-4ab0-9089-f94bc14b2729",
+      "Estudiante": "SALVADOR GASPAR GODOY DIDIER",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dff87607-5263-49a4-9080-6bf5f3147a99",
+      "ID Estudiante": "46045c21-4a42-4ab0-9089-f94bc14b2729",
+      "Estudiante": "SALVADOR GASPAR GODOY DIDIER",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dff87607-5263-49a4-9080-6bf5f3147a99",
+      "ID Estudiante": "46045c21-4a42-4ab0-9089-f94bc14b2729",
+      "Estudiante": "SALVADOR GASPAR GODOY DIDIER",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "be4d9f50-3681-4b3b-8bf7-4875b78eb7c0",
+      "ID Estudiante": "fd4b3066-92ea-451a-a25e-733a61cbca2d",
+      "Estudiante": "AMANDA VALENTINA ALAMOS ARENAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "be4d9f50-3681-4b3b-8bf7-4875b78eb7c0",
+      "ID Estudiante": "fd4b3066-92ea-451a-a25e-733a61cbca2d",
+      "Estudiante": "AMANDA VALENTINA ALAMOS ARENAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "be4d9f50-3681-4b3b-8bf7-4875b78eb7c0",
+      "ID Estudiante": "fd4b3066-92ea-451a-a25e-733a61cbca2d",
+      "Estudiante": "AMANDA VALENTINA ALAMOS ARENAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "27749b37-0135-4f44-bbe9-407804933031",
+      "ID Estudiante": "189ccc0e-2273-4115-bb8a-cdd738ef2630",
+      "Estudiante": "BENJAMIN OCTAVIO MIRANDA ZAMORANO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "27749b37-0135-4f44-bbe9-407804933031",
+      "ID Estudiante": "189ccc0e-2273-4115-bb8a-cdd738ef2630",
+      "Estudiante": "BENJAMIN OCTAVIO MIRANDA ZAMORANO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "27749b37-0135-4f44-bbe9-407804933031",
+      "ID Estudiante": "189ccc0e-2273-4115-bb8a-cdd738ef2630",
+      "Estudiante": "BENJAMIN OCTAVIO MIRANDA ZAMORANO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c59a8174-4c62-4391-b864-979d053d6ecd",
+      "ID Estudiante": "4c358bf5-c1e5-4f33-844f-5b60b8f5ac33",
+      "Estudiante": "CATALINA FRANCISCA JIMENEZ MOLINA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c59a8174-4c62-4391-b864-979d053d6ecd",
+      "ID Estudiante": "4c358bf5-c1e5-4f33-844f-5b60b8f5ac33",
+      "Estudiante": "CATALINA FRANCISCA JIMENEZ MOLINA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c59a8174-4c62-4391-b864-979d053d6ecd",
+      "ID Estudiante": "4c358bf5-c1e5-4f33-844f-5b60b8f5ac33",
+      "Estudiante": "CATALINA FRANCISCA JIMENEZ MOLINA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "89f30933-bd1c-4fe8-a25d-4544b5f2b161",
+      "ID Estudiante": "95d8a711-f669-4cb6-a5d3-ae072ee1af34",
+      "Estudiante": "COLOMBA ELUNEY SALAZAR LÓPEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "89f30933-bd1c-4fe8-a25d-4544b5f2b161",
+      "ID Estudiante": "95d8a711-f669-4cb6-a5d3-ae072ee1af34",
+      "Estudiante": "COLOMBA ELUNEY SALAZAR LÓPEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "89f30933-bd1c-4fe8-a25d-4544b5f2b161",
+      "ID Estudiante": "95d8a711-f669-4cb6-a5d3-ae072ee1af34",
+      "Estudiante": "COLOMBA ELUNEY SALAZAR LÓPEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "296b9e04-6d5d-484c-b259-2999812d9645",
+      "ID Estudiante": "f4081dc8-7388-4fbd-ad9f-62289f6350d9",
+      "Estudiante": "FLORENCIA OLIVARES FREZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "296b9e04-6d5d-484c-b259-2999812d9645",
+      "ID Estudiante": "f4081dc8-7388-4fbd-ad9f-62289f6350d9",
+      "Estudiante": "FLORENCIA OLIVARES FREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "296b9e04-6d5d-484c-b259-2999812d9645",
+      "ID Estudiante": "f4081dc8-7388-4fbd-ad9f-62289f6350d9",
+      "Estudiante": "FLORENCIA OLIVARES FREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b4cbb9cf-f7c8-44b6-ba35-c7c0842049d3",
+      "ID Estudiante": "d6bcbe6f-1807-45f2-8e99-922d1c7ce8a5",
+      "Estudiante": "GASPAR ENRIQUE REYES CODINA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331261",
+      "new_value": "1331260.00"
+    },
+    {
+      "ID Matrícula": "72c4ea03-234e-424e-956d-437edc00915b",
+      "ID Estudiante": "bed2a39a-8718-4b6a-9a02-0b6b9d5606ab",
+      "Estudiante": "ISABELLA DE JESUS SALAS QUEZADA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "72c4ea03-234e-424e-956d-437edc00915b",
+      "ID Estudiante": "bed2a39a-8718-4b6a-9a02-0b6b9d5606ab",
+      "Estudiante": "ISABELLA DE JESUS SALAS QUEZADA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "72c4ea03-234e-424e-956d-437edc00915b",
+      "ID Estudiante": "bed2a39a-8718-4b6a-9a02-0b6b9d5606ab",
+      "Estudiante": "ISABELLA DE JESUS SALAS QUEZADA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "102549df-93dd-44bb-a183-4fc553539658",
+      "ID Estudiante": "59f4eb2d-f113-480d-bfc8-fa52ffb43d47",
+      "Estudiante": "LEONOR AMANDA PARRA LENI",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "102549df-93dd-44bb-a183-4fc553539658",
+      "ID Estudiante": "59f4eb2d-f113-480d-bfc8-fa52ffb43d47",
+      "Estudiante": "LEONOR AMANDA PARRA LENI",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "102549df-93dd-44bb-a183-4fc553539658",
+      "ID Estudiante": "59f4eb2d-f113-480d-bfc8-fa52ffb43d47",
+      "Estudiante": "LEONOR AMANDA PARRA LENI",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "06f17d0b-a0cb-4d9f-a0a5-e6b0fc3080f0",
+      "ID Estudiante": "54a5746a-5b6c-4100-86de-eca2d2f32fea",
+      "Estudiante": "MAGDALENA PAZ ROJAS BENAVIDES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "82276.00"
+    },
+    {
+      "ID Matrícula": "06f17d0b-a0cb-4d9f-a0a5-e6b0fc3080f0",
+      "ID Estudiante": "54a5746a-5b6c-4100-86de-eca2d2f32fea",
+      "Estudiante": "MAGDALENA PAZ ROJAS BENAVIDES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "822760.00"
+    },
+    {
+      "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+      "ID Estudiante": "51892dfc-81b3-46c2-beb8-001dff623129",
+      "Estudiante": "OCTAVIO ANDRES ARENAS LANDEROS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "10",
+      "new_value": "5"
+    },
+    {
+      "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+      "ID Estudiante": "51892dfc-81b3-46c2-beb8-001dff623129",
+      "Estudiante": "OCTAVIO ANDRES ARENAS LANDEROS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "266252.00"
+    },
+    {
+      "ID Matrícula": "2867eee4-8216-4d9d-b083-65b5123793d4",
+      "ID Estudiante": "742755bb-0cc2-4080-bcaa-f316b3734e8b",
+      "Estudiante": "ROBERT KLAUS NAVARRO RIVEROS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "106501.00"
+    },
+    {
+      "ID Matrícula": "2867eee4-8216-4d9d-b083-65b5123793d4",
+      "ID Estudiante": "742755bb-0cc2-4080-bcaa-f316b3734e8b",
+      "Estudiante": "ROBERT KLAUS NAVARRO RIVEROS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "1065010.00"
+    },
+    {
+      "ID Matrícula": "9e874df1-f34d-40b8-bb73-6648097415e3",
+      "ID Estudiante": "d2b96822-8f35-44cd-aa3a-d3afab8f7282",
+      "Estudiante": "SOFIA AGUSTINA CATALAN VASQUEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9e874df1-f34d-40b8-bb73-6648097415e3",
+      "ID Estudiante": "d2b96822-8f35-44cd-aa3a-d3afab8f7282",
+      "Estudiante": "SOFIA AGUSTINA CATALAN VASQUEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9e874df1-f34d-40b8-bb73-6648097415e3",
+      "ID Estudiante": "d2b96822-8f35-44cd-aa3a-d3afab8f7282",
+      "Estudiante": "SOFIA AGUSTINA CATALAN VASQUEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ea44e5fd-191a-47dd-a5b2-c277fd0627de",
+      "ID Estudiante": "c3b654cd-3ef7-498c-ba5d-87234b76c248",
+      "Estudiante": "ANTONIA BELEN AZOCAR VERDEJO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ea44e5fd-191a-47dd-a5b2-c277fd0627de",
+      "ID Estudiante": "c3b654cd-3ef7-498c-ba5d-87234b76c248",
+      "Estudiante": "ANTONIA BELEN AZOCAR VERDEJO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ea44e5fd-191a-47dd-a5b2-c277fd0627de",
+      "ID Estudiante": "c3b654cd-3ef7-498c-ba5d-87234b76c248",
+      "Estudiante": "ANTONIA BELEN AZOCAR VERDEJO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d5c42a9f-07c0-4c06-9a64-1d9352660f84",
+      "ID Estudiante": "f0493125-30c0-4b2d-bf0c-a9bbcd715434",
+      "Estudiante": "DANTE NICOLÁS ROJAS AGUILERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d5c42a9f-07c0-4c06-9a64-1d9352660f84",
+      "ID Estudiante": "f0493125-30c0-4b2d-bf0c-a9bbcd715434",
+      "Estudiante": "DANTE NICOLÁS ROJAS AGUILERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d5c42a9f-07c0-4c06-9a64-1d9352660f84",
+      "ID Estudiante": "f0493125-30c0-4b2d-bf0c-a9bbcd715434",
+      "Estudiante": "DANTE NICOLÁS ROJAS AGUILERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "613cc43a-5a69-4136-a98f-6813c7186388",
+      "Estudiante": "FIORELLA PAZ BAGNARA ORTIZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "613cc43a-5a69-4136-a98f-6813c7186388",
+      "Estudiante": "FIORELLA PAZ BAGNARA ORTIZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "613cc43a-5a69-4136-a98f-6813c7186388",
+      "Estudiante": "FIORELLA PAZ BAGNARA ORTIZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7dec2206-45fb-4b74-a1ea-5dd98956ade5",
+      "ID Estudiante": "9b41cd03-7ed9-4154-b7b3-7b921e674349",
+      "Estudiante": "IAN FABRIZIO SCHRÖDER RIVEROS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7dec2206-45fb-4b74-a1ea-5dd98956ade5",
+      "ID Estudiante": "9b41cd03-7ed9-4154-b7b3-7b921e674349",
+      "Estudiante": "IAN FABRIZIO SCHRÖDER RIVEROS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7dec2206-45fb-4b74-a1ea-5dd98956ade5",
+      "ID Estudiante": "9b41cd03-7ed9-4154-b7b3-7b921e674349",
+      "Estudiante": "IAN FABRIZIO SCHRÖDER RIVEROS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "92378912-deeb-4e93-88ea-0f98bdf52f97",
+      "ID Estudiante": "b955e880-4dfc-453b-b36d-285ade76f7d4",
+      "Estudiante": "JULIAN BENJAMIN BERROETA CONTRERAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "92378912-deeb-4e93-88ea-0f98bdf52f97",
+      "ID Estudiante": "b955e880-4dfc-453b-b36d-285ade76f7d4",
+      "Estudiante": "JULIAN BENJAMIN BERROETA CONTRERAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "92378912-deeb-4e93-88ea-0f98bdf52f97",
+      "ID Estudiante": "b955e880-4dfc-453b-b36d-285ade76f7d4",
+      "Estudiante": "JULIAN BENJAMIN BERROETA CONTRERAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "184d6e71-b4c8-40d7-bef1-20440137dc1e",
+      "ID Estudiante": "2a9e7d8d-1cda-4d4c-a836-9fdd64fc11db",
+      "Estudiante": "MÁXIMO LEONIDAS EGAÑA CABRERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "184d6e71-b4c8-40d7-bef1-20440137dc1e",
+      "ID Estudiante": "2a9e7d8d-1cda-4d4c-a836-9fdd64fc11db",
+      "Estudiante": "MÁXIMO LEONIDAS EGAÑA CABRERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "184d6e71-b4c8-40d7-bef1-20440137dc1e",
+      "ID Estudiante": "2a9e7d8d-1cda-4d4c-a836-9fdd64fc11db",
+      "Estudiante": "MÁXIMO LEONIDAS EGAÑA CABRERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7ea3ea59-c255-4b68-92b0-6388291b2257",
+      "ID Estudiante": "a99fd044-da2d-4d25-b3e5-09f2e1554084",
+      "Estudiante": "PABLO IGNACIO PALACIOS BRAVO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7ea3ea59-c255-4b68-92b0-6388291b2257",
+      "ID Estudiante": "a99fd044-da2d-4d25-b3e5-09f2e1554084",
+      "Estudiante": "PABLO IGNACIO PALACIOS BRAVO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7ea3ea59-c255-4b68-92b0-6388291b2257",
+      "ID Estudiante": "a99fd044-da2d-4d25-b3e5-09f2e1554084",
+      "Estudiante": "PABLO IGNACIO PALACIOS BRAVO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9d37be52-9dbb-4412-9b9c-d95a79f6cd44",
+      "ID Estudiante": "5cf2dbcc-91c7-426a-8147-91ee36c174bf",
+      "Estudiante": "TRINIDAD ANTONIA JIMENEZ ZEGERS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9d37be52-9dbb-4412-9b9c-d95a79f6cd44",
+      "ID Estudiante": "5cf2dbcc-91c7-426a-8147-91ee36c174bf",
+      "Estudiante": "TRINIDAD ANTONIA JIMENEZ ZEGERS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9d37be52-9dbb-4412-9b9c-d95a79f6cd44",
+      "ID Estudiante": "5cf2dbcc-91c7-426a-8147-91ee36c174bf",
+      "Estudiante": "TRINIDAD ANTONIA JIMENEZ ZEGERS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a69e2d3e-6db3-4d53-894c-56896afcaaca",
+      "ID Estudiante": "05855245-38ee-44eb-90ca-7b8c81e58784",
+      "Estudiante": "TRINIDAD IGNACIA BERTEINS VÁSQUEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a69e2d3e-6db3-4d53-894c-56896afcaaca",
+      "ID Estudiante": "05855245-38ee-44eb-90ca-7b8c81e58784",
+      "Estudiante": "TRINIDAD IGNACIA BERTEINS VÁSQUEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a69e2d3e-6db3-4d53-894c-56896afcaaca",
+      "ID Estudiante": "05855245-38ee-44eb-90ca-7b8c81e58784",
+      "Estudiante": "TRINIDAD IGNACIA BERTEINS VÁSQUEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "32407e30-16df-4539-b46e-a1aba5bc67b9",
+      "ID Estudiante": "b173ae99-ca00-4669-aeb1-ee46e874009e",
+      "Estudiante": "VICENTE ALONSO AMOR ABURTO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "53250.00"
+    },
+    {
+      "ID Matrícula": "32407e30-16df-4539-b46e-a1aba5bc67b9",
+      "ID Estudiante": "b173ae99-ca00-4669-aeb1-ee46e874009e",
+      "Estudiante": "VICENTE ALONSO AMOR ABURTO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "532500.00"
+    },
+    {
+      "ID Matrícula": "cbd8afef-547e-4bf5-8e8d-6e9521e2308b",
+      "ID Estudiante": "b33b73c6-998d-41b5-9954-0a281a9a76ae",
+      "Estudiante": "ALEN PAULO LEON CARMONA NORAMBUENA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cbd8afef-547e-4bf5-8e8d-6e9521e2308b",
+      "ID Estudiante": "b33b73c6-998d-41b5-9954-0a281a9a76ae",
+      "Estudiante": "ALEN PAULO LEON CARMONA NORAMBUENA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cbd8afef-547e-4bf5-8e8d-6e9521e2308b",
+      "ID Estudiante": "b33b73c6-998d-41b5-9954-0a281a9a76ae",
+      "Estudiante": "ALEN PAULO LEON CARMONA NORAMBUENA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "PRIORITARIO",
+      "new_value": "PAGARE"
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "column": "Matrícula: Prioritario",
+      "old_value": "true",
+      "new_value": "false"
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": "10"
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": "102870.00"
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": "1028700.00"
+    },
+    {
+      "ID Matrícula": "1e056daf-f959-4d7b-8882-038a5fee9aaf",
+      "ID Estudiante": "f34121d6-2ea7-4c90-932f-09e3c28abd0e",
+      "Estudiante": "AMARANTA MAIALEN FLORES GOMEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1e056daf-f959-4d7b-8882-038a5fee9aaf",
+      "ID Estudiante": "f34121d6-2ea7-4c90-932f-09e3c28abd0e",
+      "Estudiante": "AMARANTA MAIALEN FLORES GOMEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1e056daf-f959-4d7b-8882-038a5fee9aaf",
+      "ID Estudiante": "f34121d6-2ea7-4c90-932f-09e3c28abd0e",
+      "Estudiante": "AMARANTA MAIALEN FLORES GOMEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e9bfe1fb-ba8c-47e3-afb1-cd115a2136a6",
+      "ID Estudiante": "b98377c1-0674-4932-88b1-c9c919ab9f91",
+      "Estudiante": "AUKAN AMARU PIÑONES RAMIREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "e9bfe1fb-ba8c-47e3-afb1-cd115a2136a6",
+      "ID Estudiante": "b98377c1-0674-4932-88b1-c9c919ab9f91",
+      "Estudiante": "AUKAN AMARU PIÑONES RAMIREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "ed1c4c45-bcc1-4f0f-9fcf-74c9228cc397",
+      "ID Estudiante": "619af5d7-1b32-42fd-9dfe-2a9e054ffbdb",
+      "Estudiante": "BALTAZAR EMILIO RIQUELME AYALA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed1c4c45-bcc1-4f0f-9fcf-74c9228cc397",
+      "ID Estudiante": "619af5d7-1b32-42fd-9dfe-2a9e054ffbdb",
+      "Estudiante": "BALTAZAR EMILIO RIQUELME AYALA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed1c4c45-bcc1-4f0f-9fcf-74c9228cc397",
+      "ID Estudiante": "619af5d7-1b32-42fd-9dfe-2a9e054ffbdb",
+      "Estudiante": "BALTAZAR EMILIO RIQUELME AYALA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7",
+      "ID Estudiante": "735e186f-e63e-443d-b0e7-117cc58f6d15",
+      "Estudiante": "CHARLOTTE ANDREA BIEHL SALAZAR",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7",
+      "ID Estudiante": "735e186f-e63e-443d-b0e7-117cc58f6d15",
+      "Estudiante": "CHARLOTTE ANDREA BIEHL SALAZAR",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7",
+      "ID Estudiante": "735e186f-e63e-443d-b0e7-117cc58f6d15",
+      "Estudiante": "CHARLOTTE ANDREA BIEHL SALAZAR",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d38a677f-dea9-4f78-9806-90fba6930628",
+      "ID Estudiante": "fb4e23f6-f3a3-46ca-8235-a15094a02ebc",
+      "Estudiante": "DANTE AVALOS QUIÑONES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d38a677f-dea9-4f78-9806-90fba6930628",
+      "ID Estudiante": "fb4e23f6-f3a3-46ca-8235-a15094a02ebc",
+      "Estudiante": "DANTE AVALOS QUIÑONES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d38a677f-dea9-4f78-9806-90fba6930628",
+      "ID Estudiante": "fb4e23f6-f3a3-46ca-8235-a15094a02ebc",
+      "Estudiante": "DANTE AVALOS QUIÑONES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "e2e41db6-c369-41f0-b9c2-192e2aa5c9dc",
+      "Estudiante": "INES CONTRERAS RUBIO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "e2e41db6-c369-41f0-b9c2-192e2aa5c9dc",
+      "Estudiante": "INES CONTRERAS RUBIO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "e2e41db6-c369-41f0-b9c2-192e2aa5c9dc",
+      "Estudiante": "INES CONTRERAS RUBIO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3602cbaf-10c5-432a-a94d-142d8eb4abbe",
+      "ID Estudiante": "02fd7937-561a-4a53-ae18-0a3dc8e4517f",
+      "Estudiante": "ISIDORA ALINE BERROCAL ROA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "3602cbaf-10c5-432a-a94d-142d8eb4abbe",
+      "ID Estudiante": "02fd7937-561a-4a53-ae18-0a3dc8e4517f",
+      "Estudiante": "ISIDORA ALINE BERROCAL ROA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "ae7cebd9-6447-475b-a679-602f006ae773",
+      "ID Estudiante": "ba291d0f-a75c-4b64-855e-494df05244de",
+      "Estudiante": "JOAQUÍN GONZALO GODOY INZULZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ae7cebd9-6447-475b-a679-602f006ae773",
+      "ID Estudiante": "ba291d0f-a75c-4b64-855e-494df05244de",
+      "Estudiante": "JOAQUÍN GONZALO GODOY INZULZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ae7cebd9-6447-475b-a679-602f006ae773",
+      "ID Estudiante": "ba291d0f-a75c-4b64-855e-494df05244de",
+      "Estudiante": "JOAQUÍN GONZALO GODOY INZULZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "784c4915-5cb7-47f9-a5fe-d78646a62411",
+      "ID Estudiante": "0caa2000-14bd-4e39-8e85-51bc254c51f9",
+      "Estudiante": "JULIAN EDUARDO RAMIREZ ACEVEDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "41148.00"
+    },
+    {
+      "ID Matrícula": "784c4915-5cb7-47f9-a5fe-d78646a62411",
+      "ID Estudiante": "0caa2000-14bd-4e39-8e85-51bc254c51f9",
+      "Estudiante": "JULIAN EDUARDO RAMIREZ ACEVEDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "411480.00"
+    },
+    {
+      "ID Matrícula": "90d9d718-fd32-4f37-a5c9-af7baea8b553",
+      "ID Estudiante": "1f68c3c0-5fdf-446d-91f1-c6483d10a708",
+      "Estudiante": "LUCIANO AGUSTIN HIDALGO CANALES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "90d9d718-fd32-4f37-a5c9-af7baea8b553",
+      "ID Estudiante": "1f68c3c0-5fdf-446d-91f1-c6483d10a708",
+      "Estudiante": "LUCIANO AGUSTIN HIDALGO CANALES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "90d9d718-fd32-4f37-a5c9-af7baea8b553",
+      "ID Estudiante": "1f68c3c0-5fdf-446d-91f1-c6483d10a708",
+      "Estudiante": "LUCIANO AGUSTIN HIDALGO CANALES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "201a811b-0b46-46be-b2e6-76ece341888f",
+      "ID Estudiante": "0d391db8-ffbd-4e26-9657-b96dbd8f9dac",
+      "Estudiante": "LUCIANO PATRICIO LILLO JIMENEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "201a811b-0b46-46be-b2e6-76ece341888f",
+      "ID Estudiante": "0d391db8-ffbd-4e26-9657-b96dbd8f9dac",
+      "Estudiante": "LUCIANO PATRICIO LILLO JIMENEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "201a811b-0b46-46be-b2e6-76ece341888f",
+      "ID Estudiante": "0d391db8-ffbd-4e26-9657-b96dbd8f9dac",
+      "Estudiante": "LUCIANO PATRICIO LILLO JIMENEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "caaa38a9-5d13-4aae-8dda-581af3caaa11",
+      "ID Estudiante": "b4493694-aec2-4f8f-8b0a-b92d09be3926",
+      "Estudiante": "MIA SIMONNE BAVESTRELLO MARCHESINI",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "caaa38a9-5d13-4aae-8dda-581af3caaa11",
+      "ID Estudiante": "b4493694-aec2-4f8f-8b0a-b92d09be3926",
+      "Estudiante": "MIA SIMONNE BAVESTRELLO MARCHESINI",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "caaa38a9-5d13-4aae-8dda-581af3caaa11",
+      "ID Estudiante": "b4493694-aec2-4f8f-8b0a-b92d09be3926",
+      "Estudiante": "MIA SIMONNE BAVESTRELLO MARCHESINI",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "PRIORITARIO",
+      "new_value": "PAGARE"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "column": "Matrícula: Prioritario",
+      "old_value": "true",
+      "new_value": "false"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": "10"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": "102870.00"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": "1028700.00"
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "6da0e600-a6eb-4d27-9c88-3fbd18226106",
+      "Estudiante": "ALONSO PATRICIO VARGAS ARCAYA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "6da0e600-a6eb-4d27-9c88-3fbd18226106",
+      "Estudiante": "ALONSO PATRICIO VARGAS ARCAYA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "6da0e600-a6eb-4d27-9c88-3fbd18226106",
+      "Estudiante": "ALONSO PATRICIO VARGAS ARCAYA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3c6bf549-a1a4-4607-b4dd-b7e32fbc9cff",
+      "ID Estudiante": "17b961fe-b111-40d5-bc6f-233917b2cabf",
+      "Estudiante": "BENJAMIN MAURICIO BECERRA WIUCKSTERN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3c6bf549-a1a4-4607-b4dd-b7e32fbc9cff",
+      "ID Estudiante": "17b961fe-b111-40d5-bc6f-233917b2cabf",
+      "Estudiante": "BENJAMIN MAURICIO BECERRA WIUCKSTERN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3c6bf549-a1a4-4607-b4dd-b7e32fbc9cff",
+      "ID Estudiante": "17b961fe-b111-40d5-bc6f-233917b2cabf",
+      "Estudiante": "BENJAMIN MAURICIO BECERRA WIUCKSTERN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1662dc8-dc1f-46b5-9e29-0e07fd2c9cf3",
+      "ID Estudiante": "393933d1-9ae5-469d-a9c7-a2e4a421a9ad",
+      "Estudiante": "BIANCA GIANELLA RIVAS GONZÁLEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1662dc8-dc1f-46b5-9e29-0e07fd2c9cf3",
+      "ID Estudiante": "393933d1-9ae5-469d-a9c7-a2e4a421a9ad",
+      "Estudiante": "BIANCA GIANELLA RIVAS GONZÁLEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1662dc8-dc1f-46b5-9e29-0e07fd2c9cf3",
+      "ID Estudiante": "393933d1-9ae5-469d-a9c7-a2e4a421a9ad",
+      "Estudiante": "BIANCA GIANELLA RIVAS GONZÁLEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "10909522-091e-489f-a48a-1adf2b2e2c72",
+      "ID Estudiante": "327e6aef-44ac-4e90-ba89-75c6a01ad062",
+      "Estudiante": "CAMILO ANDRES CUELLO ARANCIBIA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "10909522-091e-489f-a48a-1adf2b2e2c72",
+      "ID Estudiante": "327e6aef-44ac-4e90-ba89-75c6a01ad062",
+      "Estudiante": "CAMILO ANDRES CUELLO ARANCIBIA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "10909522-091e-489f-a48a-1adf2b2e2c72",
+      "ID Estudiante": "327e6aef-44ac-4e90-ba89-75c6a01ad062",
+      "Estudiante": "CAMILO ANDRES CUELLO ARANCIBIA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0a040d84-3d90-4c00-b263-86b41211c294",
+      "ID Estudiante": "915f0761-37b4-4ed2-b182-0c02888607da",
+      "Estudiante": "CRISTOBAL ALONSO DIAZ CALBULLANCA",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PAGARE"
+    },
+    {
+      "ID Matrícula": "0a040d84-3d90-4c00-b263-86b41211c294",
+      "ID Estudiante": "915f0761-37b4-4ed2-b182-0c02888607da",
+      "Estudiante": "CRISTOBAL ALONSO DIAZ CALBULLANCA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "0a040d84-3d90-4c00-b263-86b41211c294",
+      "ID Estudiante": "915f0761-37b4-4ed2-b182-0c02888607da",
+      "Estudiante": "CRISTOBAL ALONSO DIAZ CALBULLANCA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "32544798-ccc3-4f37-b63b-913c0794316e",
+      "ID Estudiante": "244a2c5e-c0bb-4acb-bf9e-9adfbdc5f804",
+      "Estudiante": "CRISTOBAL LEON ROMANI GUTIERREZ",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "CHEQUE",
+      "new_value": "PAGARE"
+    },
+    {
+      "ID Matrícula": "32544798-ccc3-4f37-b63b-913c0794316e",
+      "ID Estudiante": "244a2c5e-c0bb-4acb-bf9e-9adfbdc5f804",
+      "Estudiante": "CRISTOBAL LEON ROMANI GUTIERREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "32544798-ccc3-4f37-b63b-913c0794316e",
+      "ID Estudiante": "244a2c5e-c0bb-4acb-bf9e-9adfbdc5f804",
+      "Estudiante": "CRISTOBAL LEON ROMANI GUTIERREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "23c2bb8e-4b07-4470-8624-762cca271d0a",
+      "ID Estudiante": "c19bc3c6-b6fc-428c-81fe-778aea3f21dd",
+      "Estudiante": "DEREK ANTONIO JOHNSON BARROS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "23c2bb8e-4b07-4470-8624-762cca271d0a",
+      "ID Estudiante": "c19bc3c6-b6fc-428c-81fe-778aea3f21dd",
+      "Estudiante": "DEREK ANTONIO JOHNSON BARROS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "23c2bb8e-4b07-4470-8624-762cca271d0a",
+      "ID Estudiante": "c19bc3c6-b6fc-428c-81fe-778aea3f21dd",
+      "Estudiante": "DEREK ANTONIO JOHNSON BARROS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "794c9513-8a86-47b4-920c-bc1a7a8674c5",
+      "ID Estudiante": "6a7f9a8f-0df1-4556-b318-c4211ab392a3",
+      "Estudiante": "DOMINGO JOAQUIN RIVEROS CALVO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "794c9513-8a86-47b4-920c-bc1a7a8674c5",
+      "ID Estudiante": "6a7f9a8f-0df1-4556-b318-c4211ab392a3",
+      "Estudiante": "DOMINGO JOAQUIN RIVEROS CALVO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "794c9513-8a86-47b4-920c-bc1a7a8674c5",
+      "ID Estudiante": "6a7f9a8f-0df1-4556-b318-c4211ab392a3",
+      "Estudiante": "DOMINGO JOAQUIN RIVEROS CALVO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "42ba9123-89b4-46ca-9435-a123e6e2b69e",
+      "ID Estudiante": "0638de97-efc0-4f67-99d6-34b1b6fd1e88",
+      "Estudiante": "IGNACIO TOMAS LOPEZ GONZALEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "42ba9123-89b4-46ca-9435-a123e6e2b69e",
+      "ID Estudiante": "0638de97-efc0-4f67-99d6-34b1b6fd1e88",
+      "Estudiante": "IGNACIO TOMAS LOPEZ GONZALEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "42ba9123-89b4-46ca-9435-a123e6e2b69e",
+      "ID Estudiante": "0638de97-efc0-4f67-99d6-34b1b6fd1e88",
+      "Estudiante": "IGNACIO TOMAS LOPEZ GONZALEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "69cda971-eb14-4faa-9740-981649071317",
+      "ID Estudiante": "f6405475-4e26-46d6-b10c-6f7c0d6b1479",
+      "Estudiante": "ISIDORA VALENTINA SEGURA PEZO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "69cda971-eb14-4faa-9740-981649071317",
+      "ID Estudiante": "f6405475-4e26-46d6-b10c-6f7c0d6b1479",
+      "Estudiante": "ISIDORA VALENTINA SEGURA PEZO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "ce770b76-b546-454a-a926-b9146c58e79c",
+      "ID Estudiante": "2fadd17b-944d-4179-b716-740ef75b41cd",
+      "Estudiante": "NATIVA LUZ QUIROGA MUÑOZ",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PAGARE"
+    },
+    {
+      "ID Matrícula": "ce770b76-b546-454a-a926-b9146c58e79c",
+      "ID Estudiante": "2fadd17b-944d-4179-b716-740ef75b41cd",
+      "Estudiante": "NATIVA LUZ QUIROGA MUÑOZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "86532.00"
+    },
+    {
+      "ID Matrícula": "ce770b76-b546-454a-a926-b9146c58e79c",
+      "ID Estudiante": "2fadd17b-944d-4179-b716-740ef75b41cd",
+      "Estudiante": "NATIVA LUZ QUIROGA MUÑOZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "865320.00"
+    },
+    {
+      "ID Matrícula": "a0999f25-89ae-40ca-b77d-b9d9b73009af",
+      "ID Estudiante": "ae3988c6-e33a-4cd2-acd8-a47898445e59",
+      "Estudiante": "RENATA RAYEN AVILA TELLO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "a0999f25-89ae-40ca-b77d-b9d9b73009af",
+      "ID Estudiante": "ae3988c6-e33a-4cd2-acd8-a47898445e59",
+      "Estudiante": "RENATA RAYEN AVILA TELLO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "a0421dcb-e14b-4ee4-901c-2ded703645ec",
+      "ID Estudiante": "7f30b18b-03e7-4b63-a9d0-7233f9529032",
+      "Estudiante": "ROBERTA ANAIS FONSECA GOLDENBERG",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "PAGARE",
+      "new_value": "CHEQUE"
+    },
+    {
+      "ID Matrícula": "49972455-a21d-495a-b3de-ba4f1fe4f05e",
+      "ID Estudiante": "aa928d4c-ac03-4d77-854c-10cb26486bed",
+      "Estudiante": "ROCIO ELENA SEGOVIA PACHECO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "49972455-a21d-495a-b3de-ba4f1fe4f05e",
+      "ID Estudiante": "aa928d4c-ac03-4d77-854c-10cb26486bed",
+      "Estudiante": "ROCIO ELENA SEGOVIA PACHECO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "49972455-a21d-495a-b3de-ba4f1fe4f05e",
+      "ID Estudiante": "aa928d4c-ac03-4d77-854c-10cb26486bed",
+      "Estudiante": "ROCIO ELENA SEGOVIA PACHECO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e06706cc-a57f-407e-84ea-a3be618f0f07",
+      "ID Estudiante": "eea0021f-eaab-462c-b6bb-7d285c87f6a8",
+      "Estudiante": "SOFIA VAI MOANA SCHULZ GALLEGUILLOS",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "PAGARE",
+      "new_value": "CHEQUE"
+    },
+    {
+      "ID Matrícula": "0a9ecf4b-76e3-41fd-b4d0-ecbb4da047b1",
+      "ID Estudiante": "9d911a6c-6f0e-43ba-b918-84c65676d5dc",
+      "Estudiante": "ABIGAIL JAVIERA CORTES GUZMAN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0a9ecf4b-76e3-41fd-b4d0-ecbb4da047b1",
+      "ID Estudiante": "9d911a6c-6f0e-43ba-b918-84c65676d5dc",
+      "Estudiante": "ABIGAIL JAVIERA CORTES GUZMAN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0a9ecf4b-76e3-41fd-b4d0-ecbb4da047b1",
+      "ID Estudiante": "9d911a6c-6f0e-43ba-b918-84c65676d5dc",
+      "Estudiante": "ABIGAIL JAVIERA CORTES GUZMAN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c500a520-52ed-43c8-b92d-8d450707a58a",
+      "ID Estudiante": "99cbbebd-9d24-4463-a67e-ed6201e32e84",
+      "Estudiante": "ALONDRA SOFIA GUEICO GAETE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "92583.00"
+    },
+    {
+      "ID Matrícula": "c500a520-52ed-43c8-b92d-8d450707a58a",
+      "ID Estudiante": "99cbbebd-9d24-4463-a67e-ed6201e32e84",
+      "Estudiante": "ALONDRA SOFIA GUEICO GAETE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "925830.00"
+    },
+    {
+      "ID Matrícula": "2b4e15b0-dd8b-4b26-9fc8-c183e3900781",
+      "ID Estudiante": "a69bf1eb-c487-4e3c-8a35-8c9e62bad84f",
+      "Estudiante": "EMA FAIRUZ ALFARO ARANCIBIA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2b4e15b0-dd8b-4b26-9fc8-c183e3900781",
+      "ID Estudiante": "a69bf1eb-c487-4e3c-8a35-8c9e62bad84f",
+      "Estudiante": "EMA FAIRUZ ALFARO ARANCIBIA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2b4e15b0-dd8b-4b26-9fc8-c183e3900781",
+      "ID Estudiante": "a69bf1eb-c487-4e3c-8a35-8c9e62bad84f",
+      "Estudiante": "EMA FAIRUZ ALFARO ARANCIBIA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "abb521ab-c183-4b68-93e3-f9f6b8f0de08",
+      "Estudiante": "RAFFAELLA VALENTINA ZOLEZZI HENRÍQUEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "abb521ab-c183-4b68-93e3-f9f6b8f0de08",
+      "Estudiante": "RAFFAELLA VALENTINA ZOLEZZI HENRÍQUEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "abb521ab-c183-4b68-93e3-f9f6b8f0de08",
+      "Estudiante": "RAFFAELLA VALENTINA ZOLEZZI HENRÍQUEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a6e68488-20ee-4c48-8486-fd5906bf7d80",
+      "ID Estudiante": "b79f3335-ba1a-478a-ab27-9dbaccb5a282",
+      "Estudiante": "SANDINO TAHIEL LABRIN MUÑOZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "30861.00"
+    },
+    {
+      "ID Matrícula": "a6e68488-20ee-4c48-8486-fd5906bf7d80",
+      "ID Estudiante": "b79f3335-ba1a-478a-ab27-9dbaccb5a282",
+      "Estudiante": "SANDINO TAHIEL LABRIN MUÑOZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "308610.00"
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "0caebc6c-149f-41d7-9a45-9a8d592722da",
+      "Estudiante": "SOFIA IGNACIA CANELO GAETE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "0caebc6c-149f-41d7-9a45-9a8d592722da",
+      "Estudiante": "SOFIA IGNACIA CANELO GAETE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "0caebc6c-149f-41d7-9a45-9a8d592722da",
+      "Estudiante": "SOFIA IGNACIA CANELO GAETE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2f93a4e9-b33c-44ec-b342-b0ed0a155bac",
+      "ID Estudiante": "0733da4d-1f39-4fda-8b68-e8506b6b0a7b",
+      "Estudiante": "ALLAN ALEJANDRO JIMENEZ ACUÑA",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PLANILLA"
+    },
+    {
+      "ID Matrícula": "2f93a4e9-b33c-44ec-b342-b0ed0a155bac",
+      "ID Estudiante": "0733da4d-1f39-4fda-8b68-e8506b6b0a7b",
+      "Estudiante": "ALLAN ALEJANDRO JIMENEZ ACUÑA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "2f93a4e9-b33c-44ec-b342-b0ed0a155bac",
+      "ID Estudiante": "0733da4d-1f39-4fda-8b68-e8506b6b0a7b",
+      "Estudiante": "ALLAN ALEJANDRO JIMENEZ ACUÑA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "26aa7318-095a-460e-9a05-da0b457377bb",
+      "ID Estudiante": "ebc8c578-b7c0-4211-aa98-19d279cfaabc",
+      "Estudiante": "ENYA FENRIR ROJAS PUGAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "26aa7318-095a-460e-9a05-da0b457377bb",
+      "ID Estudiante": "ebc8c578-b7c0-4211-aa98-19d279cfaabc",
+      "Estudiante": "ENYA FENRIR ROJAS PUGAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "26aa7318-095a-460e-9a05-da0b457377bb",
+      "ID Estudiante": "ebc8c578-b7c0-4211-aa98-19d279cfaabc",
+      "Estudiante": "ENYA FENRIR ROJAS PUGAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1d6abc0-d844-4af2-83e1-f67630ecf231",
+      "ID Estudiante": "c83e3529-7b89-4593-9883-c8f943b427e0",
+      "Estudiante": "FRANCESCO AGUSTIN ARAOS VERGARA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "82296.00"
+    },
+    {
+      "ID Matrícula": "b1d6abc0-d844-4af2-83e1-f67630ecf231",
+      "ID Estudiante": "c83e3529-7b89-4593-9883-c8f943b427e0",
+      "Estudiante": "FRANCESCO AGUSTIN ARAOS VERGARA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "822960.00"
+    },
+    {
+      "ID Matrícula": "415b507a-acb7-4193-8e8b-992fd3d3f8b8",
+      "ID Estudiante": "4ae25e35-6a7b-4b50-8f7b-a6d06d1fcfef",
+      "Estudiante": "GASPAR ALONSO GONZALEZ CASTRO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "415b507a-acb7-4193-8e8b-992fd3d3f8b8",
+      "ID Estudiante": "4ae25e35-6a7b-4b50-8f7b-a6d06d1fcfef",
+      "Estudiante": "GASPAR ALONSO GONZALEZ CASTRO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "415b507a-acb7-4193-8e8b-992fd3d3f8b8",
+      "ID Estudiante": "4ae25e35-6a7b-4b50-8f7b-a6d06d1fcfef",
+      "Estudiante": "GASPAR ALONSO GONZALEZ CASTRO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9e81fe54-a75e-48ad-8877-8f67d0f30616",
+      "ID Estudiante": "0ef5a530-568a-4273-b6d3-3b0197dab343",
+      "Estudiante": "MARGARITA EMILIA CRUZ GARAY",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "72009.00"
+    },
+    {
+      "ID Matrícula": "9e81fe54-a75e-48ad-8877-8f67d0f30616",
+      "ID Estudiante": "0ef5a530-568a-4273-b6d3-3b0197dab343",
+      "Estudiante": "MARGARITA EMILIA CRUZ GARAY",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "720090.00"
+    },
+    {
+      "ID Matrícula": "66a04b54-8142-4950-87e3-ca552b25286a",
+      "ID Estudiante": "879d215a-bc22-439c-b902-4135f8c0cfdc",
+      "Estudiante": "MUNAY ANTAY AGÜERO VIDAL",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "66a04b54-8142-4950-87e3-ca552b25286a",
+      "ID Estudiante": "879d215a-bc22-439c-b902-4135f8c0cfdc",
+      "Estudiante": "MUNAY ANTAY AGÜERO VIDAL",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "66a04b54-8142-4950-87e3-ca552b25286a",
+      "ID Estudiante": "879d215a-bc22-439c-b902-4135f8c0cfdc",
+      "Estudiante": "MUNAY ANTAY AGÜERO VIDAL",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5faa960c-50b6-4759-beb5-f9677ce26d16",
+      "ID Estudiante": "8347c106-83b2-42c0-8beb-dea200e8b8a7",
+      "Estudiante": "RAFAELA FLORENCIA RIQUELME MONSALVES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5faa960c-50b6-4759-beb5-f9677ce26d16",
+      "ID Estudiante": "8347c106-83b2-42c0-8beb-dea200e8b8a7",
+      "Estudiante": "RAFAELA FLORENCIA RIQUELME MONSALVES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5faa960c-50b6-4759-beb5-f9677ce26d16",
+      "ID Estudiante": "8347c106-83b2-42c0-8beb-dea200e8b8a7",
+      "Estudiante": "RAFAELA FLORENCIA RIQUELME MONSALVES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "403769b3-aaee-4b41-a25a-10134cb9140e",
+      "ID Estudiante": "83ea7cec-45c4-4b60-b89e-f141671108ed",
+      "Estudiante": "SANTIAGO RODRIGO BUSTOS ARIAS",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "PRIORITARIO",
+      "new_value": "SIN_DATO"
+    },
+    {
+      "ID Matrícula": "403769b3-aaee-4b41-a25a-10134cb9140e",
+      "ID Estudiante": "83ea7cec-45c4-4b60-b89e-f141671108ed",
+      "Estudiante": "SANTIAGO RODRIGO BUSTOS ARIAS",
+      "column": "Matrícula: Prioritario",
+      "old_value": "true",
+      "new_value": "false"
+    },
+    {
+      "ID Matrícula": "403769b3-aaee-4b41-a25a-10134cb9140e",
+      "ID Estudiante": "83ea7cec-45c4-4b60-b89e-f141671108ed",
+      "Estudiante": "SANTIAGO RODRIGO BUSTOS ARIAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": "10"
+    },
+    {
+      "ID Matrícula": "d21d96e9-c80c-424d-b393-484580f74c76",
+      "ID Estudiante": "aaca0235-1659-4bd0-9d69-35b52e9aa287",
+      "Estudiante": "SIMONE ANTONIA FLORES MUÑOZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028699",
+      "new_value": "1028700.00"
+    },
+    {
+      "ID Matrícula": "89c47263-df33-49ce-9bbf-10dcf4d19c00",
+      "ID Estudiante": "74b29b66-f821-468f-8308-a41f213dcf58",
+      "Estudiante": "THOMAS VALENTIN LASNIER FIGUEROA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "1028700.00",
+      "new_value": "102870.00"
+    },
+    {
+      "ID Matrícula": "89c47263-df33-49ce-9bbf-10dcf4d19c00",
+      "ID Estudiante": "74b29b66-f821-468f-8308-a41f213dcf58",
+      "Estudiante": "THOMAS VALENTIN LASNIER FIGUEROA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "1028700.00",
+      "new_value": "102870.00"
+    },
+    {
+      "ID Matrícula": "89c47263-df33-49ce-9bbf-10dcf4d19c00",
+      "ID Estudiante": "74b29b66-f821-468f-8308-a41f213dcf58",
+      "Estudiante": "THOMAS VALENTIN LASNIER FIGUEROA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "1",
+      "new_value": "10"
+    },
+    {
+      "ID Matrícula": "cd137b14-e95d-4d13-ab5b-4e3dd2875163",
+      "ID Estudiante": "1b900564-e02f-4dfc-94fc-6af53d568def",
+      "Estudiante": "VICTORIA GUERRERO PEÑA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cd137b14-e95d-4d13-ab5b-4e3dd2875163",
+      "ID Estudiante": "1b900564-e02f-4dfc-94fc-6af53d568def",
+      "Estudiante": "VICTORIA GUERRERO PEÑA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cd137b14-e95d-4d13-ab5b-4e3dd2875163",
+      "ID Estudiante": "1b900564-e02f-4dfc-94fc-6af53d568def",
+      "Estudiante": "VICTORIA GUERRERO PEÑA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ae7cebd9-6447-475b-a679-602f006ae773",
+      "ID Estudiante": "c0ad9473-8d8b-46a2-83d0-603c93fe9af6",
+      "Estudiante": "ALONSO ESTEBAN GODOY INZULZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ae7cebd9-6447-475b-a679-602f006ae773",
+      "ID Estudiante": "c0ad9473-8d8b-46a2-83d0-603c93fe9af6",
+      "Estudiante": "ALONSO ESTEBAN GODOY INZULZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ae7cebd9-6447-475b-a679-602f006ae773",
+      "ID Estudiante": "c0ad9473-8d8b-46a2-83d0-603c93fe9af6",
+      "Estudiante": "ALONSO ESTEBAN GODOY INZULZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5eefe121-a2a1-451f-8282-ed74376a4df0",
+      "ID Estudiante": "3fc598e2-bbd9-45f0-8490-57ebb94b13b4",
+      "Estudiante": "ARIEL EMILIO BARRIA ZARRAGA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5eefe121-a2a1-451f-8282-ed74376a4df0",
+      "ID Estudiante": "3fc598e2-bbd9-45f0-8490-57ebb94b13b4",
+      "Estudiante": "ARIEL EMILIO BARRIA ZARRAGA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5eefe121-a2a1-451f-8282-ed74376a4df0",
+      "ID Estudiante": "3fc598e2-bbd9-45f0-8490-57ebb94b13b4",
+      "Estudiante": "ARIEL EMILIO BARRIA ZARRAGA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7e86d4b1-4c3b-482e-9edf-329012bdb0db",
+      "ID Estudiante": "375537c5-ebcf-41e5-b0a0-7737adcf7034",
+      "Estudiante": "DANIELA IGNACIA AURELIA DURAN FERNANDEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "93188.00"
+    },
+    {
+      "ID Matrícula": "7e86d4b1-4c3b-482e-9edf-329012bdb0db",
+      "ID Estudiante": "375537c5-ebcf-41e5-b0a0-7737adcf7034",
+      "Estudiante": "DANIELA IGNACIA AURELIA DURAN FERNANDEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "931880.00"
+    },
+    {
+      "ID Matrícula": "420a93a9-6219-4895-b431-4b973245e2ff",
+      "ID Estudiante": "633671e5-f74e-4c24-90f8-b3eb1f07dabb",
+      "Estudiante": "DANTE RIQUELME RUIZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "420a93a9-6219-4895-b431-4b973245e2ff",
+      "ID Estudiante": "633671e5-f74e-4c24-90f8-b3eb1f07dabb",
+      "Estudiante": "DANTE RIQUELME RUIZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "420a93a9-6219-4895-b431-4b973245e2ff",
+      "ID Estudiante": "633671e5-f74e-4c24-90f8-b3eb1f07dabb",
+      "Estudiante": "DANTE RIQUELME RUIZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "af2f19bf-1484-4284-968d-80ce919d1506",
+      "ID Estudiante": "87576cb6-4288-4b78-a62c-72ad619e32a6",
+      "Estudiante": "EMILIA PASCALE CACERES ARANDA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "93188.00"
+    },
+    {
+      "ID Matrícula": "af2f19bf-1484-4284-968d-80ce919d1506",
+      "ID Estudiante": "87576cb6-4288-4b78-a62c-72ad619e32a6",
+      "Estudiante": "EMILIA PASCALE CACERES ARANDA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "931880.00"
+    },
+    {
+      "ID Matrícula": "d5c42a9f-07c0-4c06-9a64-1d9352660f84",
+      "ID Estudiante": "f056b1ea-2d91-46bc-ab6a-e801ebbf71fc",
+      "Estudiante": "EMILY LUNA ROJAS AGUILERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d5c42a9f-07c0-4c06-9a64-1d9352660f84",
+      "ID Estudiante": "f056b1ea-2d91-46bc-ab6a-e801ebbf71fc",
+      "Estudiante": "EMILY LUNA ROJAS AGUILERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d5c42a9f-07c0-4c06-9a64-1d9352660f84",
+      "ID Estudiante": "f056b1ea-2d91-46bc-ab6a-e801ebbf71fc",
+      "Estudiante": "EMILY LUNA ROJAS AGUILERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cf60d160-b537-469a-b902-46be1ce87b7c",
+      "ID Estudiante": "5e14d0b7-17e9-4b26-aa21-f2974d6cb90b",
+      "Estudiante": "GABRIEL ANDRES SALAZAR GASSET",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cf60d160-b537-469a-b902-46be1ce87b7c",
+      "ID Estudiante": "5e14d0b7-17e9-4b26-aa21-f2974d6cb90b",
+      "Estudiante": "GABRIEL ANDRES SALAZAR GASSET",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cf60d160-b537-469a-b902-46be1ce87b7c",
+      "ID Estudiante": "5e14d0b7-17e9-4b26-aa21-f2974d6cb90b",
+      "Estudiante": "GABRIEL ANDRES SALAZAR GASSET",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "831cacc8-14ee-4431-8293-33afbeaed71d",
+      "ID Estudiante": "4a5b6c7d-4e8f-492a-9b0c-1d2e3f4a5b6c",
+      "Estudiante": "GASPAR ALONSO AROS BRIONES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "831cacc8-14ee-4431-8293-33afbeaed71d",
+      "ID Estudiante": "4a5b6c7d-4e8f-492a-9b0c-1d2e3f4a5b6c",
+      "Estudiante": "GASPAR ALONSO AROS BRIONES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "831cacc8-14ee-4431-8293-33afbeaed71d",
+      "ID Estudiante": "4a5b6c7d-4e8f-492a-9b0c-1d2e3f4a5b6c",
+      "Estudiante": "GASPAR ALONSO AROS BRIONES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "62445b50-9df5-4220-bf0b-6075757147aa",
+      "ID Estudiante": "0e93cefc-3cec-4133-874f-cdba6f5fd0e0",
+      "Estudiante": "IGNACIO ANDRE FAUNDEZ SAGREDO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "62445b50-9df5-4220-bf0b-6075757147aa",
+      "ID Estudiante": "0e93cefc-3cec-4133-874f-cdba6f5fd0e0",
+      "Estudiante": "IGNACIO ANDRE FAUNDEZ SAGREDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "62445b50-9df5-4220-bf0b-6075757147aa",
+      "ID Estudiante": "0e93cefc-3cec-4133-874f-cdba6f5fd0e0",
+      "Estudiante": "IGNACIO ANDRE FAUNDEZ SAGREDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+      "ID Estudiante": "04a8b591-5846-485c-8bbc-24ae165f7669",
+      "Estudiante": "ISIDORA MARTINA PIA OPAZO MELLA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+      "ID Estudiante": "04a8b591-5846-485c-8bbc-24ae165f7669",
+      "Estudiante": "ISIDORA MARTINA PIA OPAZO MELLA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+      "ID Estudiante": "04a8b591-5846-485c-8bbc-24ae165f7669",
+      "Estudiante": "ISIDORA MARTINA PIA OPAZO MELLA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "05515d59-0e5b-4b7a-a7db-7556a72fef03",
+      "ID Estudiante": "5a82f724-4907-4436-95e4-d327ccbf3a3e",
+      "Estudiante": "JOSEFINA ANTONIA GUTIERREZ ASTUDILLO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "05515d59-0e5b-4b7a-a7db-7556a72fef03",
+      "ID Estudiante": "5a82f724-4907-4436-95e4-d327ccbf3a3e",
+      "Estudiante": "JOSEFINA ANTONIA GUTIERREZ ASTUDILLO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "05515d59-0e5b-4b7a-a7db-7556a72fef03",
+      "ID Estudiante": "5a82f724-4907-4436-95e4-d327ccbf3a3e",
+      "Estudiante": "JOSEFINA ANTONIA GUTIERREZ ASTUDILLO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f11f542c-7b13-4fa0-aef3-322c0922d64e",
+      "ID Estudiante": "69ba4211-481e-430c-95c6-8d693f77c92b",
+      "Estudiante": "JULIETA HERRERA CARRASCO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1065008",
+      "new_value": "1065010.00"
+    },
+    {
+      "ID Matrícula": "7f114e6a-35b2-4d9f-a383-efeab93a1c01",
+      "ID Estudiante": "ef108fff-28cb-4eb3-89b8-c3b8fd547047",
+      "Estudiante": "MATILDA JAVIERA VILLALOBOS BORQUEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7f114e6a-35b2-4d9f-a383-efeab93a1c01",
+      "ID Estudiante": "ef108fff-28cb-4eb3-89b8-c3b8fd547047",
+      "Estudiante": "MATILDA JAVIERA VILLALOBOS BORQUEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7f114e6a-35b2-4d9f-a383-efeab93a1c01",
+      "ID Estudiante": "ef108fff-28cb-4eb3-89b8-c3b8fd547047",
+      "Estudiante": "MATILDA JAVIERA VILLALOBOS BORQUEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "867c8bda-b972-4006-ab90-e68e497faf50",
+      "ID Estudiante": "93e65f59-083e-44ba-8bff-19c6886ded99",
+      "Estudiante": "ALEXIS ANDRES BAEZ CONTRERAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "867c8bda-b972-4006-ab90-e68e497faf50",
+      "ID Estudiante": "93e65f59-083e-44ba-8bff-19c6886ded99",
+      "Estudiante": "ALEXIS ANDRES BAEZ CONTRERAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "867c8bda-b972-4006-ab90-e68e497faf50",
+      "ID Estudiante": "93e65f59-083e-44ba-8bff-19c6886ded99",
+      "Estudiante": "ALEXIS ANDRES BAEZ CONTRERAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "127eb37a-2702-4512-9626-e5be0c9d3db9",
+      "ID Estudiante": "737e17f2-9f54-4bb3-b553-c6d9032d3a96",
+      "Estudiante": "ALONSO MARTIN WILSON CARCAMO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "53250.00"
+    },
+    {
+      "ID Matrícula": "127eb37a-2702-4512-9626-e5be0c9d3db9",
+      "ID Estudiante": "737e17f2-9f54-4bb3-b553-c6d9032d3a96",
+      "Estudiante": "ALONSO MARTIN WILSON CARCAMO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "532500.00"
+    },
+    {
+      "ID Matrícula": "22e3cb3c-606d-48dc-b958-dc796e4ce4fe",
+      "ID Estudiante": "d805e667-482b-4bd9-a1fd-15094be3b14d",
+      "Estudiante": "AMANDA MONSERRAT BERNAL CHACANA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "22e3cb3c-606d-48dc-b958-dc796e4ce4fe",
+      "ID Estudiante": "d805e667-482b-4bd9-a1fd-15094be3b14d",
+      "Estudiante": "AMANDA MONSERRAT BERNAL CHACANA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "22e3cb3c-606d-48dc-b958-dc796e4ce4fe",
+      "ID Estudiante": "d805e667-482b-4bd9-a1fd-15094be3b14d",
+      "Estudiante": "AMANDA MONSERRAT BERNAL CHACANA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "721f71b4-7321-4c06-9173-a24426cc444d",
+      "ID Estudiante": "1101e164-c43f-4872-87b7-b72d4ad30d06",
+      "Estudiante": "ANTONELLA ARAYA CORTÉS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "721f71b4-7321-4c06-9173-a24426cc444d",
+      "ID Estudiante": "1101e164-c43f-4872-87b7-b72d4ad30d06",
+      "Estudiante": "ANTONELLA ARAYA CORTÉS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "721f71b4-7321-4c06-9173-a24426cc444d",
+      "ID Estudiante": "1101e164-c43f-4872-87b7-b72d4ad30d06",
+      "Estudiante": "ANTONELLA ARAYA CORTÉS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a824f8e7-97f4-47a7-b60f-51a4a9eecd85",
+      "ID Estudiante": "5f4efdd4-5c14-48da-93dd-041a96eb7030",
+      "Estudiante": "ANTONELLA JAVIERA PARRA PLAZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a824f8e7-97f4-47a7-b60f-51a4a9eecd85",
+      "ID Estudiante": "5f4efdd4-5c14-48da-93dd-041a96eb7030",
+      "Estudiante": "ANTONELLA JAVIERA PARRA PLAZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a824f8e7-97f4-47a7-b60f-51a4a9eecd85",
+      "ID Estudiante": "5f4efdd4-5c14-48da-93dd-041a96eb7030",
+      "Estudiante": "ANTONELLA JAVIERA PARRA PLAZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "79fb8e49-c458-4f9f-a7cd-13763d35d9f3",
+      "ID Estudiante": "a13b4c3d-48a7-4492-a16f-556b53158d85",
+      "Estudiante": "FRANCISCA IGNACIA BARRAZA MELO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "106501.00"
+    },
+    {
+      "ID Matrícula": "79fb8e49-c458-4f9f-a7cd-13763d35d9f3",
+      "ID Estudiante": "a13b4c3d-48a7-4492-a16f-556b53158d85",
+      "Estudiante": "FRANCISCA IGNACIA BARRAZA MELO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "1065010.00"
+    },
+    {
+      "ID Matrícula": "edebac38-6f78-4b5f-933c-d35e0e4640c5",
+      "ID Estudiante": "ffa60f3e-a86a-4514-8bbe-ddd59a440fd1",
+      "Estudiante": "HERNAN ROMAN DELGADILLO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "edebac38-6f78-4b5f-933c-d35e0e4640c5",
+      "ID Estudiante": "ffa60f3e-a86a-4514-8bbe-ddd59a440fd1",
+      "Estudiante": "HERNAN ROMAN DELGADILLO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "edebac38-6f78-4b5f-933c-d35e0e4640c5",
+      "ID Estudiante": "ffa60f3e-a86a-4514-8bbe-ddd59a440fd1",
+      "Estudiante": "HERNAN ROMAN DELGADILLO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "625ea87a-1cb2-4232-b3df-0091dcf62ee2",
+      "ID Estudiante": "5ec89816-98d5-4d29-baab-973cb0b5a849",
+      "Estudiante": "IGNACIA MIA RAMOS CORNEJO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "625ea87a-1cb2-4232-b3df-0091dcf62ee2",
+      "ID Estudiante": "5ec89816-98d5-4d29-baab-973cb0b5a849",
+      "Estudiante": "IGNACIA MIA RAMOS CORNEJO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "625ea87a-1cb2-4232-b3df-0091dcf62ee2",
+      "ID Estudiante": "5ec89816-98d5-4d29-baab-973cb0b5a849",
+      "Estudiante": "IGNACIA MIA RAMOS CORNEJO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8f6d3ab5-0656-4b5a-9a54-f3b20600f99d",
+      "ID Estudiante": "88db792d-bcaa-4e17-bf5c-40eff65fc185",
+      "Estudiante": "JOSEFA ANTONIA CISTERNAS ESPINOZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "93188.00"
+    },
+    {
+      "ID Matrícula": "8f6d3ab5-0656-4b5a-9a54-f3b20600f99d",
+      "ID Estudiante": "88db792d-bcaa-4e17-bf5c-40eff65fc185",
+      "Estudiante": "JOSEFA ANTONIA CISTERNAS ESPINOZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "931880.00"
+    },
+    {
+      "ID Matrícula": "b378dffd-a296-494a-b0dc-b5b1792140e4",
+      "ID Estudiante": "b4d20d64-73ae-4306-b037-be1a959a3b45",
+      "Estudiante": "JOSEPHINA PAZ LERIS MUÑOZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "93188.00"
+    },
+    {
+      "ID Matrícula": "b378dffd-a296-494a-b0dc-b5b1792140e4",
+      "ID Estudiante": "b4d20d64-73ae-4306-b037-be1a959a3b45",
+      "Estudiante": "JOSEPHINA PAZ LERIS MUÑOZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "931880.00"
+    },
+    {
+      "ID Matrícula": "2a56a882-f9ce-4b61-b14b-1e2c11d67738",
+      "ID Estudiante": "d5acba8a-473c-4c11-a1b1-9d28278e5d35",
+      "Estudiante": "LUCAS  GALLARDO FUENTEALBA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2a56a882-f9ce-4b61-b14b-1e2c11d67738",
+      "ID Estudiante": "d5acba8a-473c-4c11-a1b1-9d28278e5d35",
+      "Estudiante": "LUCAS  GALLARDO FUENTEALBA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2a56a882-f9ce-4b61-b14b-1e2c11d67738",
+      "ID Estudiante": "d5acba8a-473c-4c11-a1b1-9d28278e5d35",
+      "Estudiante": "LUCAS  GALLARDO FUENTEALBA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1c3dddbe-f334-4525-82b0-7bc19604473e",
+      "ID Estudiante": "680a21a7-a3f9-4208-b425-8a388147cbd5",
+      "Estudiante": "MAITE ALMENDRA ROSS LEÓN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1c3dddbe-f334-4525-82b0-7bc19604473e",
+      "ID Estudiante": "680a21a7-a3f9-4208-b425-8a388147cbd5",
+      "Estudiante": "MAITE ALMENDRA ROSS LEÓN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1c3dddbe-f334-4525-82b0-7bc19604473e",
+      "ID Estudiante": "680a21a7-a3f9-4208-b425-8a388147cbd5",
+      "Estudiante": "MAITE ALMENDRA ROSS LEÓN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "bef09353-40b9-481e-844d-1098c6a7e018",
+      "ID Estudiante": "5c84d8ae-2474-4fba-8a48-d84345e24fa1",
+      "Estudiante": "MATILDA ANAIS FERREIRA CABELLO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "bef09353-40b9-481e-844d-1098c6a7e018",
+      "ID Estudiante": "5c84d8ae-2474-4fba-8a48-d84345e24fa1",
+      "Estudiante": "MATILDA ANAIS FERREIRA CABELLO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "bef09353-40b9-481e-844d-1098c6a7e018",
+      "ID Estudiante": "5c84d8ae-2474-4fba-8a48-d84345e24fa1",
+      "Estudiante": "MATILDA ANAIS FERREIRA CABELLO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "171377c7-fd5a-44d6-b39b-c357954768bf",
+      "ID Estudiante": "c0031708-3f3d-48cf-a30f-e3d54720ab5f",
+      "Estudiante": "MONSERRATT ARAYA GALLARDO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "171377c7-fd5a-44d6-b39b-c357954768bf",
+      "ID Estudiante": "c0031708-3f3d-48cf-a30f-e3d54720ab5f",
+      "Estudiante": "MONSERRATT ARAYA GALLARDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "171377c7-fd5a-44d6-b39b-c357954768bf",
+      "ID Estudiante": "c0031708-3f3d-48cf-a30f-e3d54720ab5f",
+      "Estudiante": "MONSERRATT ARAYA GALLARDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "347b962b-ab98-4170-a8d7-889c9d20a976",
+      "ID Estudiante": "7beb7b72-3e59-421d-ba56-8b5e241ed640",
+      "Estudiante": "NAIMA CAMPOS TORRES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "347b962b-ab98-4170-a8d7-889c9d20a976",
+      "ID Estudiante": "7beb7b72-3e59-421d-ba56-8b5e241ed640",
+      "Estudiante": "NAIMA CAMPOS TORRES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "347b962b-ab98-4170-a8d7-889c9d20a976",
+      "ID Estudiante": "7beb7b72-3e59-421d-ba56-8b5e241ed640",
+      "Estudiante": "NAIMA CAMPOS TORRES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d1dec776-b302-4e3d-88e0-9698ac4e45d2",
+      "ID Estudiante": "80ef29f6-bac0-4040-a0d8-c1faa5eba093",
+      "Estudiante": "NICOLAS ANTONIO MARTINEZ GONZALEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d1dec776-b302-4e3d-88e0-9698ac4e45d2",
+      "ID Estudiante": "80ef29f6-bac0-4040-a0d8-c1faa5eba093",
+      "Estudiante": "NICOLAS ANTONIO MARTINEZ GONZALEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d1dec776-b302-4e3d-88e0-9698ac4e45d2",
+      "ID Estudiante": "80ef29f6-bac0-4040-a0d8-c1faa5eba093",
+      "Estudiante": "NICOLAS ANTONIO MARTINEZ GONZALEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1c7ff10c-f219-4034-b206-e264e80bd20b",
+      "ID Estudiante": "05ad76c9-d992-4e64-a5d6-5fd12a889bf5",
+      "Estudiante": "PHILIP ANTONIO VANI GUAJARDO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1c7ff10c-f219-4034-b206-e264e80bd20b",
+      "ID Estudiante": "05ad76c9-d992-4e64-a5d6-5fd12a889bf5",
+      "Estudiante": "PHILIP ANTONIO VANI GUAJARDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1c7ff10c-f219-4034-b206-e264e80bd20b",
+      "ID Estudiante": "05ad76c9-d992-4e64-a5d6-5fd12a889bf5",
+      "Estudiante": "PHILIP ANTONIO VANI GUAJARDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a7379488-e1f2-4370-9169-350a5c058900",
+      "ID Estudiante": "2105e23a-107c-41f9-8014-a26f4e6ca5aa",
+      "Estudiante": "ROMAN VARGAS ARAVENA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "a7379488-e1f2-4370-9169-350a5c058900",
+      "ID Estudiante": "2105e23a-107c-41f9-8014-a26f4e6ca5aa",
+      "Estudiante": "ROMAN VARGAS ARAVENA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7",
+      "ID Estudiante": "60c4befb-08f4-46a3-abce-bcecbe2fc11b",
+      "Estudiante": "ALEXANDER ANDRES BIEHL SALAZAR",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7",
+      "ID Estudiante": "60c4befb-08f4-46a3-abce-bcecbe2fc11b",
+      "Estudiante": "ALEXANDER ANDRES BIEHL SALAZAR",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "50c55e54-4e1e-43cf-8a42-19e2c8bb7ba7",
+      "ID Estudiante": "60c4befb-08f4-46a3-abce-bcecbe2fc11b",
+      "Estudiante": "ALEXANDER ANDRES BIEHL SALAZAR",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8cecb30b-ef0d-4678-8bf6-29dd7c3ef69e",
+      "ID Estudiante": "0408ed8e-d506-46e4-a206-f3914e887ec7",
+      "Estudiante": "ALMA AURORA BAEZ GONZALEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8cecb30b-ef0d-4678-8bf6-29dd7c3ef69e",
+      "ID Estudiante": "0408ed8e-d506-46e4-a206-f3914e887ec7",
+      "Estudiante": "ALMA AURORA BAEZ GONZALEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8cecb30b-ef0d-4678-8bf6-29dd7c3ef69e",
+      "ID Estudiante": "0408ed8e-d506-46e4-a206-f3914e887ec7",
+      "Estudiante": "ALMA AURORA BAEZ GONZALEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "03783485-a648-47dc-a69b-ec15e5f43ec1",
+      "ID Estudiante": "7d8bd993-c168-468a-971f-16f225d06396",
+      "Estudiante": "AMELIE PAZ PRESMITA VERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "03783485-a648-47dc-a69b-ec15e5f43ec1",
+      "ID Estudiante": "7d8bd993-c168-468a-971f-16f225d06396",
+      "Estudiante": "AMELIE PAZ PRESMITA VERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "03783485-a648-47dc-a69b-ec15e5f43ec1",
+      "ID Estudiante": "7d8bd993-c168-468a-971f-16f225d06396",
+      "Estudiante": "AMELIE PAZ PRESMITA VERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "08be0a2a-3f03-4ce2-aef9-bc6c935fca16",
+      "ID Estudiante": "9094ad36-32c6-42d4-9963-70bd14754a64",
+      "Estudiante": "AURORA SOTO LOAIZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "08be0a2a-3f03-4ce2-aef9-bc6c935fca16",
+      "ID Estudiante": "9094ad36-32c6-42d4-9963-70bd14754a64",
+      "Estudiante": "AURORA SOTO LOAIZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "08be0a2a-3f03-4ce2-aef9-bc6c935fca16",
+      "ID Estudiante": "9094ad36-32c6-42d4-9963-70bd14754a64",
+      "Estudiante": "AURORA SOTO LOAIZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "25966a52-fcb2-4117-aba2-a0a2514cc98a",
+      "ID Estudiante": "0a4d7d11-a499-4ebe-acca-fc0027c37a6e",
+      "Estudiante": "CRISTOBAL FACUNDO CARDENAS SARAVIA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "25966a52-fcb2-4117-aba2-a0a2514cc98a",
+      "ID Estudiante": "0a4d7d11-a499-4ebe-acca-fc0027c37a6e",
+      "Estudiante": "CRISTOBAL FACUNDO CARDENAS SARAVIA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "25966a52-fcb2-4117-aba2-a0a2514cc98a",
+      "ID Estudiante": "0a4d7d11-a499-4ebe-acca-fc0027c37a6e",
+      "Estudiante": "CRISTOBAL FACUNDO CARDENAS SARAVIA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "cb22756d-b14c-4828-ad6e-1d440b43cfc8",
+      "Estudiante": "FACUNDO AMARO IDE RIOS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "cb22756d-b14c-4828-ad6e-1d440b43cfc8",
+      "Estudiante": "FACUNDO AMARO IDE RIOS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "cb22756d-b14c-4828-ad6e-1d440b43cfc8",
+      "Estudiante": "FACUNDO AMARO IDE RIOS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "82feb958-cc01-4914-a20e-bc7ec54164c5",
+      "ID Estudiante": "b26c8be4-06e4-4f09-bf18-eb1a3b6eb44b",
+      "Estudiante": "FLORENCIA VALENTINA JIMENEZ TOLEDO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "82feb958-cc01-4914-a20e-bc7ec54164c5",
+      "ID Estudiante": "b26c8be4-06e4-4f09-bf18-eb1a3b6eb44b",
+      "Estudiante": "FLORENCIA VALENTINA JIMENEZ TOLEDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "82feb958-cc01-4914-a20e-bc7ec54164c5",
+      "ID Estudiante": "b26c8be4-06e4-4f09-bf18-eb1a3b6eb44b",
+      "Estudiante": "FLORENCIA VALENTINA JIMENEZ TOLEDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "95ecb732-be07-40e7-8610-508226a47705",
+      "ID Estudiante": "c74de41d-6735-4848-8fb9-939355b45af0",
+      "Estudiante": "GAEL DAMIAN PARRA CABEZAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "95ecb732-be07-40e7-8610-508226a47705",
+      "ID Estudiante": "c74de41d-6735-4848-8fb9-939355b45af0",
+      "Estudiante": "GAEL DAMIAN PARRA CABEZAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "95ecb732-be07-40e7-8610-508226a47705",
+      "ID Estudiante": "c74de41d-6735-4848-8fb9-939355b45af0",
+      "Estudiante": "GAEL DAMIAN PARRA CABEZAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9e874df1-f34d-40b8-bb73-6648097415e3",
+      "ID Estudiante": "2b6ca2b9-d363-4877-8cec-ebc921d396f1",
+      "Estudiante": "INARA SAYEN CATALAN VASQUEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9e874df1-f34d-40b8-bb73-6648097415e3",
+      "ID Estudiante": "2b6ca2b9-d363-4877-8cec-ebc921d396f1",
+      "Estudiante": "INARA SAYEN CATALAN VASQUEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9e874df1-f34d-40b8-bb73-6648097415e3",
+      "ID Estudiante": "2b6ca2b9-d363-4877-8cec-ebc921d396f1",
+      "Estudiante": "INARA SAYEN CATALAN VASQUEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "43a78173-2577-4967-8275-552686c688f6",
+      "ID Estudiante": "ddec83ec-d790-4aa8-a1a4-9688904049ef",
+      "Estudiante": "LEÓN IGNACIO RAMÍREZ HIGUERAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "43a78173-2577-4967-8275-552686c688f6",
+      "ID Estudiante": "ddec83ec-d790-4aa8-a1a4-9688904049ef",
+      "Estudiante": "LEÓN IGNACIO RAMÍREZ HIGUERAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "43a78173-2577-4967-8275-552686c688f6",
+      "ID Estudiante": "ddec83ec-d790-4aa8-a1a4-9688904049ef",
+      "Estudiante": "LEÓN IGNACIO RAMÍREZ HIGUERAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3487688d-44c3-45bd-8575-fc2bb96ec37d",
+      "ID Estudiante": "f5b9b107-be31-40eb-a410-0ad6e3720a64",
+      "Estudiante": "LIA HAYDEE ESPINOZA PULGAR",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3487688d-44c3-45bd-8575-fc2bb96ec37d",
+      "ID Estudiante": "f5b9b107-be31-40eb-a410-0ad6e3720a64",
+      "Estudiante": "LIA HAYDEE ESPINOZA PULGAR",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3487688d-44c3-45bd-8575-fc2bb96ec37d",
+      "ID Estudiante": "f5b9b107-be31-40eb-a410-0ad6e3720a64",
+      "Estudiante": "LIA HAYDEE ESPINOZA PULGAR",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3a40ffcb-db75-40cc-9210-32d6be55a1a5",
+      "ID Estudiante": "e6d1e958-9c4e-4e5a-8782-2a3ef3cbdfd2",
+      "Estudiante": "MAE AMELIE RUBINA STRAUBE",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PAGARE"
+    },
+    {
+      "ID Matrícula": "3a40ffcb-db75-40cc-9210-32d6be55a1a5",
+      "ID Estudiante": "e6d1e958-9c4e-4e5a-8782-2a3ef3cbdfd2",
+      "Estudiante": "MAE AMELIE RUBINA STRAUBE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "3a40ffcb-db75-40cc-9210-32d6be55a1a5",
+      "ID Estudiante": "e6d1e958-9c4e-4e5a-8782-2a3ef3cbdfd2",
+      "Estudiante": "MAE AMELIE RUBINA STRAUBE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "d1c8f3ea-1f26-4332-ab53-b5518d9ccc6c",
+      "ID Estudiante": "80427e60-1aef-4119-835a-79e51840600e",
+      "Estudiante": "MAGDALENA BEATRIZ MEDINA ALVAREZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d1c8f3ea-1f26-4332-ab53-b5518d9ccc6c",
+      "ID Estudiante": "80427e60-1aef-4119-835a-79e51840600e",
+      "Estudiante": "MAGDALENA BEATRIZ MEDINA ALVAREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d1c8f3ea-1f26-4332-ab53-b5518d9ccc6c",
+      "ID Estudiante": "80427e60-1aef-4119-835a-79e51840600e",
+      "Estudiante": "MAGDALENA BEATRIZ MEDINA ALVAREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6e76faf8-1c56-4f78-bf57-ac0616ae8cf2",
+      "ID Estudiante": "40cdc5ba-cac8-40a6-8add-c33b1850a6f2",
+      "Estudiante": "SALVADOR TOMÁS ABARZA MORALES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "92583.00"
+    },
+    {
+      "ID Matrícula": "6e76faf8-1c56-4f78-bf57-ac0616ae8cf2",
+      "ID Estudiante": "40cdc5ba-cac8-40a6-8add-c33b1850a6f2",
+      "Estudiante": "SALVADOR TOMÁS ABARZA MORALES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "925830.00"
+    },
+    {
+      "ID Matrícula": "75620919-1d03-432a-b90a-8e6638712c22",
+      "ID Estudiante": "0751dd28-d0f2-42e8-bdf8-72582d6d0470",
+      "Estudiante": "STEFFANO JOAN MATURANA DIAZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "75620919-1d03-432a-b90a-8e6638712c22",
+      "ID Estudiante": "0751dd28-d0f2-42e8-bdf8-72582d6d0470",
+      "Estudiante": "STEFFANO JOAN MATURANA DIAZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "68e7da22-0674-409c-92b6-908849214908",
+      "ID Estudiante": "1ea803cc-5607-4d5d-9b4d-80dd7a9a58be",
+      "Estudiante": "AGUSTINA ISIDORA HUERTA SILVA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "92583.00"
+    },
+    {
+      "ID Matrícula": "68e7da22-0674-409c-92b6-908849214908",
+      "ID Estudiante": "1ea803cc-5607-4d5d-9b4d-80dd7a9a58be",
+      "Estudiante": "AGUSTINA ISIDORA HUERTA SILVA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "925830.00"
+    },
+    {
+      "ID Matrícula": "68e7da22-0674-409c-92b6-908849214908",
+      "ID Estudiante": "1ea803cc-5607-4d5d-9b4d-80dd7a9a58be",
+      "Estudiante": "AGUSTINA ISIDORA HUERTA SILVA",
+      "column": "Aranceles: Forma de Pago",
+      "old_value": "PAGARE",
+      "new_value": "PAGARE|TRANSFERENCIA"
+    },
+    {
+      "ID Matrícula": "65194bcc-53ce-41f7-a4c3-8bf2979fb9ca",
+      "ID Estudiante": "5b0eec74-41f3-4eae-9542-16ce53ca395f",
+      "Estudiante": "BENJAMIN ALFONSO BERRIOS SILVA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "65194bcc-53ce-41f7-a4c3-8bf2979fb9ca",
+      "ID Estudiante": "5b0eec74-41f3-4eae-9542-16ce53ca395f",
+      "Estudiante": "BENJAMIN ALFONSO BERRIOS SILVA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "65194bcc-53ce-41f7-a4c3-8bf2979fb9ca",
+      "ID Estudiante": "5b0eec74-41f3-4eae-9542-16ce53ca395f",
+      "Estudiante": "BENJAMIN ALFONSO BERRIOS SILVA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+      "ID Estudiante": "143b34e2-5d22-4e48-9754-3208f33ee30e",
+      "Estudiante": "DANTE LEON ARENAS LANDEROS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "10",
+      "new_value": "5"
+    },
+    {
+      "ID Matrícula": "626d645e-351b-4860-b9ae-1ec51e296686",
+      "ID Estudiante": "143b34e2-5d22-4e48-9754-3208f33ee30e",
+      "Estudiante": "DANTE LEON ARENAS LANDEROS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "205740.00"
+    },
+    {
+      "ID Matrícula": "807f89e5-9efe-4d4d-bcca-b855339174fb",
+      "ID Estudiante": "0a33edd3-c5b5-41d3-81cb-00471b12f48e",
+      "Estudiante": "GABRIEL LUIS SANHUEZA NAVEAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "807f89e5-9efe-4d4d-bcca-b855339174fb",
+      "ID Estudiante": "0a33edd3-c5b5-41d3-81cb-00471b12f48e",
+      "Estudiante": "GABRIEL LUIS SANHUEZA NAVEAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "807f89e5-9efe-4d4d-bcca-b855339174fb",
+      "ID Estudiante": "0a33edd3-c5b5-41d3-81cb-00471b12f48e",
+      "Estudiante": "GABRIEL LUIS SANHUEZA NAVEAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5bea5763-8938-472c-a821-9b7434173085",
+      "ID Estudiante": "b4a9ab7c-9f9e-4298-8f8c-44ca9b9e38dc",
+      "Estudiante": "MAITE ISABEL ALTAMIRANO MONSALVE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5bea5763-8938-472c-a821-9b7434173085",
+      "ID Estudiante": "b4a9ab7c-9f9e-4298-8f8c-44ca9b9e38dc",
+      "Estudiante": "MAITE ISABEL ALTAMIRANO MONSALVE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5bea5763-8938-472c-a821-9b7434173085",
+      "ID Estudiante": "b4a9ab7c-9f9e-4298-8f8c-44ca9b9e38dc",
+      "Estudiante": "MAITE ISABEL ALTAMIRANO MONSALVE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "eaa3f7f1-9ca5-4b18-80f1-08e05dc52f9a",
+      "ID Estudiante": "64d02113-16b2-47b7-a089-842c20314abc",
+      "Estudiante": "MARTIN UBERUAGA CAJALES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "36005.00"
+    },
+    {
+      "ID Matrícula": "eaa3f7f1-9ca5-4b18-80f1-08e05dc52f9a",
+      "ID Estudiante": "64d02113-16b2-47b7-a089-842c20314abc",
+      "Estudiante": "MARTIN UBERUAGA CAJALES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "360050.00"
+    },
+    {
+      "ID Matrícula": "7918f5ef-96dd-4497-8413-3c459c865f78",
+      "ID Estudiante": "a0b4c75a-3141-47a0-b39a-c99db5fe9b6e",
+      "Estudiante": "NEFTALI RODOLFO ALEXIS MONTIEL TORRES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7918f5ef-96dd-4497-8413-3c459c865f78",
+      "ID Estudiante": "a0b4c75a-3141-47a0-b39a-c99db5fe9b6e",
+      "Estudiante": "NEFTALI RODOLFO ALEXIS MONTIEL TORRES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7918f5ef-96dd-4497-8413-3c459c865f78",
+      "ID Estudiante": "a0b4c75a-3141-47a0-b39a-c99db5fe9b6e",
+      "Estudiante": "NEFTALI RODOLFO ALEXIS MONTIEL TORRES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e4f64a0c-f6ad-4dae-8cf8-a9e4e92d6e21",
+      "ID Estudiante": "5b51c2e1-066c-41ad-89f7-cdb945c880eb",
+      "Estudiante": "RENATO SAMUEL AYALA AGUILERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "e4f64a0c-f6ad-4dae-8cf8-a9e4e92d6e21",
+      "ID Estudiante": "5b51c2e1-066c-41ad-89f7-cdb945c880eb",
+      "Estudiante": "RENATO SAMUEL AYALA AGUILERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "b8f0d5fb-9389-4951-8a3d-eb42729762f1",
+      "Estudiante": "ROBERTO EMILIANO SALINAS SILVA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "b8f0d5fb-9389-4951-8a3d-eb42729762f1",
+      "Estudiante": "ROBERTO EMILIANO SALINAS SILVA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "b8f0d5fb-9389-4951-8a3d-eb42729762f1",
+      "Estudiante": "ROBERTO EMILIANO SALINAS SILVA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "74b6dbf6-b815-4ee7-ac28-2a7e4f535bca",
+      "Estudiante": "SIMON CONTRERAS RUBIO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "74b6dbf6-b815-4ee7-ac28-2a7e4f535bca",
+      "Estudiante": "SIMON CONTRERAS RUBIO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "74b6dbf6-b815-4ee7-ac28-2a7e4f535bca",
+      "Estudiante": "SIMON CONTRERAS RUBIO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2c017dd2-3020-49cf-9503-70cf0a300af8",
+      "ID Estudiante": "3d3d1b6e-93fe-4432-8960-93c68567354e",
+      "Estudiante": "TOMAS LEON CANCINO TAPIA",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PLANILLA"
+    },
+    {
+      "ID Matrícula": "2c017dd2-3020-49cf-9503-70cf0a300af8",
+      "ID Estudiante": "3d3d1b6e-93fe-4432-8960-93c68567354e",
+      "Estudiante": "TOMAS LEON CANCINO TAPIA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "36005.00"
+    },
+    {
+      "ID Matrícula": "2c017dd2-3020-49cf-9503-70cf0a300af8",
+      "ID Estudiante": "3d3d1b6e-93fe-4432-8960-93c68567354e",
+      "Estudiante": "TOMAS LEON CANCINO TAPIA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "360050.00"
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "65e180f8-0182-4ebd-9469-c017e7c1f2f4",
+      "Estudiante": "VICENTE ANTONIO ESQUIVEL HECHENLEITNER",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "65e180f8-0182-4ebd-9469-c017e7c1f2f4",
+      "Estudiante": "VICENTE ANTONIO ESQUIVEL HECHENLEITNER",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "65e180f8-0182-4ebd-9469-c017e7c1f2f4",
+      "Estudiante": "VICENTE ANTONIO ESQUIVEL HECHENLEITNER",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "54e03914-8164-4c06-8513-315ea2f0c36c",
+      "ID Estudiante": "55ca7ca8-81fb-4566-a603-eadf838ae08b",
+      "Estudiante": "ABEL IGNACIO MORAGA MENA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "54e03914-8164-4c06-8513-315ea2f0c36c",
+      "ID Estudiante": "55ca7ca8-81fb-4566-a603-eadf838ae08b",
+      "Estudiante": "ABEL IGNACIO MORAGA MENA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "54e03914-8164-4c06-8513-315ea2f0c36c",
+      "ID Estudiante": "55ca7ca8-81fb-4566-a603-eadf838ae08b",
+      "Estudiante": "ABEL IGNACIO MORAGA MENA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dca666f4-0667-43ae-8dd6-9fe6054a7528",
+      "ID Estudiante": "2b00ce51-3eb8-4850-b9a6-9a5410562139",
+      "Estudiante": "ALANIZ SOFIA RIVEROS MARIMAN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dca666f4-0667-43ae-8dd6-9fe6054a7528",
+      "ID Estudiante": "2b00ce51-3eb8-4850-b9a6-9a5410562139",
+      "Estudiante": "ALANIZ SOFIA RIVEROS MARIMAN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dca666f4-0667-43ae-8dd6-9fe6054a7528",
+      "ID Estudiante": "2b00ce51-3eb8-4850-b9a6-9a5410562139",
+      "Estudiante": "ALANIZ SOFIA RIVEROS MARIMAN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e8b5287a-7090-45e6-a5d2-f186d0028701",
+      "ID Estudiante": "0c9fdd78-ffdc-440a-8064-e5953417fbee",
+      "Estudiante": "ANAIS CONSTANZA ROYO SERRANO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e8b5287a-7090-45e6-a5d2-f186d0028701",
+      "ID Estudiante": "0c9fdd78-ffdc-440a-8064-e5953417fbee",
+      "Estudiante": "ANAIS CONSTANZA ROYO SERRANO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e8b5287a-7090-45e6-a5d2-f186d0028701",
+      "ID Estudiante": "0c9fdd78-ffdc-440a-8064-e5953417fbee",
+      "Estudiante": "ANAIS CONSTANZA ROYO SERRANO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "720878db-88f2-426b-b65d-139076f20231",
+      "ID Estudiante": "1c5c9001-85ef-4e2d-a821-9e544d53ae53",
+      "Estudiante": "DANIEL ALBERTO FUENZALIDA MORENO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "720878db-88f2-426b-b65d-139076f20231",
+      "ID Estudiante": "1c5c9001-85ef-4e2d-a821-9e544d53ae53",
+      "Estudiante": "DANIEL ALBERTO FUENZALIDA MORENO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "720878db-88f2-426b-b65d-139076f20231",
+      "ID Estudiante": "1c5c9001-85ef-4e2d-a821-9e544d53ae53",
+      "Estudiante": "DANIEL ALBERTO FUENZALIDA MORENO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1d0af20-49f4-46ec-93c3-f1b943b39e40",
+      "ID Estudiante": "3f93aa62-a011-4191-bd52-d1cc2d36ac8c",
+      "Estudiante": "DANTE ALEJANDRO ESPECHE MENDEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1d0af20-49f4-46ec-93c3-f1b943b39e40",
+      "ID Estudiante": "3f93aa62-a011-4191-bd52-d1cc2d36ac8c",
+      "Estudiante": "DANTE ALEJANDRO ESPECHE MENDEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b1d0af20-49f4-46ec-93c3-f1b943b39e40",
+      "ID Estudiante": "3f93aa62-a011-4191-bd52-d1cc2d36ac8c",
+      "Estudiante": "DANTE ALEJANDRO ESPECHE MENDEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2215d989-d089-4fa1-9b64-8cd40ae6b113",
+      "ID Estudiante": "7f4ff4c7-d113-4509-9542-d3dc4c72c400",
+      "Estudiante": "DENIAM ANDRES DE LA CUADRA SALAZAR",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2215d989-d089-4fa1-9b64-8cd40ae6b113",
+      "ID Estudiante": "7f4ff4c7-d113-4509-9542-d3dc4c72c400",
+      "Estudiante": "DENIAM ANDRES DE LA CUADRA SALAZAR",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2215d989-d089-4fa1-9b64-8cd40ae6b113",
+      "ID Estudiante": "7f4ff4c7-d113-4509-9542-d3dc4c72c400",
+      "Estudiante": "DENIAM ANDRES DE LA CUADRA SALAZAR",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18bb695b-649e-4ce9-bf41-8505d0eadbcf",
+      "ID Estudiante": "2b5cf256-baf0-4480-b60d-e3b34fce18d4",
+      "Estudiante": "EMILIANA SARAH MAGDALENA VELASQUEZ YUING",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18bb695b-649e-4ce9-bf41-8505d0eadbcf",
+      "ID Estudiante": "2b5cf256-baf0-4480-b60d-e3b34fce18d4",
+      "Estudiante": "EMILIANA SARAH MAGDALENA VELASQUEZ YUING",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18bb695b-649e-4ce9-bf41-8505d0eadbcf",
+      "ID Estudiante": "2b5cf256-baf0-4480-b60d-e3b34fce18d4",
+      "Estudiante": "EMILIANA SARAH MAGDALENA VELASQUEZ YUING",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3c1f616c-2ae9-4fbe-988c-733e17102ceb",
+      "ID Estudiante": "1f65d92f-bce6-4df1-a73b-6e2562f9a33d",
+      "Estudiante": "EMILIO ALEJANDRO CASTRO VARGAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3c1f616c-2ae9-4fbe-988c-733e17102ceb",
+      "ID Estudiante": "1f65d92f-bce6-4df1-a73b-6e2562f9a33d",
+      "Estudiante": "EMILIO ALEJANDRO CASTRO VARGAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3c1f616c-2ae9-4fbe-988c-733e17102ceb",
+      "ID Estudiante": "1f65d92f-bce6-4df1-a73b-6e2562f9a33d",
+      "Estudiante": "EMILIO ALEJANDRO CASTRO VARGAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "32407e30-16df-4539-b46e-a1aba5bc67b9",
+      "ID Estudiante": "70f2b7d3-a5bb-4a58-b69c-45d6ea1a67e6",
+      "Estudiante": "FRANCISCO JAVIER AMOR ABURTO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "53250.00"
+    },
+    {
+      "ID Matrícula": "32407e30-16df-4539-b46e-a1aba5bc67b9",
+      "ID Estudiante": "70f2b7d3-a5bb-4a58-b69c-45d6ea1a67e6",
+      "Estudiante": "FRANCISCO JAVIER AMOR ABURTO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "532500.00"
+    },
+    {
+      "ID Matrícula": "b24ab5d5-09d9-4d09-a18e-f646f409993c",
+      "ID Estudiante": "fd553b9a-4aeb-48c4-8725-80c8ad65eeb2",
+      "Estudiante": "GRACE ABIGAIL LARRONDO ESPINOZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b24ab5d5-09d9-4d09-a18e-f646f409993c",
+      "ID Estudiante": "fd553b9a-4aeb-48c4-8725-80c8ad65eeb2",
+      "Estudiante": "GRACE ABIGAIL LARRONDO ESPINOZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b24ab5d5-09d9-4d09-a18e-f646f409993c",
+      "ID Estudiante": "fd553b9a-4aeb-48c4-8725-80c8ad65eeb2",
+      "Estudiante": "GRACE ABIGAIL LARRONDO ESPINOZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "c6394580-a0b8-431e-961c-0d7e74ef29dc",
+      "Estudiante": "IGNACIA CONTRERAS RUBIO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "c6394580-a0b8-431e-961c-0d7e74ef29dc",
+      "Estudiante": "IGNACIA CONTRERAS RUBIO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b0e15295-effe-4d52-8b14-aaf4e717fd68",
+      "ID Estudiante": "c6394580-a0b8-431e-961c-0d7e74ef29dc",
+      "Estudiante": "IGNACIA CONTRERAS RUBIO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "fc6e0a91-ae9c-487b-93c5-fc72c2432899",
+      "Estudiante": "JACINTA PASTORA BANDA JORQUERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "fc6e0a91-ae9c-487b-93c5-fc72c2432899",
+      "Estudiante": "JACINTA PASTORA BANDA JORQUERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "fc6e0a91-ae9c-487b-93c5-fc72c2432899",
+      "Estudiante": "JACINTA PASTORA BANDA JORQUERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "80909804-011f-4b79-9704-da1ab0cfc718",
+      "ID Estudiante": "d2951de2-a62e-4714-a485-524b3f744119",
+      "Estudiante": "JOAQUIN AMARO GONZALEZ MORA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "93188.00"
+    },
+    {
+      "ID Matrícula": "80909804-011f-4b79-9704-da1ab0cfc718",
+      "ID Estudiante": "d2951de2-a62e-4714-a485-524b3f744119",
+      "Estudiante": "JOAQUIN AMARO GONZALEZ MORA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "931880.00"
+    },
+    {
+      "ID Matrícula": "6d64084e-ea24-4a36-a74e-83216e085fdc",
+      "ID Estudiante": "1bcf03fc-71b0-4766-a8de-ea9a36627a28",
+      "Estudiante": "JOSEFA RENATA RODRIGUEZ ABURTO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "6d64084e-ea24-4a36-a74e-83216e085fdc",
+      "ID Estudiante": "1bcf03fc-71b0-4766-a8de-ea9a36627a28",
+      "Estudiante": "JOSEFA RENATA RODRIGUEZ ABURTO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "fc48711e-5c11-4d31-9e3c-ca4d1b374364",
+      "ID Estudiante": "8a36cbda-9808-4b39-91e1-a90af0762647",
+      "Estudiante": "LEON ALONSO PEDERNERA ARRATIA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "fc48711e-5c11-4d31-9e3c-ca4d1b374364",
+      "ID Estudiante": "8a36cbda-9808-4b39-91e1-a90af0762647",
+      "Estudiante": "LEON ALONSO PEDERNERA ARRATIA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "fc48711e-5c11-4d31-9e3c-ca4d1b374364",
+      "ID Estudiante": "8a36cbda-9808-4b39-91e1-a90af0762647",
+      "Estudiante": "LEON ALONSO PEDERNERA ARRATIA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f3857d9f-4cb6-4f29-b814-d321df8a18fa",
+      "ID Estudiante": "cdd5aefe-751d-455d-bdf0-f9b7bfb6e92a",
+      "Estudiante": "LEONARDO GABRIEL CONCHA BERROETA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f3857d9f-4cb6-4f29-b814-d321df8a18fa",
+      "ID Estudiante": "cdd5aefe-751d-455d-bdf0-f9b7bfb6e92a",
+      "Estudiante": "LEONARDO GABRIEL CONCHA BERROETA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f3857d9f-4cb6-4f29-b814-d321df8a18fa",
+      "ID Estudiante": "cdd5aefe-751d-455d-bdf0-f9b7bfb6e92a",
+      "Estudiante": "LEONARDO GABRIEL CONCHA BERROETA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d34519c9-e0bc-4be4-8f1e-ecdabddc40ea",
+      "ID Estudiante": "4127d968-e072-4a84-9075-993a0e7b02bb",
+      "Estudiante": "MISAEL ANTONIO DIAZ VEGA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d34519c9-e0bc-4be4-8f1e-ecdabddc40ea",
+      "ID Estudiante": "4127d968-e072-4a84-9075-993a0e7b02bb",
+      "Estudiante": "MISAEL ANTONIO DIAZ VEGA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d34519c9-e0bc-4be4-8f1e-ecdabddc40ea",
+      "ID Estudiante": "4127d968-e072-4a84-9075-993a0e7b02bb",
+      "Estudiante": "MISAEL ANTONIO DIAZ VEGA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "3cdbeff9-d011-46d3-b0b5-3cb18970e29e",
+      "Estudiante": "ROQUE ARIEL MORAGA RIQUELME",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "3cdbeff9-d011-46d3-b0b5-3cb18970e29e",
+      "Estudiante": "ROQUE ARIEL MORAGA RIQUELME",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "3cdbeff9-d011-46d3-b0b5-3cb18970e29e",
+      "Estudiante": "ROQUE ARIEL MORAGA RIQUELME",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6579e051-047f-4794-8e38-fea1479ba66b",
+      "ID Estudiante": "36cf3295-ded7-4f74-8955-efca896e4f25",
+      "Estudiante": "VICENTE MAXIMILIANO CARRASCO CABEZAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6579e051-047f-4794-8e38-fea1479ba66b",
+      "ID Estudiante": "36cf3295-ded7-4f74-8955-efca896e4f25",
+      "Estudiante": "VICENTE MAXIMILIANO CARRASCO CABEZAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6579e051-047f-4794-8e38-fea1479ba66b",
+      "ID Estudiante": "36cf3295-ded7-4f74-8955-efca896e4f25",
+      "Estudiante": "VICENTE MAXIMILIANO CARRASCO CABEZAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8ac1f63e-7046-4cc1-b29f-9374ef3e8bc2",
+      "ID Estudiante": "886c2132-e342-4d8d-99ff-76ea51cb9238",
+      "Estudiante": "CRISTOBAL ANMELLA SILVA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133326",
+      "new_value": "79996.00"
+    },
+    {
+      "ID Matrícula": "8ac1f63e-7046-4cc1-b29f-9374ef3e8bc2",
+      "ID Estudiante": "886c2132-e342-4d8d-99ff-76ea51cb9238",
+      "Estudiante": "CRISTOBAL ANMELLA SILVA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1333260",
+      "new_value": "799960.00"
+    },
+    {
+      "ID Matrícula": "daf72670-be8a-41e6-9833-ec8845510073",
+      "ID Estudiante": "a49fa76d-24d2-4891-8910-16e10f60144f",
+      "Estudiante": "EMILIA IGNACIA PERALTA ROJAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "133126",
+      "new_value": "79876.00"
+    },
+    {
+      "ID Matrícula": "daf72670-be8a-41e6-9833-ec8845510073",
+      "ID Estudiante": "a49fa76d-24d2-4891-8910-16e10f60144f",
+      "Estudiante": "EMILIA IGNACIA PERALTA ROJAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1331260",
+      "new_value": "798760.00"
+    },
+    {
+      "ID Matrícula": "7e331346-c05e-4bad-8cbc-57e99695efe6",
+      "ID Estudiante": "bc1b0a93-e1fb-4698-b172-e8545e59a43c",
+      "Estudiante": "FRANCESCA LUANA CANALES CORDOVA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7e331346-c05e-4bad-8cbc-57e99695efe6",
+      "ID Estudiante": "bc1b0a93-e1fb-4698-b172-e8545e59a43c",
+      "Estudiante": "FRANCESCA LUANA CANALES CORDOVA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7e331346-c05e-4bad-8cbc-57e99695efe6",
+      "ID Estudiante": "bc1b0a93-e1fb-4698-b172-e8545e59a43c",
+      "Estudiante": "FRANCESCA LUANA CANALES CORDOVA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1a72e2e9-fb59-4d21-8716-a2c447f7bda7",
+      "ID Estudiante": "9821e9cf-e92b-45c2-b8b4-f09a03d4cbab",
+      "Estudiante": "GLINTON MATTEO CHEVESICH SAEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1a72e2e9-fb59-4d21-8716-a2c447f7bda7",
+      "ID Estudiante": "9821e9cf-e92b-45c2-b8b4-f09a03d4cbab",
+      "Estudiante": "GLINTON MATTEO CHEVESICH SAEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1a72e2e9-fb59-4d21-8716-a2c447f7bda7",
+      "ID Estudiante": "9821e9cf-e92b-45c2-b8b4-f09a03d4cbab",
+      "Estudiante": "GLINTON MATTEO CHEVESICH SAEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a5d878f3-9814-450b-ab56-0730d85b272b",
+      "ID Estudiante": "d5a16ce0-960b-4f0d-898e-8fa8aece5402",
+      "Estudiante": "JULIAN ANTONIO OTTERMANN ARRIAGADA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a5d878f3-9814-450b-ab56-0730d85b272b",
+      "ID Estudiante": "d5a16ce0-960b-4f0d-898e-8fa8aece5402",
+      "Estudiante": "JULIAN ANTONIO OTTERMANN ARRIAGADA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a5d878f3-9814-450b-ab56-0730d85b272b",
+      "ID Estudiante": "d5a16ce0-960b-4f0d-898e-8fa8aece5402",
+      "Estudiante": "JULIAN ANTONIO OTTERMANN ARRIAGADA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b2746fce-4f54-4e97-9784-5e878853176b",
+      "ID Estudiante": "8ae397f7-03e5-47fe-8885-da5bb7cf5941",
+      "Estudiante": "LUCIANO AGUSTIN VEGA PIZARRO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b2746fce-4f54-4e97-9784-5e878853176b",
+      "ID Estudiante": "8ae397f7-03e5-47fe-8885-da5bb7cf5941",
+      "Estudiante": "LUCIANO AGUSTIN VEGA PIZARRO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b2746fce-4f54-4e97-9784-5e878853176b",
+      "ID Estudiante": "8ae397f7-03e5-47fe-8885-da5bb7cf5941",
+      "Estudiante": "LUCIANO AGUSTIN VEGA PIZARRO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "37151e68-a95f-4b02-9089-8df1f4f3c784",
+      "ID Estudiante": "55d92ff7-dd27-4a2b-be91-52f45b087039",
+      "Estudiante": "MARTINA ALEXIA SALAS MOYA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "37151e68-a95f-4b02-9089-8df1f4f3c784",
+      "ID Estudiante": "55d92ff7-dd27-4a2b-be91-52f45b087039",
+      "Estudiante": "MARTINA ALEXIA SALAS MOYA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "37151e68-a95f-4b02-9089-8df1f4f3c784",
+      "ID Estudiante": "55d92ff7-dd27-4a2b-be91-52f45b087039",
+      "Estudiante": "MARTINA ALEXIA SALAS MOYA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e66fc7dc-6c89-41a9-8509-d07e8f2ca78c",
+      "ID Estudiante": "f5c0934e-b87c-4b35-940b-35029abbf807",
+      "Estudiante": "PASCAL IGNACIA DIAZ RAMIREZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e66fc7dc-6c89-41a9-8509-d07e8f2ca78c",
+      "ID Estudiante": "f5c0934e-b87c-4b35-940b-35029abbf807",
+      "Estudiante": "PASCAL IGNACIA DIAZ RAMIREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "e66fc7dc-6c89-41a9-8509-d07e8f2ca78c",
+      "ID Estudiante": "f5c0934e-b87c-4b35-940b-35029abbf807",
+      "Estudiante": "PASCAL IGNACIA DIAZ RAMIREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "ID Estudiante": "70a10f4b-99a0-490d-b5e4-df926d8447a9",
+      "Estudiante": "SANTIAGO AMARO ALARCON HUERTA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "ID Estudiante": "70a10f4b-99a0-490d-b5e4-df926d8447a9",
+      "Estudiante": "SANTIAGO AMARO ALARCON HUERTA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "ID Estudiante": "70a10f4b-99a0-490d-b5e4-df926d8447a9",
+      "Estudiante": "SANTIAGO AMARO ALARCON HUERTA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "aa311a6b-bd1f-440f-86df-dabde21c700c",
+      "ID Estudiante": "bf0726d9-9e59-4d7e-9d4c-1e44235b870d",
+      "Estudiante": "SAYEN DE LOS ANGELES VERGARA CANDIA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "aa311a6b-bd1f-440f-86df-dabde21c700c",
+      "ID Estudiante": "bf0726d9-9e59-4d7e-9d4c-1e44235b870d",
+      "Estudiante": "SAYEN DE LOS ANGELES VERGARA CANDIA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "aa311a6b-bd1f-440f-86df-dabde21c700c",
+      "ID Estudiante": "bf0726d9-9e59-4d7e-9d4c-1e44235b870d",
+      "Estudiante": "SAYEN DE LOS ANGELES VERGARA CANDIA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "95ef84e0-4aab-4c7f-873c-4eb635e8d1d7",
+      "Estudiante": "AMANDA SAYEN BRIONES FIGUEROA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "95ef84e0-4aab-4c7f-873c-4eb635e8d1d7",
+      "Estudiante": "AMANDA SAYEN BRIONES FIGUEROA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "95ef84e0-4aab-4c7f-873c-4eb635e8d1d7",
+      "Estudiante": "AMANDA SAYEN BRIONES FIGUEROA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "abffd6ef-c1dd-4679-ab6b-5a0b1ec53851",
+      "ID Estudiante": "a817284c-e60d-4ebb-9f4e-70dd274a8805",
+      "Estudiante": "AMARANTA ROSA VEAS ASPILLAGA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "51435.00"
+    },
+    {
+      "ID Matrícula": "abffd6ef-c1dd-4679-ab6b-5a0b1ec53851",
+      "ID Estudiante": "a817284c-e60d-4ebb-9f4e-70dd274a8805",
+      "Estudiante": "AMARANTA ROSA VEAS ASPILLAGA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "514350.00"
+    },
+    {
+      "ID Matrícula": "30336372-6323-496a-8a72-0d51f27a35a3",
+      "ID Estudiante": "70b93b3d-839e-4362-959d-b4d1138797ac",
+      "Estudiante": "DARKO DUSÁN KALASIC SOBARZO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "30336372-6323-496a-8a72-0d51f27a35a3",
+      "ID Estudiante": "70b93b3d-839e-4362-959d-b4d1138797ac",
+      "Estudiante": "DARKO DUSÁN KALASIC SOBARZO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "30336372-6323-496a-8a72-0d51f27a35a3",
+      "ID Estudiante": "70b93b3d-839e-4362-959d-b4d1138797ac",
+      "Estudiante": "DARKO DUSÁN KALASIC SOBARZO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "a7379488-e1f2-4370-9169-350a5c058900",
+      "ID Estudiante": "549c27fa-0f11-481f-aa59-fa17d46ae4aa",
+      "Estudiante": "ELOISA VARGAS ARAVENA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "a7379488-e1f2-4370-9169-350a5c058900",
+      "ID Estudiante": "549c27fa-0f11-481f-aa59-fa17d46ae4aa",
+      "Estudiante": "ELOISA VARGAS ARAVENA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "52d27e5e-2e85-4d0e-b86b-69c945adc415",
+      "ID Estudiante": "2ac75f25-4813-4c83-b5e2-b9a843fbd704",
+      "Estudiante": "EMILIA JOSEFA MUÑOZ NAVARRO",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PLANILLA"
+    },
+    {
+      "ID Matrícula": "52d27e5e-2e85-4d0e-b86b-69c945adc415",
+      "ID Estudiante": "2ac75f25-4813-4c83-b5e2-b9a843fbd704",
+      "Estudiante": "EMILIA JOSEFA MUÑOZ NAVARRO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "36005.00"
+    },
+    {
+      "ID Matrícula": "52d27e5e-2e85-4d0e-b86b-69c945adc415",
+      "ID Estudiante": "2ac75f25-4813-4c83-b5e2-b9a843fbd704",
+      "Estudiante": "EMILIA JOSEFA MUÑOZ NAVARRO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "360050.00"
+    },
+    {
+      "ID Matrícula": "92378912-deeb-4e93-88ea-0f98bdf52f97",
+      "ID Estudiante": "a098bfe2-c343-4a79-aec4-afc3f2bb2968",
+      "Estudiante": "FRANCO-RENE BERROETA CONTRERAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "92378912-deeb-4e93-88ea-0f98bdf52f97",
+      "ID Estudiante": "a098bfe2-c343-4a79-aec4-afc3f2bb2968",
+      "Estudiante": "FRANCO-RENE BERROETA CONTRERAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "92378912-deeb-4e93-88ea-0f98bdf52f97",
+      "ID Estudiante": "a098bfe2-c343-4a79-aec4-afc3f2bb2968",
+      "Estudiante": "FRANCO-RENE BERROETA CONTRERAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1a72e2e9-fb59-4d21-8716-a2c447f7bda7",
+      "ID Estudiante": "e59f9d9f-4228-4c5c-a580-b51112b8a455",
+      "Estudiante": "IZAN EDUARDO CHEVESICH SAEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1a72e2e9-fb59-4d21-8716-a2c447f7bda7",
+      "ID Estudiante": "e59f9d9f-4228-4c5c-a580-b51112b8a455",
+      "Estudiante": "IZAN EDUARDO CHEVESICH SAEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "1a72e2e9-fb59-4d21-8716-a2c447f7bda7",
+      "ID Estudiante": "e59f9d9f-4228-4c5c-a580-b51112b8a455",
+      "Estudiante": "IZAN EDUARDO CHEVESICH SAEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "42ba9123-89b4-46ca-9435-a123e6e2b69e",
+      "ID Estudiante": "c6469e2d-8c5d-479c-95bc-a828bf13eac2",
+      "Estudiante": "JAVIERA EMILIA LOPEZ GONZALEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "42ba9123-89b4-46ca-9435-a123e6e2b69e",
+      "ID Estudiante": "c6469e2d-8c5d-479c-95bc-a828bf13eac2",
+      "Estudiante": "JAVIERA EMILIA LOPEZ GONZALEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "42ba9123-89b4-46ca-9435-a123e6e2b69e",
+      "ID Estudiante": "c6469e2d-8c5d-479c-95bc-a828bf13eac2",
+      "Estudiante": "JAVIERA EMILIA LOPEZ GONZALEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "4d40d3ab-a8bd-408f-a75a-ae7780358f90",
+      "ID Estudiante": "1ad4a73b-2f00-4751-b444-90a1193aaa2e",
+      "Estudiante": "LAUTARO CANDIA ROJAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "4d40d3ab-a8bd-408f-a75a-ae7780358f90",
+      "ID Estudiante": "1ad4a73b-2f00-4751-b444-90a1193aaa2e",
+      "Estudiante": "LAUTARO CANDIA ROJAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "4d40d3ab-a8bd-408f-a75a-ae7780358f90",
+      "ID Estudiante": "1ad4a73b-2f00-4751-b444-90a1193aaa2e",
+      "Estudiante": "LAUTARO CANDIA ROJAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "171377c7-fd5a-44d6-b39b-c357954768bf",
+      "ID Estudiante": "fb1e92bf-533f-4b23-935d-fef273d8f9b8",
+      "Estudiante": "LAUTARO MANCILLA GALLARDO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "171377c7-fd5a-44d6-b39b-c357954768bf",
+      "ID Estudiante": "fb1e92bf-533f-4b23-935d-fef273d8f9b8",
+      "Estudiante": "LAUTARO MANCILLA GALLARDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "171377c7-fd5a-44d6-b39b-c357954768bf",
+      "ID Estudiante": "fb1e92bf-533f-4b23-935d-fef273d8f9b8",
+      "Estudiante": "LAUTARO MANCILLA GALLARDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "ID Estudiante": "6952432f-f7ab-4774-9ef6-1d9d050f1892",
+      "Estudiante": "LETICIA COLOMBA ALARCÓN HUERTA",
+      "column": "Aranceles: Total",
+      "old_value": "102870.00",
+      "new_value": "1028700.00"
+    },
+    {
+      "ID Matrícula": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "ID Estudiante": "6952432f-f7ab-4774-9ef6-1d9d050f1892",
+      "Estudiante": "LETICIA COLOMBA ALARCÓN HUERTA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "1",
+      "new_value": "10"
+    },
+    {
+      "ID Matrícula": "07ef63dc-db4a-4f7c-9335-ca5563e62355",
+      "ID Estudiante": "44ff9f22-35c4-4028-b0d5-be057f2551fd",
+      "Estudiante": "LUCAS ALONSO VALENZUELA BELTRAN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "07ef63dc-db4a-4f7c-9335-ca5563e62355",
+      "ID Estudiante": "44ff9f22-35c4-4028-b0d5-be057f2551fd",
+      "Estudiante": "LUCAS ALONSO VALENZUELA BELTRAN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "07ef63dc-db4a-4f7c-9335-ca5563e62355",
+      "ID Estudiante": "44ff9f22-35c4-4028-b0d5-be057f2551fd",
+      "Estudiante": "LUCAS ALONSO VALENZUELA BELTRAN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18923d14-e983-4dd6-8d7f-cfc48ed0bfa1",
+      "ID Estudiante": "622774a2-0d00-4dbf-a83c-8b52ee5879c5",
+      "Estudiante": "LUCAS DANTE CATRILEO TOLEDO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18923d14-e983-4dd6-8d7f-cfc48ed0bfa1",
+      "ID Estudiante": "622774a2-0d00-4dbf-a83c-8b52ee5879c5",
+      "Estudiante": "LUCAS DANTE CATRILEO TOLEDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18923d14-e983-4dd6-8d7f-cfc48ed0bfa1",
+      "ID Estudiante": "622774a2-0d00-4dbf-a83c-8b52ee5879c5",
+      "Estudiante": "LUCAS DANTE CATRILEO TOLEDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c1538293-107a-44c3-9637-59c645eb1237",
+      "ID Estudiante": "3e6a0c95-859b-4135-8995-88501f79ea60",
+      "Estudiante": "MAILEN PAZ MARTINEZ PEREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "c1538293-107a-44c3-9637-59c645eb1237",
+      "ID Estudiante": "3e6a0c95-859b-4135-8995-88501f79ea60",
+      "Estudiante": "MAILEN PAZ MARTINEZ PEREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "8cd16537-58ec-4503-be98-f0bdbbf59d0d",
+      "ID Estudiante": "a09efbeb-afdc-44b0-8cec-856cf15c5cae",
+      "Estudiante": "NOAH THOMAS GONZALEZ BARRA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8cd16537-58ec-4503-be98-f0bdbbf59d0d",
+      "ID Estudiante": "a09efbeb-afdc-44b0-8cec-856cf15c5cae",
+      "Estudiante": "NOAH THOMAS GONZALEZ BARRA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "8cd16537-58ec-4503-be98-f0bdbbf59d0d",
+      "ID Estudiante": "a09efbeb-afdc-44b0-8cec-856cf15c5cae",
+      "Estudiante": "NOAH THOMAS GONZALEZ BARRA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "08440fe6-76b5-4760-b3b1-c5aff34dbc8d",
+      "ID Estudiante": "cb4c0322-29f2-4271-a777-54bd6c5085b1",
+      "Estudiante": "SEBASTIAN HERNAN PIÑA BOMBAL",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "51435.00"
+    },
+    {
+      "ID Matrícula": "08440fe6-76b5-4760-b3b1-c5aff34dbc8d",
+      "ID Estudiante": "cb4c0322-29f2-4271-a777-54bd6c5085b1",
+      "Estudiante": "SEBASTIAN HERNAN PIÑA BOMBAL",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "514350.00"
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "604757cf-8b2e-4987-a1f9-5b8630e35eac",
+      "Estudiante": "SIMON MIJAHIL GONZALEZ PEDRAZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "604757cf-8b2e-4987-a1f9-5b8630e35eac",
+      "Estudiante": "SIMON MIJAHIL GONZALEZ PEDRAZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "604757cf-8b2e-4987-a1f9-5b8630e35eac",
+      "Estudiante": "SIMON MIJAHIL GONZALEZ PEDRAZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c9598685-52a7-4704-a8f9-e6761335f14b",
+      "ID Estudiante": "2d07c835-b135-420d-8c90-1fd3f25a34f8",
+      "Estudiante": "AGUSTIN SEBASTIAN MERCADO ORELLANA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c9598685-52a7-4704-a8f9-e6761335f14b",
+      "ID Estudiante": "2d07c835-b135-420d-8c90-1fd3f25a34f8",
+      "Estudiante": "AGUSTIN SEBASTIAN MERCADO ORELLANA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "c9598685-52a7-4704-a8f9-e6761335f14b",
+      "ID Estudiante": "2d07c835-b135-420d-8c90-1fd3f25a34f8",
+      "Estudiante": "AGUSTIN SEBASTIAN MERCADO ORELLANA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cf60d160-b537-469a-b902-46be1ce87b7c",
+      "ID Estudiante": "85c87b5b-11a7-41d0-afb3-9618785c0672",
+      "Estudiante": "DHANIEL HECTOR SALAZAR GASSET",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cf60d160-b537-469a-b902-46be1ce87b7c",
+      "ID Estudiante": "85c87b5b-11a7-41d0-afb3-9618785c0672",
+      "Estudiante": "DHANIEL HECTOR SALAZAR GASSET",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "cf60d160-b537-469a-b902-46be1ce87b7c",
+      "ID Estudiante": "85c87b5b-11a7-41d0-afb3-9618785c0672",
+      "Estudiante": "DHANIEL HECTOR SALAZAR GASSET",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5bea5763-8938-472c-a821-9b7434173085",
+      "ID Estudiante": "b1f87e41-a351-4103-aea3-0713766c64ec",
+      "Estudiante": "ELOÍSA ANAÍS ALTAMIRANO MONSALVE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5bea5763-8938-472c-a821-9b7434173085",
+      "ID Estudiante": "b1f87e41-a351-4103-aea3-0713766c64ec",
+      "Estudiante": "ELOÍSA ANAÍS ALTAMIRANO MONSALVE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "5bea5763-8938-472c-a821-9b7434173085",
+      "ID Estudiante": "b1f87e41-a351-4103-aea3-0713766c64ec",
+      "Estudiante": "ELOÍSA ANAÍS ALTAMIRANO MONSALVE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "9fd2f8c1-e989-4237-81e1-1656b3112773",
+      "ID Estudiante": "bee53ec4-59a0-4c46-8d49-580ade54eb3a",
+      "Estudiante": "FRANCO AUGUSTO ARANA CALDERON",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PLANILLA"
+    },
+    {
+      "ID Matrícula": "9fd2f8c1-e989-4237-81e1-1656b3112773",
+      "ID Estudiante": "bee53ec4-59a0-4c46-8d49-580ade54eb3a",
+      "Estudiante": "FRANCO AUGUSTO ARANA CALDERON",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "9fd2f8c1-e989-4237-81e1-1656b3112773",
+      "ID Estudiante": "bee53ec4-59a0-4c46-8d49-580ade54eb3a",
+      "Estudiante": "FRANCO AUGUSTO ARANA CALDERON",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "18bb695b-649e-4ce9-bf41-8505d0eadbcf",
+      "ID Estudiante": "36788826-5ac3-45d0-b913-e4b057f36fc1",
+      "Estudiante": "GONZALO ALONSO VELASQUEZ YUING",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18bb695b-649e-4ce9-bf41-8505d0eadbcf",
+      "ID Estudiante": "36788826-5ac3-45d0-b913-e4b057f36fc1",
+      "Estudiante": "GONZALO ALONSO VELASQUEZ YUING",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "18bb695b-649e-4ce9-bf41-8505d0eadbcf",
+      "ID Estudiante": "36788826-5ac3-45d0-b913-e4b057f36fc1",
+      "Estudiante": "GONZALO ALONSO VELASQUEZ YUING",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "c688eabf-ddc0-41bf-9a1c-694adbac43bb",
+      "Estudiante": "IAN ANDRE MARTINEZ CASTRO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "c688eabf-ddc0-41bf-9a1c-694adbac43bb",
+      "Estudiante": "IAN ANDRE MARTINEZ CASTRO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "c688eabf-ddc0-41bf-9a1c-694adbac43bb",
+      "Estudiante": "IAN ANDRE MARTINEZ CASTRO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "a550d9e1-e8f4-4c98-b32a-ad36391dda0d",
+      "Estudiante": "ISABEL LEONARDA BANDA JORQUERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "a550d9e1-e8f4-4c98-b32a-ad36391dda0d",
+      "Estudiante": "ISABEL LEONARDA BANDA JORQUERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "a550d9e1-e8f4-4c98-b32a-ad36391dda0d",
+      "Estudiante": "ISABEL LEONARDA BANDA JORQUERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "bf596e0a-c55d-4cc2-adc9-05299c78d5fd",
+      "ID Estudiante": "bcdc5a77-19b6-4d12-9ff2-0be5ad7af3ab",
+      "Estudiante": "IVÁN ANDALÓN DARWIT",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "bf596e0a-c55d-4cc2-adc9-05299c78d5fd",
+      "ID Estudiante": "bcdc5a77-19b6-4d12-9ff2-0be5ad7af3ab",
+      "Estudiante": "IVÁN ANDALÓN DARWIT",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "bf596e0a-c55d-4cc2-adc9-05299c78d5fd",
+      "ID Estudiante": "bcdc5a77-19b6-4d12-9ff2-0be5ad7af3ab",
+      "Estudiante": "IVÁN ANDALÓN DARWIT",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "96743974-25ea-49aa-bab9-745435218121",
+      "ID Estudiante": "78622561-1e4d-4bff-8b29-c20226a65fe1",
+      "Estudiante": "JAVIERA VALENTINA GUAJARDO GUERRERO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "96743974-25ea-49aa-bab9-745435218121",
+      "ID Estudiante": "78622561-1e4d-4bff-8b29-c20226a65fe1",
+      "Estudiante": "JAVIERA VALENTINA GUAJARDO GUERRERO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "96743974-25ea-49aa-bab9-745435218121",
+      "ID Estudiante": "78622561-1e4d-4bff-8b29-c20226a65fe1",
+      "Estudiante": "JAVIERA VALENTINA GUAJARDO GUERRERO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "102549df-93dd-44bb-a183-4fc553539658",
+      "ID Estudiante": "813ea7df-6966-4340-99bd-10cd12d57fca",
+      "Estudiante": "JOAQUIN CAMILO PARRA LENI",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "102549df-93dd-44bb-a183-4fc553539658",
+      "ID Estudiante": "813ea7df-6966-4340-99bd-10cd12d57fca",
+      "Estudiante": "JOAQUIN CAMILO PARRA LENI",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "102549df-93dd-44bb-a183-4fc553539658",
+      "ID Estudiante": "813ea7df-6966-4340-99bd-10cd12d57fca",
+      "Estudiante": "JOAQUIN CAMILO PARRA LENI",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "df261c3d-e33a-40ff-a0cf-690e5832c355",
+      "Estudiante": "LEONOR ANTUMALEN VARGAS ARCAYA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "df261c3d-e33a-40ff-a0cf-690e5832c355",
+      "Estudiante": "LEONOR ANTUMALEN VARGAS ARCAYA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "df261c3d-e33a-40ff-a0cf-690e5832c355",
+      "Estudiante": "LEONOR ANTUMALEN VARGAS ARCAYA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "Estudiante": "LUCAS MIGUEL CARREÑO SOTO",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "PRIORITARIO",
+      "new_value": "TRANSFERENCIA"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "Estudiante": "LUCAS MIGUEL CARREÑO SOTO",
+      "column": "Matrícula: Prioritario",
+      "old_value": "true",
+      "new_value": "false"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "Estudiante": "LUCAS MIGUEL CARREÑO SOTO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": "10"
+    },
+    {
+      "ID Matrícula": "15db1a60-daa7-4cef-aac0-76a60e5494bb",
+      "ID Estudiante": "2cb2d25a-8d2e-4bc4-a036-0ddc646e0d10",
+      "Estudiante": "MATEO AMARO MIRANDA ZAMORANO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "15db1a60-daa7-4cef-aac0-76a60e5494bb",
+      "ID Estudiante": "2cb2d25a-8d2e-4bc4-a036-0ddc646e0d10",
+      "Estudiante": "MATEO AMARO MIRANDA ZAMORANO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "15db1a60-daa7-4cef-aac0-76a60e5494bb",
+      "ID Estudiante": "2cb2d25a-8d2e-4bc4-a036-0ddc646e0d10",
+      "Estudiante": "MATEO AMARO MIRANDA ZAMORANO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "09427afc-54f4-4e01-b501-bdb623480bd5",
+      "ID Estudiante": "fe44c627-b8be-4635-ba9b-a60867000963",
+      "Estudiante": "PEDRO SEBASTIAN MERCADO FIGUEROA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "09427afc-54f4-4e01-b501-bdb623480bd5",
+      "ID Estudiante": "fe44c627-b8be-4635-ba9b-a60867000963",
+      "Estudiante": "PEDRO SEBASTIAN MERCADO FIGUEROA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "09427afc-54f4-4e01-b501-bdb623480bd5",
+      "ID Estudiante": "fe44c627-b8be-4635-ba9b-a60867000963",
+      "Estudiante": "PEDRO SEBASTIAN MERCADO FIGUEROA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "eff1ed45-677d-4728-a669-5b61f84fe7ca",
+      "ID Estudiante": "cab77848-0a87-40a1-962a-8108b8e4c728",
+      "Estudiante": "RAFAEL NOA FREIRE AGUILERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "eff1ed45-677d-4728-a669-5b61f84fe7ca",
+      "ID Estudiante": "cab77848-0a87-40a1-962a-8108b8e4c728",
+      "Estudiante": "RAFAEL NOA FREIRE AGUILERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "eff1ed45-677d-4728-a669-5b61f84fe7ca",
+      "ID Estudiante": "cab77848-0a87-40a1-962a-8108b8e4c728",
+      "Estudiante": "RAFAEL NOA FREIRE AGUILERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "72c4ea03-234e-424e-956d-437edc00915b",
+      "ID Estudiante": "8ac7bba6-95dc-4630-9cd0-fd5482d71596",
+      "Estudiante": "RENATO EDUARDO SALAS QUEZADA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "72c4ea03-234e-424e-956d-437edc00915b",
+      "ID Estudiante": "8ac7bba6-95dc-4630-9cd0-fd5482d71596",
+      "Estudiante": "RENATO EDUARDO SALAS QUEZADA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "72c4ea03-234e-424e-956d-437edc00915b",
+      "ID Estudiante": "8ac7bba6-95dc-4630-9cd0-fd5482d71596",
+      "Estudiante": "RENATO EDUARDO SALAS QUEZADA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b24ab5d5-09d9-4d09-a18e-f646f409993c",
+      "ID Estudiante": "e7f30fee-a7f9-4059-999f-0c521bd032ae",
+      "Estudiante": "TAMAR ANAIS LARRONDO ESPINOZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b24ab5d5-09d9-4d09-a18e-f646f409993c",
+      "ID Estudiante": "e7f30fee-a7f9-4059-999f-0c521bd032ae",
+      "Estudiante": "TAMAR ANAIS LARRONDO ESPINOZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "b24ab5d5-09d9-4d09-a18e-f646f409993c",
+      "ID Estudiante": "e7f30fee-a7f9-4059-999f-0c521bd032ae",
+      "Estudiante": "TAMAR ANAIS LARRONDO ESPINOZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+      "ID Estudiante": "fac58646-2af5-4931-91b9-b8e374dac3e3",
+      "Estudiante": "VICTORIA ELINOR OPAZO MELLA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+      "ID Estudiante": "fac58646-2af5-4931-91b9-b8e374dac3e3",
+      "Estudiante": "VICTORIA ELINOR OPAZO MELLA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "924f9507-f131-43df-91c4-8ee2878e725c",
+      "ID Estudiante": "fac58646-2af5-4931-91b9-b8e374dac3e3",
+      "Estudiante": "VICTORIA ELINOR OPAZO MELLA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7f114e6a-35b2-4d9f-a383-efeab93a1c01",
+      "ID Estudiante": "81385a4b-09e0-4b93-bab5-1387c3b37011",
+      "Estudiante": "AGUSTINA EMILIA VILLALOBOS BORQUEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7f114e6a-35b2-4d9f-a383-efeab93a1c01",
+      "ID Estudiante": "81385a4b-09e0-4b93-bab5-1387c3b37011",
+      "Estudiante": "AGUSTINA EMILIA VILLALOBOS BORQUEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7f114e6a-35b2-4d9f-a383-efeab93a1c01",
+      "ID Estudiante": "81385a4b-09e0-4b93-bab5-1387c3b37011",
+      "Estudiante": "AGUSTINA EMILIA VILLALOBOS BORQUEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "26aa7318-095a-460e-9a05-da0b457377bb",
+      "ID Estudiante": "1c84595f-aab3-459d-bf26-2dd26dbded8e",
+      "Estudiante": "ALMA DUQUE PUGAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "26aa7318-095a-460e-9a05-da0b457377bb",
+      "ID Estudiante": "1c84595f-aab3-459d-bf26-2dd26dbded8e",
+      "Estudiante": "ALMA DUQUE PUGAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "26aa7318-095a-460e-9a05-da0b457377bb",
+      "ID Estudiante": "1c84595f-aab3-459d-bf26-2dd26dbded8e",
+      "Estudiante": "ALMA DUQUE PUGAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "7e98cebd-bb7b-4d95-9869-5d25aec6c79d",
+      "ID Estudiante": "304f5987-becf-4eab-a17b-28fcc925517f",
+      "Estudiante": "AMANDA JESÚS CABEZAS VILLALOBOS ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "951547",
+      "new_value": "951550.00"
+    },
+    {
+      "ID Matrícula": "c1c6e332-540f-45fe-ae1e-486646c3e689",
+      "ID Estudiante": "9d6c049b-8e2b-4f93-a3a1-52cb5e149315",
+      "Estudiante": "AMELIA SOFÍA SANTA MARÍA CARTES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "72009.00"
+    },
+    {
+      "ID Matrícula": "c1c6e332-540f-45fe-ae1e-486646c3e689",
+      "ID Estudiante": "9d6c049b-8e2b-4f93-a3a1-52cb5e149315",
+      "Estudiante": "AMELIA SOFÍA SANTA MARÍA CARTES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "720090.00"
+    },
+    {
+      "ID Matrícula": "a0697f61-b884-4078-b453-ee6343eec4b7",
+      "ID Estudiante": "9a3e4488-fb61-4fda-a3a2-67e162cd74a7",
+      "Estudiante": "ANAÍS ILLARI ALBORNOZ MORGADO",
+      "column": "Matrícula: Forma de Pago",
+      "old_value": "TRANSFERENCIA",
+      "new_value": "PLANILLA"
+    },
+    {
+      "ID Matrícula": "a0697f61-b884-4078-b453-ee6343eec4b7",
+      "ID Estudiante": "9a3e4488-fb61-4fda-a3a2-67e162cd74a7",
+      "Estudiante": "ANAÍS ILLARI ALBORNOZ MORGADO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "a0697f61-b884-4078-b453-ee6343eec4b7",
+      "ID Estudiante": "9a3e4488-fb61-4fda-a3a2-67e162cd74a7",
+      "Estudiante": "ANAÍS ILLARI ALBORNOZ MORGADO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "784c4915-5cb7-47f9-a5fe-d78646a62411",
+      "ID Estudiante": "54ccf79e-f3e8-48c3-bdef-177f1e57d1b4",
+      "Estudiante": "ANTONIO LEÓN RAMÍREZ ACEVEDO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "41148.00"
+    },
+    {
+      "ID Matrícula": "784c4915-5cb7-47f9-a5fe-d78646a62411",
+      "ID Estudiante": "54ccf79e-f3e8-48c3-bdef-177f1e57d1b4",
+      "Estudiante": "ANTONIO LEÓN RAMÍREZ ACEVEDO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "411480.00"
+    },
+    {
+      "ID Matrícula": "184d6e71-b4c8-40d7-bef1-20440137dc1e",
+      "ID Estudiante": "a7997e1c-29c7-47dc-a645-21e664bcb585",
+      "Estudiante": "ELENA FRANCISCA EGAÑA CABRERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "184d6e71-b4c8-40d7-bef1-20440137dc1e",
+      "ID Estudiante": "a7997e1c-29c7-47dc-a645-21e664bcb585",
+      "Estudiante": "ELENA FRANCISCA EGAÑA CABRERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "184d6e71-b4c8-40d7-bef1-20440137dc1e",
+      "ID Estudiante": "a7997e1c-29c7-47dc-a645-21e664bcb585",
+      "Estudiante": "ELENA FRANCISCA EGAÑA CABRERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "192ce633-a5b8-4f71-8043-bb4682eb60a2",
+      "ID Estudiante": "ec6bccc7-0af5-4ec3-82c2-54ef4aa3f446",
+      "Estudiante": "JULIETTA FERNANDA LARENAS LAGUNAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "192ce633-a5b8-4f71-8043-bb4682eb60a2",
+      "ID Estudiante": "ec6bccc7-0af5-4ec3-82c2-54ef4aa3f446",
+      "Estudiante": "JULIETTA FERNANDA LARENAS LAGUNAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "192ce633-a5b8-4f71-8043-bb4682eb60a2",
+      "ID Estudiante": "ec6bccc7-0af5-4ec3-82c2-54ef4aa3f446",
+      "Estudiante": "JULIETTA FERNANDA LARENAS LAGUNAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "057cd578-f771-4c7f-8019-75cb769772b7",
+      "ID Estudiante": "1b61f714-f267-4fd6-8f7e-f7c7660d30aa",
+      "Estudiante": "LUA ABRIL MALLEA DIAZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "057cd578-f771-4c7f-8019-75cb769772b7",
+      "ID Estudiante": "1b61f714-f267-4fd6-8f7e-f7c7660d30aa",
+      "Estudiante": "LUA ABRIL MALLEA DIAZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "b518d850-0c16-4cba-b1a7-7433779c8847",
+      "ID Estudiante": "bb7c99ec-756e-4aea-b8d5-6362d27272f1",
+      "Estudiante": "MATEO JULIAN GALLARDO ARROYO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "72009.00"
+    },
+    {
+      "ID Matrícula": "b518d850-0c16-4cba-b1a7-7433779c8847",
+      "ID Estudiante": "bb7c99ec-756e-4aea-b8d5-6362d27272f1",
+      "Estudiante": "MATEO JULIAN GALLARDO ARROYO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "720090.00"
+    },
+    {
+      "ID Matrícula": "c1538293-107a-44c3-9637-59c645eb1237",
+      "ID Estudiante": "08c6255b-fe62-40ab-aa34-56fc90aa795c",
+      "Estudiante": "RAFAEL ALONSO MARTINEZ PEREZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "25718.00"
+    },
+    {
+      "ID Matrícula": "c1538293-107a-44c3-9637-59c645eb1237",
+      "ID Estudiante": "08c6255b-fe62-40ab-aa34-56fc90aa795c",
+      "Estudiante": "RAFAEL ALONSO MARTINEZ PEREZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "257180.00"
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "5224e00b-11ed-4800-9414-70fbcfdee4a9",
+      "Estudiante": "RENATO ANTONIO VARGAS ARCAYA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "5224e00b-11ed-4800-9414-70fbcfdee4a9",
+      "Estudiante": "RENATO ANTONIO VARGAS ARCAYA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "ed5775ea-e394-45b5-8718-714db1cbd734",
+      "ID Estudiante": "5224e00b-11ed-4800-9414-70fbcfdee4a9",
+      "Estudiante": "RENATO ANTONIO VARGAS ARCAYA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "570445da-0dbd-4aa8-bf7c-2a63b89e55b8",
+      "ID Estudiante": "a2715c76-93b7-4caf-aae5-34cdb370d11d",
+      "Estudiante": "AGUSTINA JACQUELINE ESCOBAR CEBALLO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "1028700",
+      "new_value": "720090.00"
+    },
+    {
+      "ID Matrícula": "570445da-0dbd-4aa8-bf7c-2a63b89e55b8",
+      "ID Estudiante": "a2715c76-93b7-4caf-aae5-34cdb370d11d",
+      "Estudiante": "AGUSTINA JACQUELINE ESCOBAR CEBALLO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "720090.00"
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "49f84a27-7b83-4879-85a3-74ae4742cef3",
+      "Estudiante": "AURORA KÜYEN BANDA JORQUERA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "49f84a27-7b83-4879-85a3-74ae4742cef3",
+      "Estudiante": "AURORA KÜYEN BANDA JORQUERA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f8fc5beb-0848-4473-9131-fd8c0fb189fe",
+      "ID Estudiante": "49f84a27-7b83-4879-85a3-74ae4742cef3",
+      "Estudiante": "AURORA KÜYEN BANDA JORQUERA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "21b18d69-bd2d-4b83-bf84-0896beebfd11",
+      "Estudiante": "DAHLIA DESIREÉ CASTILLO LÓPEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "21b18d69-bd2d-4b83-bf84-0896beebfd11",
+      "Estudiante": "DAHLIA DESIREÉ CASTILLO LÓPEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "21b18d69-bd2d-4b83-bf84-0896beebfd11",
+      "Estudiante": "DAHLIA DESIREÉ CASTILLO LÓPEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "732d0650-c971-464f-bd70-fec8be284661",
+      "ID Estudiante": "a86ead86-a4d2-404a-90f4-6735f2538e8d",
+      "Estudiante": "FELIPE ALEJANDRO ZAVALA SALUCCI",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "732d0650-c971-464f-bd70-fec8be284661",
+      "ID Estudiante": "a86ead86-a4d2-404a-90f4-6735f2538e8d",
+      "Estudiante": "FELIPE ALEJANDRO ZAVALA SALUCCI",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "bd8a20e6-cf68-48b6-8a3b-44a4ab45c55f",
+      "ID Estudiante": "39dd0ceb-4780-40de-a798-f9327229e6af",
+      "Estudiante": "FLORENCIA PASCAL PEIRANO CARVAJAL",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "61722.00"
+    },
+    {
+      "ID Matrícula": "bd8a20e6-cf68-48b6-8a3b-44a4ab45c55f",
+      "ID Estudiante": "39dd0ceb-4780-40de-a798-f9327229e6af",
+      "Estudiante": "FLORENCIA PASCAL PEIRANO CARVAJAL",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "617220.00"
+    },
+    {
+      "ID Matrícula": "dca666f4-0667-43ae-8dd6-9fe6054a7528",
+      "ID Estudiante": "13a34697-9e0e-49c2-ab0d-70d833661438",
+      "Estudiante": "ITALO BASTIAN HOCES MARIMAN",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dca666f4-0667-43ae-8dd6-9fe6054a7528",
+      "ID Estudiante": "13a34697-9e0e-49c2-ab0d-70d833661438",
+      "Estudiante": "ITALO BASTIAN HOCES MARIMAN",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "dca666f4-0667-43ae-8dd6-9fe6054a7528",
+      "ID Estudiante": "13a34697-9e0e-49c2-ab0d-70d833661438",
+      "Estudiante": "ITALO BASTIAN HOCES MARIMAN",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "807f89e5-9efe-4d4d-bcca-b855339174fb",
+      "ID Estudiante": "8aa4b903-2192-426f-b84c-8153a16ceaa5",
+      "Estudiante": "JORGE ANTONIO JARA NAVEAS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "807f89e5-9efe-4d4d-bcca-b855339174fb",
+      "ID Estudiante": "8aa4b903-2192-426f-b84c-8153a16ceaa5",
+      "Estudiante": "JORGE ANTONIO JARA NAVEAS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "807f89e5-9efe-4d4d-bcca-b855339174fb",
+      "ID Estudiante": "8aa4b903-2192-426f-b84c-8153a16ceaa5",
+      "Estudiante": "JORGE ANTONIO JARA NAVEAS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6923a844-4571-4a2e-acbe-2151388f12fa",
+      "ID Estudiante": "fd538745-73ba-4267-8cbe-074f1c265665",
+      "Estudiante": "JOSEFA LETICIA ORTIZ BARRIOS",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6923a844-4571-4a2e-acbe-2151388f12fa",
+      "ID Estudiante": "fd538745-73ba-4267-8cbe-074f1c265665",
+      "Estudiante": "JOSEFA LETICIA ORTIZ BARRIOS",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "6923a844-4571-4a2e-acbe-2151388f12fa",
+      "ID Estudiante": "fd538745-73ba-4267-8cbe-074f1c265665",
+      "Estudiante": "JOSEFA LETICIA ORTIZ BARRIOS",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f160be4e-e9a9-48e8-87f6-903cf8e57ca1",
+      "ID Estudiante": "feb6954d-6ad9-4ab7-b2c9-e8fd2d5297f2",
+      "Estudiante": "MAILEN AMANDA ADASME SILVA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "102870",
+      "new_value": "82296.00"
+    },
+    {
+      "ID Matrícula": "f160be4e-e9a9-48e8-87f6-903cf8e57ca1",
+      "ID Estudiante": "feb6954d-6ad9-4ab7-b2c9-e8fd2d5297f2",
+      "Estudiante": "MAILEN AMANDA ADASME SILVA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "1028700",
+      "new_value": "822960.00"
+    },
+    {
+      "ID Matrícula": "38c9f70d-1084-42a5-955a-d32eada5adac",
+      "ID Estudiante": "81d5ec2e-9718-4400-83b0-caed870c824b",
+      "Estudiante": "MARIA GRACIA MANRIQUEZ MENDOZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "38c9f70d-1084-42a5-955a-d32eada5adac",
+      "ID Estudiante": "81d5ec2e-9718-4400-83b0-caed870c824b",
+      "Estudiante": "MARIA GRACIA MANRIQUEZ MENDOZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "38c9f70d-1084-42a5-955a-d32eada5adac",
+      "ID Estudiante": "81d5ec2e-9718-4400-83b0-caed870c824b",
+      "Estudiante": "MARIA GRACIA MANRIQUEZ MENDOZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3a8a2063-c803-4b9c-83ae-e5689dfb466a",
+      "ID Estudiante": "787a0343-dcc5-4086-91db-bc23c113e0f8",
+      "Estudiante": "MARIANO SANTTINO GERALDO HYDE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3a8a2063-c803-4b9c-83ae-e5689dfb466a",
+      "ID Estudiante": "787a0343-dcc5-4086-91db-bc23c113e0f8",
+      "Estudiante": "MARIANO SANTTINO GERALDO HYDE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "3a8a2063-c803-4b9c-83ae-e5689dfb466a",
+      "ID Estudiante": "787a0343-dcc5-4086-91db-bc23c113e0f8",
+      "Estudiante": "MARIANO SANTTINO GERALDO HYDE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0c01d7be-1bc9-41a3-be19-677257a05056",
+      "ID Estudiante": "3dd04ade-6a1f-434a-88f2-9571de5037e7",
+      "Estudiante": "MATEO IGNACIO VALENZUELA GONZÁLEZ",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0c01d7be-1bc9-41a3-be19-677257a05056",
+      "ID Estudiante": "3dd04ade-6a1f-434a-88f2-9571de5037e7",
+      "Estudiante": "MATEO IGNACIO VALENZUELA GONZÁLEZ",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "0c01d7be-1bc9-41a3-be19-677257a05056",
+      "ID Estudiante": "3dd04ade-6a1f-434a-88f2-9571de5037e7",
+      "Estudiante": "MATEO IGNACIO VALENZUELA GONZÁLEZ",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f3857d9f-4cb6-4f29-b814-d321df8a18fa",
+      "ID Estudiante": "6bd6a8f8-7d23-4bf8-b075-34f5d817e344",
+      "Estudiante": "MAXIMO LEON CONCHA BERROETA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f3857d9f-4cb6-4f29-b814-d321df8a18fa",
+      "ID Estudiante": "6bd6a8f8-7d23-4bf8-b075-34f5d817e344",
+      "Estudiante": "MAXIMO LEON CONCHA BERROETA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "f3857d9f-4cb6-4f29-b814-d321df8a18fa",
+      "ID Estudiante": "6bd6a8f8-7d23-4bf8-b075-34f5d817e344",
+      "Estudiante": "MAXIMO LEON CONCHA BERROETA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "83e031f7-5fae-4c1b-b562-a4a421f352d9",
+      "Estudiante": "SALVADOR AUKAN CERDA ALCAIDE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "83e031f7-5fae-4c1b-b562-a4a421f352d9",
+      "Estudiante": "SALVADOR AUKAN CERDA ALCAIDE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "83e031f7-5fae-4c1b-b562-a4a421f352d9",
+      "Estudiante": "SALVADOR AUKAN CERDA ALCAIDE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "21d7dffa-ad4f-4a8a-812b-407090f388ce",
+      "ID Estudiante": "0668b381-e359-4261-9dfb-d0b509e61ca7",
+      "Estudiante": "SOFIA ANTONELLA ALLENDE TABILO",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "21d7dffa-ad4f-4a8a-812b-407090f388ce",
+      "ID Estudiante": "0668b381-e359-4261-9dfb-d0b509e61ca7",
+      "Estudiante": "SOFIA ANTONELLA ALLENDE TABILO",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "21d7dffa-ad4f-4a8a-812b-407090f388ce",
+      "ID Estudiante": "0668b381-e359-4261-9dfb-d0b509e61ca7",
+      "Estudiante": "SOFIA ANTONELLA ALLENDE TABILO",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "785a10dd-ab8f-44e4-9dd4-bd327259f6e3",
+      "ID Estudiante": "cca42415-ef85-4ace-abec-70c77ef2340b",
+      "Estudiante": "TRINIDAD BEATRIZ FAUNDES PALMA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "785a10dd-ab8f-44e4-9dd4-bd327259f6e3",
+      "ID Estudiante": "cca42415-ef85-4ace-abec-70c77ef2340b",
+      "Estudiante": "TRINIDAD BEATRIZ FAUNDES PALMA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "785a10dd-ab8f-44e4-9dd4-bd327259f6e3",
+      "ID Estudiante": "cca42415-ef85-4ace-abec-70c77ef2340b",
+      "Estudiante": "TRINIDAD BEATRIZ FAUNDES PALMA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "4f429179-ca0b-44b8-a3a7-ba86bddbaed6",
+      "Estudiante": "VIOLETA AMARANTA CERDA ALCAIDE",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "4f429179-ca0b-44b8-a3a7-ba86bddbaed6",
+      "Estudiante": "VIOLETA AMARANTA CERDA ALCAIDE",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "4f429179-ca0b-44b8-a3a7-ba86bddbaed6",
+      "Estudiante": "VIOLETA AMARANTA CERDA ALCAIDE",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "38c9f70d-1084-42a5-955a-d32eada5adac",
+      "ID Estudiante": "8a8bdf3e-e5d6-44a2-9d43-2fe25908725a",
+      "Estudiante": "VIOLETA GALA MANRIQUEZ MENDOZA",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "38c9f70d-1084-42a5-955a-d32eada5adac",
+      "ID Estudiante": "8a8bdf3e-e5d6-44a2-9d43-2fe25908725a",
+      "Estudiante": "VIOLETA GALA MANRIQUEZ MENDOZA",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "38c9f70d-1084-42a5-955a-d32eada5adac",
+      "ID Estudiante": "8a8bdf3e-e5d6-44a2-9d43-2fe25908725a",
+      "Estudiante": "VIOLETA GALA MANRIQUEZ MENDOZA",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "01ef3d3e-886b-458f-a8fc-aaedc38e9e0a",
+      "ID Estudiante": "3e4c3212-bfee-4b18-b259-480db6cbcad6",
+      "Estudiante": "ZDRAVKO MIODRAG NOVAKOVICH JELDES",
+      "column": "Matrícula: N° Cuotas",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "01ef3d3e-886b-458f-a8fc-aaedc38e9e0a",
+      "ID Estudiante": "3e4c3212-bfee-4b18-b259-480db6cbcad6",
+      "Estudiante": "ZDRAVKO MIODRAG NOVAKOVICH JELDES",
+      "column": "Matrícula: Monto por Cuota",
+      "old_value": "0",
+      "new_value": ""
+    },
+    {
+      "ID Matrícula": "01ef3d3e-886b-458f-a8fc-aaedc38e9e0a",
+      "ID Estudiante": "3e4c3212-bfee-4b18-b259-480db6cbcad6",
+      "Estudiante": "ZDRAVKO MIODRAG NOVAKOVICH JELDES",
+      "column": "Matrícula: Total Anual",
+      "old_value": "0",
+      "new_value": ""
+    }
+  ]
+}

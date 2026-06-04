@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import { Card } from '../ui/Card';
@@ -6,6 +6,10 @@ import { supabase } from '../../services/supabase';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { GuardianMultiSelect } from './GuardianMultiSelect';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
+import { getStudentStatusOptions } from '../../utils/studentStatus';
+import { useCursosQuery } from '../../hooks/queries/useCursosQuery';
+import { useQueryClient } from '@tanstack/react-query';
 
 const getFreshDefaultValues = () => ({
   whole_name: '',
@@ -24,7 +28,8 @@ const getFreshDefaultValues = () => ({
   institucion_procedencia: '',
   direccion: '',
   comuna: '',
-  con_quien_vive: ''
+  con_quien_vive: '',
+  estado_std: 'MATRICULADO'
 });
 
 export function StudentFormModal({ isOpen, onClose, student = null, onSuccess }) {
@@ -32,12 +37,41 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting },
-    reset
+    reset,
+    watch,
+    setValue
   } = useForm({
+    defaultValues: getFreshDefaultValues()
   });
 
-  const [cursos, setCursos] = useState([]);
   const [selectedGuardiansInfo, setSelectedGuardiansInfo] = useState([]);
+  const [showOtherYears, setShowOtherYears] = useState(false);
+  const statusOptions = getStudentStatusOptions();
+  const { data: cursos = [] } = useCursosQuery();
+  const queryClient = useQueryClient();
+
+  const currentYear = new Date().getFullYear();
+  const selectedNivel = watch('nivel');
+
+  // Filtrar cursos: por nivel seleccionado + año académico corriente
+  const cursosFiltrados = useMemo(() => {
+    if (!selectedNivel) return [];
+    return cursos.filter(c => c.year_academico === currentYear && String(c.nivel) === String(selectedNivel));
+  }, [cursos, currentYear, selectedNivel]);
+
+  // Cursos de otros años, agrupados por año descendente
+  const cursosOtrosAnios = useMemo(() => {
+    const otros = cursos.filter(c => c.year_academico !== currentYear);
+    const grouped = {};
+    otros.forEach(c => {
+      const y = c.year_academico;
+      if (!grouped[y]) grouped[y] = [];
+      grouped[y].push(c);
+    });
+    return Object.keys(grouped)
+      .sort((a, b) => Number(b) - Number(a))
+      .map(y => ({ year: Number(y), courses: grouped[y] }));
+  }, [cursos, currentYear]);
 
   // Effect to reset form when student data changes or modal opens/closes
   useEffect(() => {
@@ -49,7 +83,16 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
           fecha_matricula: student.fecha_matricula ? format(new Date(student.fecha_matricula), 'yyyy-MM-dd') : '', // Use '' if null
           fecha_incorporacion: student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'yyyy-MM-dd') : '', // Use '' if null
           curso: (student.curso && typeof student.curso === 'object' && student.curso.id != null) ? student.curso.id : student.curso,
+          nivel: student.nivel ? String(student.nivel) : '',
+          estado_std: student.estado_std || 'MATRICULADO'
         };
+        // Auto-detect nivel from course if not set
+        if (!studentDataForForm.nivel && studentDataForForm.curso && cursos.length > 0) {
+          const cursoObj = cursos.find(c => String(c.id) === String(studentDataForForm.curso));
+          if (cursoObj && cursoObj.nivel) {
+            studentDataForForm.nivel = String(cursoObj.nivel);
+          }
+        }
         reset(studentDataForForm);
         fetchStudentGuardianAssociations(student.id);
       } else {
@@ -73,23 +116,7 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
     }
   };
 
-  useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('cursos')
-          .select('*')
-          .order('nom_curso');
-          
-        if (error) throw error;
-        setCursos(data);
-      } catch (error) {
-        console.error('Error al cargar cursos:', error);
-      }
-    };
 
-    fetchCursos();
-  }, []);
 
   const onSubmit = async (formData) => { // Renamed data to formData for clarity
     try {
@@ -128,9 +155,13 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       // --- Inicio de la corrección ---
       // Crear una copia de los datos para modificarla
       const dataToSend = { ...formData };
-      // Eliminar explícitamente la clave 'cursos' si existe.
-      // Esta clave viene de la consulta con relación y no debe enviarse al guardar/actualizar.
-      delete dataToSend.cursos;
+      // Si 'curso' es un objeto (del join PostgREST), extraer solo el UUID
+      if (dataToSend.curso && typeof dataToSend.curso === 'object') {
+        dataToSend.curso = dataToSend.curso.id;
+      }
+      if (!dataToSend.estado_std) {
+        dataToSend.estado_std = 'MATRICULADO';
+      }
       // --- Fin de la corrección ---
 
 
@@ -141,7 +172,15 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       }
 
       // Manejar el campo genero para cumplir con la restricción en la base de datos
-      const genero = dataToSend.genero || null;
+      // La BD tiene un CHECK (students_genero_check): normalizamos para evitar valores no permitidos.
+      const genero = (() => {
+        const raw = (dataToSend.genero || '').toString().trim();
+        if (!raw) return null;
+        const up = raw.toUpperCase();
+        if (up === 'MASCULINO' || up === 'FEMENINO' || up === 'NO BINARIO') return up;
+        if (up === 'NO_BINARIO') return 'NO BINARIO';
+        return null;
+      })();
 
       // Crea un nuevo objeto con solo los campos necesarios para la BD usando dataToSend
       const formattedStudentData = {
@@ -165,6 +204,8 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
         comuna: dataToSend.comuna || null,
         con_quien_vive: dataToSend.con_quien_vive || null,
         curso: dataToSend.curso
+        ,
+        estado_std: (dataToSend.estado_std || (student ? student.estado_std : null) || 'MATRICULADO').toUpperCase()
       };
 
       let studentIdToUpdate = student?.id;
@@ -254,19 +295,47 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
       }
       // --- End of association update ---
 
+      queryClient.invalidateQueries({ queryKey: ['students'] });
       onSuccess?.();
       reset();
       setSelectedGuardiansInfo([]); // Clear selection after submit
       onClose();
     } catch (error) {
-      console.error('Error:', error);
-      // Mostrar un mensaje de error más específico si es posible
-      const errorMessage = error.message?.includes("violates foreign key constraint")
-        ? "Error: El curso seleccionado no es válido."
-        : error.message?.includes("violates not-null constraint")
-        ? "Error: Faltan campos requeridos."
-        : "Error al guardar el estudiante.";
-      toast.error(errorMessage);
+      // Mejora: mostrar información más útil según el código de error de Postgres/Supabase
+      console.error('Error al registrar/actualizar estudiante:', error);
+
+      // Estructura común de errores de Supabase/PostgREST
+      const code = error?.code || error?.status || '';
+      const msg = (error?.message || '').toString();
+      const details = (error?.details || error?.hint || '').toString();
+
+      let humanMessage = 'Error al guardar el estudiante.';
+
+      // Mapeo por códigos de Postgres habituales
+      // 23505 unique_violation, 23503 foreign_key_violation, 23502 not_null_violation
+      // 42501 insufficient_privilege (incluye violación de RLS)
+      if (code === '23503' || msg.includes('foreign key constraint')) {
+        humanMessage = 'Error: El curso seleccionado no es válido (relación no encontrada).';
+      } else if (code === '23502' || msg.includes('not-null constraint')) {
+        humanMessage = 'Error: Faltan campos requeridos o están vacíos.';
+      } else if (code === '23505' || msg.toLowerCase().includes('duplicate key') || msg.toLowerCase().includes('already exists')) {
+        // RUN duplicado u otra restricción única
+        humanMessage = 'Error: Ya existe un registro con estos datos (verifique RUN o campos únicos).';
+      } else if (code === '42501' || msg.toLowerCase().includes('row-level security') || msg.toLowerCase().includes('rls')) {
+        humanMessage = 'Permisos insuficientes (RLS). Contacte a un administrador para habilitar la acción.';
+      } else if (msg.includes('violates foreign key constraint')) {
+        humanMessage = 'Error: El curso seleccionado no es válido.';
+      } else if (msg.includes('violates not-null constraint')) {
+        humanMessage = 'Error: Faltan campos requeridos.';
+      }
+
+      // Añadir detalles si existen y estamos en entorno de desarrollo
+      const isDev = import.meta?.env?.MODE !== 'production';
+      if (isDev && details) {
+        humanMessage += `\n${details}`;
+      }
+
+      toast.error(humanMessage);
     }
   };
 
@@ -318,18 +387,24 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     RUN *
                   </label>
-                  <input
-                    type="text"
-                    {...register('run', { 
+                  {(() => {
+                    const { onChange, ...rest } = register('run', { 
                       required: !student ? 'Este campo es requerido' : false,
-                      pattern: !student ? {
-                        value: /^\d{7,8}-[\dkK]$/,
-                        message: 'RUN inválido (ej: 12345678-9)'
-                      } : undefined
-                    })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    disabled={!!student} // Ensures field is disabled if student exists
-                  />
+                      validate: !student ? (value) => isRutFormatValid(value) || 'Formato de RUN inválido' : undefined
+                    });
+                    return (
+                      <input
+                        type="text"
+                        {...rest}
+                        onChange={(e) => {
+                          e.target.value = formatRut(e.target.value);
+                          onChange(e);
+                        }}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        disabled={!!student} // Ensures field is disabled if student exists
+                      />
+                    );
+                  })()}
                   {errors.run && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
                   )}
@@ -354,35 +429,126 @@ export function StudentFormModal({ isOpen, onClose, student = null, onSuccess })
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Curso *
+                    Nivel *
                   </label>
-                  <select
-                    {...register('curso', { required: 'Este campo es requerido' })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  >
-                    <option value="">Seleccionar curso</option>
-                    {cursos.map(curso => (
-                      <option key={curso.id} value={curso.id}>
-                        {curso.nom_curso} ({curso.year_academico || 'Sin año'})
-                      </option>
-                    ))}
-                  </select>
-                  {errors.curso && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.curso.message}</p>
+                  {(() => {
+                    const { onChange, ...rest } = register('nivel', { required: 'Este campo es requerido' });
+                    return (
+                      <select
+                        {...rest}
+                        onChange={(e) => {
+                          onChange(e);
+                          setValue('curso', '', { shouldValidate: false });
+                        }}
+                        className="w-full px-4 py-2 rounded-lg border-2 border-primary bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      >
+                        <option value="">Seleccionar nivel</option>
+                        <option value="110">110 - Básica</option>
+                        <option value="310">310 - Media</option>
+                      </select>
+                    );
+                  })()}
+                  {errors.nivel && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nivel.message}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nivel *
+                    Curso {currentYear} *
                   </label>
-                  <input
-                    type="text"
-                    {...register('nivel', { required: 'Este campo es requerido' })}
+                  <select
+                    {...register('curso', { required: 'Este campo es requerido' })}
+                    disabled={!selectedNivel}
+                    className={`w-full px-4 py-2 rounded-lg border-2 border-primary bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary ${!selectedNivel ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <option value="">
+                      {selectedNivel ? `— Seleccionar curso (${currentYear}) —` : '— Primero seleccione un nivel —'}
+                    </option>
+                    {cursosFiltrados.map(curso => (
+                      <option key={curso.id} value={curso.id}>
+                        {curso.nom_curso}
+                      </option>
+                    ))}
+                  </select>
+                  {cursosOtrosAnios.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOtherYears(true)}
+                      className="mt-1 text-xs text-primary hover:text-primary-light underline"
+                    >
+                      Ver cursos de otros años ({cursosOtrosAnios.map(g => g.year).join(', ')})
+                    </button>
+                  )}
+                  {errors.curso && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.curso.message}</p>
+                  )}
+
+                  {/* Popup modal para seleccionar cursos de otros años */}
+                  {showOtherYears && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+                      <div className="bg-white dark:bg-dark-card rounded-xl shadow-xl p-6 max-w-md w-full max-h-[70vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Cursos de otros años</h3>
+                          <button
+                            type="button"
+                            onClick={() => setShowOtherYears(false)}
+                            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        {cursosOtrosAnios.map(group => (
+                          <div key={group.year} className="mb-4">
+                            <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 border-b pb-1">
+                              Año {group.year}
+                            </h4>
+                            <div className="space-y-1">
+                              {group.courses.map(curso => (
+                                <button
+                                  key={curso.id}
+                                  type="button"
+                                  onClick={() => {
+                                    const nivelVal = curso.nivel ? String(curso.nivel) : '';
+                                    if (nivelVal) setValue('nivel', nivelVal, { shouldValidate: true, shouldDirty: true });
+                                    setValue('curso', curso.id, { shouldValidate: true, shouldDirty: true });
+                                    setShowOtherYears(false);
+                                  }}
+                                  className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-primary/10 text-gray-700 dark:text-gray-300 transition-colors"
+                                >
+                                  {curso.nom_curso}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setShowOtherYears(false)}
+                          className="mt-4 w-full py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium"
+                        >
+                          Cerrar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Estado de Matrícula *
+                  </label>
+                  <select
+                    {...register('estado_std', { required: 'Este campo es requerido' })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
-                  {errors.nivel && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nivel.message}</p>
+                  >
+                    {statusOptions.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Mantén Pre-Matriculado (valor MATRICULADO) hasta firmar los contratos físicos; luego cambia a Confirmado (valor ACTIVO) o Retirado cuando corresponda.</p>
+                  {errors.estado_std && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.estado_std.message}</p>
                   )}
                 </div>
 

@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { format } from 'date-fns';
 import { Card } from '../ui/Card';
+import { TabsContainer, TabButton } from '../ui/Tabs';
 import { StudentFormModal } from './StudentFormModal';
 import { GuardianDetailsModal } from '../guardians/GuardianDetailsModal';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { useStudentMutations } from '../../hooks/mutations/useStudentMutations';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
+import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'No especificada';
@@ -17,19 +21,28 @@ const formatDate = (dateString) => {
 };
 
 export function StudentDetailsModal({ student, onClose, onSuccess }) { 
+  const { updateStudent } = useStudentMutations();
   if (!student) return null;
 
   const [isEditing, setIsEditing] = useState(false);
+    const studentStatus = deriveStudentStatusFromRecord(student);
+    const friendlyStatus = getStudentStatusLabel(studentStatus);
+
   const [guardians, setGuardians] = useState([]);
   const [loadingGuardians, setLoadingGuardians] = useState(true);
   const [viewingGuardian, setViewingGuardian] = useState(null); // NEW
   const [editingFieldKey, setEditingFieldKey] = useState(null); // null | 'run' | 'email' | etc.
   const [fieldEditValue, setFieldEditValue] = useState('');
   const [isSavingField, setIsSavingField] = useState(false);
+  const [academicRecords, setAcademicRecords] = useState([]);
+  const [loadingRecords, setLoadingRecords] = useState(true);
+  const [expandedYear, setExpandedYear] = useState(null);
+  const [activeTab, setActiveTab] = useState('datos');
 
   // Fetch guardian data when component mounts
   useEffect(() => {
     fetchGuardians();
+    fetchAcademicRecords();
   }, [student.id]);
 
   const fetchGuardians = async () => {
@@ -85,6 +98,83 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
     onSuccess?.();
   };
 
+  const fetchAcademicRecords = async () => {
+    if (!student?.id) return;
+    try {
+      setLoadingRecords(true);
+
+      // Fetch enrollments for this student across all years
+      const { data: enrollmentLinks, error: elError } = await supabase
+        .from('enrollment_students')
+        .select(`
+          enrollment_id,
+          enrollments:enrollment_id (
+            id,
+            year,
+            status,
+            guardian_id,
+            guardians:guardian_id ( first_name, last_name )
+          )
+        `)
+        .eq('student_id', student.id);
+
+      if (elError) throw elError;
+
+      // Fetch all cursos this student has been assigned to (via the student record + any matching cursos)
+      const { data: allCursos, error: cursosError } = await supabase
+        .from('cursos')
+        .select('id, nom_curso, year_academico')
+        .eq('id', student.curso);
+
+      if (cursosError) throw cursosError;
+
+      // Fetch fee summary per year for this student
+      const { data: fees, error: feesError } = await supabase
+        .from('fee')
+        .select('year_academico, status, amount')
+        .eq('student_id', student.id);
+
+      if (feesError) throw feesError;
+
+      // Build timeline records grouped by year
+      const yearMap = {};
+
+      // Process enrollments
+      (enrollmentLinks || []).forEach(link => {
+        const enrollment = link.enrollments;
+        if (!enrollment) return;
+        const yr = enrollment.year;
+        if (!yearMap[yr]) yearMap[yr] = { year: yr, enrollmentStatus: null, guardianName: null, curso: null, feesPaid: 0, feesTotal: 0 };
+        yearMap[yr].enrollmentStatus = enrollment.status;
+        if (enrollment.guardians) {
+          yearMap[yr].guardianName = `${enrollment.guardians.first_name || ''} ${enrollment.guardians.last_name || ''}`.trim();
+        }
+      });
+
+      // Process current curso
+      (allCursos || []).forEach(c => {
+        const yr = c.year_academico;
+        if (!yearMap[yr]) yearMap[yr] = { year: yr, enrollmentStatus: null, guardianName: null, curso: null, feesPaid: 0, feesTotal: 0 };
+        yearMap[yr].curso = c.nom_curso;
+      });
+
+      // Process fees
+      (fees || []).forEach(f => {
+        const yr = f.year_academico;
+        if (!yearMap[yr]) yearMap[yr] = { year: yr, enrollmentStatus: null, guardianName: null, curso: null, feesPaid: 0, feesTotal: 0 };
+        yearMap[yr].feesTotal += 1;
+        if (f.status === 'paid') yearMap[yr].feesPaid += 1;
+      });
+
+      const records = Object.values(yearMap).sort((a, b) => b.year - a.year);
+      setAcademicRecords(records);
+    } catch (error) {
+      console.error('Error fetching academic records:', error);
+    } finally {
+      setLoadingRecords(false);
+    }
+  };
+
   const handleFieldEditClick = (fieldKey, currentValue) => {
     setEditingFieldKey(fieldKey);
     setFieldEditValue(currentValue || '');
@@ -105,8 +195,8 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !/^(\\d{1,3}(?:\\.\\d{3})*)-?([\\dkK])$/.test(fieldEditValue)) {
-      toast.error('Formato de RUT inválido');
+    if (fieldKey === 'run' && !isRutFormatValid(fieldEditValue)) {
+      toast.error('Formato de RUN inválido');
       return;
     }
     // Add more specific validations if needed for other fields like dates
@@ -128,15 +218,7 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
 
     setIsSavingField(true);
     try {
-      const updateData = { [fieldKey]: fieldEditValue };
-      
-      const { error } = await supabase
-        .from('students')
-        .update(updateData)
-        .eq('id', student.id);
-
-      if (error) throw error;
-
+      await updateStudent.mutateAsync({ id: student.id, data: { [fieldKey]: fieldEditValue } });
       toast.success(`${label} actualizado exitosamente.`);
       onSuccess?.(); 
       handleFieldCancel();
@@ -182,7 +264,10 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                 id={fieldKey}
                 type={inputType}
                 value={currentEditValue}
-                onChange={(e) => setFieldEditValue(e.target.value)}
+                onChange={(e) => {
+                  const newValue = fieldKey === 'run' ? formatRut(e.target.value) : e.target.value;
+                  setFieldEditValue(newValue);
+                }}
                 className="w-full px-3 py-1.5 rounded-md border border-primary dark:border-primary bg-white dark:bg-dark-input text-gray-900 dark:text-white focus:ring-1 focus:ring-primary"
                 autoFocus
               />
@@ -291,13 +376,21 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
             </div>
 
             <div className="flex-1 overflow-y-auto p-6">
+              <TabsContainer>
+                <TabButton active={activeTab === 'datos'} onClick={() => setActiveTab('datos')}>Datos</TabButton>
+                <TabButton active={activeTab === 'apoderados'} onClick={() => setActiveTab('apoderados')}>Apoderados</TabButton>
+                <TabButton active={activeTab === 'historial'} onClick={() => setActiveTab('historial')}>Historial</TabButton>
+              </TabsContainer>
+
+              {activeTab === 'datos' && (
+              <div className="mt-4">
               {/* Student details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {renderDetailItem('Curso', 'curso', student.cursos?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
+                {renderDetailItem('Curso', 'curso', student.curso?.nom_curso, 'text')} {/* Assuming curso is an object, might need specific handling if ID is stored */}
                 {renderDetailItem('Nombre Social', 'nombre_social', student.nombre_social, 'text')}
-                {renderDetailItem('Estado', 'fecha_retiro', student.fecha_retiro ? 'Retirado' : 'Activo', 'select', [
-                  { value: '', label: 'Activo' }, // Empty value for active
-                  { value: new Date().toISOString().split('T')[0], label: 'Retirado' } // Current date for retired, or handle differently
+                {renderDetailItem('Estado', 'fecha_retiro', friendlyStatus, 'select', [
+                  { value: '', label: 'Confirmado' },
+                  { value: new Date().toISOString().split('T')[0], label: 'Retirado' }
                 ])} {/* This needs careful handling for 'active' vs 'retired' state based on fecha_retiro */}
                 {renderDetailItem('Fecha de Matrícula', 'fecha_matricula', student.fecha_matricula, 'date')}
                 {renderDetailItem('Fecha de Incorporación', 'fecha_incorporacion', student.fecha_incorporacion, 'date')}
@@ -315,9 +408,13 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                 {renderDetailItem('Con quién vive', 'con_quien_vive', student.con_quien_vive, 'text')}
                 {student.motivo_retiro && renderDetailItem('Motivo de Retiro', 'motivo_retiro', student.motivo_retiro, 'text')}
               </div>
+              </div>
+              )}
 
+              {activeTab === 'apoderados' && (
+              <div className="mt-4">
               {/* Guardians section */}
-              <div className="mt-8">
+              <div>
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                   Apoderados Asociados
                 </h3>
@@ -381,6 +478,116 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
                   <p className="text-sm text-gray-500 dark:text-gray-400">No hay apoderados asociados.</p>
                 )}
               </div>
+              </div>
+              )}
+
+              {activeTab === 'historial' && (
+              <div className="mt-4">
+              {/* Academic History Timeline */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                  Historial Académico
+                </h3>
+                {loadingRecords ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : academicRecords.length > 0 ? (
+                  <div className="space-y-3">
+                    {academicRecords.map((record) => {
+                      const currentYear = new Date().getFullYear();
+                      const isCurrentYear = record.year === currentYear;
+                      const isExpanded = expandedYear === record.year;
+
+                      const statusLabel = record.enrollmentStatus === 'completed' ? 'Completada' :
+                        record.enrollmentStatus === 'pending' ? 'Pendiente' :
+                        record.enrollmentStatus === 'draft' ? 'Borrador' :
+                        record.enrollmentStatus === 'rejected' ? 'Rechazada' : '—';
+                      const statusColor = record.enrollmentStatus === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                        record.enrollmentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                        record.enrollmentStatus === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+
+                      return (
+                        <div
+                          key={record.year}
+                          className={`rounded-lg border transition-colors ${
+                            isCurrentYear
+                              ? 'border-primary/40 bg-primary/5 dark:bg-primary/10'
+                              : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-dark-hover'
+                          }`}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setExpandedYear(isExpanded ? null : record.year)}
+                            className="w-full flex items-center justify-between p-4 text-left"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-lg">📅</span>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {record.year}
+                                  </span>
+                                  {isCurrentYear && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary dark:text-primary-light">
+                                      Año actual
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  {record.curso || 'Sin curso asignado'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+                                {statusLabel}
+                              </span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </div>
+                          </button>
+
+                          {isExpanded && (
+                            <div className="px-4 pb-4 pt-0 border-t border-gray-200 dark:border-gray-700">
+                              <div className="grid grid-cols-2 gap-4 mt-3 text-sm">
+                                <div>
+                                  <p className="text-gray-500 dark:text-gray-400">Matrícula</p>
+                                  <p className="font-medium text-gray-900 dark:text-white">{statusLabel}</p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500 dark:text-gray-400">Cuotas</p>
+                                  <p className="font-medium text-gray-900 dark:text-white">
+                                    {record.feesTotal > 0 ? `${record.feesPaid}/${record.feesTotal} pagadas` : 'Sin cuotas'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500 dark:text-gray-400">Curso</p>
+                                  <p className="font-medium text-gray-900 dark:text-white">{record.curso || '—'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500 dark:text-gray-400">Apoderado titular</p>
+                                  <p className="font-medium text-gray-900 dark:text-white">{record.guardianName || '—'}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No hay registros académicos.</p>
+                )}
+              </div>
+              </div>
+              )}
             </div>
 
             {/* Footer */}

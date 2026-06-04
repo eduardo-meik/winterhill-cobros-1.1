@@ -1,51 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../services/supabase';
-import toast from 'react-hot-toast';
+import React, { useState } from 'react';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
 export function StudentMultiSelect({ selectedIds = [], onChange, error }) {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: students = [], isLoading: loading } = useStudentsQuery();
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const { data, error: fetchError } = await supabase
-        .from('students')
-        .select(`
-          id,
-          first_name,
-          apellido_paterno,
-          whole_name,
-          run,
-          curso,
-          cursos:curso (
-            id,
-            nom_curso
-          )
-        `)
-        .order('apellido_paterno', { ascending: true });
-
-      if (fetchError) throw fetchError;
-
-      setStudents(data || []);
-    } catch (fetchError) {
-      console.error('Error fetching students:', fetchError);
-      toast.error('Error al cargar los estudiantes');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredStudents = students.filter(student => {
     const searchLower = searchTerm.toLowerCase();
     const wholeNameMatch = student.whole_name?.toLowerCase().includes(searchLower);
     const runMatch = student.run?.toLowerCase().includes(searchLower);
-    const cursoMatch = student.cursos?.nom_curso?.toLowerCase().includes(searchLower);
+    const cursoMatch = student.curso?.nom_curso?.toLowerCase().includes(searchLower);
     return wholeNameMatch || runMatch || cursoMatch;
   });
 
@@ -84,7 +48,7 @@ export function StudentMultiSelect({ selectedIds = [], onChange, error }) {
                   {student.whole_name || `${student.apellido_paterno}, ${student.first_name}`}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {student.run} ({student.cursos?.nom_curso || 'Sin curso'})
+                  {student.run} ({student.curso?.nom_curso || 'Sin curso'})
                 </p>
               </div>
             </label>

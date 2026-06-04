@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { House, UsersThree, ChatDots, Money, ChartPie, Guardian } from './Icons';
+import { useGuardianData } from '../contexts/GuardianContext';
+import { House, UsersThree, ChatDots, Money, ChartPie, Guardian, ClipboardCheck, ArrowsRepeat, GraduationCap } from './Icons';
+import { ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN, isGuardianRole } from '../constants/roles';
 import clsx from 'clsx';
 
 /**
@@ -8,13 +10,22 @@ import clsx from 'clsx';
  * Each item defines an id, icon component, and display text
  */
 const baseMenuItems = [
-  { id: 'dashboard', icon: House, text: 'Inicio', roles: ['admin', 'asist', 'guardian', undefined] },
-  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: ['admin', 'asist'] },
-  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: ['admin', 'asist'] },
-  { id: 'payments', icon: Money, text: 'Aranceles', roles: ['admin', 'asist', 'guardian'] },
-  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: ['admin', 'asist'] },
-  { id: 'matricula', icon: Guardian, text: 'Matrícula', roles: ['admin', 'asist'] },
-  { id: 'repactacion', icon: Money, text: 'Repactación', roles: ['admin', 'asist'] }
+  { id: 'dashboard', icon: House, text: 'Inicio', roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN] },
+  { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'payments', icon: Money, text: 'Aranceles', roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN] },
+  { id: 'scheduling', icon: ClipboardCheck, text: 'Horarios', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'attendance-report', icon: ChartPie, text: 'Asistencia', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  {
+    id: 'matricula',
+    icon: ClipboardCheck,
+    text: 'Matrícula',
+    roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN],
+    condition: ({ role, guardianReady }) => !isGuardianRole(role) || guardianReady
+  },
+  { id: 'promocion', icon: GraduationCap, text: 'Promoción', roles: [ROLE_ADMIN] },
+  { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: [ROLE_ADMIN, ROLE_ASIST] }
   // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   
 ];
@@ -25,7 +36,9 @@ const baseMenuItems = [
  */
 export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick, isCollapsed, onToggleCollapse }) {
   const { user } = useAuth();
-  const role = user?.role;
+  const role = (user?.role ?? 'guardian').toLowerCase();
+  const { data: guardianData } = useGuardianData();
+  const guardianReady = role === 'guardian' && guardianData && guardianData.needsIntake === false;
   // Handle escape key to close mobile sidebar
   useEffect(() => {
     const handleEscape = (e) => {
@@ -89,7 +102,13 @@ export default function Sidebar({ isOpen, onClose, currentPage, onMenuItemClick,
             isCollapsed ? "p-2" : "p-4"
           )}>
             {baseMenuItems
-              .filter(item => !item.roles || item.roles.includes(role))
+              .filter(item => {
+                if (item.roles && !item.roles.includes(role)) return false;
+                if (item.condition) {
+                  return item.condition({ role, guardianReady, guardianData });
+                }
+                return true;
+              })
               .map((item) => {
                 const text = item.id === 'dashboard' && role === 'guardian' ? 'Bienvenida' : item.text;
                 return (

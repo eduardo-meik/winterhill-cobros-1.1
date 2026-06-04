@@ -51,7 +51,7 @@ type RequestBody = {
   to: string;
   subject: string;
   html: string;
-  type?: "receipt" | "pagare" | "other";
+  type?: "receipt" | "pagare" | "other" | "comprobante" | "prestacion";
   related_id?: string;
   attachments?: Attachment[];
 };
@@ -59,6 +59,7 @@ type RequestBody = {
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const MAX_TOTAL_ATTACHMENT_BYTES = 10 * 1024 * 1024; // 10MB
 const MAX_ATTACHMENTS = 5;
+const BCC_EMAIL = "secretariaadministrativa@winterhillenlinea.cl";
 
 function base64ByteLength(b64: string): number {
   // Approximate: 3/4 of length minus padding
@@ -90,6 +91,13 @@ async function sendViaResend(from: string, payload: RequestBody, apiKey: string)
     subject: payload.subject,
     html: payload.html,
   };
+
+  // BCC for receipts and contracts
+  const t = (payload.type || "").toLowerCase();
+  if (["receipt", "pagare", "comprobante", "prestacion"].includes(t)) {
+    body.bcc = BCC_EMAIL;
+  }
+
   if (payload.attachments && payload.attachments.length > 0) {
     body.attachments = payload.attachments.map((a) => ({
       filename: a.filename,
@@ -134,6 +142,13 @@ async function sendViaMailtrap(from: string, payload: RequestBody, apiKey: strin
     subject: payload.subject,
     html: payload.html,
   };
+
+  // BCC for receipts and contracts
+  const t = (payload.type || "").toLowerCase();
+  if (["receipt", "pagare", "comprobante", "prestacion"].includes(t)) {
+    body.bcc = [{ email: BCC_EMAIL }];
+  }
+
   if (payload.attachments && payload.attachments.length > 0) {
     body.attachments = payload.attachments.map((a) => ({
       filename: a.filename,
@@ -302,8 +317,14 @@ Deno.serve(async (req: Request) => {
   // Log outcome (service role bypasses RLS)
   // Don't fail the request if logging fails
   try {
+    // Map incoming type to valid DB type for logging
+    let dbType = "other";
+    const t = (body.type || "").toLowerCase();
+    if (t === "receipt" || t === "comprobante") dbType = "receipt";
+    else if (t === "pagare" || t === "prestacion") dbType = "pagare";
+
     await adminClient.from("email_logs").insert({
-      type: body.type ?? "other",
+      type: dbType,
       to_email: body.to,
       related_id: body.related_id ?? null,
       user_id: userId,

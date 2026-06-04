@@ -1,10 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { Card } from '../ui/Card';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { adminUpsertGuardianIntake, adminSubmitGuardianIntake } from '../../services/guardianIntake';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
 
 // Default values for a new guardian
 const initialDefaultValues = {
@@ -22,6 +26,12 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
+  const { user } = useAuth();
+  const isStaff = user?.profile === 'ADMIN' || user?.profile === 'ASIST';
+  const [extendToIntake, setExtendToIntake] = useState(isStaff);
+  const [autoLaunchWizard, setAutoLaunchWizard] = useState(isStaff);
+  const [autoOpenIntakeEditor, setAutoOpenIntakeEditor] = useState(isStaff);
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: guardian ? guardian : initialDefaultValues // Use guardian data if editing
@@ -34,6 +44,54 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
       reset(initialDefaultValues);
     }
   }, [guardian, reset]);
+
+  useEffect(() => {
+    if (!guardian && isStaff) {
+      setExtendToIntake(true);
+      setAutoLaunchWizard(true);
+      setAutoOpenIntakeEditor(true);
+    } else {
+      setExtendToIntake(false);
+      setAutoLaunchWizard(false);
+      setAutoOpenIntakeEditor(false);
+    }
+  }, [isStaff, guardian]);
+
+  const buildIntakePayload = (formValues) => {
+    const lastNameRaw = formValues.last_name?.trim() || '';
+    const lastParts = lastNameRaw.split(/\s+/).filter(Boolean);
+    const paterno = lastParts[0] || lastNameRaw || null;
+    const materno = lastParts.slice(1).join(' ') || null;
+
+    // Guardian ↔ intake column mapping for staff-created surveys
+    return {
+      guardian_first_name: formValues.first_name,
+      guardian_last_name_paterno: paterno,
+      guardian_last_name_materno: materno,
+      guardian_relationship: formValues.relationship_type,
+      guardian_rut: formValues.run,
+      guardian_address: formValues.address || null,
+      guardian_commune: formValues.comuna || null,
+      guardian_email: formValues.email || null,
+      guardian_phone: formValues.phone || null,
+      // Student placeholders to keep the survey in draft until MatriculaWizard completes it
+      student_first_names: 'Pendiente',
+      student_last_name_paterno: null,
+      student_last_name_materno: null,
+      student_run: 'PENDIENTE',
+      student_course: null,
+      status: 'draft'
+    };
+  };
+
+  const handleOpenIntakeEditor = () => {
+    if (!guardian?.id) {
+      toast.error('Guarda el apoderado antes de abrir la encuesta completa.');
+      return;
+    }
+    onClose?.();
+    navigate(`/apoderado/encuesta?guardianId=${guardian.id}`);
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -48,7 +106,6 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
           .maybeSingle();
 
         if (checkError) {
-          console.error('Error checking for existing guardian:', checkError);
           toast.error('Error al verificar el RUN');
           setIsSaving(false); // Ensure saving state is reset
           return;
@@ -71,17 +128,24 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
           .eq('id', guardian.id);
         
         if (updateError) {
-          console.error('Error updating guardian:', updateError);
           throw updateError;
         }
         toast.success('Apoderado actualizado exitosamente');
 
       } else { // Otherwise, create a new guardian
+        const { data: authUser, error: authError } = await supabase.auth.getUser();
+        if (authError) {
+          throw authError;
+        }
+        const ownerId = authUser?.user?.id || user?.id || null;
+        if (!ownerId) {
+          throw new Error('No se pudo determinar el usuario autenticado para guardar al apoderado.');
+        }
         const { data: newGuardian, error: insertError } = await supabase
           .from('guardians')
           .insert([{
             ...data,
-            owner_id: (await supabase.auth.getUser()).data.user.id,
+            owner_id: ownerId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }])
@@ -89,7 +153,6 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
           .single();
 
         if (insertError) {
-          console.error('Error creating guardian:', insertError);
           throw insertError;
         }
 
@@ -110,11 +173,54 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
             // Do not return early, allow success callback and modal close
           }
         }
+
+        if (isStaff && extendToIntake && newGuardian) {
+          const intakePayload = buildIntakePayload(data);
+          try {
+            await adminUpsertGuardianIntake(newGuardian.id, intakePayload);
+            try {
+              await adminSubmitGuardianIntake(newGuardian.id);
+              await adminUpsertGuardianIntake(newGuardian.id, intakePayload);
+              toast.success('Encuesta de matrícula preparada');
+            } catch (submitError) {
+              console.warn('No se pudo finalizar la encuesta de matrícula', submitError);
+              toast('Encuesta creada, pero deberás completarla manualmente.', { icon: '⚠️' });
+            }
+          } catch (intakeError) {
+            console.warn('No se pudo preparar la encuesta de matrícula', intakeError);
+            toast('Apoderado creado, pero no se pudo preparar la encuesta de matrícula.', { icon: '⚠️' });
+          }
+        }
         toast.success('Apoderado registrado exitosamente');
+
+        if (isStaff && autoOpenIntakeEditor && !guardian && newGuardian) {
+          navigate(`/apoderado/encuesta?guardianId=${newGuardian.id}`, {
+            state: { from: 'guardian-form', staffMode: true }
+          });
+        } else if (autoLaunchWizard && isStaff && !guardian && newGuardian) {
+          const snapshot = {
+            id: newGuardian.id,
+            first_name: newGuardian.first_name,
+            last_name: newGuardian.last_name,
+            run: newGuardian.run,
+            email: newGuardian.email,
+            phone: newGuardian.phone,
+            address: newGuardian.address,
+            comuna: newGuardian.comuna
+          };
+          navigate('/matricula', {
+            state: {
+              guardianId: newGuardian.id,
+              guardianSnapshot: snapshot,
+              from: 'guardian-form'
+            }
+          });
+        }
       }
 
       onSuccess?.();
       reset(); // Reset form after successful submission
+      setSelectedStudentIds([]);
       onClose();
     } catch (error) {
       console.error('Error:', error);
@@ -141,6 +247,7 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
               </Dialog.Title>
               <button
                 onClick={onClose}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -196,18 +303,24 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         RUT *
                       </label>
-                      <input
-                        type="text"
-                        {...register('run', { 
-                          required: !guardian ? 'Este campo es requerido' : false, // RUT is required only for new guardians
-                          pattern: !guardian ? { // Apply pattern only for new guardians
-                            value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
-                            message: 'Formato de RUT inválido'
-                          } : undefined
-                        })}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        disabled={!!guardian} // Disable RUN field if editing an existing guardian
-                      />
+                      {(() => {
+                        const { onChange, ...rest } = register('run', { 
+                          required: !guardian ? 'Este campo es requerido' : false,
+                          validate: !guardian ? (value) => isRutFormatValid(value) || 'Formato de RUT inválido' : undefined
+                        });
+                        return (
+                          <input
+                            type="text"
+                            {...rest}
+                            onChange={(e) => {
+                              e.target.value = formatRut(e.target.value);
+                              onChange(e);
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            disabled={!!guardian} // Disable RUN field if editing an existing guardian
+                          />
+                        );
+                      })()}
                       {errors.run && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
                       )}
@@ -303,6 +416,56 @@ export function GuardianFormModal({ isOpen, onClose, onSuccess, guardian = null 
                       />
                     </div>
                   </div>
+
+                  {isStaff && (
+                    <div className="col-span-2 space-y-2 p-3 border rounded-lg bg-gray-50 dark:bg-dark-hover">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={extendToIntake}
+                          onChange={(e) => setExtendToIntake(e.target.checked)}
+                        />
+                        Completar encuesta de matrícula al guardar
+                      </label>
+                      <p className="text-xs text-gray-500">
+                        Crea un borrador en <strong>guardian_intake_surveys</strong> usando los datos ingresados. La encuesta permanece en estado MATRICULADO hasta que el equipo termine el proceso.
+                      </p>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={autoLaunchWizard}
+                          onChange={(e) => setAutoLaunchWizard(e.target.checked)}
+                        />
+                        Abrir asistente de matrícula al cerrar
+                      </label>
+                      <p className="text-xs text-gray-500">Redirige al MatriculaWizard en modo asistido con este apoderado preseleccionado.</p>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={autoOpenIntakeEditor}
+                          onChange={(e) => setAutoOpenIntakeEditor(e.target.checked)}
+                        />
+                        Abrir encuesta completa al guardar
+                      </label>
+                      <p className="text-xs text-gray-500">Lleva al formulario integral para completar todos los campos inmediatamente.</p>
+                      <div className="pt-1">
+                        <button
+                          type="button"
+                          onClick={handleOpenIntakeEditor}
+                          disabled={!guardian?.id}
+                          className="text-sm font-medium text-primary hover:underline disabled:text-gray-400"
+                        >
+                          Abrir encuesta completa ahora
+                        </button>
+                        {!guardian?.id && (
+                          <p className="text-xs text-gray-500">Guarda el apoderado para habilitar esta acción.</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
             </form>
 
             {/* Footer */}

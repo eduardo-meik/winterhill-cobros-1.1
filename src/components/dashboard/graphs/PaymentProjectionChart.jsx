@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../../ui/Card';
+import { ChartSkeleton } from '../../ui/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '../../../services/supabase';
+import { useFeesQuery } from '../../../hooks/queries/useFeesQuery';
 import { format, parseISO, startOfMonth, addMonths } from 'date-fns';
-import toast from 'react-hot-toast';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -28,78 +28,44 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export function PaymentProjectionChart() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function PaymentProjectionChart({ academicYear }) {
+  const { data: fees = [], isLoading: loading } = useFeesQuery();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const data = useMemo(() => {
+    const now = new Date();
+    const monthlyData = {};
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+    for (let i = 0; i < 6; i++) {
+      const monthDate = addMonths(now, i);
+      const monthKey = startOfMonth(monthDate).toISOString();
+      monthlyData[monthKey] = {
+        month: format(monthDate, 'MMM yyyy'),
+        projected: 0,
+        actual: 0
+      };
+    }
 
-      const { data: fees, error } = await supabase
-        .from('fee')
-        .select('amount, status, due_date, payment_date')
-        .order('due_date', { ascending: true });
-
-      if (error) throw error;
-
-      const now = new Date();
-      const monthlyData = {};
-
-      // Initialize next 6 months
-      for (let i = 0; i < 6; i++) {
-        const monthDate = addMonths(now, i);
-        const monthKey = startOfMonth(monthDate).toISOString();
-        monthlyData[monthKey] = {
-          month: format(monthDate, 'MMM yyyy'),
-          projected: 0,
-          actual: 0
-        };
+    fees.forEach(fee => {
+      if (!feeHasValidDueDate(fee)) {
+        return;
       }
 
-      // Process fees
-      fees.forEach(fee => {
-        const dueDate = parseISO(fee.due_date);
-        const monthKey = startOfMonth(dueDate).toISOString();
-        
-        if (monthlyData[monthKey]) {
-          const amount = parseFloat(fee.amount);
-          monthlyData[monthKey].projected += amount;
-          
-          if (fee.status === 'paid') {
-            monthlyData[monthKey].actual += amount;
-          }
+      const dueDate = parseISO(fee.due_date);
+      const monthKey = startOfMonth(dueDate).toISOString();
+      if (monthlyData[monthKey]) {
+        const amount = parseFloat(fee.amount);
+        monthlyData[monthKey].projected += amount;
+        if (fee.status === 'paid') {
+          monthlyData[monthKey].actual += amount;
         }
-      });
+      }
+    });
 
-      setData(Object.values(monthlyData));
-    } catch (err) {
-      console.error('Error fetching payment projection data:', err);
-      toast.error('Error al cargar las proyecciones de pago');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return Object.values(monthlyData);
+  }, [fees]);
 
   if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <h2 className="text-gray-900 dark:text-white text-lg font-semibold">
-            Proyección de Pagos
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <ChartSkeleton title="Proyección de Pagos" />;
   }
 
   return (
@@ -135,4 +101,8 @@ export function PaymentProjectionChart() {
       </CardContent>
     </Card>
   );
+}
+
+function feeHasValidDueDate(fee) {
+  return typeof fee?.due_date === 'string' && fee.due_date.trim() !== '';
 }

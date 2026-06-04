@@ -10,10 +10,16 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
  * - onSave: (chequesArray) => void
  * - initialData?: Array<{ numero_cuota, numero_serie, banco, fecha_emision, monto, notas }>
  * - cantidadCuotas: number
- * - montoCuota?: number
+ * - montoCuota?: number (monto por cuota total, ya con descuentos)
+ * - diaVencimiento?: number (día del mes para generar vencimientos desde marzo)
+ * - year?: number (año académico de la matrícula)
  */
-export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], cantidadCuotas = 1, montoCuota = 0 }) {
+export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], cantidadCuotas = 1, montoCuota = 0, diaVencimiento, year }) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const montoCuotaBase = useMemo(
+    () => Math.max(0, Number(montoCuota) || 0),
+    [montoCuota]
+  );
   const [rows, setRows] = useState(() => {
     const N = Math.max(1, Number(cantidadCuotas) || 1);
     const base = Array.from({ length: N }, (_, i) => ({
@@ -21,14 +27,24 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
       numero_serie: '',
       banco: '',
       fecha_emision: today,
-      monto: montoCuota || 0,
+      monto: montoCuotaBase,
       notas: ''
     }));
-    // Apply initialData if provided
+    // Apply initialData if provided (sanitize null/undefined to avoid warnings)
     if (Array.isArray(initialData) && initialData.length) {
       initialData.forEach((r) => {
         const idx = (r.numero_cuota ? r.numero_cuota - 1 : -1);
-        if (idx >= 0 && idx < base.length) base[idx] = { ...base[idx], ...r };
+        if (idx >= 0 && idx < base.length) {
+          base[idx] = {
+            ...base[idx],
+            numero_cuota: r.numero_cuota ?? base[idx].numero_cuota,
+            numero_serie: r.numero_serie ?? '',
+            banco: r.banco ?? '',
+            fecha_emision: r.fecha_emision ?? today,
+            monto: r.monto ?? montoCuotaBase,
+            notas: r.notas ?? ''
+          };
+        }
       });
     }
     return base;
@@ -36,22 +52,41 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
 
   const [errors, setErrors] = useState({});
 
-  // Adjust rows when cantidadCuotas changes
+  // Sincronizar filas con cantidadCuotas e initialData reactivamente
+  // Se ejecuta cuando cambian cantidadCuotas, initialData o montoCuotaBase (no depende de isOpen)
   useEffect(() => {
     const N = Math.max(1, Number(cantidadCuotas) || 1);
-    setRows((prev) => {
-      const next = [...prev];
-      if (next.length < N) {
-        for (let i = next.length; i < N; i++) {
-          next.push({ numero_cuota: i + 1, numero_serie: '', banco: '', fecha_emision: today, monto: montoCuota || 0, notas: '' });
+    const base = Array.from({ length: N }, (_, i) => ({
+      numero_cuota: i + 1,
+      numero_serie: '',
+      banco: '',
+      fecha_emision: today,
+      monto: montoCuotaBase,
+      notas: ''
+    }));
+
+    // Aplicar initialData si existe (preservar datos existentes)
+    if (Array.isArray(initialData) && initialData.length) {
+      initialData.forEach((r) => {
+        const idx = (r.numero_cuota ? r.numero_cuota - 1 : -1);
+        if (idx >= 0 && idx < base.length) {
+          // Sanitize null/undefined values to avoid controlled→uncontrolled warnings
+          base[idx] = {
+            ...base[idx],
+            numero_cuota: r.numero_cuota ?? base[idx].numero_cuota,
+            numero_serie: r.numero_serie ?? '',
+            banco: r.banco ?? '',
+            fecha_emision: r.fecha_emision ?? today,
+            monto: r.monto ?? montoCuotaBase,
+            notas: r.notas ?? ''
+          };
         }
-      } else if (next.length > N) {
-        next.length = N; // truncate
-      }
-      // re-number cuotas to ensure 1..N
-      return next.map((r, i) => ({ ...r, numero_cuota: i + 1 }));
-    });
-  }, [cantidadCuotas, montoCuota, today]);
+      });
+    }
+
+    setRows(base);
+    setErrors({});
+  }, [cantidadCuotas, initialData, montoCuotaBase, today]);
 
   const setField = (idx, field, value) => {
     setRows((prev) => prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r)));
@@ -72,11 +107,32 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
   };
 
   const handleAutoFill = () => {
-    setRows((prev) => prev.map((r) => ({ ...r, monto: montoCuota || r.monto || 0, fecha_emision: r.fecha_emision || today })));
+    setRows((prev) => {
+      const N = prev.length;
+      const baseDay = Number(diaVencimiento) && Number(diaVencimiento) > 0 ? Math.min(28, Number(diaVencimiento)) : null;
+      const baseYear = Number(year) || new Date().getFullYear();
+
+      // Buscar primer banco no vacío para usarlo como default
+      const firstBanco = prev.find(r => r.banco && r.banco.trim())?.banco || '';
+
+      const buildDate = (monthOffset) => {
+        if (!baseDay) return today;
+        const monthIndex = 2 + monthOffset; // 2 = marzo (0-based)
+        const d = new Date(Date.UTC(baseYear, monthIndex, baseDay));
+        return d.toISOString().slice(0, 10);
+      };
+
+      return prev.map((r, idx) => ({
+        ...r,
+        monto: montoCuotaBase,
+        fecha_emision: buildDate(idx),
+        banco: firstBanco || r.banco || '',
+      }));
+    });
   };
 
   const handleReset = () => {
-    setRows((prev) => prev.map((r) => ({ ...r, numero_serie: '', banco: '', fecha_emision: today, monto: montoCuota || 0, notas: '' })));
+    setRows((prev) => prev.map((r) => ({ ...r, numero_serie: '', banco: '', fecha_emision: today, monto: montoCuotaBase, notas: '' })));
     setErrors({});
   };
 
@@ -102,9 +158,13 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
         <CardHeader>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">🧾 Cheques por Cuota</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
+            <button onClick={onClose} aria-label="Cerrar" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
           </div>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Definiste {cantidadCuotas} cuotas. Completa los datos de cada cheque. Usa “Autocompletar” para rellenar montos = monto por cuota.</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+            Definiste {cantidadCuotas} cuotas. Completa los datos de cada cheque.
+            Usa “Autocompletar” para rellenar automáticamente el monto de cada cheque con el monto por cuota total
+            (sumando todos los estudiantes y aplicando descuentos) y las fechas de emisión mensuales desde marzo según el día de vencimiento definido.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2 mb-3">
@@ -136,7 +196,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           className={`w-full px-2 py-1 border rounded ${errors[`${idx}.numero_serie`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-800 dark:text-white`}
                           placeholder="Ej: 123456789"
                         />
-                        {errors[`${idx}.numero_serie`] && <div className="text-red-500 text-xs">{errors[`${idx}.numero_serie`]}</div>}
+                        {errors[`${idx}.numero_serie`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.numero_serie`]}</p>}
                       </td>
                       <td className="px-3 py-2 min-w-[160px]">
                         <select
@@ -159,7 +219,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           <option value="BICE">BICE</option>
                           <option value="Otro">Otro</option>
                         </select>
-                        {errors[`${idx}.banco`] && <div className="text-red-500 text-xs">{errors[`${idx}.banco`]}</div>}
+                        {errors[`${idx}.banco`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.banco`]}</p>}
                       </td>
                       <td className="px-3 py-2 w-44">
                         <input
@@ -168,7 +228,7 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           onChange={(e) => setField(idx, 'fecha_emision', e.target.value)}
                           className={`w-full px-2 py-1 border rounded ${errors[`${idx}.fecha_emision`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-800 dark:text-white`}
                         />
-                        {errors[`${idx}.fecha_emision`] && <div className="text-red-500 text-xs">{errors[`${idx}.fecha_emision`]}</div>}
+                        {errors[`${idx}.fecha_emision`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.fecha_emision`]}</p>}
                       </td>
                       <td className="px-3 py-2 w-40">
                         <input
@@ -176,10 +236,10 @@ export function ChequesDataModal({ isOpen, onClose, onSave, initialData = [], ca
                           min="1"
                           step="1"
                           value={r.monto}
-                          onChange={(e) => setField(idx, 'monto', e.target.value)}
+                          onChange={(e) => setField(idx, 'monto', Number(e.target.value))}
                           className={`w-full px-2 py-1 border rounded ${errors[`${idx}.monto`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-800 dark:text-white`}
                         />
-                        {errors[`${idx}.monto`] && <div className="text-red-500 text-xs">{errors[`${idx}.monto`]}</div>}
+                        {errors[`${idx}.monto`] && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[`${idx}.monto`]}</p>}
                       </td>
                       <td className="px-3 py-2">
                         <input

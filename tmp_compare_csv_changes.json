@@ -1,0 +1,1839 @@
+{
+  "changed_rows": 83,
+  "column_counts": {
+    "Aranceles: Forma de Pago": 25,
+    "Matrícula: N° Cuotas": 60,
+    "Matrícula: Monto por Cuota": 53,
+    "Matrícula: Total Anual": 52,
+    "Aranceles: N° Cuotas": 11,
+    "Aranceles: Monto Cuota Mínimo": 9,
+    "Aranceles: Monto Cuota Máximo": 9,
+    "Aranceles: Total": 9,
+    "Aranceles: N° Cuota Mínima": 9,
+    "Aranceles: N° Cuota Máxima": 9,
+    "Matrícula: Forma de Pago": 2
+  },
+  "rows": [
+    {
+      "ID Matrícula": "f1b103fb-4400-471f-8d2a-4dd789326207",
+      "ID Estudiante": "04e6c1a6-e72c-4ccc-aa13-9e900fa3be97",
+      "Estudiante": "ELEONORA PUEBLA MORENO",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "ID Estudiante": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "Estudiante": "MAYA AURORA MERA GARCÍA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fa19b9ee-9765-487f-b052-b96d8ca2828f",
+      "ID Estudiante": "08b2dd2d-0739-46fc-8a4d-19e9013ca0de",
+      "Estudiante": "FLORENCIA AYALÉN TERUEL",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "TRANSFERENCIA",
+          "copy": "CHEQUE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "ID Estudiante": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "Estudiante": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "Estudiante": "HELENA MAILEN BRIONES FIGUEROA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "diffs": [
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "102870.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "102870.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "1028700.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "10",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "ID Estudiante": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "Estudiante": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "ID Estudiante": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "Estudiante": "EMILIO GAEL CONTRERAS VERGARA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "ID Estudiante": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "Estudiante": "PASCUALA ANTONIA LABORDE SALINAS",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "ID Estudiante": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "Estudiante": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "ID Estudiante": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "Estudiante": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "5ad7dbf2-7183-4c93-a9ad-d700bed09ef7",
+      "ID Estudiante": "3317705f-7dd3-49ca-b547-21b3155fd611",
+      "Estudiante": "RENATA EMILIA IRARRAZABAL BASAEZ",
+      "diffs": [
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "0",
+          "copy": "102870"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "0",
+          "copy": "1028700"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "9abd66dc-36cb-42e9-a24e-c7224e8d0951",
+      "ID Estudiante": "3a283002-2d43-4568-bd8c-d0fa2463cc81",
+      "Estudiante": "ALELI ARAYA AGUILAR",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "e23eab60-d5cd-49e5-90a8-189104140ce8",
+      "ID Estudiante": "3ae7a468-3363-4790-9ea5-62cd39ab111f",
+      "Estudiante": "CONSTANZA PAZ CARRASCO SEPULVEDA",
+      "diffs": [
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "1202870",
+          "copy": "102870"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "12028700",
+          "copy": "1028700"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "40812bca-c859-4aab-b744-e017cd94d974",
+      "Estudiante": "GASPAR TOMAS CARREÑO SOTO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "SIN_DATO",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "10",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "ID Estudiante": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "Estudiante": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "Estudiante": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "ID Estudiante": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "Estudiante": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "68178644-172b-4e34-9d03-d86125492c65",
+      "ID Estudiante": "4c57b31c-4a96-4ac5-88ff-cdb827f4d862",
+      "Estudiante": "DAMIAN IGNACIO MIRANDA ALVAREZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "7",
+          "copy": "10"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "4f429179-ca0b-44b8-a3a7-ba86bddbaed6",
+      "Estudiante": "VIOLETA AMARANTA CERDA ALCAIDE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "7de67eb0-a861-4879-95eb-d5ef4246d8cc",
+      "ID Estudiante": "55e0c792-a2b9-4712-a4d7-a4ae4cd2d4d4",
+      "Estudiante": "GASPAR LUCIANO RODRÍGUEZ ESTEFANÍA",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "6599447f-fd35-4d28-99dd-888c99ee2a62",
+      "ID Estudiante": "5945ab89-9c94-4cd6-95ab-5a5767d2bb47",
+      "Estudiante": "MATIAS ANKATU CASTRO CORREA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "1",
+          "copy": "10"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "1331260",
+          "copy": "133126"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "ID Estudiante": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "Estudiante": "BRISA OLIVIA AVDALOV SAGREDO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "102870.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "102870.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "1028700.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "10",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "ID Estudiante": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "Estudiante": "TAHIEL NICANOR DIAZ URICH",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "604757cf-8b2e-4987-a1f9-5b8630e35eac",
+      "Estudiante": "SIMON MIJAHIL GONZALEZ PEDRAZA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "ID Estudiante": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "Estudiante": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "613cc43a-5a69-4136-a98f-6813c7186388",
+      "Estudiante": "FIORELLA PAZ BAGNARA ORTIZ",
+      "diffs": [
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "ID Estudiante": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "Estudiante": "DANTE VELKAN MEDINA SEPULVEDA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "64153345-58a7-4027-95c7-2ba709e62461",
+      "Estudiante": "OLIVER MILOVAN VARGAS CASTRO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b64ea244-c5f3-4b3e-a585-d8bb7f2ba257",
+      "ID Estudiante": "65189315-ca98-4cb3-b9d6-8ff2eb8e80e1",
+      "Estudiante": "LUKAS ALONSO GATICA DIAZ",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "9755e5d1-e54f-4443-884b-721219622d77",
+      "ID Estudiante": "66bf4d83-cb55-4acc-8658-c714f82c5f0e",
+      "Estudiante": "VIOLETA BEATRIZ GUERRERO BIRKE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "4",
+          "copy": "10"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "e47e19b6-75ea-4ff6-9d8d-40a97e56b53a",
+      "ID Estudiante": "67bc9321-1484-4d62-b46f-5ab24648d0db",
+      "Estudiante": "ISAAC MAXIMILIANO CABRERA VRIES",
+      "diffs": [
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "0",
+          "copy": "10"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "SIN_FEE",
+          "copy": "PAGARE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "",
+          "copy": "102870.00"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "",
+          "copy": "102870.00"
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "",
+          "copy": "1028700.00"
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "",
+          "copy": "1"
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "",
+          "copy": "10"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "ID Estudiante": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "Estudiante": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "1",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "TARJETA",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "1028700.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "1028700.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "1028700.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "1",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "ID Estudiante": "6952432f-f7ab-4774-9ef6-1d9d050f1892",
+      "Estudiante": "LETICIA COLOMBA ALARCÓN HUERTA",
+      "diffs": [
+        {
+          "column": "Matrícula: Forma de Pago",
+          "original": "SIN_DATO",
+          "copy": "PAGARE"
+        },
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "10"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "102870"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "1028700"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "1",
+          "copy": "10"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "Estudiante": "PASCAL ISIDORA ARAYA SILVA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "124f2fcb-ee42-47a1-8e52-180919137c32",
+      "ID Estudiante": "6c1e2c95-9d30-4eba-a4bc-a3dd5454bb17",
+      "Estudiante": "AMANDA FRANCISCA SALINAS VELIZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "9",
+          "copy": "10"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "89c47263-df33-49ce-9bbf-10dcf4d19c00",
+      "ID Estudiante": "74b29b66-f821-468f-8308-a41f213dcf58",
+      "Estudiante": "THOMAS VALENTIN LASNIER FIGUEROA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "0",
+          "copy": "10"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "1028700",
+          "copy": "102870"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "1",
+          "copy": "10"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "ID Estudiante": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "Estudiante": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "138f0e5e-6d4d-4ff9-8f06-603cea01c9cc",
+      "ID Estudiante": "76efd3a1-8586-46f6-ab08-96ba11ef3334",
+      "Estudiante": "PASCAL ALUDY VEGA PLAZA",
+      "diffs": [
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "12870",
+          "copy": "102870"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "128700",
+          "copy": "1028700"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "794a4776-1e12-40c8-b8d6-1e8f0441ed45",
+      "ID Estudiante": "77e94297-b89a-4d0d-829e-8aa373449d14",
+      "Estudiante": "MIGUEL ESTEBAN VICUÑA PÉREZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "1",
+          "copy": "10"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "1331260",
+          "copy": "133126"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "Estudiante": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "ID Estudiante": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "Estudiante": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "SIN_DATO",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "10",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "9d5d6220-74d6-4fc6-9a8a-242f6d65d0dd",
+      "ID Estudiante": "8131019a-9414-471a-95d2-65087f949cb7",
+      "Estudiante": "MONSERRAT ESPINOZA REYES",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "83e031f7-5fae-4c1b-b562-a4a421f352d9",
+      "Estudiante": "SALVADOR AUKAN CERDA ALCAIDE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "403769b3-aaee-4b41-a25a-10134cb9140e",
+      "ID Estudiante": "83ea7cec-45c4-4b60-b89e-f141671108ed",
+      "Estudiante": "SANTIAGO RODRIGO BUSTOS ARIAS",
+      "diffs": [
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "SIN_DATO",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "10",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "Estudiante": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "ID Estudiante": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "Estudiante": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "Estudiante": "ISAAC GAEL PEÑA LOPEZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "112800",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "cfde4fbb-f707-414d-b112-e8b6979c390f",
+      "ID Estudiante": "94c70054-2428-4e84-9a84-bbafb3171e51",
+      "Estudiante": "NADIA UMAÑA GONZALEZ",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "1715e001-1157-403f-8e86-66e7d5dd97c2",
+      "ID Estudiante": "97e49951-e13c-4438-856b-5a9b6db38602",
+      "Estudiante": "BASTIAN ANGEL MAICKOLL LOYOLA GRONDONA",
+      "diffs": [
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "0",
+          "copy": "102870"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "0",
+          "copy": "1028700"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "7f9d1595-3c22-4df7-bd43-e2994acc205f",
+      "ID Estudiante": "9ce9f734-8aa7-4440-81b8-ba98466f14df",
+      "Estudiante": "AMANDA TORRES FERNANDEZ",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "ID Estudiante": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "Estudiante": "RODRIGO LEÓN VALDÉS MATURANA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "f95055bd-fcae-4262-872f-47646d335b17",
+      "ID Estudiante": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "Estudiante": "GASPAR ANDRÉS ARAYA LARA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "a0999f25-89ae-40ca-b77d-b9d9b73009af",
+      "ID Estudiante": "ae3988c6-e33a-4cd2-acd8-a47898445e59",
+      "Estudiante": "RENATA RAYEN AVILA TELLO",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "ID Estudiante": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "Estudiante": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fba5295b-2960-4398-8ed7-ac1f6ab0cedb",
+      "ID Estudiante": "b4719a36-da47-4bbd-9950-8755d3c195b7",
+      "Estudiante": "FLORENCIA GALAZ DURÁN",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "9",
+          "copy": "10"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "ID Estudiante": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "Estudiante": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "ID Estudiante": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "Estudiante": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "ID Estudiante": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "Estudiante": "PAZ MIA CORTES BASCUÑAN",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "37725c84-7cca-48ff-9c28-bea450663896",
+      "ID Estudiante": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "Estudiante": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "diffs": [
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "ID Estudiante": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "Estudiante": "MATILDA MAGDALENA GODOY DIDIER",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "Estudiante": "ENZO MARIO BAGNARA ORTIZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "ID Estudiante": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "Estudiante": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "Estudiante": "LUCAS MIGUEL CARREÑO SOTO",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "SIN_DATO",
+          "copy": "SIN_FEE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "0.00",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "1",
+          "copy": ""
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "10",
+          "copy": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "Estudiante": "LU AMADOR BENÍTEZ ALCAIDE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "cb22756d-b14c-4828-ad6e-1d440b43cfc8",
+      "Estudiante": "FACUNDO AMARO IDE RIOS",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "Estudiante": "LUKAS ANDRÉS CANELO GAETE",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "0df0822d-53aa-456d-8677-0a12b5e29895",
+      "ID Estudiante": "d29967d7-ddaf-46e9-9e51-9e3e98c18d63",
+      "Estudiante": "ARA IGNACIA SILVA VARGAS",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "Estudiante": "MAGDALENA LUNA IDE RIOS",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "ID Estudiante": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "Estudiante": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "Estudiante": "BORJA LEON MORAGA RIQUELME",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "ID Estudiante": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "Estudiante": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "1028700",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "ID Estudiante": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "Estudiante": "LEÓN IGNACIO TORRES MOLINA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "d407e4ba-fb8e-4c6e-b547-46448ee4a06d",
+      "ID Estudiante": "e0bf1072-fbec-4732-aa38-4b892db92a9f",
+      "Estudiante": "AGUSTINA ALARCÓN HERRERA",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "CHEQUE|TRANSFERENCIA",
+          "copy": "CHEQUE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "f972167c-5003-4247-b8be-0a89536b6d51",
+      "ID Estudiante": "e0fb9baf-658b-402f-8443-2fb6f0484458",
+      "Estudiante": "VICENTE SALVADOR SALINAS CARRASCO",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "ID Estudiante": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "Estudiante": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "Estudiante": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "ID Estudiante": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "Estudiante": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "80a6e309-c49e-436f-ac1d-d63b45ced2ee",
+      "ID Estudiante": "fb2b948d-6e42-4ce8-9034-c2991c3d3145",
+      "Estudiante": "SALVADOR ALONSO MORENO BUSTAMANTE",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "a1468139-53fd-4677-8f72-267c998eea43",
+      "ID Estudiante": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "Estudiante": "FERNANDO JAVIER MORALES MOYA",
+      "diffs": [
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "10",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "102870",
+          "copy": "0"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "",
+          "copy": "0"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "f160be4e-e9a9-48e8-87f6-903cf8e57ca1",
+      "ID Estudiante": "feb6954d-6ad9-4ab7-b2c9-e8fd2d5297f2",
+      "Estudiante": "MAILEN AMANDA ADASME SILVA",
+      "diffs": [
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "PAGARE|TRANSFERENCIA",
+          "copy": "PAGARE"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "07aa90fc-9a60-4de1-a1b8-1636d9d8c06c",
+      "ID Estudiante": "ff66c43d-8f12-4921-aa9d-5a306a9234e6",
+      "Estudiante": "SOFIA ELIZABETH AVENDAÑO LUNA",
+      "diffs": [
+        {
+          "column": "Matrícula: Forma de Pago",
+          "original": "PRIORITARIO",
+          "copy": "PAGARE"
+        },
+        {
+          "column": "Matrícula: N° Cuotas",
+          "original": "0",
+          "copy": "10"
+        },
+        {
+          "column": "Matrícula: Monto por Cuota",
+          "original": "0",
+          "copy": "102870"
+        },
+        {
+          "column": "Matrícula: Total Anual",
+          "original": "0",
+          "copy": "1028700"
+        },
+        {
+          "column": "Aranceles: N° Cuotas",
+          "original": "0",
+          "copy": "10"
+        },
+        {
+          "column": "Aranceles: Forma de Pago",
+          "original": "SIN_FEE",
+          "copy": "PAGARE"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Mínimo",
+          "original": "",
+          "copy": "102870.00"
+        },
+        {
+          "column": "Aranceles: Monto Cuota Máximo",
+          "original": "",
+          "copy": "102870.00"
+        },
+        {
+          "column": "Aranceles: Total",
+          "original": "",
+          "copy": "1028700.00"
+        },
+        {
+          "column": "Aranceles: N° Cuota Mínima",
+          "original": "",
+          "copy": "1"
+        },
+        {
+          "column": "Aranceles: N° Cuota Máxima",
+          "original": "",
+          "copy": "10"
+        }
+      ]
+    }
+  ]
+}

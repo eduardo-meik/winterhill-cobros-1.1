@@ -1,134 +1,118 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/Button';
+import { isStaffRole } from '../constants/roles';
 import { StatCard } from './dashboard/StatCard';
 import { DebtTrendChart } from './dashboard/graphs/DebtTrendChart';
 import { DebtDistributionChart } from './dashboard/graphs/DebtDistributionChart';
 import { PaymentProjectionChart } from './dashboard/graphs/PaymentProjectionChart';
 import { DebtorsTable } from './dashboard/DebtorsTable';
-import { supabase } from '../services/supabase';
-import toast from 'react-hot-toast';
-import { format, subMonths } from 'date-fns';
+import { YearComparisonChart } from './dashboard/graphs/YearComparisonChart';
+import { StatCardSkeleton } from './ui/Skeleton';
+import { useFeesQuery } from '../hooks/queries/useFeesQuery';
+import { useAcademicYear } from '../contexts/AcademicYearContext';
+import { subMonths } from 'date-fns';
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState(true);
-  const [metrics, setMetrics] = useState({
-    activeDebtors: 0,
-    totalDebt: 0,
-    projectedIncome: 0,
-    delinquencyRate: 0,
-    previousDelinquencyRate: 0
+  const { user } = useAuth();
+  const { academicYear } = useAcademicYear();
+
+  // MJ-04: refetchOnWindowFocus replaces the manual visibilitychange listener
+  const { data: fees = [], isLoading: loading, error: feesError } = useFeesQuery(academicYear, {
+    refetchOnWindowFocus: 'always',
   });
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const metrics = useMemo(() => {
+    if (!fees.length) return { activeDebtors: 0, totalDebt: 0, projectedIncome: 0, delinquencyRate: 0, previousDelinquencyRate: 0 };
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch all fees
-      const { data: fees, error } = await supabase
-        .from('fee')
-        .select(`
-          *,
-          student:students (
-            id,
-            first_name, 
-            apellido_paterno,
-            curso:cursos!students_curso_fkey(
-              nom_curso
-            )
-          )
-        `);
+    const now = new Date();
+    const lastMonth = subMonths(now, 1);
 
-      if (error) throw error;
+    // Filter fees to the selected academic year
+    const yearFees = fees.filter(f => f.year_academico === academicYear);
+    if (!yearFees.length) return { activeDebtors: 0, totalDebt: 0, projectedIncome: 0, delinquencyRate: 0, previousDelinquencyRate: 0 };
 
-      // Calculate metrics
-      const now = new Date();
-      const lastMonth = subMonths(now, 1);
-      
-      const activeDebtors = new Set(
-        fees.filter(f => f.status !== 'paid').map(f => f.student_id)
-      ).size;
+    const activeDebtors = new Set(
+      yearFees.filter(f => f.status !== 'paid').map(f => f.student_id)
+    ).size;
 
-      const totalDebt = fees
-        .filter(f => f.status !== 'paid')
-        .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
+    const totalDebt = yearFees
+      .filter(f => f.status !== 'paid')
+      .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
 
-      const projectedIncome = fees
-        .filter(f => f.status === 'pending')
-        .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
+    const projectedIncome = yearFees
+      .filter(f => f.status === 'pending')
+      .reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
 
-      const currentOverdue = fees.filter(f => f.status === 'overdue').length;
-      const previousOverdue = fees.filter(f => 
-        f.status === 'overdue' && 
-        new Date(f.due_date) <= lastMonth
-      ).length;
+    const currentOverdue = yearFees.filter(f => f.status === 'overdue').length;
+    const previousOverdue = yearFees.filter(f =>
+      f.status === 'overdue' &&
+      new Date(f.due_date) <= lastMonth
+    ).length;
 
-      const delinquencyRate = (currentOverdue / fees.length) * 100;
-      const previousDelinquencyRate = (previousOverdue / fees.length) * 100;
+    const delinquencyRate = (currentOverdue / yearFees.length) * 100;
+    const previousDelinquencyRate = (previousOverdue / yearFees.length) * 100;
 
-      setMetrics({
-        activeDebtors,
-        totalDebt,
-        projectedIncome,
-        delinquencyRate,
-        previousDelinquencyRate
-      });
-
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Error al cargar los datos del dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return { activeDebtors, totalDebt, projectedIncome, delinquencyRate, previousDelinquencyRate };
+  }, [fees, academicYear]);
 
   return (
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap justify-between gap-3 p-4">
-          <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+          </div>
           <DashboardActions />
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-          <StatCard 
-            title="Deudores Activos" 
-            value={loading ? '...' : metrics.activeDebtors} 
-            icon="users"
-          />
-          <StatCard 
-            title="Deuda Total" 
-            value={loading ? '...' : `$${Math.round(metrics.totalDebt).toLocaleString()}`}
-            icon="money"
-          />
-          <StatCard 
-            title="Ingresos Proyectados" 
-            value={loading ? '...' : `$${Math.round(metrics.projectedIncome).toLocaleString()}`}
-            icon="chart"
-          />
-          <StatCard 
-            title="Tasa de Morosidad" 
-            value={loading ? '...' : `${metrics.delinquencyRate.toFixed(1)}%`}
-            change={`${(metrics.delinquencyRate - metrics.previousDelinquencyRate).toFixed(1)}%`}
-            changeType={metrics.delinquencyRate < metrics.previousDelinquencyRate ? 'decrease' : 'increase'}
-            icon="alert"
-          />
+          {loading ? (
+            <>
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </>
+          ) : (
+            <>
+              <StatCard 
+                title="Deudores Activos" 
+                value={metrics.activeDebtors} 
+                icon="users"
+              />
+              <StatCard 
+                title="Deuda Total" 
+                value={`$${Math.round(metrics.totalDebt).toLocaleString()}`}
+                icon="money"
+              />
+              <StatCard 
+                title="Ingresos Proyectados" 
+                value={`$${Math.round(metrics.projectedIncome).toLocaleString()}`}
+                icon="chart"
+              />
+              <StatCard 
+                title="Tasa de Morosidad" 
+                value={`${metrics.delinquencyRate.toFixed(1)}%`}
+                change={`${(metrics.delinquencyRate - metrics.previousDelinquencyRate).toFixed(1)}%`}
+                changeType={metrics.delinquencyRate < metrics.previousDelinquencyRate ? 'decrease' : 'increase'}
+                icon="alert"
+              />
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
           <div className="lg:col-span-2 space-y-4">
-            <DebtTrendChart />
-            <PaymentProjectionChart />
+            <DebtTrendChart academicYear={academicYear} />
+            <PaymentProjectionChart academicYear={academicYear} />
+            <YearComparisonChart academicYear={academicYear} />
           </div>
           
           <div className="space-y-4">
-            <DebtDistributionChart />
-            <DebtorsTable />
+            <DebtDistributionChart academicYear={academicYear} />
+            <DebtorsTable academicYear={academicYear} />
           </div>
         </div>
       </div>
@@ -139,9 +123,7 @@ export default function Dashboard() {
 function DashboardActions() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const role = user?.role?.toLowerCase();
-  const canMatricular = role === 'admin' || role === 'asist';
-  if (!canMatricular) return null;
+  if (!isStaffRole(user?.role)) return null;
   return (
     <div className="flex items-center gap-2">
       <Button

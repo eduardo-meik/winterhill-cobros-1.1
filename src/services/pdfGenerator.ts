@@ -1,6 +1,3 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-
 export interface PDFGenerationOptions {
   htmlContent: string;
   filename?: string;
@@ -19,342 +16,159 @@ export interface PDFGenerationOptions {
     keywords?: string;
     creator?: string;
   };
+  assetBaseUrl?: string;
 }
 
-/**
- * Add professional header with logo (aligned left) - REDUCIDO AL 25%
- */
-async function addPDFHeader(pdf: jsPDF, pageWidth: number, folioNumber?: string): Promise<number> {
-  const headerHeight = 20; // mm - REDUCIDO de 35 a 20 (aprox 25% menos)
-  const leftMargin = 15;
-  
-  // Logo (aligned to the left, proportional) - MÁS PEQUEÑO
-  try {
-    const logoImg = new Image();
-    logoImg.src = '/logo-winterhill.png';
-    await new Promise((resolve, reject) => {
-      logoImg.onload = resolve;
-      logoImg.onerror = reject;
-      setTimeout(reject, 3000); // 3s timeout
-    });
-    
-    // Calculate proportional dimensions (maintaining aspect ratio) - REDUCIDO
-    const maxLogoWidth = 20; // Reducido de 35 a 20
-    const maxLogoHeight = 15; // Reducido de 25 a 15
-    const logoAspectRatio = logoImg.width / logoImg.height;
-    
-    let logoWidth = maxLogoWidth;
-    let logoHeight = logoWidth / logoAspectRatio;
-    
-    // Adjust if height exceeds max
-    if (logoHeight > maxLogoHeight) {
-      logoHeight = maxLogoHeight;
-      logoWidth = logoHeight * logoAspectRatio;
-    }
-    
-    // Add logo (left-aligned)
-    pdf.addImage(logoImg, 'PNG', leftMargin, 5, logoWidth, logoHeight);
-  } catch (error) {
-    console.warn('Logo not loaded, skipping header image');
+const DEFAULT_PDF_SERVICE_URL = 'https://pdf-service-3ypq.onrender.com/api/render-pdf';
+// Increase timeout to 120s to handle cold starts (Render free tier)
+const PDF_SERVICE_TIMEOUT_MS = Math.max(Number(import.meta.env?.VITE_PDF_SERVICE_TIMEOUT_MS || '120000'), 120000);
+
+type RemoteMarginPayload =
+  | number
+  | {
+      top?: number;
+      right?: number;
+      bottom?: number;
+      left?: number;
+    };
+
+interface RemotePDFRequest {
+  html: string;
+  assetBaseUrl?: string;
+  options: {
+    format: string;
+    landscape: boolean;
+    margin: RemoteMarginPayload;
+    printBackground: boolean;
+    displayHeaderFooter?: boolean;
+    headerTemplate?: string;
+    footerTemplate?: string;
+  };
+  metadata?: PDFGenerationOptions['metadata'];
+  watermark?: string;
+  guardianRun?: string;
+  folioNumber?: string;
+  includeHeader?: boolean;
+  includeSignatureSection?: boolean;
+}
+
+export async function generatePDFFromHTML(options: PDFGenerationOptions): Promise<Blob> {
+  // Para contratos y documentos legales, usamos SIEMPRE el servicio remoto
+  // basado en Puppeteer. No se hace fallback a html2canvas/jsPDF.
+  return generatePuppeteerPDFFromHTML(options);
+}
+
+function resolveAssetBaseUrl(candidate?: string): string | undefined {
+  const trimmed = candidate?.trim();
+  if (trimmed && /^https?:\/\//i.test(trimmed)) {
+    return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
   }
-  
-  // School name and RUT (aligned with logo on the right side) - MÁS COMPACTO
-  const textStartX = 40; // Reducido de 55 a 40
-  
-  pdf.setFontSize(9); // Reducido de 12 a 9
-  pdf.setFont('helvetica', 'bold');
-  pdf.text('CORPORACIÓN EDUCACIONAL WINTERHILL', textStartX, 10);
-  
-  pdf.setFontSize(7); // Reducido de 10 a 7
-  pdf.setFont('helvetica', 'normal');
-  pdf.text('RUT: 65.152.884-4 | Viña del Mar', textStartX, 14);
-  
-  // Add folio number (top right corner)
-  if (folioNumber) {
-    pdf.setFontSize(8); // Reducido de 10 a 8
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(`FOLIO N° ${folioNumber}`, pageWidth - 15, 8, { align: 'right' });
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    const origin = window.location.origin;
+    return origin.endsWith('/') ? origin : `${origin}/`;
   }
-  
-  // Horizontal line below header - MÁS DELGADA
-  pdf.setDrawColor(0, 51, 102); // Dark blue
-  pdf.setLineWidth(0.5); // Reducido de 0.8 a 0.5
-  pdf.line(15, headerHeight + 2, pageWidth - 15, headerHeight + 2);
-  
-  return headerHeight + 5; // Return content start position - REDUCIDO
+
+  return undefined;
 }
 
-/**
- * Add signature section at bottom with BOXES
- */
-function addSignatureSection(
-  pdf: jsPDF, 
-  pageWidth: number, 
-  pageHeight: number,
-  guardianRun?: string
-) {
-  const signatureY = pageHeight - 65; // Más espacio
-  
-  // Horizontal line above signatures
-  pdf.setDrawColor(0, 0, 0);
-  pdf.setLineWidth(0.5);
-  pdf.line(15, signatureY, pageWidth - 15, signatureY);
-  
-  // Title
-  pdf.setFontSize(11);
-  pdf.setFont('helvetica', 'bold');
-  pdf.text('FIRMAS:', 20, signatureY + 8);
-  
-  // Signature boxes
-  const col1X = 25;
-  const col2X = pageWidth / 2 + 10;
-  const boxY = signatureY + 12;
-  const boxWidth = 75;
-  const boxHeight = 35;
-  
-  // BOX 1 - APODERADO/A (con borde)
-  pdf.setDrawColor(0, 51, 102); // Dark blue border
-  pdf.setLineWidth(0.8);
-  pdf.rect(col1X, boxY, boxWidth, boxHeight);
-  
-  // Signature line inside box
-  pdf.setDrawColor(0, 0, 0);
-  pdf.setLineWidth(0.3);
-  const sigLineY = boxY + 22;
-  pdf.line(col1X + 10, sigLineY, col1X + boxWidth - 10, sigLineY);
-  
-  // Labels inside box
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'bold');
-  pdf.text('APODERADO/A', col1X + boxWidth / 2, boxY + 6, { align: 'center' });
-  
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8);
-  if (guardianRun && guardianRun !== '11111111-1') {
-    pdf.text(`RUN: ${guardianRun}`, col1X + boxWidth / 2, sigLineY + 5, { align: 'center' });
-  } else {
-    pdf.text('RUN: _______________', col1X + boxWidth / 2, sigLineY + 5, { align: 'center' });
-  }
-  pdf.text('Firma', col1X + boxWidth / 2, sigLineY - 3, { align: 'center' });
-  
-  // BOX 2 - CORPORACIÓN WINTERHILL (con borde)
-  pdf.setDrawColor(0, 51, 102); // Dark blue border
-  pdf.setLineWidth(0.8);
-  pdf.rect(col2X, boxY, boxWidth, boxHeight);
-  
-  // Signature line inside box
-  pdf.setDrawColor(0, 0, 0);
-  pdf.setLineWidth(0.3);
-  pdf.line(col2X + 10, sigLineY, col2X + boxWidth - 10, sigLineY);
-  
-  // Labels inside box
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'bold');
-  pdf.text('CORPORACIÓN WINTERHILL', col2X + boxWidth / 2, boxY + 6, { align: 'center' });
-  
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8);
-  pdf.text('RUT: 65.152.884-4', col2X + boxWidth / 2, boxY + 12, { align: 'center' });
-  pdf.text('Firma', col2X + boxWidth / 2, sigLineY - 3, { align: 'center' });
-  pdf.text('Representante Legal', col2X + boxWidth / 2, sigLineY + 5, { align: 'center' });
-  
-  // Date and place
-  pdf.setFontSize(8);
-  pdf.setFont('helvetica', 'normal');
-  pdf.text(`Viña del Mar, ${new Date().toLocaleDateString('es-CL')}`, pageWidth / 2, boxY + boxHeight + 8, {
-    align: 'center'
-  });
-}
-
-// Watermark inline helper (no declarative unused warnings)
-function _applyWatermark(pdf: jsPDF, pageWidth: number, pageHeight: number, text: string) {
-  pdf.setFontSize(60);
-  pdf.setTextColor(220, 220, 220);
-  pdf.setFont('helvetica', 'bold');
-  pdf.text(text, pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
-  pdf.setTextColor(0, 0, 0);
-}
-
-/**
- * Add page numbers to all pages
- */
-function addPageNumbers(pdf: jsPDF, pageWidth: number, pageHeight: number) {
-  const totalPages = pdf.getNumberOfPages();
-  
-  for (let i = 1; i <= totalPages; i++) {
-    pdf.setPage(i);
-    pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setTextColor(100, 100, 100); // Gray
-    pdf.text(
-      `Página ${i} de ${totalPages}`,
-      pageWidth / 2,
-      pageHeight - 10,
-      { align: 'center' }
-    );
-    pdf.setTextColor(0, 0, 0); // Reset to black
-  }
-}
-
-/**
- * Generate PDF from HTML content with professional styling
- */
-export async function generatePDFFromHTML(
-  options: PDFGenerationOptions
-): Promise<Blob> {
+function buildRemotePayload(options: PDFGenerationOptions): RemotePDFRequest {
   const {
     htmlContent,
     orientation = 'portrait',
-    format = 'a4',
+    format = 'letter',
     margin = 20,
     includeHeader = true,
     includeSignatureSection = true,
     watermark,
     guardianRun,
     folioNumber,
-    metadata
+    metadata,
+    assetBaseUrl,
   } = options;
-  // touch watermark to satisfy strict no-unused checks in some toolchains
-  // (real use occurs at the end when adding optional watermark)
-  void watermark;
 
-  // Create PDF
-  const pdf = new jsPDF({
-    orientation,
-    unit: 'mm',
-    format
-  });
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  
-  let contentStartY = margin;
-
-  // Add header with logo and folio
-  if (includeHeader) {
-    contentStartY = await addPDFHeader(pdf, pageWidth, folioNumber);
+  if (!htmlContent || typeof htmlContent !== 'string') {
+    throw new Error('Se requiere htmlContent para generar el PDF');
   }
 
-  // Create temporary container for HTML
-  const container = document.createElement('div');
-  container.innerHTML = htmlContent;
-  container.style.position = 'absolute';
-  container.style.left = '-9999px';
-  // Ajustes de layout: evitar doble margen/padding y respetar estilos del template
-  // Usamos el ancho efectivo del contenido (sin padding interno extra)
-  container.style.width = `${pageWidth - 2 * margin}mm`;
-  container.style.padding = '0';
-  container.style.margin = '0';
-  container.style.backgroundColor = 'white';
-  // No forzamos tipografía ni tamaños para respetar el HTML fuente (más compacto)
-  container.style.color = '#000';
-  
-  // Add professional styling to content - MANTENER SALTOS DE LÍNEA
-  // Dejamos que el HTML defina alineación/espaciado; solo aseguramos el wrap correcto
-  container.style.whiteSpace = 'normal';
-  container.style.wordWrap = 'break-word';
-  
-  // Estilos para tablas (evitar sobreposición)
-  const tables = container.querySelectorAll('table');
-  tables.forEach(table => {
-    (table as HTMLElement).style.width = '100%';
-    (table as HTMLElement).style.borderCollapse = 'collapse';
-    (table as HTMLElement).style.pageBreakInside = 'avoid'; // Evitar corte de tabla
-    // No sobreescribimos padding/bordes/tamaños para respetar el template compacto
-  });
-  
-  document.body.appendChild(container);
+  // Custom Header Logic:
+  // If includeHeader is requested, we override the default backend header (which contains unwanted text)
+  // and instead provide a custom Puppeteer template that ONLY shows the Folio number.
+  let finalIncludeHeader = includeHeader;
+  let displayHeaderFooter = false;
+  let headerTemplate = '';
+  let footerTemplate = '';
+
+  if (includeHeader) {
+    // Disable backend's default header generation
+    finalIncludeHeader = false;
+    // Enable Puppeteer's header/footer
+    displayHeaderFooter = true;
+    
+    const folioText = folioNumber ? `Folio: ${folioNumber}` : '';
+    
+    // Custom header template: Right-aligned Folio, small font
+    // Note: Puppeteer templates require explicit font-size and margins to render correctly.
+    // We use padding to align roughly with the content margins.
+    headerTemplate = `
+      <div style="font-size: 9px; width: 100%; text-align: right; padding-right: 2cm; font-family: Arial, sans-serif; color: #333; margin-top: 10px;">
+        ${folioText}
+      </div>
+    `;
+    
+    // Empty footer to suppress default browser footer (URL, page number, etc.)
+    footerTemplate = '<div style="font-size: 0px;"></div>';
+  }
+
+  return {
+    html: htmlContent,
+    assetBaseUrl: resolveAssetBaseUrl(assetBaseUrl),
+    options: {
+      format: format.toUpperCase(),
+      landscape: orientation === 'landscape',
+      margin,
+      printBackground: true,
+      displayHeaderFooter,
+      headerTemplate,
+      footerTemplate,
+    },
+    metadata,
+    watermark,
+    guardianRun,
+    folioNumber,
+    includeHeader: finalIncludeHeader,
+    includeSignatureSection,
+  };
+}
+
+async function generatePuppeteerPDFFromHTML(options: PDFGenerationOptions): Promise<Blob> {
+  const serviceUrl = (import.meta.env?.VITE_PDF_SERVICE_URL || '').trim() || DEFAULT_PDF_SERVICE_URL;
+  const payload = buildRemotePayload(options);
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timeoutId = controller ? window.setTimeout(() => controller.abort(), PDF_SERVICE_TIMEOUT_MS) : null;
 
   try {
-    // Capture HTML as canvas
-    const canvas = await html2canvas(container, {
-      scale: 2.5, // Mayor calidad para mejor renderizado
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      windowWidth: container.scrollWidth,
-      windowHeight: container.scrollHeight,
-      imageTimeout: 0,
-      removeContainer: false
-    } as any);
-
-    // Calculate dimensions
-    const imgWidth = pageWidth - 2 * margin;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
-    // Altura disponible por página (reservando espacio realista)
-    const reservedBottom = includeSignatureSection ? 65 : 20; // mm
-    const availableHeight = pageHeight - contentStartY - reservedBottom;
-
-    let heightLeft = imgHeight;
-    let position = contentStartY;
-
-    // Add first page content
-    pdf.addImage(
-      canvas.toDataURL('image/png'),
-      'PNG',
-      margin,
-      position,
-      imgWidth,
-      imgHeight,
-      undefined,
-      'FAST'
-    );
-    
-    heightLeft -= availableHeight;
-
-    // Add additional pages if content overflows
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight + contentStartY;
-      pdf.addPage();
-      
-      // RE-ADD HEADER ON ALL PAGES (SIEMPRE)
-      if (includeHeader) {
-        await addPDFHeader(pdf, pageWidth, folioNumber);
-      }
-      
-      pdf.addImage(
-        canvas.toDataURL('image/png'),
-        'PNG',
-        margin,
-        position,
-        imgWidth,
-        imgHeight,
-        undefined,
-        'FAST'
-      );
-      
-      heightLeft -= availableHeight;
-    }
-
-    // Add signature section on last page
-    if (includeSignatureSection) {
-      addSignatureSection(pdf, pageWidth, pageHeight, guardianRun);
-    }
-
-    // ADD PAGE NUMBERS TO ALL PAGES
-    addPageNumbers(pdf, pageWidth, pageHeight);
-
-    // Opcional: Marca de agua sólo si se provee explícitamente
-    if (watermark) {
-      _applyWatermark(pdf, pageWidth, pageHeight, watermark);
-    }
-
-    // Add metadata (allow override)
-    pdf.setProperties({
-      title: metadata?.title || 'Pagaré - Contrato de Prestación de Servicios Educacionales',
-      subject: metadata?.subject || 'Contrato de Matrícula Colegio Winterhill',
-      author: metadata?.author || 'Corporación Educacional Winterhill',
-      keywords: metadata?.keywords || 'pagare, matricula, educacion, contrato',
-      creator: metadata?.creator || 'Sistema de Matrícula Winterhill'
+    const response = await fetch(serviceUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller?.signal,
     });
 
-    // Return as blob
-    return pdf.output('blob');
-    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`Remote PDF service error: ${response.status} ${errorText}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    return new Blob([arrayBuffer], { type: 'application/pdf' });
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error(`El servicio de PDF tardó demasiado (${Math.round(PDF_SERVICE_TIMEOUT_MS/1000)}s). Puede que esté "despertando", por favor intente nuevamente.`);
+    }
+    throw error;
   } finally {
-    // Cleanup
-    document.body.removeChild(container);
+    if (timeoutId) window.clearTimeout(timeoutId);
   }
 }
 

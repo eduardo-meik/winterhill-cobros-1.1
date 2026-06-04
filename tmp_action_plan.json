@@ -1,0 +1,1410 @@
+{
+  "matricula_updates": [
+    {
+      "enrollment_id": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "student_id": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "student_name": "MAYA AURORA MERA GARCÍA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "student_id": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "student_name": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "student_id": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "student_name": "HELENA MAILEN BRIONES FIGUEROA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "student_id": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "student_name": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "student_id": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "student_name": "EMILIO GAEL CONTRERAS VERGARA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "student_id": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "student_name": "PASCUALA ANTONIA LABORDE SALINAS",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "student_id": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "student_name": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "student_id": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "student_name": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "5ad7dbf2-7183-4c93-a9ad-d700bed09ef7",
+      "student_id": "3317705f-7dd3-49ca-b547-21b3155fd611",
+      "student_name": "RENATA EMILIA IRARRAZABAL BASAEZ",
+      "payment_method": "PAGARE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "e23eab60-d5cd-49e5-90a8-189104140ce8",
+      "student_id": "3ae7a468-3363-4790-9ea5-62cd39ab111f",
+      "student_name": "CONSTANZA PAZ CARRASCO SEPULVEDA",
+      "payment_method": "CHEQUE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "student_id": "40812bca-c859-4aab-b744-e017cd94d974",
+      "student_name": "GASPAR TOMAS CARREÑO SOTO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "student_id": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "student_name": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "student_id": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "student_name": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "student_id": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "student_name": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "68178644-172b-4e34-9d03-d86125492c65",
+      "student_id": "4c57b31c-4a96-4ac5-88ff-cdb827f4d862",
+      "student_name": "DAMIAN IGNACIO MIRANDA ALVAREZ",
+      "payment_method": "PAGARE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "190180",
+      "total_anual": "1331260",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "student_id": "4f429179-ca0b-44b8-a3a7-ba86bddbaed6",
+      "student_name": "VIOLETA AMARANTA CERDA ALCAIDE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "6599447f-fd35-4d28-99dd-888c99ee2a62",
+      "student_id": "5945ab89-9c94-4cd6-95ab-5a5767d2bb47",
+      "student_name": "MATIAS ANKATU CASTRO CORREA",
+      "payment_method": "CHEQUE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "133126",
+      "total_anual": "1331260",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "student_id": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "student_name": "BRISA OLIVIA AVDALOV SAGREDO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "student_id": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "student_name": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "student_id": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "student_name": "TAHIEL NICANOR DIAZ URICH",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "student_id": "604757cf-8b2e-4987-a1f9-5b8630e35eac",
+      "student_name": "SIMON MIJAHIL GONZALEZ PEDRAZA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "student_id": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "student_name": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "student_id": "613cc43a-5a69-4136-a98f-6813c7186388",
+      "student_name": "FIORELLA PAZ BAGNARA ORTIZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "student_id": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "student_name": "DANTE VELKAN MEDINA SEPULVEDA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "student_id": "64153345-58a7-4027-95c7-2ba709e62461",
+      "student_name": "OLIVER MILOVAN VARGAS CASTRO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "9755e5d1-e54f-4443-884b-721219622d77",
+      "student_id": "66bf4d83-cb55-4acc-8658-c714f82c5f0e",
+      "student_name": "VIOLETA BEATRIZ GUERRERO BIRKE",
+      "payment_method": "CHEQUE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "332815",
+      "total_anual": "1331260",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "student_id": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "student_name": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "student_id": "6952432f-f7ab-4774-9ef6-1d9d050f1892",
+      "student_name": "LETICIA COLOMBA ALARCÓN HUERTA",
+      "payment_method": "PAGARE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Forma de Pago",
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "student_id": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "student_name": "PASCAL ISIDORA ARAYA SILVA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "124f2fcb-ee42-47a1-8e52-180919137c32",
+      "student_id": "6c1e2c95-9d30-4eba-a4bc-a3dd5454bb17",
+      "student_name": "AMANDA FRANCISCA SALINAS VELIZ",
+      "payment_method": "CHEQUE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "147918",
+      "total_anual": "1331260",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "89c47263-df33-49ce-9bbf-10dcf4d19c00",
+      "student_id": "74b29b66-f821-468f-8308-a41f213dcf58",
+      "student_name": "THOMAS VALENTIN LASNIER FIGUEROA",
+      "payment_method": "PAGARE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "student_id": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "student_name": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "138f0e5e-6d4d-4ff9-8f06-603cea01c9cc",
+      "student_id": "76efd3a1-8586-46f6-ab08-96ba11ef3334",
+      "student_name": "PASCAL ALUDY VEGA PLAZA",
+      "payment_method": "CHEQUE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "794a4776-1e12-40c8-b8d6-1e8f0441ed45",
+      "student_id": "77e94297-b89a-4d0d-829e-8aa373449d14",
+      "student_name": "MIGUEL ESTEBAN VICUÑA PÉREZ",
+      "payment_method": "CHEQUE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "133126",
+      "total_anual": "1331260",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "41450c85-801e-4653-b45f-70f60e81a196",
+      "student_id": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "student_name": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "student_id": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "student_name": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "student_id": "83e031f7-5fae-4c1b-b562-a4a421f352d9",
+      "student_name": "SALVADOR AUKAN CERDA ALCAIDE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "student_id": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "student_name": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "student_id": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "student_name": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "student_id": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "student_name": "ISAAC GAEL PEÑA LOPEZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "1715e001-1157-403f-8e86-66e7d5dd97c2",
+      "student_id": "97e49951-e13c-4438-856b-5a9b6db38602",
+      "student_name": "BASTIAN ANGEL MAICKOLL LOYOLA GRONDONA",
+      "payment_method": "PAGARE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "student_id": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "student_name": "RODRIGO LEÓN VALDÉS MATURANA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "f95055bd-fcae-4262-872f-47646d335b17",
+      "student_id": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "student_name": "GASPAR ANDRÉS ARAYA LARA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "student_id": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "student_name": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "fba5295b-2960-4398-8ed7-ac1f6ab0cedb",
+      "student_id": "b4719a36-da47-4bbd-9950-8755d3c195b7",
+      "student_name": "FLORENCIA GALAZ DURÁN",
+      "payment_method": "PAGARE",
+      "prioritario": "false",
+      "cuotas": "10",
+      "monto_cuota": "114300",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "student_id": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "student_name": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "student_id": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "student_name": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "student_id": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "student_name": "PAZ MIA CORTES BASCUÑAN",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "37725c84-7cca-48ff-9c28-bea450663896",
+      "student_id": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "student_name": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "student_id": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "student_name": "MATILDA MAGDALENA GODOY DIDIER",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "student_id": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "student_name": "ENZO MARIO BAGNARA ORTIZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "student_id": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "student_name": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "student_id": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "student_name": "LUCAS MIGUEL CARREÑO SOTO",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "student_id": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "student_name": "LU AMADOR BENÍTEZ ALCAIDE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "student_id": "cb22756d-b14c-4828-ad6e-1d440b43cfc8",
+      "student_name": "FACUNDO AMARO IDE RIOS",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "student_id": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "student_name": "LUKAS ANDRÉS CANELO GAETE",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "student_id": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "student_name": "MAGDALENA LUNA IDE RIOS",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "student_id": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "student_name": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "student_id": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "student_name": "BORJA LEON MORAGA RIQUELME",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "student_id": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "student_name": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "student_id": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "student_name": "LEÓN IGNACIO TORRES MOLINA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "student_id": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "student_name": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "student_id": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "student_name": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "student_id": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "student_name": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "a1468139-53fd-4677-8f72-267c998eea43",
+      "student_id": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "student_name": "FERNANDO JAVIER MORALES MOYA",
+      "payment_method": "PRIORITARIO",
+      "prioritario": "true",
+      "cuotas": "0",
+      "monto_cuota": "0",
+      "total_anual": "0",
+      "changed_cols": [
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    },
+    {
+      "enrollment_id": "07aa90fc-9a60-4de1-a1b8-1636d9d8c06c",
+      "student_id": "ff66c43d-8f12-4921-aa9d-5a306a9234e6",
+      "student_name": "SOFIA ELIZABETH AVENDAÑO LUNA",
+      "payment_method": "PAGARE",
+      "prioritario": "true",
+      "cuotas": "10",
+      "monto_cuota": "102870",
+      "total_anual": "1028700",
+      "changed_cols": [
+        "Matrícula: Forma de Pago",
+        "Matrícula: Monto por Cuota",
+        "Matrícula: N° Cuotas",
+        "Matrícula: Total Anual"
+      ]
+    }
+  ],
+  "fee_target_updates": [
+    {
+      "enrollment_id": "f1b103fb-4400-471f-8d2a-4dd789326207",
+      "student_id": "04e6c1a6-e72c-4ccc-aa13-9e900fa3be97",
+      "student_name": "ELEONORA PUEBLA MORENO",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "fa19b9ee-9765-487f-b052-b96d8ca2828f",
+      "student_id": "08b2dd2d-0739-46fc-8a4d-19e9013ca0de",
+      "student_name": "FLORENCIA AYALÉN TERUEL",
+      "target_fee_count": "10",
+      "target_payment_method": "CHEQUE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "student_id": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "student_name": "AMANDA AYELEN PAREDES RIOS",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "5ad7dbf2-7183-4c93-a9ad-d700bed09ef7",
+      "student_id": "3317705f-7dd3-49ca-b547-21b3155fd611",
+      "student_name": "RENATA EMILIA IRARRAZABAL BASAEZ",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "99324.00",
+      "target_max_amount": "99324.00",
+      "target_total": "993240.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "9abd66dc-36cb-42e9-a24e-c7224e8d0951",
+      "student_id": "3a283002-2d43-4568-bd8c-d0fa2463cc81",
+      "student_name": "ALELI ARAYA AGUILAR",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "student_id": "40812bca-c859-4aab-b744-e017cd94d974",
+      "student_name": "GASPAR TOMAS CARREÑO SOTO",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "7de67eb0-a861-4879-95eb-d5ef4246d8cc",
+      "student_id": "55e0c792-a2b9-4712-a4d7-a4ae4cd2d4d4",
+      "student_name": "GASPAR LUCIANO RODRÍGUEZ ESTEFANÍA",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "student_id": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "student_name": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "b64ea244-c5f3-4b3e-a585-d8bb7f2ba257",
+      "student_id": "65189315-ca98-4cb3-b9d6-8ff2eb8e80e1",
+      "student_name": "LUKAS ALONSO GATICA DIAZ",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "e47e19b6-75ea-4ff6-9d8d-40a97e56b53a",
+      "student_id": "67bc9321-1484-4d62-b46f-5ab24648d0db",
+      "student_name": "ISAAC MAXIMILIANO CABRERA VRIES",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "student_id": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "student_name": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "23de1816-62e8-4509-9a66-29b80dbe43b6",
+      "student_id": "6952432f-f7ab-4774-9ef6-1d9d050f1892",
+      "student_name": "LETICIA COLOMBA ALARCÓN HUERTA",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "102870.00",
+      "target_min_installment": "1",
+      "target_max_installment": "1",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "89c47263-df33-49ce-9bbf-10dcf4d19c00",
+      "student_id": "74b29b66-f821-468f-8308-a41f213dcf58",
+      "student_name": "THOMAS VALENTIN LASNIER FIGUEROA",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "1028700.00",
+      "target_max_amount": "1028700.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "1",
+      "changed_cols": [
+        "Aranceles: N° Cuotas"
+      ]
+    },
+    {
+      "enrollment_id": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "student_id": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "student_name": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "9d5d6220-74d6-4fc6-9a8a-242f6d65d0dd",
+      "student_id": "8131019a-9414-471a-95d2-65087f949cb7",
+      "student_name": "MONSERRAT ESPINOZA REYES",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "133126.00",
+      "target_max_amount": "133126.00",
+      "target_total": "1331260.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "403769b3-aaee-4b41-a25a-10134cb9140e",
+      "student_id": "83ea7cec-45c4-4b60-b89e-f141671108ed",
+      "student_name": "SANTIAGO RODRIGO BUSTOS ARIAS",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "cfde4fbb-f707-414d-b112-e8b6979c390f",
+      "student_id": "94c70054-2428-4e84-9a84-bbafb3171e51",
+      "student_name": "NADIA UMAÑA GONZALEZ",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "133126.00",
+      "target_max_amount": "133126.00",
+      "target_total": "1331260.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "7f9d1595-3c22-4df7-bd43-e2994acc205f",
+      "student_id": "9ce9f734-8aa7-4440-81b8-ba98466f14df",
+      "student_name": "AMANDA TORRES FERNANDEZ",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "a0999f25-89ae-40ca-b77d-b9d9b73009af",
+      "student_id": "ae3988c6-e33a-4cd2-acd8-a47898445e59",
+      "student_name": "RENATA RAYEN AVILA TELLO",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "79876.00",
+      "target_max_amount": "79876.00",
+      "target_total": "798760.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "student_id": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "student_name": "LUCAS MIGUEL CARREÑO SOTO",
+      "target_fee_count": "0",
+      "target_payment_method": "SIN_FEE",
+      "target_min_amount": "",
+      "target_max_amount": "",
+      "target_total": "",
+      "target_min_installment": "",
+      "target_max_installment": "",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    },
+    {
+      "enrollment_id": "0df0822d-53aa-456d-8677-0a12b5e29895",
+      "student_id": "d29967d7-ddaf-46e9-9e51-9e3e98c18d63",
+      "student_name": "ARA IGNACIA SILVA VARGAS",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "d407e4ba-fb8e-4c6e-b547-46448ee4a06d",
+      "student_id": "e0bf1072-fbec-4732-aa38-4b892db92a9f",
+      "student_name": "AGUSTINA ALARCÓN HERRERA",
+      "target_fee_count": "10",
+      "target_payment_method": "CHEQUE",
+      "target_min_amount": "133126.00",
+      "target_max_amount": "133126.00",
+      "target_total": "1331260.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "f972167c-5003-4247-b8be-0a89536b6d51",
+      "student_id": "e0fb9baf-658b-402f-8443-2fb6f0484458",
+      "student_name": "VICENTE SALVADOR SALINAS CARRASCO",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "80a6e309-c49e-436f-ac1d-d63b45ced2ee",
+      "student_id": "fb2b948d-6e42-4ce8-9034-c2991c3d3145",
+      "student_name": "SALVADOR ALONSO MORENO BUSTAMANTE",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "133126.00",
+      "target_max_amount": "133126.00",
+      "target_total": "1331260.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "f160be4e-e9a9-48e8-87f6-903cf8e57ca1",
+      "student_id": "feb6954d-6ad9-4ab7-b2c9-e8fd2d5297f2",
+      "student_name": "MAILEN AMANDA ADASME SILVA",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "82296.00",
+      "target_max_amount": "82296.00",
+      "target_total": "822960.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago"
+      ]
+    },
+    {
+      "enrollment_id": "07aa90fc-9a60-4de1-a1b8-1636d9d8c06c",
+      "student_id": "ff66c43d-8f12-4921-aa9d-5a306a9234e6",
+      "student_name": "SOFIA ELIZABETH AVENDAÑO LUNA",
+      "target_fee_count": "10",
+      "target_payment_method": "PAGARE",
+      "target_min_amount": "102870.00",
+      "target_max_amount": "102870.00",
+      "target_total": "1028700.00",
+      "target_min_installment": "1",
+      "target_max_installment": "10",
+      "changed_cols": [
+        "Aranceles: Forma de Pago",
+        "Aranceles: Monto Cuota Máximo",
+        "Aranceles: Monto Cuota Mínimo",
+        "Aranceles: N° Cuota Máxima",
+        "Aranceles: N° Cuota Mínima",
+        "Aranceles: N° Cuotas",
+        "Aranceles: Total"
+      ]
+    }
+  ]
+}

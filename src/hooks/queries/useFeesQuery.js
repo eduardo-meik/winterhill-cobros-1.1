@@ -1,0 +1,43 @@
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '../../services/supabase';
+
+/**
+ * Shared React Query hook for fees by academic year.
+ * Uses a single "wide" select that covers all dashboard components,
+ * so React Query can deduplicate 6+ parallel requests into 1.
+ *
+ * @param {number} academicYear
+ * @param {object} [options] - extra useQuery options (enabled, select, etc.)
+ */
+export function useFeesQuery(academicYear, options = {}) {
+  // Ignoramos academicYear en el key para cachear un solo listado global
+  return useQuery({
+    queryKey: ['fees'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fee')
+        .select(`
+          *,
+          student:students (
+            id,
+            first_name,
+            apellido_paterno,
+            apellido_materno,
+            whole_name,
+            run,
+            curso:cursos (
+              id,
+              nom_curso
+            )
+          )
+        `);
+
+      if (error) {
+        throw error;
+      }
+      return data ?? [];
+    },
+    
+    ...options,
+  });
+}

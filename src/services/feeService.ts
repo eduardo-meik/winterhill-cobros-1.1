@@ -22,9 +22,11 @@ export interface Fee {
   notes: string | null;
   owner_id: string;
   fee_curso: string | null;
+  fee_curso_id?: string | null;
   numero_cuota: number | null;
   institucion_financiera: string | null;
-  year: number;
+  year: number | null;
+  year_academico: number | null;
   
   // Joined fields
   student?: {
@@ -71,7 +73,10 @@ export async function fetchGuardianFees(
   const { data, error } = await supabase
     .from('fee')
     .select(`
-      *,
+      id, student_id, guardian_id, amount, due_date, payment_date,
+      status, payment_method, num_boleta, mov_bancario, notes,
+      fee_curso, numero_cuota, institucion_financiera, year, year_academico,
+      fee_curso_rel:cursos!fee_fee_curso_fkey(nom_curso),
       students:student_id (
         id,
         first_name,
@@ -79,17 +84,16 @@ export async function fetchGuardianFees(
         apellido_materno,
         whole_name,
         run,
-        curso,
-        cursos:curso(nom_curso)
+        curso:cursos(nom_curso)
       )
     `)
     .eq('guardian_id', guardianId)
-    .eq('year', currentYear)
+    .eq('year_academico', currentYear)
     .order('due_date', { ascending: true })
     .order('numero_cuota', { ascending: true });
 
   if (error) {
-    console.error('Error fetching guardian fees:', error);
+
     throw error;
   }
 
@@ -114,7 +118,10 @@ export async function fetchStudentFees(
   const { data, error } = await supabase
     .from('fee')
     .select(`
-      *,
+      id, student_id, guardian_id, amount, due_date, payment_date,
+      status, payment_method, num_boleta, mov_bancario, notes,
+      fee_curso, numero_cuota, institucion_financiera, year, year_academico,
+      fee_curso_rel:cursos!fee_fee_curso_fkey(nom_curso),
       students:student_id (
         id,
         first_name,
@@ -122,17 +129,16 @@ export async function fetchStudentFees(
         apellido_materno,
         whole_name,
         run,
-        curso,
-        cursos:curso(nom_curso)
+        curso:cursos(nom_curso)
       )
     `)
     .eq('student_id', studentId)
-    .eq('year', currentYear)
+    .eq('year_academico', currentYear)
     .order('due_date', { ascending: true })
     .order('numero_cuota', { ascending: true });
 
   if (error) {
-    console.error('Error fetching student fees:', error);
+
     throw error;
   }
 
@@ -151,7 +157,10 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
   const { data, error } = await supabase
     .from('fee')
     .select(`
-      *,
+      id, student_id, guardian_id, amount, due_date, payment_date,
+      status, payment_method, num_boleta, mov_bancario, notes,
+      fee_curso, numero_cuota, institucion_financiera, year, year_academico,
+      fee_curso_rel:cursos!fee_fee_curso_fkey(nom_curso),
       students:student_id (
         id,
         first_name,
@@ -159,16 +168,14 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
         apellido_materno,
         whole_name,
         run,
-        curso,
-        cursos:curso(nom_curso)
+        curso:cursos(nom_curso)
       )
     `)
     .eq('guardian_id', guardianId)
-    .order('year', { ascending: false })
+    .order('year_academico', { ascending: false })
     .order('due_date', { ascending: true });
 
   if (error) {
-    console.error('Error fetching guardian fees (all years):', error);
     throw error;
   }
 
@@ -211,13 +218,22 @@ function processFeesWithStatus(fees: any[]): Fee[] {
       curso: fee.students.curso,
     } : undefined;
 
-    const curso = fee.students?.cursos ? {
-      nom_curso: fee.students.cursos.nom_curso
+    const curso = fee.students?.curso ? {
+      nom_curso: fee.students.curso.nom_curso
     } : undefined;
+
+    const normalizedYear = fee.year ?? fee.year_academico ?? (fee.due_date ? new Date(fee.due_date).getFullYear() : null);
+    const normalizedYearAcademico = fee.year_academico ?? fee.year ?? normalizedYear;
+    const feeCursoNombre = fee.fee_curso_rel?.nom_curso ?? null;
+    const feeCursoId = fee.fee_curso ?? null;
 
     return {
       ...fee,
       status: computedStatus,
+      fee_curso: feeCursoNombre,
+      fee_curso_id: feeCursoId,
+      year: normalizedYear,
+      year_academico: normalizedYearAcademico,
       student,
       curso,
     };
@@ -310,10 +326,12 @@ export function groupFeesByYear(fees: Fee[]): Map<number, Fee[]> {
   const grouped = new Map<number, Fee[]>();
   
   fees.forEach(fee => {
-    if (!grouped.has(fee.year)) {
-      grouped.set(fee.year, []);
+    const key = fee.year ?? fee.year_academico ?? (fee.due_date ? new Date(fee.due_date).getFullYear() : undefined);
+    if (key === undefined || key === null) return;
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
     }
-    grouped.get(fee.year)!.push(fee);
+    grouped.get(key)!.push(fee);
   });
 
   return grouped;

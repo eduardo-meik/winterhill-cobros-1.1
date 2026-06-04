@@ -2,11 +2,13 @@ import { supabase } from './supabase';
 import { computeEnrollmentDocumentPlan } from './autodoc';
 import { templates } from '../contracts/templates';
 import toast from 'react-hot-toast';
+import type { GuardianIntakeRecord } from './guardianIntake';
+import { normalizeRun, validateRun, isRutFormatValid, formatRunDisplay } from '../utils/rut';
 
 // Types (lightweight to avoid adding global type deps now)
 export interface GuardianRecord {
   id: string;
-  owner_id: string;
+  owner_id: string | null;
   first_name?: string;
   last_name?: string;
   run?: string;
@@ -31,11 +33,22 @@ export interface StudentRecord {
   curso?: string; // UUID del curso
   curso_nombre?: string; // Nombre del curso (ej: "4° MEDIO A")
   curso_id?: string;
+  target_course?: string; // Nombre del curso al que se matricula
+  target_course_id?: string; // UUID del curso al que se matricula
+  target_nivel?: string; // Nivel del curso al que se matricula
   first_name?: string;
   last_name?: string;
   grade?: string;
   nivel?: string;
   date_of_birth?: string;
+}
+
+export interface PaymentMethodFlags {
+  cheques?: boolean;
+  transferencia?: boolean;
+  efectivo?: boolean;
+  tarjeta?: boolean;
+  pagare?: boolean;
 }
 
 export interface GuardianLinkedStudent {
@@ -89,42 +102,77 @@ export interface EnrollmentDocumentRecord {
   pdf_hash?: string | null;
 }
 
+
 // Caching & safe single-attempt RPC creation flags (avoid spamming console when function missing)
 let _guardianCache: Record<string, GuardianRecord | null | undefined> = {};
 let _guardianFetchInFlight: Record<string, Promise<GuardianRecord | null> | undefined> = {};
 let _missingEnsureGuardianFn = false;
 let _attemptedAutoCreate: Record<string, boolean> = {};
+let _attemptedManualCreate: Record<string, boolean> = {};
+
+/**
+ * Clears all module-level guardian caches.
+ * MUST be called on auth state change (SIGNED_OUT / SIGNED_IN) to prevent
+ * leaking data from one user session to another.
+ */
+export function clearGuardianCaches(): void {
+  _guardianCache = {};
+  _guardianFetchInFlight = {};
+  _attemptedAutoCreate = {};
+  _attemptedManualCreate = {};
+}
 
 // 1. Fetch guardian for current user (assuming one guardian per owner/user)
-export async function fetchCurrentGuardian(userId: string): Promise<GuardianRecord | null> {
-  console.log('🔍 fetchCurrentGuardian called with userId:', userId);
+export async function fetchCurrentGuardian(userId: string, userEmail?: string | null): Promise<GuardianRecord | null> {
   if (!userId) return null;
   if (_guardianCache[userId] !== undefined) {
-    console.log('🔍 fetchCurrentGuardian: Returning from cache:', _guardianCache[userId]);
     return _guardianCache[userId] || null;
   }
   if (Object.prototype.hasOwnProperty.call(_guardianFetchInFlight, userId) && _guardianFetchInFlight[userId]) {
-    console.log('🔍 fetchCurrentGuardian: Returning existing promise');
     return _guardianFetchInFlight[userId] as Promise<GuardianRecord | null>;
   }
 
   _guardianFetchInFlight[userId] = (async () => {
     try {
-      console.log('🔍 fetchCurrentGuardian: Querying database for owner_id:', userId);
       const { data, error } = await supabase
         .from('guardians')
         .select('*')
         .eq('owner_id', userId)
         .limit(1);
-      console.log('🔍 fetchCurrentGuardian: Query result - data:', data, 'error:', error);
       if (error) {
-        console.error('fetchCurrentGuardian error', error);
         toast.error('Error cargando apoderado');
         _guardianCache[userId] = null;
         return null;
       }
       let guardian = data?.[0] || null;
-      console.log('🔍 fetchCurrentGuardian: Guardian from query:', guardian);
+
+      const normalizedEmail = userEmail?.trim().toLowerCase() || '';
+
+      if (!guardian && normalizedEmail) {
+        const { data: emailMatches, error: emailError } = await supabase
+          .from('guardians')
+          .select('*')
+          .ilike('email', normalizedEmail)
+          .limit(1);
+        if (emailError) {
+          // email lookup failed — continue with guardian as null
+        }
+        guardian = emailMatches?.[0] || null;
+        if (guardian) {
+          if (!guardian.owner_id) {
+            const { error: updateError } = await supabase
+              .from('guardians')
+              .update({ owner_id: userId })
+              .eq('id', guardian.id)
+              .is('owner_id', null);
+            if (updateError) {
+              // Could not attach owner_id — non-fatal
+            } else {
+              guardian = { ...guardian, owner_id: userId };
+            }
+          }
+        }
+      }
 
       // Auto-create attempt only if function exists (skip if previously flagged missing)
       if (!guardian && !_missingEnsureGuardianFn && !_attemptedAutoCreate[userId]) {
@@ -135,10 +183,8 @@ export async function fetchCurrentGuardian(userId: string): Promise<GuardianReco
             // If 404 / PGRST202 function not found, mark so we don't retry
             if (rpcErr.code === 'PGRST202') {
               _missingEnsureGuardianFn = true;
-              // Silent after first detection
-              console.warn('[guardians] RPC ensure_guardian_for_user ausente. Omite auto-creación. Puedes crearla o desactivar este flujo.');
             } else {
-              console.error('RPC ensure_guardian_for_user error', rpcErr);
+              // RPC error — non-fatal
             }
           } else if (rpcRes) {
             // Re-query once if RPC succeeded
@@ -153,8 +199,34 @@ export async function fetchCurrentGuardian(userId: string): Promise<GuardianReco
           // swallow unexpected errors to avoid loop; guardian stays null
         }
       }
+
+      if (!guardian && normalizedEmail && !_attemptedManualCreate[userId]) {
+        _attemptedManualCreate[userId] = true;
+        try {
+          const initialNames = normalizedEmail.split('@')[0]?.split('.') || [];
+          const sanitizedFirst = initialNames[0]?.replace(/[^a-zA-ZÀ-ÿ\s'-]/g, ' ')?.trim();
+          const payload: Partial<GuardianRecord> & { owner_id: string | null; email: string } = {
+            owner_id: userId,
+            email: normalizedEmail,
+            first_name: sanitizedFirst || null,
+          } as any;
+
+          const { data: inserted, error: insertError } = await supabase
+            .from('guardians')
+            .insert(payload)
+            .select('*')
+            .maybeSingle();
+
+          if (insertError) {
+            // Manual create failed — guardian stays null
+          } else if (inserted) {
+            guardian = inserted as GuardianRecord;
+          }
+        } catch (creationError) {
+          // Swallow — guardian stays null
+        }
+      }
       _guardianCache[userId] = guardian;
-      console.log('🔍 fetchCurrentGuardian: Final result - caching and returning:', guardian);
       return guardian;
     } finally {
       delete _guardianFetchInFlight[userId];
@@ -174,7 +246,6 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
     .eq('year', year)
     .limit(1);
   if (selError) {
-    console.error('getOrCreateEnrollment select error', selError);
     toast.error('No se pudo revisar matrícula existente');
     return null;
   }
@@ -186,7 +257,27 @@ export async function getOrCreateEnrollment(guardianId: string, year: number): P
     .select()
     .single();
   if (error) {
-    console.error('getOrCreateEnrollment insert error', error);
+    const code = `${(error as any)?.code || ''}`;
+    const message = `${(error as any)?.message || ''}`;
+    const details = `${(error as any)?.details || ''}`;
+    const isDuplicate = code === '23505' || /duplicate/i.test(message) || /duplicate/i.test(details) || /enrollments_guardian_id_year_key/i.test(message + details);
+
+    if (isDuplicate) {
+      const { data: dupeExisting, error: dupeError } = await supabase
+        .from('enrollments')
+        .select('*')
+        .eq('guardian_id', guardianId)
+        .eq('year', year)
+        .limit(1)
+        .single();
+      if (!dupeError && dupeExisting) {
+        return dupeExisting;
+      }
+      if (dupeError) {
+        // duplicate fallback failed
+      }
+    }
+
     toast.error('No se pudo crear matrícula');
     return null;
   }
@@ -200,16 +291,25 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
       .from('enrollment_students')
       .select(`
         student_id,
+        academic_record_id,
         students (
           id,
           whole_name,
           run,
-          curso,
           first_name,
           apellido_paterno,
           apellido_materno,
           date_of_birth,
-          cursos:curso (
+          curso:cursos (
+            id,
+            nom_curso,
+            nivel,
+            letra_curso
+          )
+        ),
+        academic_record:student_academic_records (
+          curso_id,
+          curso:cursos (
             id,
             nom_curso,
             nivel,
@@ -219,38 +319,59 @@ export async function listEnrollmentStudents(enrollmentId: string): Promise<Stud
       `)
       .eq('enrollment_id', enrollmentId);
     if (error) throw error;
-    const rows = (data || []) as Array<{ student_id: string; students: any | null }>;
+    const rows = (data || []) as Array<{ 
+      student_id: string; 
+      students: any | null;
+      academic_record: any | null;
+    }>;
     const mapped: StudentRecord[] = rows
-      .map(r => r.students)
-      .filter(Boolean)
-      .map((s: any): StudentRecord => {
+      .map(r => {
+        const s = r.students;
+        if (!s) return null;
+
+        const ar = r.academic_record;
+        let targetCourseLabel: string | undefined;
+        let targetCourseId: string | undefined;
+        let targetNivel: string | undefined;
+
+        if (ar && ar.curso) {
+          const tc = ar.curso;
+          targetCourseId = ar.curso_id;
+          targetCourseLabel = tc.nom_curso
+            || (tc ? `${tc.nivel ?? ''}${tc.letra_curso ? ' ' + tc.letra_curso : ''}`.trim() : undefined);
+          targetNivel = tc.nivel ? String(tc.nivel) : undefined;
+        }
+
         const apellidosStr = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim();
-  const lastName: string | undefined = apellidosStr ? apellidosStr : undefined;
+        const lastName: string | undefined = apellidosStr ? apellidosStr : undefined;
         const full = s.whole_name || [s.first_name, lastName ?? ''].filter(Boolean).join(' ').trim();
-        const c = s.cursos || null;
+        const c = s.curso || null;
         const cursoLabel = c?.nom_curso
           || (c ? `${c.nivel ?? ''}${c.letra_curso ? ' ' + c.letra_curso : ''}`.trim() : null)
-          || s.curso
           || null;
         const obj: StudentRecord = {
           id: s.id as string,
           whole_name: (full || undefined) as string | undefined,
           run: (s.run || undefined) as string | undefined,
-          curso: (s.curso || undefined) as string | undefined,
+          curso: (c?.id || undefined) as string | undefined,
           curso_nombre: (cursoLabel || undefined) as string | undefined,
+          curso_id: (c?.id || undefined) as string | undefined,
+          target_course: targetCourseLabel,
+          target_course_id: targetCourseId,
+          target_nivel: targetNivel,
           first_name: (s.first_name || undefined) as string | undefined,
-          grade: (c?.nivel || undefined) as string | undefined,
-          nivel: (c?.nivel || undefined) as string | undefined,
-          date_of_birth: (s.date_of_birth || undefined) as string | undefined
+          last_name: lastName,
+          grade: (cursoLabel || undefined) as string | undefined,
+          nivel: (c?.nivel ? String(c.nivel) : undefined),
+          date_of_birth: (s.date_of_birth || undefined) as string | undefined,
         };
-        if (lastName) obj.last_name = lastName;
         return obj;
-      });
+      })
+      .filter(Boolean) as StudentRecord[];
     return mapped;
-  } catch (e) {
-    console.error('listEnrollmentStudents error', e);
-    toast.error('No se pudieron cargar los alumnos de la matrícula');
-    return [] as StudentRecord[];
+  } catch (err) {
+    console.error('Error listing enrollment students:', err);
+    return [];
   }
 }
 
@@ -326,6 +447,27 @@ export async function updateEnrollmentMeta(enrollmentId: string, patch: Record<s
   }
 }
 
+/**
+ * Assigns a sequential folio (ENR-YYYY-NNNNNN) to an enrollment via the
+ * assign_enrollment_folio RPC. Returns the existing folio if already assigned.
+ * Idempotent — safe to call multiple times.
+ */
+export async function assignEnrollmentFolio(enrollmentId: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.rpc('assign_enrollment_folio', {
+      p_enrollment_id: enrollmentId,
+    });
+    if (error) {
+      console.error('assignEnrollmentFolio RPC error', error);
+      return null;
+    }
+    return data as string;
+  } catch (e) {
+    console.error('assignEnrollmentFolio unexpected error', e);
+    return null;
+  }
+}
+
 // Fetch latest active PAGARE template
 export async function getActivePagareTemplate(): Promise<DocumentTemplate | null> {
   try {
@@ -376,7 +518,6 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           apellido_paterno,
           apellido_materno,
           run,
-          curso,
           date_of_birth,
           genero,
           nombre_social,
@@ -384,8 +525,8 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           direccion,
           comuna,
           institucion_procedencia,
-          convive_con,
-          cursos:curso (
+          con_quien_vive,
+          curso:cursos (
             id,
             nom_curso,
             nivel,
@@ -400,10 +541,9 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
       .map(r => r.students)
       .filter(Boolean)
       .map((s: any) => {
-        const c = s.cursos || null;
+        const c = s.curso || null;
         const label = c?.nom_curso
           || (c ? `${c.nivel ?? ''}${c.letra_curso ? ' ' + c.letra_curso : ''}`.trim() : null)
-          || s.curso
           || null;
         const apellidos = [s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ').trim() || null;
         return {
@@ -412,7 +552,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           first_name: s.first_name || null,
           last_name: apellidos,
           run: s.run || null,
-          curso_id: c?.id || s.curso || null,
+          curso_id: c?.id || null,
           curso_label: label,
           date_of_birth: s.date_of_birth || null,
           genero: s.genero || null,
@@ -421,7 +561,7 @@ export async function fetchGuardianStudents(guardianId: string): Promise<Array<{
           direccion: s.direccion || null,
           comuna: s.comuna || null,
           institucion_procedencia: s.institucion_procedencia || null,
-          convive_con: s.convive_con || null
+          convive_con: s.con_quien_vive || null
         };
       });
   } catch (e) {
@@ -796,13 +936,8 @@ export function buildPrestacionPayload(opts: {
     monto_cuota?: number;
     dia_vencimiento?: number;
   };
-  paymentMethod?: {
-    cheques?: boolean;
-    transferencia?: boolean;
-    efectivo?: boolean;
-    tarjeta?: boolean;
-    pagare?: boolean;
-  };
+  paymentPlan?: EnrollmentPaymentPlan | null;
+  paymentMethod?: PaymentMethodFlags;
   cheques?: Array<{ numero_cuota?: number; numero_serie?: string; banco?: string; fecha_emision?: string; monto?: number; notas?: string; }>;
   descuento?: {
     porcentaje?: number;
@@ -810,7 +945,7 @@ export function buildPrestacionPayload(opts: {
     condiciones?: string;
   } | null;
 }): PrestacionPayload {
-  const { guardian, year, students, economic, paymentMethod, cheques } = opts;
+  const { guardian, year, students, economic, paymentPlan, paymentMethod, cheques } = opts;
 
   const now = new Date();
   const day = now.getDate();
@@ -887,15 +1022,23 @@ export function buildPrestacionPayload(opts: {
 
   const paymentSummary = joinWithConjunction(paymentSummaryParts);
 
-  const colegAnual = economic?.colegiatura_anual || 0;
-  const cuotasNum = Number(economic?.cantidad_cuotas) || 0;
+  // Si hay datos económicos por alumno en opts (monto_neto_anual_por_alumno), se suma para contratos multi-estudiante.
+  const perStudentNetTotals: number[] = (opts as any)?.perStudentEconomic?.map((e: any) => Number(e?.monto_neto_anual) || 0) || [];
+  const sumPerStudentNet = perStudentNetTotals.reduce((acc, v) => acc + (Number.isFinite(v) ? v : 0), 0);
+
+  // Usar economic directamente como fuente de verdad (no priorizar paymentPlan)
+  const effective = getEffectiveEconomicFromPlan({ economic, paymentPlan: null });
+
+  const colegAnualBase = effective.colegiatura_anual || 0;
+  const colegAnual = sumPerStudentNet > 0 ? sumPerStudentNet : colegAnualBase;
+  const cuotasNum = Number(effective.cantidad_cuotas) || 0;
   const montoCuotaCalc = (() => {
-    if (economic?.colegiatura_anual && economic?.cantidad_cuotas) {
-      const total = Number(economic.colegiatura_anual) || 0;
-      const cuotas = Number(economic.cantidad_cuotas) || 0;
-      if (total > 0 && cuotas > 0) return Math.round(total / cuotas);
+    // Prefer explicit plan monto_por_cuota when present.
+    if (effective.monto_cuota > 0) return Math.round(effective.monto_cuota);
+    if (effective.colegiatura_anual > 0 && effective.cantidad_cuotas > 0) {
+      return Math.round(effective.colegiatura_anual / effective.cantidad_cuotas);
     }
-    return economic?.monto_cuota || 0;
+    return 0;
   })();
 
   // Descuento por planilla calculations (if provided)
@@ -925,13 +1068,13 @@ export function buildPrestacionPayload(opts: {
     guardian_estado_civil: guardian.estado_civil || undefined,
     students_table: studentsTable,
     students_list: studentsList,
-    monto_matricula: formatCurrency(economic?.monto_matricula),
+    monto_matricula: formatCurrency(effective.monto_matricula),
   colegiatura_anual: formatCurrency(colegAnual),
   colegiatura_anual_texto: `${numberToWordsEs(colegAnual)} pesos`,
-    cantidad_cuotas: economic?.cantidad_cuotas?.toString() || '_______________',
+    cantidad_cuotas: effective.cantidad_cuotas ? String(effective.cantidad_cuotas) : '_______________',
   monto_cuota: formatCurrency(montoCuotaCalc),
   monto_cuota_texto: `${numberToWordsEs(montoCuotaCalc)} pesos`,
-    dia_vencimiento: economic?.dia_vencimiento?.toString() || '_______________',
+    dia_vencimiento: effective.dia_vencimiento ? String(effective.dia_vencimiento) : '_______________',
     forma_pago_cheques: paymentMethod?.cheques ? '☑' : '☐',
     forma_pago_transferencia: paymentMethod?.transferencia ? '☑' : '☐',
     forma_pago_efectivo: paymentMethod?.efectivo ? '☑' : '☐',
@@ -1025,6 +1168,192 @@ export function renderPrestacionWithAnnex(payload: PrestacionPayload, options: {
   return `${doctype}\n${htmlTag}\n<head>\n${mergedHead}\n</head>\n${bodyTag}\n${mergedBody}\n</body>\n</html>`;
 }
 
+export function renderSingleDocument(payload: PrestacionPayload, type: 'contract' | 'pagare' | 'descuento'): string {
+  let template = templates.prestacion;
+  if (type === 'pagare') template = templates.pagare;
+  if (type === 'descuento') template = templates.descuento;
+  
+  return renderTemplate(template, payload);
+}
+
+export interface EnrollmentPaymentPlan {
+  n_cuotas: number;
+  monto_total: number;
+  monto_por_cuota: number;
+  primer_vencimiento: string;
+  dia_vencimiento: number;
+  payment_method: string | null;
+  cuotas: Array<{ numero: number; amount: number; due_date: string }>;
+}
+
+export function getEffectiveEconomicFromPlan(input: {
+  economic?: {
+    monto_matricula?: number | string;
+    colegiatura_anual?: number | string;
+    cantidad_cuotas?: number | string;
+    monto_cuota?: number | string;
+    dia_vencimiento?: number | string;
+    primer_vencimiento?: string | null;
+  };
+  paymentPlan?: EnrollmentPaymentPlan | null;
+}): {
+  monto_matricula: number;
+  colegiatura_anual: number;
+  cantidad_cuotas: number;
+  monto_cuota: number;
+  dia_vencimiento: number;
+  primer_vencimiento: string | null;
+} {
+  const econ = input.economic || {};
+  const plan = input.paymentPlan || null;
+
+  const montoMatricula = toNumberOrZero(econ.monto_matricula);
+  const colegiaturaAnual = plan ? Math.max(0, toNumberOrZero(plan.monto_total)) : Math.max(0, toNumberOrZero(econ.colegiatura_anual));
+  const cantidadCuotas = plan ? Math.max(0, toPositiveInt(plan.n_cuotas)) : Math.max(0, toPositiveInt(econ.cantidad_cuotas));
+  const montoCuota = plan ? Math.max(0, toNumberOrZero(plan.monto_por_cuota)) : Math.max(0, toNumberOrZero(econ.monto_cuota));
+  const diaVencimiento = plan ? clampDayOfMonth(plan.dia_vencimiento) : clampDayOfMonth(econ.dia_vencimiento);
+  const primerVencimiento = plan?.primer_vencimiento || normalizeIsoDate(econ.primer_vencimiento) || null;
+
+  return {
+    monto_matricula: montoMatricula,
+    colegiatura_anual: colegiaturaAnual,
+    cantidad_cuotas: cantidadCuotas,
+    monto_cuota: montoCuota,
+    dia_vencimiento: diaVencimiento,
+    primer_vencimiento: primerVencimiento,
+  };
+}
+
+interface BuildPaymentPlanOptions {
+  enrollmentYear: number;
+  economic?: {
+    monto_matricula?: number | string;
+    colegiatura_anual?: number | string;
+    cantidad_cuotas?: number | string;
+    monto_cuota?: number | string;
+    dia_vencimiento?: number | string;
+    primer_vencimiento?: string | null;
+  };
+  paymentMethodFlags?: PaymentMethodFlags;
+  firstDueMonth?: number; // 0-indexed month; defaults to March
+  firstDueDate?: string | null; // overrides everything if provided
+}
+
+export function buildEnrollmentPaymentPlan(options: BuildPaymentPlanOptions): EnrollmentPaymentPlan | null {
+  const { enrollmentYear, economic, paymentMethodFlags } = options;
+  if (!enrollmentYear) return null;
+  const econ = economic || {};
+  const montoTotal = Math.max(0, toNumberOrZero(econ.colegiatura_anual));
+  const cuotasCount = toPositiveInt(econ.cantidad_cuotas);
+  
+  // Allow 0 installments ONLY if total amount is 0
+  if (!cuotasCount && montoTotal > 0) return null;
+
+  let dayOfMonth = clampDayOfMonth(econ.dia_vencimiento);
+  if (!dayOfMonth) {
+    // If total is 0 (e.g. Prioritario), we don't strictly need a due day, 
+    // but we set a default (e.g. 5th) to satisfy the date logic.
+    if (montoTotal === 0) {
+      dayOfMonth = 5;
+    } else {
+      return null;
+    }
+  }
+
+  let montoCuota = toNumberOrZero(econ.monto_cuota);
+  if (!montoCuota && montoTotal && cuotasCount) {
+    montoCuota = Math.round(montoTotal / cuotasCount);
+  }
+
+  const explicitDate = options.firstDueDate || econ.primer_vencimiento || null;
+  const normalizedExplicitDate = normalizeIsoDate(explicitDate);
+  const baseMonth = typeof options.firstDueMonth === 'number' ? options.firstDueMonth : 2; // March by default
+  const baseDate = normalizedExplicitDate
+    ? isoToUTCDate(normalizedExplicitDate)
+    : new Date(Date.UTC(enrollmentYear, baseMonth, dayOfMonth));
+  if (!baseDate) return null;
+
+  const cuotas: Array<{ numero: number; amount: number; due_date: string }> = [];
+  for (let i = 0; i < cuotasCount; i += 1) {
+    const due = addMonthsUTC(baseDate, i);
+    cuotas.push({
+      numero: i + 1,
+      amount: montoCuota,
+      due_date: formatIsoDate(due)
+    });
+  }
+
+  return {
+    n_cuotas: cuotasCount,
+    monto_total: montoTotal,
+    monto_por_cuota: montoCuota,
+    primer_vencimiento: formatIsoDate(baseDate),
+    dia_vencimiento: dayOfMonth,
+    payment_method: derivePrimaryPaymentMethod(paymentMethodFlags),
+    cuotas
+  };
+}
+
+function derivePrimaryPaymentMethod(flags?: PaymentMethodFlags): string | null {
+  if (!flags) return null;
+  const ordered: Array<{ key: keyof PaymentMethodFlags; label: string }> = [
+    { key: 'pagare', label: 'PAGARE' },
+    { key: 'transferencia', label: 'TRANSFERENCIA' },
+    { key: 'cheques', label: 'CHEQUE' },
+    { key: 'tarjeta', label: 'TARJETA' },
+    { key: 'efectivo', label: 'EFECTIVO' },
+  ];
+  const enabled = ordered.filter(item => flags[item.key]);
+  if (enabled.length === 0) {
+    const anyTrue = Object.values(flags).some(Boolean);
+    return anyTrue ? 'MIXTO' : null;
+  }
+  return enabled[0].label;
+}
+
+function clampDayOfMonth(value: unknown): number {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 0;
+  const day = Math.floor(num);
+  if (day <= 0) return 0;
+  return Math.max(1, Math.min(28, day));
+}
+
+function toPositiveInt(value: unknown): number {
+  const num = Number(value);
+  if (!Number.isFinite(num) || num <= 0) return 0;
+  return Math.floor(num);
+}
+
+function toNumberOrZero(value: unknown): number {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function formatIsoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function normalizeIsoDate(value?: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+function isoToUTCDate(value: string): Date | null {
+  const [y, m, d] = value.split('-').map(part => Number(part));
+  if (!y || !m || !d) return null;
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function addMonthsUTC(date: Date, months: number): Date {
+  const clone = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  clone.setUTCMonth(clone.getUTCMonth() + months);
+  return clone;
+}
+
 // Decision engine: compute needed documents and generate/update them idempotently
 // Types considered:
 //  - PRESTACION (base, may embed descuento/pagare annex)
@@ -1097,6 +1426,7 @@ export async function ensureEnrollmentDocuments(ctx: AutoDocContext): Promise<vo
     year: enrollment.year,
     students,
     economic: prioritario ? undefined : economic, // if prioritario we can still pass economic but optionally omit
+    paymentPlan: (meta?.payment_plan || null) as any,
     paymentMethod: prioritario ? undefined : paymentMethod,
     cheques: (!prioritario && chequesSeleccionados && Array.isArray(chequesArr)) ? chequesArr : undefined,
     descuento,
@@ -1942,6 +2272,329 @@ export async function sha256(text: string): Promise<string> {
 }
 
 // =====================================================
+// INTAKE → STUDENT AUTO-CREATION HELPERS
+// =====================================================
+
+export type CourseLite = {
+  id: string;
+  nom_curso: string | null;
+  nivel: string | null;
+  letra_curso: string | null;
+};
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+let _courseCatalog: CourseLite[] | null = null;
+let _courseCatalogPromise: Promise<CourseLite[]> | null = null;
+
+function normalizeCourseLabel(value: string): string {
+  const base = typeof value.normalize === 'function' ? value.normalize('NFD') : value;
+  return base
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u00b0\u00ba]/g, '')
+    .replace(/[^a-zA-Z0-9 ]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+}
+
+async function getCourseCatalog(): Promise<CourseLite[]> {
+  if (_courseCatalog) return _courseCatalog;
+  if (_courseCatalogPromise) return _courseCatalogPromise;
+  _courseCatalogPromise = (async () => {
+    try {
+      const { data, error } = await supabase
+        .from('cursos')
+        .select('id, nom_curso, nivel, letra_curso')
+        .order('nom_curso', { ascending: true });
+      if (error) throw error;
+      _courseCatalog = data || [];
+      return _courseCatalog;
+    } catch (e) {
+      console.error('getCourseCatalog error', e);
+      _courseCatalog = [];
+      return _courseCatalog;
+    } finally {
+      _courseCatalogPromise = null;
+    }
+  })();
+  return _courseCatalogPromise;
+}
+
+export async function fetchCourseCatalogLite(options?: { force?: boolean }): Promise<CourseLite[]> {
+  if (options?.force) {
+    _courseCatalog = null;
+  }
+  return getCourseCatalog();
+}
+
+function findCourseByNormalizedLabel(catalog: CourseLite[], normalized: string): CourseLite | null {
+  if (!normalized) return null;
+  for (const course of catalog) {
+    const courseLabel = course?.nom_curso ? normalizeCourseLabel(course.nom_curso) : '';
+    if (!courseLabel) continue;
+    if (courseLabel === normalized) return course;
+  }
+  for (const course of catalog) {
+    const courseLabel = course?.nom_curso ? normalizeCourseLabel(course.nom_curso) : '';
+    if (!courseLabel) continue;
+    if (courseLabel.includes(normalized) || normalized.includes(courseLabel)) {
+      return course;
+    }
+  }
+  return null;
+}
+
+async function resolveCourseFromInput(raw: string | null | undefined): Promise<{ courseId: string | null; course: CourseLite | null }> {
+  if (!raw) return { courseId: null, course: null };
+  const value = raw.trim();
+  if (!value) return { courseId: null, course: null };
+  const catalog = await getCourseCatalog();
+  const direct = catalog.find(course => course.id === value);
+  if (direct) return { courseId: direct.id, course: direct };
+  if (UUID_REGEX.test(value)) {
+    const { data, error } = await supabase
+      .from('cursos')
+      .select('id, nom_curso, nivel, letra_curso')
+      .eq('id', value)
+      .maybeSingle();
+    if (!error && data) {
+      return { courseId: data.id, course: data as CourseLite };
+    }
+  }
+  const normalized = normalizeCourseLabel(value);
+  if (!normalized) return { courseId: null, course: null };
+  const match = findCourseByNormalizedLabel(catalog, normalized);
+  return match ? { courseId: match.id, course: match } : { courseId: null, course: null };
+}
+
+async function ensureGuardianStudentLink(
+  studentId: string,
+  guardianId: string,
+  guardianRole?: string | null
+): Promise<boolean> {
+  try {
+    const payload = {
+      student_id: studentId,
+      guardian_id: guardianId,
+      is_primary: true,
+      guardian_role: guardianRole || null
+    };
+    const { error } = await supabase
+      .from('student_guardian')
+      .upsert(payload, { onConflict: 'student_id,guardian_id' });
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    console.error('ensureGuardianStudentLink error', e);
+    return false;
+  }
+}
+
+export interface AutoCreateStudentFromIntakeOptions {
+  guardianId: string;
+  intake: Partial<GuardianIntakeRecord> | null | undefined;
+  guardianOwnerId?: string | null;
+  guardianRelationship?: string | null;
+  staffUserId?: string | null;
+}
+
+export interface AutoCreateStudentFromIntakeResult {
+  created: boolean;
+  linked: boolean;
+  studentId: string | null;
+  reason?:
+    | 'missing_guardian'
+    | 'missing_intake'
+    | 'missing_fields'
+    | 'invalid_run'
+    | 'course_not_found'
+    | 'missing_owner'
+    | 'link_failed'
+    | 'error';
+  courseId?: string | null;
+  details?: string;
+}
+
+export async function ensureStudentFromIntake(
+  options: AutoCreateStudentFromIntakeOptions
+): Promise<AutoCreateStudentFromIntakeResult> {
+  const base: AutoCreateStudentFromIntakeResult = {
+    created: false,
+    linked: false,
+    studentId: null
+  };
+
+  try {
+    if (!options?.guardianId) {
+      return { ...base, reason: 'missing_guardian' };
+    }
+    const intake = options?.intake;
+    if (!intake) {
+      return { ...base, reason: 'missing_intake' };
+    }
+
+    const firstNames = (intake.student_first_names || '').trim();
+    const lastNameP = (intake.student_last_name_paterno || '').trim();
+    const lastNameM = (intake.student_last_name_materno || '').trim();
+    const runRaw = (intake.student_run || '').trim();
+    const birthDate = (intake.student_birth_date || '').trim();
+    const courseRaw = (intake.student_course || '').trim();
+    const courseIdFromIntake = (() => {
+      const rawValue = (intake as any).student_course_id;
+      if (rawValue === null || rawValue === undefined) return '';
+      return String(rawValue).trim();
+    })();
+
+    if (!firstNames || !lastNameP || !runRaw || !birthDate || (!courseRaw && !courseIdFromIntake)) {
+      return { ...base, reason: 'missing_fields' };
+    }
+
+    const normalizedRun = normalizeRun(runRaw);
+    if (!isRutFormatValid(normalizedRun)) {
+      return { ...base, reason: 'invalid_run' };
+    }
+
+    const runInfo = validateRun(normalizedRun);
+    const runBody = runInfo.body ?? normalizedRun.slice(0, -1);
+    const dvInput = runInfo.dv ?? normalizedRun.slice(-1);
+    const formattedRun = formatRunDisplay(normalizedRun);
+    const plainRun = `${runBody}-${dvInput}`;
+    const compactRun = `${runBody}${dvInput}`;
+    const runNumber = Number(runBody);
+    const runFilters: string[] = [`run.eq.${formattedRun}`, `run.eq.${plainRun}`, `run.eq.${compactRun}`];
+    if (Number.isFinite(runNumber)) {
+      runFilters.push(`run_numero.eq.${runNumber}`);
+    }
+
+    const { data: existing, error: existingError } = await supabase
+      .from('students')
+      .select('id')
+      .or(runFilters.join(','))
+      .maybeSingle();
+    if (existingError && existingError.code !== 'PGRST116') {
+      console.error('ensureStudentFromIntake lookup error', existingError);
+    }
+    if (existing?.id) {
+      const linked = await ensureGuardianStudentLink(
+        existing.id,
+        options.guardianId,
+        options.guardianRelationship || (intake.guardian_relationship ?? null)
+      );
+      return {
+        ...base,
+        studentId: existing.id,
+        linked,
+        reason: linked ? undefined : 'link_failed'
+      };
+    }
+
+    let courseResolution = { courseId: null as string | null, course: null as CourseLite | null };
+    if (courseIdFromIntake) {
+      courseResolution = await resolveCourseFromInput(courseIdFromIntake);
+    }
+    if (!courseResolution.courseId) {
+      courseResolution = await resolveCourseFromInput(courseRaw);
+    }
+    if (!courseResolution.courseId) {
+      return { ...base, reason: 'course_not_found' };
+    }
+
+    const ownerId = options.guardianOwnerId || options.staffUserId || null;
+    if (!ownerId) {
+      return { ...base, reason: 'missing_owner' };
+    }
+
+    const wholeName = [firstNames, [lastNameP, lastNameM].filter(Boolean).join(' ')].filter(Boolean).join(' ').trim();
+    const enrollmentDate = (intake.student_enrollment_date || '').trim();
+    const nowDate = new Date().toISOString().slice(0, 10);
+    const livesWith = Array.isArray(intake.student_lives_with)
+      ? intake.student_lives_with.filter(Boolean).join(', ')
+      : '';
+
+    const payload = {
+      first_name: firstNames,
+      apellido_paterno: lastNameP,
+      apellido_materno: lastNameM || null,
+      whole_name: wholeName || null,
+      run: formattedRun,
+      run_numero: Number.isFinite(runNumber) ? runNumber : null,
+      run_verificador: dvInput || null,
+      date_of_birth: birthDate,
+      owner_id: ownerId,
+      curso: courseResolution.courseId,
+      nivel: courseResolution.course?.nivel || null,
+      nombre_social: intake.student_social_name || null,
+      genero: intake.student_gender || null,
+      nacionalidad: intake.student_nationality || null,
+      fecha_matricula: enrollmentDate || nowDate,
+      fecha_incorporacion: enrollmentDate || null,
+      fecha_retiro: (intake.student_withdrawal_date || '').trim() || null,
+      motivo_retiro: (intake.student_withdrawal_reason || '').trim() || null,
+      repite_curso_actual:
+        typeof intake.student_repeat_current === 'boolean'
+          ? intake.student_repeat_current ? 'SI' : 'NO'
+          : null,
+      institucion_procedencia: intake.student_previous_institution || null,
+      direccion: intake.student_address || null,
+      comuna: intake.student_commune || null,
+      con_quien_vive: livesWith || null,
+      estado_std: 'MATRICULADO'
+    } as Record<string, any>;
+
+    const { data: created, error: createError } = await supabase
+      .from('students')
+      .insert(payload)
+      .select('id')
+      .single();
+    if (createError) {
+      console.error('ensureStudentFromIntake insert error', createError);
+      if ((createError as any)?.code === '23505') {
+        // Unique violation fallback: fetch and link
+        const { data: dupe } = await supabase
+          .from('students')
+          .select('id')
+          .or(runFilters.join(','))
+          .maybeSingle();
+        if (dupe?.id) {
+          const linked = await ensureGuardianStudentLink(
+            dupe.id,
+            options.guardianId,
+            options.guardianRelationship || (intake.guardian_relationship ?? null)
+          );
+          return {
+            ...base,
+            studentId: dupe.id,
+            linked,
+            reason: linked ? undefined : 'link_failed'
+          };
+        }
+      }
+      return { ...base, reason: 'error', details: createError.message };
+    }
+
+    const studentId = created?.id || null;
+    const linked = studentId
+      ? await ensureGuardianStudentLink(
+          studentId,
+          options.guardianId,
+          options.guardianRelationship || (intake.guardian_relationship ?? null)
+        )
+      : false;
+    return {
+      created: Boolean(studentId),
+      linked,
+      studentId,
+      courseId: courseResolution.courseId,
+      reason: linked ? undefined : 'link_failed'
+    };
+  } catch (e: any) {
+    console.error('ensureStudentFromIntake unexpected error', e);
+    return { ...base, reason: 'error', details: e?.message || String(e) };
+  }
+}
+
+// =====================================================
 // STORAGE FUNCTIONS FOR PDF DOCUMENTS
 // =====================================================
 
@@ -2044,3 +2697,192 @@ export async function deleteDocumentPDF(storagePath: string): Promise<boolean> {
     return false;
   }
 }
+
+// =====================================================
+// FINALIZE ENROLLMENT (RPC)
+// =====================================================
+
+/**
+ * Ejecuta un dry-run de la finalización de matrícula para obtener un resumen sin aplicar cambios.
+ * Llama al RPC finalize_enrollment con p_options.dry_run=true
+ */
+export async function finalizeEnrollmentPreview(
+  enrollmentId: string,
+  options: Record<string, any> = {}
+): Promise<any> {
+  try {
+    const payload = { ...options, dry_run: true, skip_doc_checks: true };
+    console.log('[PREVIEW] Request:', { enrollmentId, payload });
+    const { data, error } = await supabase.rpc('finalize_enrollment', {
+      p_enrollment_id: enrollmentId,
+      p_options: payload
+    });
+    if (error) {
+      console.error('[PREVIEW] Supabase error:', error);
+      throw error;
+    }
+    console.log('[PREVIEW] Response:', data);
+    return data;
+  } catch (e: any) {
+    console.error('finalizeEnrollmentPreview error', e);
+    const message = e?.message || 'No se pudo preparar la confirmación de matrícula';
+    toast.error(message);
+    throw e;
+  }
+}
+
+/**
+ * Confirma la matrícula (aplica cambios). Llama al RPC finalize_enrollment con dry_run=false
+ */
+export async function finalizeEnrollmentConfirm(
+  enrollmentId: string,
+  options: Record<string, any> = {}
+): Promise<any> {
+  try {
+    const payload = { ...options, dry_run: false, skip_doc_checks: true };
+    console.log('[CONFIRM] Request:', { enrollmentId, payload });
+    const { data, error } = await supabase.rpc('finalize_enrollment', {
+      p_enrollment_id: enrollmentId,
+      p_options: payload
+    });
+    if (error) {
+      console.error('[CONFIRM] Supabase error:', error);
+      console.error('[CONFIRM] Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      throw error;
+    }
+    console.log('[CONFIRM] Response:', data);
+    return data;
+  } catch (e: any) {
+    console.error('finalizeEnrollmentConfirm error', e);
+    const message = e?.message || 'No se pudo confirmar la matrícula';
+    toast.error(message);
+    throw e;
+  }
+}
+
+// List all enrollments for a guardian
+export async function listGuardianEnrollments(guardianId: string): Promise<any[]> {
+  try {
+    // Solo matrículas de los últimos 6 meses
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select(`
+        id,
+        year,
+        status,
+        created_at,
+        updated_at,
+        meta,
+        enrollment_students (
+          student_id,
+          students (
+            id,
+            whole_name,
+            run
+          )
+        ),
+        guardian_id,
+        guardians (
+          id,
+          first_name,
+          last_name,
+          run,
+          email,
+          phone
+        )
+      `)
+      .eq('guardian_id', guardianId)
+      .gte('created_at', sixMonthsAgo.toISOString())
+      .order('year', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (e) {
+    console.error('listGuardianEnrollments error', e);
+    return [];
+  }
+}
+
+// List ALL enrollments from the last 6 months (for ADMIN/ASIST dashboard)
+export async function listAllRecentEnrollments(): Promise<any[]> {
+  try {
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select(`
+        id,
+        year,
+        status,
+        created_at,
+        updated_at,
+        meta,
+        guardian_id,
+        guardians (
+          id,
+          first_name,
+          last_name,
+          run,
+          email,
+          phone
+        ),
+        enrollment_students (
+          student_id,
+          students (
+            id,
+            whole_name,
+            run
+          )
+        )
+      `)
+      .gte('created_at', sixMonthsAgo.toISOString())
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return data || [];
+  } catch (e) {
+    console.error('listAllRecentEnrollments error', e);
+    return [];
+  }
+}
+
+// Fetch cheques for an enrollment
+export async function getChequesForEnrollment(enrollmentId: string): Promise<Array<ChequeSaveInput & { numero_cuota: number }> | null> {
+  try {
+    if (!enrollmentId) return null;
+    // Nota: `order=numero_cuota` actualmente está provocando 400 en el backend.
+    // Para evitar romper la UX, siempre consultamos sin ORDER y ordenamos en cliente.
+    const res = await supabase
+      .from('cheques')
+      .select('*')
+      .eq('enrollment_id', enrollmentId);
+
+    if (res.error) {
+      console.error('[cheques] fetch error', res.error);
+      return null;
+    }
+
+    const rows = (res.data || []) as any[];
+    rows.sort((a, b) => {
+      const na = Number(a?.numero_cuota ?? a?.cuota_numero ?? a?.cuota ?? 0);
+      const nb = Number(b?.numero_cuota ?? b?.cuota_numero ?? b?.cuota ?? 0);
+      return na - nb;
+    });
+    return rows as any;
+  } catch (e) {
+    console.error('[cheques] unexpected fetch error', e);
+    return null;
+  }
+}
+

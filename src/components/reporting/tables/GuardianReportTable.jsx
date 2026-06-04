@@ -2,7 +2,7 @@ import React from 'react';
 import { TableContainer } from '../../ui/TableContainer';
 import { TableHeader } from '../../ui/TableHeader';
 
-export function GuardianReportTable({ data, loading, filteredByStudents, studentsSelected }) {
+export function GuardianReportTable({ data, loading, debtMap, filteredByStudents, studentsSelected }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -37,6 +37,8 @@ export function GuardianReportTable({ data, loading, filteredByStudents, student
     </div>
   ) : null;
 
+  const fmt = (n) => `$${(n || 0).toLocaleString('es-CL')}`;
+
   return (
     <div>
       {filterMessage}
@@ -47,26 +49,45 @@ export function GuardianReportTable({ data, loading, filteredByStudents, student
             <tr className="border-b border-gray-100 dark:border-gray-800">
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Nombre</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">RUN</th>
+              <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Total</th>
+              <th className="text-right py-3 px-4 text-sm font-medium text-green-600 dark:text-green-400">Pagado</th>
+              <th className="text-right py-3 px-4 text-sm font-medium text-yellow-600 dark:text-yellow-400">Pendiente</th>
+              <th className="text-right py-3 px-4 text-sm font-medium text-red-600 dark:text-red-400">Vencido</th>
             </tr>
           </TableHeader>
           <tbody>
-            {data.map((guardian) => (
-              <tr
-                key={guardian.id}
-                className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors"
-              >
-                <td className="py-3 px-4">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {guardian.name}
-                  </p>
-                </td>
-                <td className="py-3 px-4">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {guardian.run || "-"}
-                  </p>
-                </td>
-              </tr>
-            ))}
+            {data.map((guardian) => {
+              const debt = debtMap?.[guardian.id] || { paid: 0, pending: 0, overdue: 0, total: 0 };
+              return (
+                <tr
+                  key={guardian.id}
+                  className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors"
+                >
+                  <td className="py-3 px-4">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {guardian.name}
+                    </p>
+                  </td>
+                  <td className="py-3 px-4">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {guardian.run || "-"}
+                    </p>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{fmt(debt.total)}</p>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <p className="text-sm text-green-700 dark:text-green-400">{fmt(debt.paid)}</p>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <p className="text-sm text-yellow-700 dark:text-yellow-400">{fmt(debt.pending)}</p>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <p className="text-sm text-red-700 dark:text-red-400">{fmt(debt.overdue)}</p>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </TableContainer>
       </div>

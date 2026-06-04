@@ -1,0 +1,358 @@
+table_name,column_name,data_type,is_nullable
+audit_logs,actor_uid,uuid,YES
+audit_logs,occurred_at,timestamp with time zone,NO
+audit_logs,new_values,jsonb,YES
+audit_logs,id,uuid,NO
+audit_logs,old_values,jsonb,YES
+audit_logs,record_pk,text,NO
+audit_logs,table_name,text,NO
+audit_logs,action,text,NO
+audit_logs,changed_columns,ARRAY,YES
+audit_logs,reason,text,YES
+audit_logs,extra,jsonb,YES
+auth_logs,created_at,timestamp with time zone,YES
+auth_logs,code,text,YES
+auth_logs,user_id,text,YES
+auth_logs,message,text,YES
+auth_logs,action,text,YES
+auth_logs,metadata,jsonb,YES
+auth_logs,id,uuid,NO
+cheques,notas,text,YES
+cheques,id,uuid,NO
+cheques,enrollment_id,uuid,NO
+cheques,fecha_emision,date,NO
+cheques,monto,numeric,NO
+cheques,created_at,timestamp with time zone,YES
+cheques,updated_at,timestamp with time zone,YES
+cheques,created_by,uuid,YES
+cheques,numero_cuota,integer,YES
+cheques,document_id,uuid,YES
+cheques,folio_number,text,YES
+cheques,numero_serie,character varying,NO
+cheques,banco,character varying,NO
+cheques,estado,character varying,NO
+cursos,letra_curso,character varying,YES
+cursos,codigo_curso_matricula,text,NO
+cursos,nom_curso,character varying,YES
+cursos,descripcion_curso,character varying,YES
+cursos,nivel,integer,YES
+cursos,cod_curso,integer,YES
+cursos,year_academico,integer,YES
+cursos,id,uuid,NO
+database_metadata,constraint_type,character varying,YES
+database_metadata,is_nullable,character varying,YES
+database_metadata,column_default,character varying,YES
+database_metadata,table_type,character varying,YES
+database_metadata,data_type,character varying,YES
+database_metadata,table_name,name,YES
+database_metadata,column_name,name,YES
+document_templates,placeholders,jsonb,YES
+document_templates,created_at,timestamp with time zone,NO
+document_templates,active,boolean,NO
+document_templates,updated_at,timestamp with time zone,NO
+document_templates,content,text,NO
+document_templates,title,text,YES
+document_templates,type,text,NO
+document_templates,id,uuid,NO
+document_templates,version,integer,NO
+email_logs,related_id,uuid,YES
+email_logs,provider_message_id,text,YES
+email_logs,status,text,NO
+email_logs,error,text,YES
+email_logs,type,text,NO
+email_logs,to_email,text,NO
+email_logs,created_at,timestamp with time zone,NO
+email_logs,user_id,uuid,YES
+email_logs,id,uuid,NO
+enrollment_document_receipts,id,uuid,NO
+enrollment_document_receipts,evidence_url,text,YES
+enrollment_document_receipts,updated_at,timestamp with time zone,NO
+enrollment_document_receipts,received_at,timestamp with time zone,NO
+enrollment_document_receipts,enrollment_document_id,uuid,NO
+enrollment_document_receipts,method,text,NO
+enrollment_document_receipts,notes,text,YES
+enrollment_document_receipts,received_by,uuid,NO
+enrollment_document_receipts,created_at,timestamp with time zone,NO
+enrollment_document_receipts,meta,jsonb,NO
+enrollment_documents,content_hash,text,YES
+enrollment_documents,final_content,text,YES
+enrollment_documents,pdf_hash,text,YES
+enrollment_documents,storage_path,text,YES
+enrollment_documents,pdf_url,text,YES
+enrollment_documents,status,text,NO
+enrollment_documents,type,text,NO
+enrollment_documents,updated_at,timestamp with time zone,NO
+enrollment_documents,created_at,timestamp with time zone,NO
+enrollment_documents,signed_at,timestamp with time zone,YES
+enrollment_documents,generated_payload,jsonb,YES
+enrollment_documents,template_version,integer,NO
+enrollment_documents,enrollment_id,uuid,NO
+enrollment_documents,id,uuid,NO
+enrollment_students,student_id,uuid,NO
+enrollment_students,enrollment_id,uuid,NO
+enrollment_students,academic_record_id,uuid,YES
+enrollment_students,created_at,timestamp with time zone,NO
+enrollments,created_at,timestamp with time zone,NO
+enrollments,meta,jsonb,YES
+enrollments,year,integer,NO
+enrollments,guardian_id,uuid,NO
+enrollments,id,uuid,NO
+enrollments,status,text,NO
+enrollments,updated_at,timestamp with time zone,NO
+fee,payment_date,date,YES
+fee,payment_method,text,YES
+fee,num_boleta,text,YES
+fee,mov_bancario,text,YES
+fee,notes,text,YES
+fee,institucion_financiera,text,YES
+fee,created_at,timestamp with time zone,YES
+fee,meta,jsonb,NO
+fee,year_academico,integer,NO
+fee,enrollment_id,uuid,YES
+fee,id,uuid,NO
+fee,updated_at,timestamp with time zone,YES
+fee,status,text,YES
+fee,owner_id,uuid,NO
+fee,student_id,uuid,NO
+fee,fee_curso,uuid,YES
+fee,numero_cuota,numeric,YES
+fee,guardian_id,uuid,YES
+fee,amount,numeric,NO
+fee,due_date,date,NO
+guardian_claim_logs,status,text,NO
+guardian_claim_logs,message,text,YES
+guardian_claim_logs,input_run,text,YES
+guardian_claim_logs,created_at,timestamp with time zone,YES
+guardian_claim_logs,guardian_id,uuid,YES
+guardian_claim_logs,user_id,uuid,YES
+guardian_claim_logs,id,bigint,NO
+guardian_claim_logs,normalized_run,text,YES
+guardian_intake_surveys,student_address,text,YES
+guardian_intake_surveys,id,uuid,NO
+guardian_intake_surveys,guardian_id,uuid,NO
+guardian_intake_surveys,year,integer,NO
+guardian_intake_surveys,student_birth_date,date,YES
+guardian_intake_surveys,student_enrollment_date,date,YES
+guardian_intake_surveys,student_withdrawal_date,date,YES
+guardian_intake_surveys,student_repeat_current,boolean,YES
+guardian_intake_surveys,scholarship_percentage,numeric,YES
+guardian_intake_surveys,payment_form_prioritario,boolean,YES
+guardian_intake_surveys,payment_form_cheques,boolean,YES
+guardian_intake_surveys,payment_form_pagare,boolean,YES
+guardian_intake_surveys,payment_form_credit_card,boolean,YES
+guardian_intake_surveys,payment_form_transfer,boolean,YES
+guardian_intake_surveys,payment_form_planilla,boolean,YES
+guardian_intake_surveys,submitted_at,timestamp with time zone,YES
+guardian_intake_surveys,created_at,timestamp with time zone,YES
+guardian_intake_surveys,updated_at,timestamp with time zone,YES
+guardian_intake_surveys,student_course_id,uuid,YES
+guardian_intake_surveys,student_lives_with,ARRAY,YES
+guardian_intake_surveys,alt_contact_name,text,YES
+guardian_intake_surveys,alt_contact_phone,text,YES
+guardian_intake_surveys,financial_institution,text,YES
+guardian_intake_surveys,status,text,NO
+guardian_intake_surveys,student_previous_institution,text,YES
+guardian_intake_surveys,student_commune,text,YES
+guardian_intake_surveys,guardian_first_name,text,YES
+guardian_intake_surveys,guardian_last_name_paterno,text,YES
+guardian_intake_surveys,guardian_last_name_materno,text,YES
+guardian_intake_surveys,guardian_relationship,text,YES
+guardian_intake_surveys,guardian_rut,text,YES
+guardian_intake_surveys,guardian_education_level,text,YES
+guardian_intake_surveys,guardian_address,text,YES
+guardian_intake_surveys,guardian_commune,text,YES
+guardian_intake_surveys,guardian_email,text,YES
+guardian_intake_surveys,guardian_phone,text,YES
+guardian_intake_surveys,student_first_names,text,YES
+guardian_intake_surveys,student_last_name_paterno,text,YES
+guardian_intake_surveys,student_last_name_materno,text,YES
+guardian_intake_surveys,student_run,text,YES
+guardian_intake_surveys,student_course,text,YES
+guardian_intake_surveys,student_nationality,text,YES
+guardian_intake_surveys,student_gender,text,YES
+guardian_intake_surveys,student_social_name,text,YES
+guardian_intake_surveys,student_withdrawal_reason,text,YES
+guardians,nacionalidad,character varying,YES
+guardians,estado_civil,text,YES
+guardians,profesion,text,YES
+guardians,last_name,text,NO
+guardians,first_name,text,NO
+guardians,apellido_materno,character varying,YES
+guardians,claim_token,text,YES
+guardians,family_tie,text,YES
+guardians,nivel_educacional,text,YES
+guardians,comuna,text,YES
+guardians,tipo_apoderado,text,YES
+guardians,relationship_type,text,YES
+guardians,address,text,YES
+guardians,phone,text,YES
+guardians,email,text,YES
+guardians,date_of_birth,date,YES
+guardians,needs_update,boolean,YES
+guardians,claimed_at,timestamp with time zone,YES
+guardians,claim_expires_at,timestamp with time zone,YES
+guardians,date_birth,date,YES
+guardians,owner_id,uuid,NO
+guardians,updated_at,timestamp with time zone,YES
+guardians,created_at,timestamp with time zone,YES
+guardians,id,uuid,NO
+guardians,run,text,NO
+guardians,apellido_paterno,character varying,YES
+invoices,student_id,uuid,NO
+invoices,id,uuid,NO
+invoices,updated_at,timestamp with time zone,YES
+invoices,created_at,timestamp with time zone,NO
+invoices,total,numeric,NO
+invoices,discount,numeric,NO
+invoices,subtotal,numeric,NO
+invoices,due_date,date,NO
+invoices,issue_date,date,NO
+invoices,status,text,NO
+matriculas_detalle,apoderado_id,uuid,YES
+matriculas_detalle,matricula_id,uuid,NO
+matriculas_detalle,owner_id,uuid,YES
+matriculas_detalle,institucion_id,uuid,YES
+matriculas_detalle,repite,boolean,YES
+matriculas_detalle,fecha_retiro,date,YES
+matriculas_detalle,fecha_matricula,date,YES
+matriculas_detalle,nivel,integer,YES
+matriculas_detalle,profesor_jefe_id,uuid,YES
+matriculas_detalle,year_academico,integer,YES
+matriculas_detalle,year_escolar_id,uuid,YES
+matriculas_detalle,curso_id,text,YES
+matriculas_detalle,cod_curso,text,YES
+matriculas_detalle,letra_curso,text,YES
+matriculas_detalle,nom_curso,text,YES
+matriculas_detalle,descripcion_curso,text,YES
+matriculas_detalle,estado,text,YES
+matriculas_detalle,observaciones,text,YES
+matriculas_detalle,estudiante_id,uuid,NO
+payment_summary,first_name,text,YES
+payment_summary,created_at,timestamp with time zone,YES
+payment_summary,amount,numeric,YES
+payment_summary,id,uuid,YES
+payment_summary,student_id,uuid,YES
+payment_summary,fee_amount,numeric,YES
+payment_summary,due_date,date,YES
+payment_summary,curso,uuid,YES
+payment_summary,payment_date,date,YES
+payment_summary,nom_curso,character varying,YES
+payment_summary,full_last_name,text,YES
+payment_summary,apellido_materno,text,YES
+payment_summary,apellido_paterno,text,YES
+pre_receipts,updated_at,timestamp with time zone,NO
+pre_receipts,created_at,timestamp with time zone,NO
+pre_receipts,student_id,uuid,YES
+pre_receipts,enrollment_id,uuid,YES
+pre_receipts,status,text,NO
+pre_receipts,meta,jsonb,YES
+pre_receipts,issued_at,timestamp with time zone,YES
+pre_receipts,amount,numeric,NO
+pre_receipts,id,uuid,NO
+profiles,id,uuid,NO
+profiles,created_at,timestamp with time zone,NO
+profiles,email,text,NO
+profiles,role,text,NO
+profiles,first_name,text,NO
+profiles,last_name,text,NO
+profiles,avatar_url,text,YES
+profiles,full_name,text,YES
+profiles,phone,text,YES
+profiles,updated_at,timestamp with time zone,YES
+rate_limit_counters,count,integer,NO
+rate_limit_counters,window_start,timestamp with time zone,NO
+rate_limit_counters,key,text,NO
+signatures,signed_at,timestamp with time zone,NO
+signatures,method,text,NO
+signatures,user_agent,text,YES
+signatures,created_at,timestamp with time zone,NO
+signatures,signer_type,text,NO
+signatures,ip,inet,YES
+signatures,id,uuid,NO
+signatures,signer_user_id,uuid,YES
+signatures,enrollment_document_id,uuid,NO
+signatures,signature_image,text,YES
+student_academic_records,observaciones,text,YES
+student_academic_records,updated_by,uuid,YES
+student_academic_records,created_by,uuid,YES
+student_academic_records,updated_at,timestamp with time zone,NO
+student_academic_records,created_at,timestamp with time zone,NO
+student_academic_records,enrollment_id,uuid,YES
+student_academic_records,asistencia_porcentaje,numeric,YES
+student_academic_records,curso_id,uuid,NO
+student_academic_records,id,uuid,NO
+student_academic_records,year_academico,integer,NO
+student_academic_records,promedio_anual,numeric,YES
+student_academic_records,fecha_termino,date,YES
+student_academic_records,student_id,uuid,NO
+student_academic_records,estado,text,NO
+student_academic_records,fecha_inicio,date,YES
+student_guardian,student_id,uuid,NO
+student_guardian,is_primary,boolean,YES
+student_guardian,guardian_id,uuid,NO
+student_guardian,guardian_role,text,YES
+student_guardian,id,uuid,NO
+student_guardian,created_at,timestamp with time zone,YES
+student_guardian_backup_20241222,student_id,uuid,YES
+student_guardian_backup_20241222,guardian_id,uuid,YES
+student_guardian_backup_20241222,created_at,timestamp with time zone,YES
+student_guardian_backup_20241222,guardian_role,text,YES
+student_guardian_backup_20241222,id,uuid,YES
+student_guardian_backup_20241222,is_primary,boolean,YES
+student_guardian_backup_20241222,backup_timestamp,timestamp with time zone,YES
+students,n_inscripcion,integer,YES
+students,first_name,text,NO
+students,apellido_paterno,text,NO
+students,run,text,NO
+students,email,text,YES
+students,fecha_incorporacion,date,YES
+students,owner_id,uuid,NO
+students,nivel,text,YES
+students,nombre_social,text,YES
+students,genero,text,YES
+students,nacionalidad,text,YES
+students,repite_curso_actual,text,YES
+students,institucion_procedencia,text,YES
+students,direccion,text,YES
+students,comuna,text,YES
+students,con_quien_vive,text,YES
+students,motivo_retiro,text,YES
+students,run_verificador,text,YES
+students,apellido_materno,text,YES
+students,whole_name,text,YES
+students,categoria_social,text,YES
+students,estado_std,text,YES
+students,fecha_retiro,date,YES
+students,date_of_birth,date,NO
+students,updated_at,timestamp with time zone,YES
+students,created_at,timestamp with time zone,YES
+students,fecha_matricula,date,YES
+students,run_numero,numeric,YES
+students,curso,uuid,NO
+students,id,uuid,NO
+v_current_student_courses,enrollment_status,text,YES
+v_current_student_courses,curso_id,uuid,YES
+v_current_student_courses,first_name,text,YES
+v_current_student_courses,student_id,uuid,YES
+v_current_student_courses,nom_curso,character varying,YES
+v_current_student_courses,letra_curso,character varying,YES
+v_current_student_courses,apellido_materno,text,YES
+v_current_student_courses,apellido_paterno,text,YES
+v_current_student_courses,whole_name,text,YES
+v_current_student_courses,run,text,YES
+v_current_student_courses,asistencia_porcentaje,numeric,YES
+v_current_student_courses,promedio_anual,numeric,YES
+v_current_student_courses,year_academico,integer,YES
+v_current_student_courses,nivel,integer,YES
+v_student_academic_history,observaciones,text,YES
+v_student_academic_history,whole_name,text,YES
+v_student_academic_history,student_id,uuid,YES
+v_student_academic_history,nom_curso,character varying,YES
+v_student_academic_history,estado,text,YES
+v_student_academic_history,year_academico,integer,YES
+v_student_academic_history,fecha_termino,date,YES
+v_student_academic_history,nivel,integer,YES
+v_student_academic_history,promedio_anual,numeric,YES
+v_student_academic_history,asistencia_porcentaje,numeric,YES
+v_student_academic_history,fecha_inicio,date,YES
+v_student_academic_history,run,text,YES

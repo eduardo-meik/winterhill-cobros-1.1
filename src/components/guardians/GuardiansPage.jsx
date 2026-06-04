@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { GuardiansTable } from './GuardiansTable';
@@ -9,6 +9,8 @@ import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
 
 export function GuardiansPage() {
   const [guardians, setGuardians] = useState([]);
@@ -16,44 +18,47 @@ export function GuardiansPage() {
   const [selectedGuardian, setSelectedGuardian] = useState(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [relationshipType, setRelationshipType] = useState('all');
+  const debounceRef = useRef(null);
+  const { academicYear } = useAcademicYear();
 
   useEffect(() => {
     fetchGuardians();
   }, []);
 
+  // Debounce search term
   useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchTerm]);
+
+  const isSearching = searchTerm !== debouncedSearch;
+
+  // Memoized filtering — replaces dual state pattern
+  const filteredGuardians = useMemo(() => {
     const normalizeText = (text = '') => text
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
 
-    const filterGuardians = () => {
-      setIsSearching(true);
-      const searchNormalized = normalizeText(searchTerm);
+    const searchNormalized = normalizeText(debouncedSearch);
 
-      const results = guardians.filter(guardian => {
-        if (relationshipType !== 'all' && guardian.relationship_type !== relationshipType) return false;
-        if (!searchTerm) return true;
+    return guardians.filter(guardian => {
+      if (relationshipType !== 'all' && guardian.relationship_type !== relationshipType) return false;
+      if (!debouncedSearch) return true;
 
-        const fullName = `${guardian.first_name || ''} ${guardian.last_name || ''}`;
-        const normalizedName = normalizeText(fullName);
-        const normalizedRut = normalizeText(guardian.rut || '');
+      const fullName = `${guardian.first_name || ''} ${guardian.last_name || ''}`;
+      const normalizedName = normalizeText(fullName);
+      const normalizedRut = normalizeText(guardian.rut || '');
 
-        return normalizedName.includes(searchNormalized) ||
-               normalizedRut.includes(searchNormalized);
-      });
-
-      setSearchResults(results);
-      setIsSearching(false);
-    };
-
-    const debounceTimer = setTimeout(filterGuardians, 300);
-    return () => clearTimeout(debounceTimer);
-
-  }, [searchTerm, relationshipType, guardians]);
+      return normalizedName.includes(searchNormalized) ||
+             normalizedRut.includes(searchNormalized);
+    });
+  }, [guardians, debouncedSearch, relationshipType]);
 
   const fetchGuardians = async () => {
     try {
@@ -67,12 +72,10 @@ export function GuardiansPage() {
 
       const fetchedGuardians = data || [];
       setGuardians(fetchedGuardians);
-      setSearchResults(fetchedGuardians);
     } catch (error) {
       toast.error('Error al cargar los apoderados');
       console.error('Error:', error);
       setGuardians([]);
-      setSearchResults([]);
     } finally {
       setLoading(false);
     }
@@ -85,7 +88,7 @@ export function GuardiansPage() {
     totalPages,
     paginatedItems,
     handlePageChange
-  } = usePagination(searchResults);
+  } = usePagination(filteredGuardians);
 
   const handleCloseDetails = () => {
     setSelectedGuardian(null);
@@ -129,25 +132,40 @@ export function GuardiansPage() {
                   placeholder="Buscar por nombre o RUT del apoderado..."
                   aria-label="Buscar apoderados"
                 />
-                <select
-                  value={relationshipType}
-                  onChange={(e) => setRelationshipType(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  aria-label="Filtrar por tipo de relación"
-                >
-                  <option value="all">Todos los Tipos</option>
-                  <option value="PADRE">Padre</option>
-                  <option value="MADRE">Madre</option>
-                  <option value="TUTOR">Tutor</option>
-                </select>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Relación</label>
+                  <select
+                    value={relationshipType}
+                    onChange={(e) => setRelationshipType(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    aria-label="Filtrar por tipo de relación"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="PADRE">Padre</option>
+                    <option value="MADRE">Madre</option>
+                    <option value="TUTOR">Tutor</option>
+                  </select>
+                </div>
               </div>
             </CardHeader>
+            <ActiveFiltersBar
+              yearLabel={String(academicYear)}
+              filters={[
+                relationshipType !== 'all' && {
+                  key: 'rel',
+                  label: 'Relación',
+                  value: relationshipType === 'PADRE' ? 'Padre' : relationshipType === 'MADRE' ? 'Madre' : 'Tutor',
+                  onRemove: () => setRelationshipType('all'),
+                },
+              ].filter(Boolean)}
+              onClearAll={() => { setSearchTerm(''); setRelationshipType('all'); }}
+            />
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                 </div>
-              ) : !loading && searchResults.length === 0 ? (
+              ) : !loading && filteredGuardians.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                   <p>No se encontraron apoderados que coincidan con los filtros.</p>
                   {(searchTerm || relationshipType !== 'all') && (
@@ -172,7 +190,7 @@ export function GuardiansPage() {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
-                    totalRecords={searchResults.length}
+                    totalRecords={filteredGuardians.length}
                     pageSize={pageSize}
                     onPageSizeChange={setPageSize}
                   />

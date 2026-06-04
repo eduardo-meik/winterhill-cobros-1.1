@@ -1,6 +1,8 @@
 // React import not required with react-jsx runtime
 
 export function GoogleAuthDebug() {
+  if (!import.meta.env.DEV) return null;
+
   const envVars = {
     VITE_GOOGLE_CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID,
     VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,

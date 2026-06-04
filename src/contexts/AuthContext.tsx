@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase, signInWithGoogle, handleSupabaseError } from '../services/supabase';
 import toast from 'react-hot-toast';
@@ -6,6 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import Logger from '../services/logger'; 
 import { LogCode } from '../types/logging'; 
 import { AuthContextType, AuthState, User as LocalUser } from '../types/auth';
+import { useIdleSessionTimeout } from '../hooks/useIdleSessionTimeout';
+import { clearGuardianCaches } from '../services/matricula';
+import { friendlyError } from '../utils/friendlyError';
+
+const ENABLE_IDLE_TIMEOUT = import.meta.env.PROD;
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -15,21 +20,29 @@ const initialAuthState: AuthState = {
   loading: true,
 };
 
+const clearStoredAuthSession = () => {
+  try {
+    localStorage.removeItem('supabase.auth.token');
+  } catch {
+    // ignore storage errors
+  }
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AuthState>(initialAuthState);
   const navigate = useNavigate();
   // Idle session timeout (30 min) implementation
   const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutos
-  const [lastActivity, setLastActivity] = useState<number>(Date.now());
-  const [idleTimerId, setIdleTimerId] = useState<number | null>(null);
 
   const mapSupabaseUserToLocalUser = (supabaseUser: SupabaseUser | null | undefined, role?: string, profile?: string): LocalUser | null => {
     if (!supabaseUser) return null;
     // Normalize role to lowercase to avoid casing mismatches (e.g. 'GUARDIAN' vs 'guardian').
-    const normalizedRole = role ? role.toLowerCase() : undefined;
+  const normalizedRole = role ? String(role).toLowerCase() : undefined;
+  const recognizedRole = normalizedRole && ['admin', 'asist', 'guardian'].includes(normalizedRole) ? normalizedRole : undefined;
+  const finalRole = recognizedRole ?? 'guardian';
     // Derive profile from role if not explicitly provided (profile column no longer exists)
     const derivedProfile = (profile || (() => {
-      const r = (role || '').toUpperCase();
+      const r = (normalizedRole ?? finalRole).toUpperCase();
       if (r === 'ADMIN') return 'ADMIN';
       if (r === 'ASIST') return 'ASIST';
       return 'READONLY';
@@ -39,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       email: supabaseUser.email || '',
       created_at: supabaseUser.created_at,
       updated_at: supabaseUser.updated_at || supabaseUser.created_at,
-      role: normalizedRole,
+      role: finalRole,
       profile: derivedProfile,
     };
   };
@@ -55,21 +68,68 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .single();
       
       if (profileError && profileError.code !== 'PGRST116') { // PGRST116 = no rows found
+        console.error('[AUTH] ❌ Profile fetch error:', profileError.code, profileError.message);
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching profile data: ${profileError.message}`, userId, 'fetchProfileRole', { level: 'WARN', area: 'AUTH', error: profileError });
       }
 
-      const roleLower = profileData?.role ? String(profileData.role).toLowerCase() : undefined;
-      const roleUpper = profileData?.role ? String(profileData.role).toUpperCase() : undefined;
+      if (!profileData?.role) {
+        console.warn('[AUTH] ⚠️ No role found for user', userId, '→ defaulting to guardian');
+        return {
+          role: 'guardian',
+          profile: 'READONLY',
+        };
+      }
+
+      const roleLowerRaw = profileData?.role ? String(profileData.role).toLowerCase() : undefined;
+      const roleLower = roleLowerRaw && ['admin', 'asist', 'guardian'].includes(roleLowerRaw) ? roleLowerRaw : 'guardian';
+      const roleUpper = roleLower.toUpperCase();
       const derivedProfile = roleUpper === 'ADMIN' || roleUpper === 'ASIST' ? roleUpper : 'READONLY';
+      console.log('[AUTH] ✅ Profile resolved:', { userId, role: roleLower, profile: derivedProfile });
       return {
         role: roleLower,
         profile: derivedProfile
       };
     } catch (err: any) {
+      console.error('[AUTH] ❌ Exception fetching profile:', err.message);
       Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Exception fetching profile data: ${err.message}`, userId, 'fetchProfileRoleCatch', { level: 'ERROR', area: 'AUTH', errorMessage: err.message });
       return { profile: 'READONLY' }; // Safe default
     }
   };
+
+  const buildValidatedAuthState = useCallback(async (session: any): Promise<AuthState> => {
+    if (!session?.access_token) {
+      return {
+        session: null,
+        user: null,
+        loading: false,
+      };
+    }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !userData?.user) {
+      Logger.getInstance().log(
+        LogCode.AUTH_SESSION_FETCH_FAILED,
+        `Invalid stored session: ${userError?.message || 'No authenticated user returned'}`,
+        session?.user?.id,
+        'buildValidatedAuthState',
+        { level: 'WARN', area: 'AUTH', error: userError }
+      );
+      clearStoredAuthSession();
+      return {
+        session: null,
+        user: null,
+        loading: false,
+      };
+    }
+
+    const { role, profile } = await fetchProfileRole(userData.user.id);
+    return {
+      session,
+      user: mapSupabaseUserToLocalUser(userData.user, role, profile),
+      loading: false,
+    };
+  }, []);
 
   useEffect(() => {
     const getSession = async () => {
@@ -79,8 +139,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Error fetching session initial: ${error.message}`, undefined, 'getSession', { level: 'ERROR', area: 'AUTH', error });
           throw error;
         }
-        const { role, profile } = await fetchProfileRole(session?.user?.id);
-        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role, profile), loading: false });
+        const nextState = await buildValidatedAuthState(session);
+        setState(nextState);
       } catch (error: any) {
         Logger.getInstance().log(LogCode.AUTH_SESSION_FETCH_FAILED, `Catch getSession: ${error.message}`, undefined, 'getSessionCatch', { level: 'ERROR', area: 'AUTH', errorMessage: error.message });
         setState(prev => ({ ...prev, loading: false }));
@@ -91,8 +151,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       Logger.getInstance().log(LogCode.AUTH_STATE_CHANGED, `Auth event: ${event}`, session?.user?.id, 'onAuthStateChange', { level: 'INFO', area: 'AUTH', session });
       (async () => {
-        const { role, profile } = await fetchProfileRole(session?.user?.id);
-        setState({ session, user: mapSupabaseUserToLocalUser(session?.user, role, profile), loading: false });
+        const nextState = await buildValidatedAuthState(session);
+        setState(nextState);
       })();
       
       if (event === 'PASSWORD_RECOVERY') {
@@ -101,6 +161,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         //   navigate('/reset-password');
         // }
       } else if (event === 'SIGNED_OUT') {
+        clearGuardianCaches(); // Prevent leaking cached data across sessions
+        clearStoredAuthSession();
         navigate('/login');
       }
     });
@@ -108,44 +170,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [navigate]);
-
-  // ------------------------------------------------------
-  // Idle timeout: registra actividad y cierra sesión tras inactividad
-  // ------------------------------------------------------
-  useEffect(() => {
-    const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-    const markActivity = () => setLastActivity(Date.now());
-    activityEvents.forEach(ev => window.addEventListener(ev, markActivity, { passive: true }));
-
-    return () => {
-      activityEvents.forEach(ev => window.removeEventListener(ev, markActivity));
-    };
-  }, []);
-
-  useEffect(() => {
-    // Limpia timer anterior
-    if (idleTimerId) {
-      window.clearTimeout(idleTimerId);
-    }
-    // Programa nuevo timeout solo si usuario autenticado
-    if (state.session && state.user) {
-      const remaining = IDLE_TIMEOUT_MS - (Date.now() - lastActivity);
-      const timeoutMs = Math.max(5_000, remaining); // Nunca menos de 5s para evitar loops
-      const tid = window.setTimeout(async () => {
-        // Verifica nuevamente que siga autenticado
-        if (state.session && state.user) {
-          toast('Sesión terminada por inactividad (30 min).', { icon: '⏱️' });
-          try {
-            await signOut();
-          } catch {/* ya se maneja en signOut */}
-        }
-      }, timeoutMs);
-      setIdleTimerId(tid);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastActivity, state.session, state.user]);
-
+  }, [buildValidatedAuthState, navigate]);
 
   const signIn = async (email: string, password: string /*, remember = false */) => {
     setState(prev => ({ ...prev, loading: true }));
@@ -154,7 +179,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_LOGIN_FAILED, `Error signing in for ${email}: ${error.message}`, undefined, 'signIn', { level: 'ERROR', area: 'AUTH', email, error });
-        toast.error(error.message || 'Error al iniciar sesión.');
+        toast.error(friendlyError(error, 'Error al iniciar sesión.'));
         throw error;
       }
       if (!data.session || !data.user) {
@@ -170,7 +195,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!error.message?.includes('Error signing in') && !error.message?.includes('No session or user data')) {
         Logger.getInstance().log(LogCode.AUTH_LOGIN_FAILED, `SignIn catch block for ${email}: ${error.message}`, userIdOnError, 'signInCatch', { level: 'ERROR', area: 'AUTH', email, error });
       }
-      toast.error(error.message || 'Error al iniciar sesión.');
+      toast.error(friendlyError(error, 'Error al iniciar sesión.'));
       throw error; 
     }
   };
@@ -188,7 +213,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_SIGNUP_FAILED, `Error signing up for ${email}: ${error.message}`, undefined, 'signUp', { level: 'ERROR', area: 'AUTH', email, error });
-        toast.error(error.message || 'Error al registrar la cuenta.');
+        toast.error(friendlyError(error, 'Error al registrar la cuenta.'));
         throw error;
       }
       userIdForLog = data.user?.id;
@@ -205,19 +230,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!error.message?.includes('Error signing up')) {
          Logger.getInstance().log(LogCode.AUTH_SIGNUP_FAILED, `SignUp catch block for ${email}: ${error.message}`, userIdForLog, 'signUpCatch', { level: 'ERROR', area: 'AUTH', email, error });
       }
-      toast.error(error.message || 'Error al registrar la cuenta.');
+      toast.error(friendlyError(error, 'Error al registrar la cuenta.'));
       throw error;
     }
   };
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true }));
     const userIdForLog = state.user?.id;
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_LOGOUT_FAILED, `Error signing out: ${error.message}`, userIdForLog, 'signOut', { level: 'ERROR', area: 'AUTH', error });
-        toast.error(error.message || 'Error al cerrar sesión.');
+        toast.error(friendlyError(error, 'Error al cerrar sesión.'));
         throw error;
       }
       Logger.getInstance().log(LogCode.AUTH_LOGOUT_SUCCESS, 'User signed out successfully', userIdForLog, 'signOut', { level: 'INFO', area: 'AUTH' });
@@ -227,15 +252,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!error.message?.includes('Error signing out')) {
         Logger.getInstance().log(LogCode.AUTH_LOGOUT_FAILED, `SignOut catch block: ${error.message}`, userIdForLog, 'signOutCatch', { level: 'ERROR', area: 'AUTH', error });
       }
-      toast.error(error.message || 'Error al cerrar sesión.');
+      toast.error(friendlyError(error, 'Error al cerrar sesión.'));
       throw error; 
     }
-  };
+  }, [state.user?.id]);
 
   const resetPassword = async (email: string) => {
     setState(prev => ({ ...prev, loading: true }));
     try {
-      const functionUrl = 'https://yeotpplgerfpxviqazrn.supabase.co/functions/v1/password-recovery';
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/password-recovery`;
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -286,7 +311,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
         Logger.getInstance().log(LogCode.AUTH_PASSWORD_UPDATE_FAILED, `Error updating password: ${error.message}`, userIdForLog, 'updatePassword', { level: 'ERROR', area: 'AUTH', error });
-        toast.error(error.message || 'Error al actualizar la contraseña.');
+        toast.error(friendlyError(error, 'Error al actualizar la contraseña.'));
         throw error;
       }
       Logger.getInstance().log(LogCode.AUTH_PASSWORD_UPDATE_SUCCESS, 'Password updated successfully', userIdForLog, 'updatePassword', { level: 'INFO', area: 'AUTH' });
@@ -297,7 +322,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!errorMessage.includes('Error updating password')) {
          Logger.getInstance().log(LogCode.AUTH_PASSWORD_UPDATE_FAILED, `AuthContext updatePassword catch block: ${errorMessage}`, userIdForLog, 'updatePasswordCatch', { level: 'ERROR', area: 'AUTH', errorDetails: error.message });
       }
-      toast.error(errorMessage);
+      toast.error(friendlyError(error, 'Error al actualizar la contraseña.'));
     } finally {
       setState(prev => ({ ...prev, loading: false }));
     }
@@ -317,8 +342,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }));
   };
 
+  useIdleSessionTimeout({
+    enabled: ENABLE_IDLE_TIMEOUT,
+    isActive: Boolean(state.session && state.user),
+    timeoutMs: IDLE_TIMEOUT_MS,
+    onTimeout: async () => {
+      toast('Sesión terminada por inactividad (30 min).', { icon: '⏱️' });
+      try {
+        await signOut();
+      } catch {
+        /* errores ya reportados por signOut */
+      }
+    }
+  });
+
+  const contextValue = useMemo(() => ({
+    ...state,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    updatePassword,
+    signInWithGoogle: signInWithGoogleProvider,
+    refreshProfileRole,
+  }), [state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogleProvider, refreshProfileRole]);
+
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, resetPassword, updatePassword, signInWithGoogle: signInWithGoogleProvider, refreshProfileRole }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

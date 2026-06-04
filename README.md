@@ -37,12 +37,19 @@ VITE_SITE_URL=http://localhost:5173
 
 ### Configuración de Google OAuth
 
-Para configurar la autenticación con Google, consulta el archivo `GOOGLE_AUTH_SETUP.md` que contiene instrucciones detalladas para:
+Para configurar la autenticación con Google, consulta `docs/GOOGLE_AUTH_SETUP.md`, que contiene instrucciones detalladas para:
 
 - Configurar Google Cloud Console
 - Configurar Supabase OAuth
 - Variables de entorno de producción
 - Mejores prácticas de seguridad
+
+### Documentación Clave
+
+- `BACKLOG.MD`: estado de trabajo y prioridades activas
+- `wiki/Home.md`: mapa de conocimiento estable del proyecto
+- `docs/QUICK_START.md`: arranque rápido operativo
+- `docs/SECURITY_FIXES_APPLICATION_GUIDE.md`: runbook canónico de hardening
 
 ## Desarrollo
 

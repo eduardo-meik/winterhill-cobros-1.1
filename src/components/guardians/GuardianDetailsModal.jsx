@@ -7,8 +7,11 @@ import { StudentMultiSelect } from './StudentMultiSelect';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { StudentDetailsModal } from '../students/StudentDetailsModal';
+import { isRutFormatValid, formatRut } from '../../utils/rut';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 
 export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
+  const [guardianData, setGuardianData] = useState(guardian);
   const [associatedStudents, setAssociatedStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -19,7 +22,10 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   const [editingFieldKey, setEditingFieldKey] = useState(null); // null | 'run' | 'email' | etc.
   const [fieldEditValue, setFieldEditValue] = useState('');
   const [isSavingField, setIsSavingField] = useState(false);
+  const [enrollmentStatuses, setEnrollmentStatuses] = useState({}); // { studentId: status }
+  const [debtSummary, setDebtSummary] = useState(null); // { studentId: { paid, pending, overdue, total } }
   const navigate = useNavigate();
+  const { data: allStudents = [] } = useStudentsQuery();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: guardian
@@ -28,13 +34,86 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   useEffect(() => {
     if (guardian?.id) {
       fetchAssociatedStudents();
+      fetchEnrollmentStatuses();
     }
   }, [guardian?.id]);
 
+  const fetchEnrollmentStatuses = async () => {
+    if (!guardian?.id) return;
+    try {
+      const currentYear = new Date().getFullYear();
+      const { data: enrollments, error } = await supabase
+        .from('enrollments')
+        .select(`
+          id,
+          status,
+          enrollment_students ( student_id )
+        `)
+        .eq('guardian_id', guardian.id)
+        .eq('year', currentYear);
+
+      if (error) throw error;
+
+      const statusMap = {};
+      (enrollments || []).forEach(e => {
+        (e.enrollment_students || []).forEach(es => {
+          statusMap[es.student_id] = e.status;
+        });
+      });
+      setEnrollmentStatuses(statusMap);
+    } catch (err) {
+      console.error('Error fetching enrollment statuses:', err);
+    }
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
-    reset(guardian);
+    reset(guardianData);
   };
+
+  // MJ-02: Fetch debt summary per associated student
+  useEffect(() => {
+    if (associatedStudents.length === 0) {
+      setDebtSummary(null);
+      return;
+    }
+    const fetchDebt = async () => {
+      try {
+        const studentIds = associatedStudents.map(s => s.id);
+        const currentYear = new Date().getFullYear();
+        const { data: fees, error } = await supabase
+          .from('fee')
+          .select('student_id, amount, status, due_date')
+          .in('student_id', studentIds)
+          .eq('year_academico', currentYear);
+
+        if (error) throw error;
+
+        const summary = {};
+        studentIds.forEach(id => {
+          summary[id] = { paid: 0, pending: 0, overdue: 0, total: 0 };
+        });
+        const today = new Date();
+        (fees || []).forEach(f => {
+          const sid = f.student_id;
+          if (!summary[sid]) summary[sid] = { paid: 0, pending: 0, overdue: 0, total: 0 };
+          const amt = Number(f.amount) || 0;
+          summary[sid].total += amt;
+          if (f.status === 'paid') {
+            summary[sid].paid += amt;
+          } else if (new Date(f.due_date) < today) {
+            summary[sid].overdue += amt;
+          } else {
+            summary[sid].pending += amt;
+          }
+        });
+        setDebtSummary(summary);
+      } catch (err) {
+        console.error('Error fetching debt summary:', err);
+      }
+    };
+    fetchDebt();
+  }, [associatedStudents]);
 
   const onSubmit = async (data) => {
     try {
@@ -97,6 +176,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       }
 
       toast.success('Apoderado actualizado exitosamente');
+      setGuardianData(prev => ({ ...prev, ...data }));
       setIsEditing(false);
       fetchAssociatedStudents();
       onSuccess?.();
@@ -109,7 +189,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al apoderado ${guardian.first_name} ${guardian.last_name}?`);
+    const confirmed = window.confirm(`¿Estás seguro de que deseas eliminar al apoderado ${guardianData.first_name} ${guardianData.last_name}?`);
     if (!confirmed) return;
 
     try {
@@ -154,38 +234,15 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
       const studentIds = associations.map(a => a.student_id);
       
-      const { data: students, error: studentsError } = await supabase
-        .from('students')
-        .select('id, whole_name, first_name, apellido_paterno, apellido_materno, curso')
-        .in('id', studentIds);
-        
-      if (studentsError) throw studentsError;
-      
-      const cursoIds = Array.from(new Set(students.filter(s => s.curso).map(s => s.curso)));
-      
-      let cursosMap = {};
-      if (cursoIds.length > 0) {
-        const { data: cursos, error: cursosError } = await supabase
-          .from('cursos')
-          .select('id, nom_curso')
-          .in('id', cursoIds);
-          
-        if (cursosError) throw cursosError;
-        
-        cursosMap = (cursos || []).reduce((map, curso) => {
-          map[curso.id] = curso;
-          return map;
-        }, {});
-      }
-      
-      const processedStudents = students.map(student => {
-        const curso = student.curso ? cursosMap[student.curso] : null;
-        return {
+      // Use cached students from shared hook instead of separate fetches
+      const processedStudents = allStudents
+        .filter(s => studentIds.includes(s.id))
+        .map(student => ({
           id: student.id,
           whole_name: student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''} ${student.apellido_materno || ''}`.trim(),
-          nom_curso: curso ? curso.nom_curso : 'Sin curso asignado'
-        };
-      });
+          run: student.run || null,
+          nom_curso: student.curso?.nom_curso || 'Sin curso asignado'
+        }));
       
       setAssociatedStudents(processedStudents);
       setSelectedStudentIds(studentIds);
@@ -218,11 +275,11 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       toast.error(`El campo ${label.toLowerCase()} es requerido.`);
       return;
     }
-    if (fieldKey === 'run' && !/^(\\d{1,3}(?:\\.\\d{3})*)-?([\\dkK])$/.test(fieldEditValue)) {
+    if (fieldKey === 'run' && !isRutFormatValid(fieldEditValue)) {
       toast.error('Formato de RUT inválido');
       return;
     }
-    if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i.test(fieldEditValue)) {
+    if (fieldKey === 'email' && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(fieldEditValue)) {
       toast.error('Email inválido');
       return;
     }
@@ -233,7 +290,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
 
 
     // Prevent saving if value hasn't changed
-    if (fieldEditValue === (guardian[fieldKey] || '')) {
+    if (fieldEditValue === (guardianData[fieldKey] || '')) {
       handleFieldCancel();
       return;
     }
@@ -250,6 +307,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
       if (error) throw error;
 
       toast.success(`${fieldKey.replace(/_/g, ' ')} actualizado exitosamente.`);
+      setGuardianData(prev => ({ ...prev, ...updateData }));
       onSuccess?.(); 
       handleFieldCancel();
     } catch (error) {
@@ -282,12 +340,15 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 id={fieldKey}
                 type={inputType}
                 value={fieldEditValue}
-                onChange={(e) => setFieldEditValue(e.target.value)}
+                onChange={(e) => {
+                  const newValue = fieldKey === 'run' ? formatRut(e.target.value) : e.target.value;
+                  setFieldEditValue(newValue);
+                }}
                 className="w-full px-3 py-1.5 rounded-md border border-primary dark:border-primary bg-white dark:bg-dark-input text-gray-900 dark:text-white focus:ring-1 focus:ring-primary"
                 autoFocus
               />
             )}
-            <button onClick={() => handleFieldSave(fieldKey)} disabled={isSavingField} className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50">
+            <button onClick={() => handleFieldSave(fieldKey)} disabled={isSavingField} aria-label="Guardar campo" className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50">
               {isSavingField ? 
                 <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -297,7 +358,7 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
               }
             </button>
-            <button onClick={handleFieldCancel} disabled={isSavingField} className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50">
+            <button onClick={handleFieldCancel} disabled={isSavingField} aria-label="Cancelar edición" className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
@@ -359,14 +420,15 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800 shrink-0">
               <div>
                 <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {guardian.first_name} {guardian.last_name}
+                  {guardianData.first_name} {guardianData.last_name}
                 </Dialog.Title>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {guardian.relationship_type} • RUT: {guardian.run || 'No especificado'}
+                  {guardianData.relationship_type} • RUT: {guardianData.run || 'No especificado'}
                 </p>
               </div>
               <button
                 onClick={onClose}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -424,17 +486,25 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         RUT *
                       </label>
-                      <input
-                        type="text"
-                        {...register('run', { 
+                      {(() => {
+                        const { onChange, ...rest } = register('run', { 
                           required: 'Este campo es requerido',
-                          pattern: {
-                            value: /^(\d{1,3}(?:\.\d{3})*)\-?([\dkK])$/,
-                            message: 'Formato de RUT inválido'
-                          }
-                        })}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      />
+                          validate: {
+                            validRut: value => isRutFormatValid(value) || 'Formato de RUT inválido',
+                          },
+                        });
+                        return (
+                          <input
+                            type="text"
+                            {...rest}
+                            onChange={(e) => {
+                              e.target.value = formatRut(e.target.value);
+                              onChange(e);
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          />
+                        );
+                      })()}
                       {errors.run && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.run.message}</p>
                       )}
@@ -551,26 +621,122 @@ export function GuardianDetailsModal({ guardian, onClose, onSuccess }) {
                   </div>
                 </form>
               ) : (
+                <>
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  {renderDetailItem('RUT', 'run', guardian.run)}
-                  {renderDetailItem('Email', 'email', guardian.email, 'email')}
-                  {renderDetailItem('Teléfono', 'phone', guardian.phone, 'tel')}
-                  {renderDetailItem('Dirección', 'address', guardian.address)}
-                  {renderDetailItem('Comuna', 'comuna', guardian.comuna)}
-                  {renderDetailItem('Tipo de Relación', 'relationship_type', guardian.relationship_type, 'select', [
+                  {renderDetailItem('RUT', 'run', guardianData.run)}
+                  {renderDetailItem('Email', 'email', guardianData.email, 'email')}
+                  {renderDetailItem('Teléfono', 'phone', guardianData.phone, 'tel')}
+                  {renderDetailItem('Dirección', 'address', guardianData.address)}
+                  {renderDetailItem('Comuna', 'comuna', guardianData.comuna)}
+                  {renderDetailItem('Tipo de Relación', 'relationship_type', guardianData.relationship_type, 'select', [
                     { value: '', label: 'Seleccionar tipo' },
                     { value: 'PADRE', label: 'PADRE' },
                     { value: 'MADRE', label: 'MADRE' },
                     { value: 'TUTOR', label: 'TUTOR' },
                   ])}
-                  {renderDetailItem('Tipo de Apoderado', 'tipo_apoderado', guardian.tipo_apoderado, 'select', [
+                  {renderDetailItem('Tipo de Apoderado', 'tipo_apoderado', guardianData.tipo_apoderado, 'select', [
                     { value: '', label: 'Seleccionar tipo' },
                     { value: 'ECONOMICO', label: 'ECONOMICO' },
                     { value: 'PEDAGOGICO', label: 'PEDAGOGICO' },
-                    { value: 'AMBOS', label: 'AMBOS' }, // Assuming AMBOS is a possible value
+                    { value: 'AMBOS', label: 'AMBOS' },
                     { value: 'RESPONSABLE', label: 'RESPONSABLE' },
                   ])}
                 </dl>
+
+                {/* BG-03 + BG-04: Estudiantes Asociados section in view mode */}
+                {associatedStudents.length > 0 && (
+                  <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                      Estudiantes Asociados ({associatedStudents.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {associatedStudents.map(student => (
+                        <div
+                          key={student.id}
+                          className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-dark-hover"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                              {student.whole_name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {student.run ? `RUT: ${student.run} • ` : ''}{student.nom_curso}
+                            </p>
+                            {(() => {
+                              const status = enrollmentStatuses[student.id];
+                              const currentYear = new Date().getFullYear();
+                              if (status === 'completed') return (
+                                <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                  Matrícula {currentYear}
+                                </span>
+                              );
+                              if (status === 'pending' || status === 'draft') return (
+                                <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                  Matrícula {currentYear} pendiente
+                                </span>
+                              );
+                              return (
+                                <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                  Sin matrícula {currentYear}
+                                </span>
+                              );
+                            })()}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setViewingStudent(student)}
+                            disabled={editingFieldKey !== null}
+                            className="ml-2 p-1.5 text-gray-400 hover:text-primary dark:hover:text-primary-light rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                            title="Ver detalle del estudiante"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* MJ-02: Detalle de deuda por estudiante */}
+                {debtSummary && associatedStudents.length > 0 && (
+                  <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                      Resumen de Deuda {new Date().getFullYear()}
+                    </h4>
+                    <div className="space-y-2">
+                      {associatedStudents.map(student => {
+                        const d = debtSummary[student.id];
+                        if (!d || d.total === 0) return null;
+                        const fmt = (n) => `$${n.toLocaleString('es-CL')}`;
+                        return (
+                          <div key={`debt-${student.id}`} className="p-3 rounded-lg bg-gray-50 dark:bg-dark-hover">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">{student.whole_name}</p>
+                            <div className="grid grid-cols-3 gap-2 text-xs">
+                              <div className="text-center p-1.5 rounded bg-green-50 dark:bg-green-900/20">
+                                <p className="text-green-700 dark:text-green-400 font-semibold">{fmt(d.paid)}</p>
+                                <p className="text-green-600 dark:text-green-500">Pagado</p>
+                              </div>
+                              <div className="text-center p-1.5 rounded bg-yellow-50 dark:bg-yellow-900/20">
+                                <p className="text-yellow-700 dark:text-yellow-400 font-semibold">{fmt(d.pending)}</p>
+                                <p className="text-yellow-600 dark:text-yellow-500">Pendiente</p>
+                              </div>
+                              <div className="text-center p-1.5 rounded bg-red-50 dark:bg-red-900/20">
+                                <p className="text-red-700 dark:text-red-400 font-semibold">{fmt(d.overdue)}</p>
+                                <p className="text-red-600 dark:text-red-500">Vencido</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                </>
               )}
             </div>
 

@@ -8,6 +8,8 @@ import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf } from '../../services/receiptGenerator';
+import { friendlyError } from '../../utils/friendlyError';
+import { useQueryClient } from '@tanstack/react-query';
 
 const defaultValues = {
   student_id: '',
@@ -21,7 +23,7 @@ const defaultValues = {
   is_free_payment: false
 };
 
-export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
+export function RegisterPaymentModal({ isOpen, onClose, onSuccess, academicYear }) {
   const { 
     register, 
     handleSubmit, 
@@ -39,6 +41,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
   const selectedNumeroCuota = watch('numero_cuota');
   const isFreePayment = watch('is_free_payment');
   const permissions = usePermissions();
+  const queryClient = useQueryClient();
 
   // State for cuota management
   const [availableCuotas, setAvailableCuotas] = useState([]);
@@ -77,12 +80,16 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
   const fetchAvailableCuotas = async () => {
     try {
       setIsLoadingCuotas(true);
-      
+
+      const targetAcademicYear = Number.isFinite(Number(academicYear))
+        ? Number(academicYear)
+        : new Date().getFullYear();
       // Fetch existing fee records for this student to identify cuotas
       const { data: fees, error } = await supabase
         .from('fee')
         .select('numero_cuota, amount, status, due_date, payment_date')
         .eq('student_id', selectedStudentId)
+        .eq('year_academico', targetAcademicYear)
         .order('numero_cuota', { ascending: true });
 
       if (error) throw error;
@@ -200,15 +207,9 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
         num_boleta: data.num_boleta,
         mov_bancario: data.mov_bancario,
         // Ensure DB NOT NULL column is satisfied
-        year_academico: (() => {
-          try {
-            const d = new Date(data.payment_date);
-            const y = d.getFullYear();
-            return Number.isFinite(y) ? y : new Date().getFullYear();
-          } catch {
-            return new Date().getFullYear();
-          }
-        })()
+        year_academico: Number.isFinite(Number(academicYear))
+          ? Number(academicYear)
+          : new Date().getFullYear()
       };
 
       // Add numero_cuota if not a free payment
@@ -231,6 +232,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
           .select('id, status')
           .eq('student_id', data.student_id)
           .eq('numero_cuota', cuotaNumber)
+          .eq('year_academico', paymentData.year_academico)
           .neq('status', 'paid')
           .limit(1);
 
@@ -269,15 +271,15 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
             // Fetch student basic info for the receipt
             const { data: studentRows } = await supabase
               .from('students')
-              .select('first_name,last_name,cursos(nom_curso)')
+              .select('first_name,apellido_paterno,apellido_materno,whole_name,curso:cursos(nom_curso)')
               .eq('id', data.student_id)
               .limit(1);
             const student = studentRows?.[0];
             const cashierName = (permissions?.user?.user_metadata?.full_name) || permissions?.user?.email || 'Usuario';
             await generateReceiptPdf({
               feeId: existing.id,
-              studentName: `${student?.first_name || ''} ${student?.last_name || ''}`.trim(),
-              courseName: student?.cursos?.nom_curso || null,
+              studentName: student?.whole_name || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim(),
+              courseName: student?.curso?.nom_curso || null,
               numeroCuota: cuotaNumber,
               yearAcademico: paymentData.year_academico,
               amount: paymentData.amount,
@@ -288,6 +290,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
               cashierName,
             });
           }
+          queryClient.invalidateQueries({ queryKey: ['fees'] });
           reset();
           onSuccess();
           onClose();
@@ -311,15 +314,15 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
         const feeId = insertedRows?.[0]?.id || '';
         const { data: studentRows } = await supabase
           .from('students')
-          .select('first_name,last_name,cursos(nom_curso)')
+          .select('first_name,apellido_paterno,apellido_materno,whole_name,curso:cursos(nom_curso)')
           .eq('id', data.student_id)
           .limit(1);
         const student = studentRows?.[0];
         const cashierName = (permissions?.user?.user_metadata?.full_name) || permissions?.user?.email || 'Usuario';
         await generateReceiptPdf({
           feeId,
-          studentName: `${student?.first_name || ''} ${student?.last_name || ''}`.trim(),
-          courseName: student?.cursos?.nom_curso || null,
+          studentName: student?.whole_name || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim(),
+          courseName: student?.curso?.nom_curso || null,
           numeroCuota: isFreePayment ? (data.numero_cuota ? parseInt(data.numero_cuota) : null) : parseInt(data.numero_cuota),
           yearAcademico: paymentData.year_academico,
           amount: paymentData.amount,
@@ -330,15 +333,13 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
           cashierName,
         });
       }
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       reset();
       onSuccess();
       onClose();
     } catch (error) {
-      // Improve error visibility
-      const message = error?.message || 'Error desconocido';
-      const details = error?.details || error?.hint || '';
-      console.error('Error al registrar el pago:', { message, details, error });
-      toast.error(`Error al registrar el pago${details ? `: ${details}` : ''}`);
+      console.error('Error al registrar el pago:', error);
+      toast.error(friendlyError(error, 'Error al registrar el pago.'));
     }
   };
 
@@ -536,7 +537,7 @@ export function RegisterPaymentModal({ isOpen, onClose, onSuccess }) {
                         valueAsNumber: true, // Ensure value is treated as number
                         min: { value: 0.01, message: 'El monto debe ser mayor a 0' },
                         // --- Add max validation ---
-                        max: { value: 5000000, message: 'El monto máximo es 99,999,999.99' }
+                        max: { value: 5000000, message: 'El monto máximo es $5.000.000' }
                         // --- End max validation ---
                       })}
                       className={`w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary ${

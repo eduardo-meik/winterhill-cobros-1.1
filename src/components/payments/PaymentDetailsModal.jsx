@@ -8,6 +8,74 @@ import toast from 'react-hot-toast';
 import { usePermissions } from '../../hooks/usePermissions';
 import { generateReceiptPdf, buildReceiptEmailHtml } from '../../services/receiptGenerator';
 import { sendEmailViaFunction } from '../../services/email';
+import { friendlyError } from '../../utils/friendlyError';
+import { useFeeMutations } from '../../hooks/mutations/useFeeMutations';
+
+/** Extract year safely from a date string, fallback to current year */
+function safeYearFromDate(dateStr) {
+  try {
+    const d = new Date(dateStr);
+    const y = d.getFullYear();
+    return Number.isFinite(y) ? y : new Date().getFullYear();
+  } catch {
+    return new Date().getFullYear();
+  }
+}
+
+function getStudentDisplayName(student) {
+  return student?.whole_name
+    || `${student?.first_name || ''} ${student?.apellido_paterno || ''} ${student?.apellido_materno || ''}`.trim();
+}
+
+const RECEIPT_GUARDIAN_ROLE_PRIORITY = ['ECONOMICO', 'AMBOS'];
+
+function normalizeGuardianRole(role) {
+  return typeof role === 'string' ? role.trim().toUpperCase() : '';
+}
+
+function selectReceiptGuardian(rows = []) {
+  const validRows = rows.filter((row) => row?.guardian && typeof row.guardian === 'object');
+  if (!validRows.length) return null;
+
+  for (const role of RECEIPT_GUARDIAN_ROLE_PRIORITY) {
+    const match = validRows.find(
+      (row) => normalizeGuardianRole(row.guardian_role) === role && row.guardian?.email
+    );
+    if (match) return match.guardian;
+  }
+
+  const primaryWithEmail = validRows.find((row) => Boolean(row.is_primary) && row.guardian?.email);
+  if (primaryWithEmail) return primaryWithEmail.guardian;
+
+  const firstWithEmail = validRows.find((row) => row.guardian?.email);
+  if (firstWithEmail) return firstWithEmail.guardian;
+
+  return validRows[0].guardian;
+}
+
+async function fetchPreferredGuardian(studentId) {
+  if (!studentId) return null;
+
+  const { data, error } = await supabase
+    .from('student_guardian')
+    .select(`
+      guardian_role,
+      is_primary,
+      guardian:guardians (
+        id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        relationship_type
+      )
+    `)
+    .eq('student_id', studentId)
+    .order('is_primary', { ascending: false });
+
+  if (error) throw error;
+  return selectReceiptGuardian(data || []);
+}
 
 const DetailItem = ({ label, value }) => (
   <div className="space-y-1">
@@ -17,63 +85,51 @@ const DetailItem = ({ label, value }) => (
 );
 
 export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
-  if (!payment) return null;
-
+  const currentCalendarYear = new Date().getFullYear();
+  // All hooks MUST be called before any conditional return (Rules of Hooks)
   const [guardianInfo, setGuardianInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    student_id: payment.student.id,
-    amount: payment.amount,
-    payment_date: payment.payment_date,
-    payment_method: payment.payment_method || '',
-    status: payment.status,
-    num_boleta: payment.num_boleta || '',
-    mov_bancario: payment.mov_bancario || '',
-    notes: payment.notes || ''
+    student_id: payment?.student?.id ?? '',
+    amount: payment?.amount ?? 0,
+    payment_date: payment?.payment_date ?? '',
+    payment_method: payment?.payment_method || '',
+    status: payment?.status ?? '',
+    num_boleta: payment?.num_boleta || '',
+    mov_bancario: payment?.mov_bancario || '',
+    notes: payment?.notes || ''
   });
-  const [loading, setLoading] = useState(false);
   const permissions = usePermissions();
+  const { updateFee, deleteFee } = useFeeMutations();
+  const loading = updateFee.isPending || deleteFee.isPending;
 
   // Registrar pago (ASIST) state
   const [isRegistering, setIsRegistering] = useState(false);
-  const [registerLoading, setRegisterLoading] = useState(false);
   const [sendingReceipt, setSendingReceipt] = useState(false);
   const [registerData, setRegisterData] = useState({
-    amount: payment.amount,
+    amount: payment?.amount ?? 0,
     payment_date: '',
     payment_method: '',
+    num_boleta: '',
     mov_bancario: '',
     notes: ''
   });
 
   useEffect(() => {
+    if (!payment?.student?.id) return;
+    const fetchGuardianInfo = async () => {
+      try {
+        const guardian = await fetchPreferredGuardian(payment.student.id);
+        setGuardianInfo(guardian);
+      } catch (error) {
+        console.error('Error fetching guardian info:', error);
+      }
+    };
     fetchGuardianInfo();
-  }, [payment.student.id]);
+  }, [payment?.student?.id]);
 
-  const fetchGuardianInfo = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('student_guardian')
-        .select(`
-          guardian:guardians (
-            id,
-            first_name,
-            last_name,
-            email,
-            phone,
-            relationship_type
-          )
-        `)
-        .eq('student_id', payment.student.id)
-        .single();
-
-      if (error) throw error;
-      setGuardianInfo(data.guardian);
-    } catch (error) {
-      console.error('Error fetching guardian info:', error);
-      toast.error('Error al cargar la información del apoderado');
-    }
-  };
+  // Early return AFTER all hooks
+  if (!payment) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,25 +152,20 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         toast.error('Método de pago inválido');
         return;
       }
-      
-      setLoading(true);
-      
-      const { error } = await supabase
-        .from('fee')
-        .update({
-          // student_id is not updated to prevent data conflicts
+
+      await updateFee.mutateAsync({
+        id: payment.id,
+        data: {
           amount: parseFloat(formData.amount),
           payment_date: formData.payment_date,
-          payment_method: formData.payment_method || null, // Ensure null if empty
+          payment_method: formData.payment_method || null,
           status: formData.status,
           num_boleta: formData.num_boleta,
           mov_bancario: formData.mov_bancario,
           notes: formData.notes,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', payment.id);
-
-      if (error) throw error;
+        }
+      });
 
       toast.success('Pago actualizado exitosamente');
       // If ADMIN (or any role) changed status to paid, offer printing the receipt
@@ -124,13 +175,11 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           const cashierName = permissions?.user?.user_metadata?.full_name 
             || permissions?.user?.email 
             || 'Usuario';
-          const year = (() => {
-            try { const d = new Date(formData.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
-          })();
+          const year = safeYearFromDate(formData.payment_date);
           await generateReceiptPdf({
             feeId: payment.id,
-            studentName: `${payment.student.first_name} ${payment.student.last_name}`,
-            courseName: payment.student?.cursos?.nom_curso || null,
+            studentName: getStudentDisplayName(payment.student),
+            courseName: payment.student?.curso?.nom_curso || null,
             numeroCuota: payment.numero_cuota || null,
             yearAcademico: year,
             amount: Number(formData.amount || payment.amount),
@@ -141,14 +190,49 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
             cashierName,
           });
         }
+
+        try {
+          const receiptGuardian = guardianInfo || await fetchPreferredGuardian(payment?.student?.id);
+          if (receiptGuardian?.email) {
+            const cashierName = permissions?.user?.user_metadata?.full_name
+              || permissions?.user?.email
+              || 'Usuario';
+            const year = safeYearFromDate(formData.payment_date || payment.payment_date || new Date().toISOString());
+            const html = buildReceiptEmailHtml({
+              feeId: payment.id,
+              studentName: getStudentDisplayName(payment.student),
+              courseName: payment.student?.curso?.nom_curso || null,
+              numeroCuota: payment.numero_cuota || null,
+              yearAcademico: year,
+              amount: Number(formData.amount || payment.amount),
+              paymentDate: formData.payment_date || payment.payment_date || new Date().toISOString(),
+              paymentMethod: formData.payment_method || payment.payment_method || '—',
+              movBancario: formData.mov_bancario || payment.mov_bancario || null,
+              notes: formData.notes || payment.notes || null,
+              cashierName,
+            });
+            const subject = `Comprobante de Pago - Colegio Winterhill - ${new Date().toLocaleDateString('es-CL')}`;
+            await sendEmailViaFunction({
+              to: receiptGuardian.email,
+              subject,
+              html,
+              type: 'receipt',
+              related_id: payment.id,
+            });
+            toast.success('Recibo enviado al correo del apoderado económico');
+          } else {
+            toast.error('Pago marcado como pagado, pero el apoderado económico no tiene correo registrado.');
+          }
+        } catch (emailError) {
+          console.error('Error sending automatic receipt email:', emailError);
+          toast.error(friendlyError(emailError, 'Pago guardado, pero no se pudo enviar el recibo por correo.'));
+        }
       }
       onSuccess?.();
       onClose();
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al actualizar el pago');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -157,23 +241,13 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
     if (!confirmed) return;
 
     try {
-      setLoading(true);
-      
-      const { error } = await supabase
-        .from('fee')
-        .delete()
-        .eq('id', payment.id);
-
-      if (error) throw error;
-
+      await deleteFee.mutateAsync(payment.id);
       toast.success('Pago eliminado exitosamente');
       onSuccess?.();
       onClose();
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al eliminar el pago');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -201,33 +275,21 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       }
 
       // Build update payload
-      const year = (() => {
-        try {
-          const d = new Date(registerData.payment_date);
-          const y = d.getFullYear();
-          return Number.isFinite(y) ? y : new Date().getFullYear();
-        } catch {
-          return new Date().getFullYear();
+      const year = payment?.year_academico || safeYearFromDate(registerData.payment_date);
+
+      await updateFee.mutateAsync({
+        id: payment.id,
+        data: {
+          amount: amountNum,
+          payment_date: registerData.payment_date,
+          payment_method: registerData.payment_method,
+          status: 'paid',
+          num_boleta: registerData.num_boleta || null,
+          mov_bancario: registerData.mov_bancario || null,
+          notes: registerData.notes || null,
+          year_academico: year
         }
-      })();
-
-      const updatePayload = {
-        amount: amountNum,
-        payment_date: registerData.payment_date,
-        payment_method: registerData.payment_method,
-        status: 'paid',
-        mov_bancario: registerData.mov_bancario || null,
-        notes: registerData.notes || null,
-        year_academico: year
-      };
-
-      setRegisterLoading(true);
-      const { error } = await supabase
-        .from('fee')
-        .update(updatePayload, { returning: 'minimal' })
-        .eq('id', payment.id);
-
-      if (error) throw error;
+      });
 
       toast.success('Pago registrado exitosamente');
       setIsRegistering(false);
@@ -239,8 +301,8 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
           || 'Usuario';
         await generateReceiptPdf({
           feeId: payment.id,
-          studentName: `${payment.student.first_name} ${payment.student.last_name}`,
-          courseName: payment.student?.cursos?.nom_curso || null,
+          studentName: getStudentDisplayName(payment.student),
+          courseName: payment.student?.curso?.nom_curso || null,
           numeroCuota: payment.numero_cuota || null,
           yearAcademico: year,
           amount: amountNum,
@@ -254,29 +316,26 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
       onSuccess?.();
       onClose();
     } catch (err) {
-      const message = err?.message || 'Error al registrar el pago';
-      const details = err?.details || err?.hint || '';
       console.error('Registrar pago error:', err);
-      toast.error(`${message}${details ? `: ${details}` : ''}`);
-    } finally {
-      setRegisterLoading(false);
+      toast.error(friendlyError(err, 'Error al registrar el pago.'));
     }
   };
 
   // Print receipt for already paid fees
   const handlePrintReceipt = async () => {
     try {
+      toast.loading('Generando recibo...', { id: 'print-receipt' });
       const cashierName = permissions?.user?.user_metadata?.full_name 
         || permissions?.user?.email 
         || 'Usuario';
       const year = (() => {
         if (payment.year_academico) return payment.year_academico;
-        try { const d = new Date(payment.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+        return safeYearFromDate(payment.payment_date);
       })();
       await generateReceiptPdf({
         feeId: payment.id,
-        studentName: `${payment.student.first_name} ${payment.student.last_name}`,
-        courseName: payment.student?.cursos?.nom_curso || null,
+        studentName: getStudentDisplayName(payment.student),
+        courseName: payment.student?.curso?.nom_curso || null,
         numeroCuota: payment.numero_cuota || null,
         yearAcademico: year,
         amount: Number(payment.amount),
@@ -286,9 +345,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         notes: payment.notes || null,
         cashierName,
       });
+      toast.success('Recibo generado', { id: 'print-receipt' });
     } catch (err) {
       console.error('Error al generar recibo:', err);
-      toast.error('No se pudo generar el recibo');
+      toast.error('No se pudo generar el recibo', { id: 'print-receipt' });
     }
   };
 
@@ -300,17 +360,18 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         return;
       }
       setSendingReceipt(true);
+      toast.loading('Enviando recibo...', { id: 'send-receipt' });
       const cashierName = permissions?.user?.user_metadata?.full_name 
         || permissions?.user?.email 
         || 'Usuario';
       const year = (() => {
         if (payment.year_academico) return payment.year_academico;
-        try { const d = new Date(payment.payment_date || formData.payment_date); const y = d.getFullYear(); return Number.isFinite(y) ? y : new Date().getFullYear(); } catch { return new Date().getFullYear(); }
+        return safeYearFromDate(payment.payment_date || formData.payment_date);
       })();
       const html = buildReceiptEmailHtml({
         feeId: payment.id,
-        studentName: `${payment.student.first_name} ${payment.student.last_name}`,
-        courseName: payment.student?.cursos?.nom_curso || null,
+        studentName: getStudentDisplayName(payment.student),
+        courseName: payment.student?.curso?.nom_curso || null,
         numeroCuota: payment.numero_cuota || null,
         yearAcademico: year,
         amount: Number(payment.amount),
@@ -328,17 +389,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
         type: 'receipt',
         related_id: payment.id,
       });
-      toast.success('Recibo enviado por correo');
+      toast.success('Recibo enviado por correo', { id: 'send-receipt' });
     } catch (err) {
       console.error('Enviar recibo error:', err);
-      console.error('Error details:', {
-        message: err?.message,
-        status: err?.status,
-        context: err?.context,
-        full: err
-      });
-      const msg = err?.message || 'No se pudo enviar el recibo';
-      toast.error(`Error al enviar: ${msg}`);
+      toast.error(friendlyError(err, 'No se pudo enviar el recibo.'), { id: 'send-receipt' });
     } finally {
       setSendingReceipt(false);
     }
@@ -363,11 +417,12 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                   Detalles del Pago
                 </Dialog.Title>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {payment.student.first_name} {payment.student.last_name}
+                  {getStudentDisplayName(payment.student)}
                 </p>
               </div>
               <button
                 onClick={onClose}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -393,7 +448,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                               {payment.student?.whole_name || `${payment.student?.first_name || ''} ${payment.student?.apellido_paterno || ''}`}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {payment.student?.run} - {payment.student?.cursos?.nom_curso || 'Sin curso asignado'}
+                              {payment.student?.run} - {payment.student?.curso?.nom_curso || 'Sin curso asignado'}
                             </p>
                           </div>
                         </div>
@@ -550,6 +605,16 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                       </select>
                     </div>
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folio Boleta</label>
+                      <input
+                        type="text"
+                        name="num_boleta"
+                        value={registerData.num_boleta}
+                        onChange={handleRegisterChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movimiento Bancario</label>
                       <input
                         type="text"
@@ -581,11 +646,11 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                      <div className="grid grid-cols-2 gap-4">
                        <DetailItem 
                          label="Nombre Completo" 
-                         value={`${payment.student.first_name} ${payment.student.last_name}`}
+                         value={getStudentDisplayName(payment.student)}
                        />
                        <DetailItem 
                          label="Curso" 
-                         value={payment.student?.cursos?.nom_curso || 'No asignado'}
+                         value={payment.student?.curso?.nom_curso || 'No asignado'}
                        />
                      </div>
                    </div>
@@ -644,7 +709,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                    />
                    <DetailItem 
                      label="Fecha de Vencimiento" 
-                     value={format(new Date(payment.due_date), 'dd/MM/yyyy')}
+                     value={payment.due_date ? format(new Date(payment.due_date), 'dd/MM/yyyy') : 'No especificado'}
                    />
                    <DetailItem 
                      label="Método de Pago" 
@@ -660,7 +725,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                    />
                    <DetailItem 
                      label="Curso del Estudiante" 
-                     value={payment.student?.cursos?.nom_curso || 'No asignado'}
+                     value={payment.student?.curso?.nom_curso || 'No asignado'}
                    />
                    {payment.payment_date && (
                      <DetailItem 
@@ -706,7 +771,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                   <button
                     type="button"
                     onClick={() => setIsRegistering(false)}
-                    disabled={registerLoading}
+                    disabled={updateFee.isPending}
                     className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-hover rounded-lg transition-colors"
                   >
                     Cancelar
@@ -714,10 +779,10 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                   <button
                     type="button"
                     onClick={handleRegisterPay}
-                    disabled={registerLoading}
+                    disabled={updateFee.isPending}
                     className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors disabled:opacity-50"
                   >
-                    {registerLoading ? 'Registrando...' : 'Confirmar Pago'}
+                    {updateFee.isPending ? 'Registrando...' : 'Confirmar Pago'}
                   </button>
                 </>
               ) : (
@@ -763,7 +828,7 @@ export function PaymentDetailsModal({ payment, onClose, onSuccess }) {
                     </button>
                   )}
                   {/* ASIST: Registrar pago si no está pagado */}
-                  {permissions.isAssistant() && payment.status !== 'paid' && (
+                  {permissions.isAssistant() && payment.status !== 'paid' && (payment.year_academico ?? currentCalendarYear) >= currentCalendarYear && (
                     <button
                       onClick={() => setIsRegistering(true)}
                       className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-light rounded-lg transition-colors"

@@ -1,5 +1,6 @@
 // RUT / RUN utilities centralized
-export const normalizeRun = (run: string) => run.replace(/[^0-9kK]/g, '').toUpperCase();
+export const cleanRut = (run: string) => typeof run === 'string' ? run.replace(/[^0-9kK]/g, '').toUpperCase() : '';
+export const normalizeRun = cleanRut;
 
 export const computeDv = (body: string) => {
   let sum = 0; let multiplier = 2;
@@ -14,7 +15,7 @@ export const computeDv = (body: string) => {
 };
 
 export const validateRun = (raw: string) => {
-  const clean = normalizeRun(raw);
+  const clean = cleanRut(raw);
   if (clean.length < 2) return { valid: false, clean };
   const body = clean.slice(0, -1);
   const dv = clean.slice(-1).toUpperCase();
@@ -23,11 +24,26 @@ export const validateRun = (raw: string) => {
   return { valid: dv === expected, clean, body, dv, expected };
 };
 
+export const validateRut = (rut: string) => {
+    return validateRun(rut).valid;
+};
+
+export const isRutFormatValid = (rut: string) => {
+  if (!rut) return false;
+  const clean = cleanRut(rut);
+  if (clean.length < 2) return false;
+  const body = clean.slice(0, -1);
+  const dv = clean.slice(-1).toUpperCase();
+  return /^\d+$/.test(body) && /^[0-9K]$/.test(dv);
+};
+
 export const formatRunDisplay = (raw: string) => {
-  const clean = normalizeRun(raw);
+  const clean = cleanRut(raw);
   if (clean.length < 2) return clean;
   const body = clean.slice(0, -1);
   const dv = clean.slice(-1);
   const bodyWithDots = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   return `${bodyWithDots}-${dv}`;
 };
+
+export const formatRut = formatRunDisplay;

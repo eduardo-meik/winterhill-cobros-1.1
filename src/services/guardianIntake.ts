@@ -14,6 +14,20 @@ export function clearGuardianIntakeCache() {
   _intakeFetchPromise = null;
 }
 
+function normalizeIntakeRecord(row: any): GuardianIntakeRecord | null {
+  if (!row) return null;
+  const record = { ...row } as GuardianIntakeRecord;
+  if (typeof record.student_lives_with === 'string') {
+    record.student_lives_with = record.student_lives_with
+      ? record.student_lives_with.split('|').filter((s: string) => s.trim())
+      : [];
+  }
+  if (typeof record.status === 'string') {
+    record.status = record.status.toLowerCase() as GuardianIntakeRecord['status'];
+  }
+  return record;
+}
+
 export interface GuardianIntakeRecord {
   id: string;
   guardian_id: string;
@@ -34,6 +48,7 @@ export interface GuardianIntakeRecord {
   student_last_name_materno?: string;
   student_run?: string;
   student_course?: string;
+  student_course_id?: string | null;
   student_birth_date?: string;
   student_nationality?: string;
   student_gender?: string;
@@ -80,24 +95,7 @@ export async function fetchCurrentIntake(force = false): Promise<GuardianIntakeR
         .maybeSingle();
       if (error && error.code !== 'PGRST116') throw error;
 
-      let record = data || null;
-      
-      // Convert student_lives_with from pipe-delimited string to array
-      if (record && typeof record.student_lives_with === 'string') {
-        record = {
-          ...record,
-          student_lives_with: record.student_lives_with
-            ? record.student_lives_with.split('|').filter((s: string) => s.trim())
-            : []
-        };
-      }
-
-      if (record && typeof record.status === 'string') {
-        record = {
-          ...record,
-          status: record.status.toLowerCase() as GuardianIntakeRecord['status']
-        };
-      }
+      let record = normalizeIntakeRecord(data || null);
       
       // If not found (404 / PGRST116) try auto-create a minimal draft once.
       if (!record && !_intakeAutoCreateAttempted) {
@@ -105,8 +103,8 @@ export async function fetchCurrentIntake(force = false): Promise<GuardianIntakeR
         try {
           const minimalPayload = { year: CURRENT_YEAR, status: 'draft' } as any;
           const { data: created, error: createErr } = await supabase.rpc('upsert_guardian_intake_survey', { payload: minimalPayload });
-          if (!createErr) {
-            record = created as GuardianIntakeRecord;
+          if (!createErr && created) {
+            record = normalizeIntakeRecord(created);
           }
         } catch { /* ignore auto-create failure */ }
       }
@@ -127,10 +125,14 @@ export async function saveIntakeDraft(payload: Record<string, any>) {
   if (Array.isArray(processedPayload.student_lives_with)) {
     processedPayload.student_lives_with = processedPayload.student_lives_with.join('|');
   }
+  if (!processedPayload.student_course_id) {
+    processedPayload.student_course_id = null;
+  }
   
   const full = { ...processedPayload, year: CURRENT_YEAR, status: 'draft' };
   const { data, error } = await supabase.rpc('upsert_guardian_intake_survey', { payload: full });
   if (error) throw error;
+  clearGuardianIntakeCache(); // MJ-04: Clear cache so next fetch gets fresh data
   return data as GuardianIntakeRecord;
 }
 
@@ -139,6 +141,21 @@ export async function submitIntake() {
   if (error) throw error;
   clearGuardianIntakeCache();
   return data;
+}
+
+export async function adminFetchGuardianIntake(guardianId: string, year?: number): Promise<GuardianIntakeRecord | null> {
+  if (!guardianId) throw new Error('guardianId required');
+  const targetYear = year ?? CURRENT_YEAR;
+  const { data, error } = await supabase
+    .from('guardian_intake_surveys')
+    .select('*')
+    .eq('guardian_id', guardianId)
+    .eq('year', targetYear)
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return normalizeIntakeRecord(data || null);
 }
 
 export async function needsIntakeCheck(force = false): Promise<boolean> {
@@ -150,4 +167,40 @@ export async function needsIntakeCheck(force = false): Promise<boolean> {
     // Conservative: require completion if error
     return true;
   }
+}
+
+// --------------------------------------------------
+// STAFF HELPERS
+// --------------------------------------------------
+
+export async function adminUpsertGuardianIntake(
+  guardianId: string,
+  payload: Record<string, any>,
+  year?: number
+) {
+  if (!guardianId) throw new Error('guardianId required');
+  const processedPayload = { ...payload };
+  if (Array.isArray(processedPayload.student_lives_with)) {
+    processedPayload.student_lives_with = processedPayload.student_lives_with.join('|');
+  }
+  if (!processedPayload.student_course_id) {
+    processedPayload.student_course_id = null;
+  }
+  const args: Record<string, any> = {
+    p_guardian_id: guardianId,
+    p_payload: processedPayload,
+  };
+  if (year) args.p_year = year;
+  const { data, error } = await supabase.rpc('admin_upsert_guardian_intake', args);
+  if (error) throw error;
+  return data;
+}
+
+export async function adminSubmitGuardianIntake(guardianId: string, year?: number) {
+  if (!guardianId) throw new Error('guardianId required');
+  const args: Record<string, any> = { p_guardian_id: guardianId };
+  if (year) args.p_year = year;
+  const { data, error } = await supabase.rpc('admin_submit_guardian_intake', args);
+  if (error) throw error;
+  return data;
 }

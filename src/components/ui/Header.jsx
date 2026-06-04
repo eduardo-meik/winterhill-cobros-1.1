@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserMenu } from './UserMenu';
+import { YearSelector } from './YearSelector';
 
 export function Header({ onMenuClick, onNavigate }) {
   return (
@@ -8,6 +9,7 @@ export function Header({ onMenuClick, onNavigate }) {
         <div className="flex items-center gap-4">
           <button
             onClick={onMenuClick}
+            aria-label="Abrir menú"
             className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -18,7 +20,9 @@ export function Header({ onMenuClick, onNavigate }) {
             <span className="text-xl font-bold text-primary">Sistema de Cobros Escolares</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <YearSelector className="hidden sm:flex" />
+          <YearSelector compact className="sm:hidden" />
           <UserMenu onNavigate={onNavigate} />
         </div>
       </div>

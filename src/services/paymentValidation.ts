@@ -77,15 +77,14 @@ export const validateExactAmount = async (
   }
 
   try {
-    // Consultar el monto esperado de la cuota
+    // Consultar el monto esperado de la cuota (tabla fee)
     const { data: cuotaData, error } = await supabaseClient
-      .from('cuotas') // Asumo que existe una tabla de cuotas
-      .select('amount, description')
+      .from('fee')
+      .select('amount, notes')
       .eq('id', cuotaId)
       .single();
 
     if (error) {
-      console.error('Error fetching cuota data:', error);
       return { 
         valid: false, 
         error: 'No se pudo verificar el monto de la cuota' 
@@ -180,17 +179,6 @@ export const examplePaymentController = async (req: Request, res: Response) => {
   // Aplicar validaciones adicionales
   const validationError = await handlePaymentValidation(req, res, undefined /* supabaseClient */);
     if (validationError) return; // Response ya enviado
-
-    // Log de la acción para auditoría
-    console.log(`💰 Registrando pago - Perfil: ${userProfile}`, {
-      userId: req.user?.id,
-      userEmail: req.user?.email,
-      studentId: paymentData.student_id,
-      amount: paymentData.amount,
-      cuotaId: paymentData.cuota_id,
-      isFreePayment: paymentData.is_free_payment,
-      timestamp: new Date().toISOString()
-    });
 
     // Aquí iría la lógica para guardar el pago en la DB
     // const result = await savePayment(paymentData);

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react'; // Added useRef
-import { supabase } from '../../services/supabase';
-import toast from 'react-hot-toast';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
 import clsx from 'clsx';
 
 // Helper function to normalize text (lowercase and remove accents)
@@ -19,8 +18,7 @@ const getRunDigitsAndK = (run = '') => {
 }
 
 export function StudentSelect({ value, onChange, error }) {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: students = [], isLoading: loading } = useStudentsQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const [isListOpen, setIsListOpen] = useState(false); // State to control list visibility
   const wrapperRef = useRef(null); // Ref for the component wrapper
@@ -41,40 +39,6 @@ export function StudentSelect({ value, onChange, error }) {
   }, [wrapperRef]);
   // --- End Click Outside Handler ---
 
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const { data, error: fetchError } = await supabase
-        .from('students')
-        .select(`
-          id,
-          first_name,
-          apellido_paterno,
-          whole_name,
-          run,
-          curso,
-          cursos:curso (
-            id,
-            nom_curso
-          )
-        `)
-        .order('apellido_paterno', { ascending: true });
-
-      if (fetchError) throw fetchError;
-      setStudents(data || []);
-    } catch (fetchError) {
-      console.error('Error fetching students:', fetchError);
-      toast.error('Error al cargar los estudiantes');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Filtering logic using useMemo, depends directly on searchTerm
   const filteredStudents = useMemo(() => {
     const searchNormalized = normalizeText(searchTerm);
@@ -88,7 +52,7 @@ export function StudentSelect({ value, onChange, error }) {
     return students.filter(student => {
       const nameNormalized = normalizeText(student.whole_name);
       const runDigitsAndK = getRunDigitsAndK(student.run);
-      const cursoNormalized = normalizeText(student.cursos?.nom_curso);
+      const cursoNormalized = normalizeText(student.curso?.nom_curso);
 
       const nameMatch = nameNormalized.includes(searchNormalized);
       // Check digits+K OR raw RUN
@@ -173,7 +137,7 @@ export function StudentSelect({ value, onChange, error }) {
                     {student.whole_name || `${student.apellido_paterno}, ${student.first_name}`}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {student.run} ({student.cursos?.nom_curso || 'Sin curso'})
+                    {student.run} ({student.curso?.nom_curso || 'Sin curso'})
                   </p>
                 </div>
               </div>

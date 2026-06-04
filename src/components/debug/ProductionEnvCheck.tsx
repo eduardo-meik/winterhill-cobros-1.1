@@ -1,4 +1,6 @@
 export function ProductionEnvCheck() {
+  if (!import.meta.env.DEV) return null;
+
   const env = {
     VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,

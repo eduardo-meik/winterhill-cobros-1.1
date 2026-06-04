@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../services/supabase';
-import toast from 'react-hot-toast';
-import { fetchCurrentGuardian } from '../../services/matricula';
+import { useGuardianData } from '../../contexts/GuardianContext';
+import { useGuardianIntakeGate } from '../../hooks/useGuardianIntakeGate';
 
 function formatCurrency(value) {
   try {
@@ -35,93 +34,51 @@ function downloadCSV(filename, rows) {
 }
 
 export default function GuardianPortalPage() {
-  const { user, loading } = useAuth();
-  const [guardian, setGuardian] = useState(null);
-  const [students, setStudents] = useState([]);
-  const [fees, setFees] = useState([]);
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [status, setStatus] = useState('all');
-  const [fetching, setFetching] = useState(true);
+  const { user } = useAuth();
+  const { data, loading, refreshing, refresh, error } = useGuardianData();
+  const { checking } = useGuardianIntakeGate();
   const [selectedStudent, setSelectedStudent] = useState('all');
+  const [status, setStatus] = useState('all');
+  const currentYear = new Date().getFullYear();
+  const availableYears = useMemo(() => {
+    const years = new Set();
+    (data?.fees || []).forEach((fee) => {
+      if (fee.year) years.add(fee.year);
+      else if (fee.year_academico) years.add(fee.year_academico);
+    });
+    if (years.size === 0) {
+      years.add(currentYear);
+    }
+    return Array.from(years).sort((a, b) => Number(b) - Number(a));
+  }, [data?.fees, currentYear]);
+  const [year, setYear] = useState(() => availableYears[0] || currentYear);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) return;
-    if (user.role && user.role !== 'guardian') {
-      // Non-guardian users shouldn't access this page
-      toast.error('Solo los apoderados pueden acceder al portal de apoderados.');
-      return;
+    if (!availableYears.includes(year)) {
+      setYear(availableYears[0] || currentYear);
     }
-    (async () => {
-      try {
-        const g = await fetchCurrentGuardian(user.id);
-        if (!g) {
-          toast.error('No encontramos tu registro de apoderado.');
-          setFetching(false);
-          return;
-        }
-        setGuardian(g);
+  }, [availableYears, year, currentYear]);
 
-        // 1) Get student_ids linked to this guardian
-        const guardianId = g.guardian_id || g.id;
-        if (!guardianId) {
-          setStudents([]);
-          setFees([]);
-          setFetching(false);
-          return;
-        }
-        const { data: links, error: linkErr } = await supabase
-          .from('student_guardian')
-          .select('student_id')
-          .eq('guardian_id', guardianId);
-        if (linkErr) throw linkErr;
-        const studentIds = (links || []).map(l => l.student_id);
-
-        if (studentIds.length === 0) {
-          setStudents([]);
-          setFees([]);
-          setFetching(false);
-          return;
-        }
-
-        // 2) Get students basic info
-        const { data: studentRows, error: stuErr } = await supabase
-          .from('students')
-          .select('id, whole_name, run, curso, cursos:curso(nom_curso)')
-          .in('id', studentIds);
-        if (stuErr) throw stuErr;
-        setStudents(studentRows || []);
-
-        // 3) Get fees for these students for current year
-        const { data: feeRows, error: feeErr } = await supabase
-          .from('fee')
-          .select(`
-            id, student_id, amount, due_date, status, payment_method, year, numero_cuota
-          `)
-          .in('student_id', studentIds)
-          .eq('year', year)
-          .order('due_date', { ascending: true });
-        if (feeErr) throw feeErr;
-        setFees(feeRows || []);
-      } catch (e) {
-        console.error(e);
-        toast.error('Error cargando el portal del apoderado.');
-      } finally {
-        setFetching(false);
-      }
-    })();
-  }, [user, loading, year]);
+  const guardian = data?.guardian;
+  const students = data?.students || [];
+  const fees = data?.fees || [];
+  const enrollment = data?.enrollment;
+  const enrollmentStudentIds = data?.enrollmentStudentIds || [];
+  const enrollmentDocs = data?.enrollmentDocuments || [];
 
   const filteredFees = useMemo(() => {
-    let data = fees;
+    let rows = fees.filter((fee) => {
+      const feeYear = fee.year ?? fee.year_academico ?? year;
+      return Number(feeYear) === Number(year);
+    });
     if (selectedStudent !== 'all') {
-      data = data.filter(f => f.student_id === selectedStudent);
+      rows = rows.filter((fee) => fee.student_id === selectedStudent);
     }
     if (status !== 'all') {
-      data = data.filter(f => String(f.status).toLowerCase() === status);
+      rows = rows.filter((fee) => String(fee.status || '').toLowerCase() === status);
     }
-    return data;
-  }, [fees, status, selectedStudent]);
+    return rows;
+  }, [fees, status, selectedStudent, year]);
 
   const totals = useMemo(() => {
     const total = filteredFees.reduce((acc, f) => acc + Number(f.amount || 0), 0);
@@ -137,24 +94,108 @@ export default function GuardianPortalPage() {
     const rows = filteredFees.map(f => {
       const s = students.find(s => s.id === f.student_id);
       return {
-        estudiante: s?.whole_name || '-',
-        run: s?.run || '-',
-        curso: s?.cursos?.nom_curso || '-',
+  estudiante: s?.whole_name || '-',
+  run: s?.run || '-',
+  curso: s?.curso_label || '-',
         numero_cuota: f.numero_cuota,
         monto: f.amount,
         fecha_vencimiento: f.due_date,
         estado: f.status,
         metodo_pago: f.payment_method,
-        anio: f.year,
+        anio: f.year ?? f.year_academico,
       };
     });
     downloadCSV(`aranceles_${year}_${selectedStudent === 'all' ? 'todos' : selectedStudent}.csv`, rows);
   };
 
+  if (!user) {
+    return <div className="p-6">No autenticado.</div>;
+  }
+  if (user.role !== 'guardian') {
+    return <div className="p-6">Esta página es solo para apoderados.</div>;
+  }
+
+  if (checking || loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (!guardian) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-semibold mb-2">Portal de Apoderados</h1>
+        <p className="text-sm text-gray-600">Aún no encontramos tu registro de apoderado. Intenta refrescar en unos minutos.</p>
+        <button onClick={() => refresh({ force: true })} className="mt-3 px-4 py-2 bg-primary text-white rounded">Reintentar</button>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Portal de Apoderados</h1>
-      <p className="text-gray-600 dark:text-gray-300 mb-6">Revisa la situación financiera de tus estudiantes.</p>
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">Portal de Apoderados</h1>
+          <p className="text-gray-600 dark:text-gray-300">Revisa la situación financiera de tus estudiantes.</p>
+        </div>
+        <button onClick={() => refresh({ force: true })} className="px-3 py-2 text-sm rounded bg-gray-100 hover:bg-gray-200">
+          {refreshing ? 'Actualizando…' : 'Actualizar'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="border border-red-300 bg-red-50 dark:bg-red-900/30 text-sm text-red-700 rounded p-3 mb-4">
+          {error}
+        </div>
+      )}
+
+      {/* MP-02: Estado de matrícula */}
+      {enrollment && (
+        <div className="mb-6 p-4 rounded border bg-white dark:bg-gray-900 dark:border-gray-800">
+          <h2 className="text-lg font-semibold mb-3">Estado de Matrícula {enrollment.year || currentYear}</h2>
+          <div className="flex items-center gap-3 mb-3">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+              enrollment.status === 'completed'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                : enrollment.status === 'pending' || enrollment.status === 'draft'
+                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
+            }`}>
+              {enrollment.status === 'completed' ? '✓ Matrícula Finalizada'
+                : enrollment.status === 'pending' ? '⏳ Matrícula Pendiente'
+                : enrollment.status === 'draft' ? '📝 Matrícula en Borrador'
+                : enrollment.status}
+            </span>
+            {enrollment.meta?.folio && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">Folio: {enrollment.meta.folio}</span>
+            )}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-300">
+            <span className="font-medium">Estudiantes matriculados:</span>{' '}
+            {enrollmentStudentIds.length > 0
+              ? students.filter(s => enrollmentStudentIds.includes(s.id)).map(s => s.whole_name || s.run).join(', ')
+              : 'Ninguno'}
+          </div>
+          {enrollmentDocs.length > 0 && (
+            <div className="mt-3">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Documentos:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {enrollmentDocs.map((doc, i) => (
+                  <span key={i} className={`inline-flex items-center px-2 py-0.5 rounded text-xs ${
+                    doc.status === 'signed' || doc.status === 'completed'
+                      ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                      : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                  }`}>
+                    {doc.document_type || doc.type || 'Documento'}: {doc.status === 'signed' || doc.status === 'completed' ? '✓ Firmado' : '⏳ Pendiente'}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="text-lg font-semibold">Aranceles</h2>
@@ -181,7 +222,7 @@ export default function GuardianPortalPage() {
             onChange={e => setYear(Number(e.target.value))}
             className="border rounded px-3 py-2 bg-white dark:bg-gray-800 dark:text-white"
           >
-            {[year, year - 1, year - 2].map(y => (
+            {availableYears.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
@@ -224,7 +265,7 @@ export default function GuardianPortalPage() {
       </div>
 
       <div className="overflow-x-auto border rounded bg-white dark:bg-gray-900 dark:border-gray-800">
-        {fetching ? (
+        {refreshing ? (
           <div className="p-6 text-center text-gray-500 dark:text-gray-400">Cargando…</div>
         ) : filteredFees.length === 0 ? (
           <div className="p-6 text-center text-gray-500 dark:text-gray-400">Sin cuotas para los filtros seleccionados.</div>

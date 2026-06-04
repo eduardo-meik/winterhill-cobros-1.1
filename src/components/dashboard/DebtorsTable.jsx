@@ -1,72 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
-import { supabase } from '../../services/supabase';
+import { TableSkeleton } from '../ui/Skeleton';
+import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
 import { format } from 'date-fns';
-import toast from 'react-hot-toast';
 
-export function DebtorsTable() {
-  const [debtors, setDebtors] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function DebtorsTable({ academicYear }) {
+  const { data: fees = [], isLoading: loading } = useFeesQuery();
 
-  useEffect(() => {
-    fetchTopDebtors();
-  }, []);
+  const debtors = useMemo(() => {
+    const pendingFees = fees.filter(f => (f.status === 'pending' || f.status === 'overdue') && f.student);
 
-  const fetchTopDebtors = async () => {
-    try {
-      setLoading(true);
+    const debtByStudent = pendingFees.reduce((acc, fee) => {
+      const studentId = fee.student.id;
+      if (!acc[studentId]) {
+        acc[studentId] = {
+          student: fee.student,
+          totalDebt: 0,
+          overdueCount: 0,
+          lastDueDate: null
+        };
+      }
+      acc[studentId].totalDebt += parseFloat(fee.amount);
+      if (fee.status === 'overdue') acc[studentId].overdueCount++;
+      if (!acc[studentId].lastDueDate || new Date(fee.due_date) > new Date(acc[studentId].lastDueDate)) {
+        acc[studentId].lastDueDate = fee.due_date;
+      }
+      return acc;
+    }, {});
 
-      const { data: fees, error } = await supabase
-        .from('fee')
-        .select(`
-          amount,
-          status,
-          due_date,
-          student:students (
-            id,
-            first_name,
-            apellido_paterno,
-            curso:cursos!students_curso_fkey(
-              nom_curso
-            )
-          )
-        `)
-        .in('status', ['pending', 'overdue']);
-
-      if (error) throw error;
-
-      // Aggregate debt by student
-      const debtByStudent = fees.reduce((acc, fee) => {
-        const studentId = fee.student.id;
-        if (!acc[studentId]) {
-          acc[studentId] = {
-            student: fee.student,
-            totalDebt: 0,
-            overdueCount: 0,
-            lastDueDate: null
-          };
-        }
-        acc[studentId].totalDebt += parseFloat(fee.amount);
-        if (fee.status === 'overdue') acc[studentId].overdueCount++;
-        if (!acc[studentId].lastDueDate || new Date(fee.due_date) > new Date(acc[studentId].lastDueDate)) {
-          acc[studentId].lastDueDate = fee.due_date;
-        }
-        return acc;
-      }, {});
-
-      // Convert to array and sort by total debt
-      const sortedDebtors = Object.values(debtByStudent)
-        .sort((a, b) => b.totalDebt - a.totalDebt)
-        .slice(0, 5);
-
-      setDebtors(sortedDebtors);
-    } catch (err) {
-      console.error('Error fetching top debtors:', err);
-      toast.error('Error al cargar los deudores principales');
-    } finally {
-      setLoading(false);
-    }
-  };
+    return Object.values(debtByStudent)
+      .sort((a, b) => b.totalDebt - a.totalDebt)
+      .slice(0, 5);
+  }, [fees]);
 
   return (
     <Card>
@@ -77,9 +42,7 @@ export function DebtorsTable() {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
+          <TableSkeleton rows={5} cols={2} />
         ) : (
           <div className="space-y-4">
             {debtors.map((debtor) => (
@@ -100,7 +63,7 @@ export function DebtorsTable() {
                     ${Math.round(debtor.totalDebt).toLocaleString()}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Último vencimiento: {format(new Date(debtor.lastDueDate), 'dd/MM/yyyy')}
+                    Último vencimiento: {debtor.lastDueDate ? format(new Date(debtor.lastDueDate), 'dd/MM/yyyy') : 'Sin fecha'}
                   </p>
                 </div>
               </div>

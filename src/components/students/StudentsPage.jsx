@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Added useMemo
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { StudentsTable } from './StudentsTable';
 import { StudentDetailsModal } from './StudentDetailsModal';
 import { StudentFormModal } from './StudentFormModal';
-import { supabase } from '../../services/supabase';
 import { SearchBar } from './SearchBar';
-import toast from 'react-hot-toast';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
+import { deriveStudentStatusFromRecord, getStudentStatusLabel } from '../../utils/studentStatus';
+import { format } from 'date-fns';
+import toast from 'react-hot-toast';
+import { useStudentsQuery } from '../../hooks/queries/useStudentsQuery';
+import { useAcademicYear } from '../../contexts/AcademicYearContext';
+import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
 
 export function StudentsPage() {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: allStudents = [], isLoading: loading, refetch: fetchStudents } = useStudentsQuery();
+  const { academicYear } = useAcademicYear();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -23,6 +27,8 @@ export function StudentsPage() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const isReadOnly = false; // rollback de readonly para años pasados
+  const [exporting, setExporting] = useState(false);
 
   // Debounce search term
   useEffect(() => {
@@ -30,43 +36,23 @@ export function StudentsPage() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Use useCallback for fetchStudents
-  const fetchStudents = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('students')
-        .select(`
-          *,
-          cursos:curso (
-            id,
-            nom_curso,
-            nivel,
-            year_academico
-          )
-        `)
-        .order('apellido_paterno', { ascending: true });
+  // Filter students by the global academic year
+  const students = useMemo(
+    () => allStudents.filter(s => s.curso?.year_academico === academicYear),
+    [allStudents, academicYear]
+  );
 
-      if (error) throw error;
-      setStudents(data || []);
-      return data || [];
-    } catch (error) {
-      toast.error('Error al cargar los estudiantes');
-      console.error('Error fetching students:', error);
-      setStudents([]);
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
+  // Sync selectedStudent with latest data
   useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+    if (selectedStudent) {
+      const updated = students.find(s => s.id === selectedStudent.id);
+      if (updated) setSelectedStudent(updated);
+    }
+  }, [students]);
 
   // Generate unique course names AND convenio names for filter dropdowns
   const uniqueCursos = useMemo(() =>
-    [...new Set(students.map(s => s.cursos?.nom_curso).filter(Boolean))].sort(),
+    [...new Set(students.map(s => s.curso?.nom_curso).filter(Boolean))].sort(),
     [students]
   );
   const uniqueConvenios = useMemo(() =>
@@ -84,10 +70,9 @@ export function StudentsPage() {
 
     return students.filter(student => {
       const cursoMatch = filters.curso === 'all' ||
-        student.cursos?.nom_curso === filters.curso;
-      const statusMatch = filters.status === 'all' ||
-        (filters.status === 'active' && !student.fecha_retiro) ||
-        (filters.status === 'inactive' && student.fecha_retiro);
+        student.curso?.nom_curso === filters.curso;
+      const studentStatus = deriveStudentStatusFromRecord(student);
+      const statusMatch = filters.status === 'all' || studentStatus === filters.status;
       const searchMatch = !debouncedSearchTerm ||
         normalizeText(student.whole_name)?.includes(searchNormalized) ||
         normalizeText(student.run)?.includes(searchNormalized);
@@ -132,21 +117,12 @@ export function StudentsPage() {
 
   const handleFormSuccess = () => {
     handleCloseFormModal();
-    fetchStudents();
   };
 
   const handleDetailsUpdateSuccess = async () => {
-    const updatedStudentsList = await fetchStudents();
-    if (selectedStudent && updatedStudentsList.length > 0) {
-      const newlyUpdatedStudentData = updatedStudentsList.find(s => s.id === selectedStudent.id);
-      if (newlyUpdatedStudentData) {
-        setSelectedStudent(newlyUpdatedStudentData);
-      } else {
-        handleCloseDetailsModal();
-      }
-    } else {
-       handleCloseDetailsModal();
-    }
+    // Students cache auto-refreshes via React Query invalidation
+    // selectedStudent syncs via the useEffect above
+    handleCloseDetailsModal();
   };
 
   const handleResetFilters = () => {
@@ -154,12 +130,74 @@ export function StudentsPage() {
     setFilters({ curso: 'all', status: 'all', convenio: 'all' });
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setExporting(true);
+      toast.loading('Exportando Excel...', { id: 'students-export' });
+      const dataToExport = filteredStudents;
+      const excelData = dataToExport.map(student => ({
+        'Nombre': student.whole_name || `${student.first_name || ''} ${student.apellido_paterno || ''}`,
+        'RUN': student.run || '-',
+        'Curso': student.curso?.nom_curso || '-',
+        'Año': student.curso?.year_academico || '-',
+        'Estado': getStudentStatusLabel(deriveStudentStatusFromRecord(student)),
+        'Convenio': student.categoria_social || 'Sin convenio',
+        'G\u00e9nero': student.genero || '-',
+        'Nacionalidad': student.nacionalidad || '-',
+        'Direcci\u00f3n': student.direccion || '-',
+        'Comuna': student.comuna || '-',
+        'Fecha Matr\u00edcula': student.fecha_matricula ? format(new Date(student.fecha_matricula), 'dd/MM/yyyy') : '-',
+        'Fecha Incorporaci\u00f3n': student.fecha_incorporacion ? format(new Date(student.fecha_incorporacion), 'dd/MM/yyyy') : '-',
+      }));
+
+      const ExcelJS = await import('exceljs');
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Estudiantes');
+      const headers = Object.keys(excelData[0] || {});
+      ws.addRow(headers);
+      excelData.forEach(row => ws.addRow(Object.values(row)));
+      headers.forEach((header, index) => {
+        const column = ws.getColumn(index + 1);
+        const maxLength = Math.max(header.length, ...excelData.map(row => String(row[header] || '').length));
+        column.width = Math.min(maxLength + 2, 50);
+      });
+
+      const timestamp = format(new Date(), 'yyyyMMdd-HHmmss');
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `estudiantes_${timestamp}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Archivo Excel exportado exitosamente', { id: 'students-export' });
+    } catch (error) {
+      console.error('Error al exportar:', error);
+      toast.error('Error al exportar el archivo Excel', { id: 'students-export' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <main className="flex-1 min-w-0 overflow-auto">
       <div className="max-w-[1440px] mx-auto animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-4 p-4">
-          <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Estudiantes</h1>
-          <Button onClick={() => handleOpenFormModal(null)}>Agregar Estudiante</Button>
+          <div className="flex items-center gap-3">
+            <h1 className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold">Estudiantes</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleExportExcel}
+              disabled={exporting || filteredStudents.length === 0}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {exporting ? 'Exportando...' : 'Exportar Excel'}
+            </Button>
+            {!isReadOnly && <Button onClick={() => handleOpenFormModal(null)}>Agregar Estudiante</Button>}
+          </div>
         </div>
 
         <div className="p-4">
@@ -172,38 +210,57 @@ export function StudentsPage() {
                   isSearching={loading && debouncedSearchTerm !== ''}
                   placeholder="Buscar por nombre o RUN..."
                 />
-                <select
-                  value={filters.curso}
-                  onChange={(e) => setFilters({ ...filters, curso: e.target.value })}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="all">Todos los Cursos</option>
-                  {uniqueCursos.map(curso => (
-                    <option key={curso} value={curso}>{curso}</option>
-                  ))}
-                </select>
-                <select
-                  value={filters.status}
-                  onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="all">Todos los Estados</option>
-                  <option value="active">Activos</option>
-                  <option value="inactive">Retirados</option>
-                </select>
-                <select
-                  value={filters.convenio}
-                  onChange={(e) => setFilters({ ...filters, convenio: e.target.value })}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="all">Todos los Convenios</option>
-                  <option value="Sin convenio">Sin convenio</option>
-                  {uniqueConvenios.map(convenio => (
-                    <option key={convenio} value={convenio}>{convenio}</option>
-                  ))}
-                </select>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Curso</label>
+                  <select
+                    value={filters.curso}
+                    onChange={(e) => setFilters({ ...filters, curso: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="all">Todos</option>
+                    {uniqueCursos.map(curso => (
+                      <option key={curso} value={curso}>{curso}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Estado</label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="PENDIENTE">Pre-Matriculados</option>
+                    <option value="ACTIVO">Confirmados</option>
+                    <option value="RETIRADO">Retirados</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Convenio</label>
+                  <select
+                    value={filters.convenio}
+                    onChange={(e) => setFilters({ ...filters, convenio: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-hover text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="Sin convenio">Sin convenio</option>
+                    {uniqueConvenios.map(convenio => (
+                      <option key={convenio} value={convenio}>{convenio}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </CardHeader>
+            <ActiveFiltersBar
+              yearLabel={String(academicYear)}
+              filters={[
+                filters.curso !== 'all' && { key: 'curso', label: 'Curso', value: filters.curso, onRemove: () => setFilters(f => ({ ...f, curso: 'all' })) },
+                filters.status !== 'all' && { key: 'status', label: 'Estado', value: filters.status === 'PENDIENTE' ? 'Pre-Matriculados' : filters.status === 'ACTIVO' ? 'Confirmados' : 'Retirados', onRemove: () => setFilters(f => ({ ...f, status: 'all' })) },
+                filters.convenio !== 'all' && { key: 'convenio', label: 'Convenio', value: filters.convenio, onRemove: () => setFilters(f => ({ ...f, convenio: 'all' })) },
+              ].filter(Boolean)}
+              onClearAll={handleResetFilters}
+            />
             <CardContent>
               {loading && paginatedItems.length === 0 ? ( // Check paginatedItems
                 <div className="flex items-center justify-center py-8">
@@ -224,9 +281,10 @@ export function StudentsPage() {
               ) : (
                 <>
                   <StudentsTable
-                    students={paginatedItems} // Pass paginated items
+                    students={paginatedItems}
                     onViewDetails={handleViewDetails}
                     onSuccess={fetchStudents}
+                    isReadOnly={isReadOnly}
                   />
                   {/* --- Add Pagination Component --- */}
                   <Pagination

@@ -3,6 +3,9 @@
  * Generates HTML/PDF for discount authorization documents (alternative to Pagaré)
  */
 
+import { escapeHtml } from '../utils/html';
+import { SCHOOL_INFO } from '../constants/school';
+
 interface DescuentoInfo {
   tipo?: string;
   porcentaje_descuento?: number;
@@ -225,8 +228,8 @@ export function generateAutorizacionHTML(payload: any) {
     </div>
     <div class="school-name">CORPORACIÓN EDUCACIONAL WINTERHILL</div>
     <div class="doc-title">Autorización de Descuento por Planilla</div>
-    <div class="doc-subtitle">Año Académico ${payload.anio_academico}</div>
-    <div class="doc-subtitle">Fecha: ${payload.fecha_actual}</div>
+    <div class="doc-subtitle">Año Académico ${escapeHtml(payload.anio_academico)}</div>
+    <div class="doc-subtitle">Fecha: ${escapeHtml(payload.fecha_actual)}</div>
   </div>
 
   <!-- Información del Apoderado -->
@@ -234,23 +237,23 @@ export function generateAutorizacionHTML(payload: any) {
     <div class="section-title">📋 DATOS DEL APODERADO</div>
     <div class="info-row">
       <span class="info-label">Nombre Completo:</span>
-      <span class="info-value">${payload.guardian_full_name}</span>
+      <span class="info-value">${escapeHtml(payload.guardian_full_name)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">RUN:</span>
-      <span class="info-value">${payload.guardian_run}</span>
+      <span class="info-value">${escapeHtml(payload.guardian_run)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Email:</span>
-      <span class="info-value">${payload.guardian_email}</span>
+      <span class="info-value">${escapeHtml(payload.guardian_email)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Teléfono:</span>
-      <span class="info-value">${payload.guardian_phone}</span>
+      <span class="info-value">${escapeHtml(payload.guardian_phone)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Dirección:</span>
-      <span class="info-value">${payload.guardian_address}</span>
+      <span class="info-value">${escapeHtml(payload.guardian_address)}</span>
     </div>
   </div>
 
@@ -259,11 +262,11 @@ export function generateAutorizacionHTML(payload: any) {
     <div class="section-title">👨‍🎓 ALUMNO(S) BENEFICIADO(S)</div>
     <div class="info-row">
       <span class="info-label">Nombre(s):</span>
-      <span class="info-value">${payload.student_names}</span>
+      <span class="info-value">${escapeHtml(payload.student_names)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Total de alumnos:</span>
-      <span class="info-value">${payload.student_count}</span>
+      <span class="info-value">${escapeHtml(payload.student_count)}</span>
     </div>
   </div>
 
@@ -278,33 +281,33 @@ export function generateAutorizacionHTML(payload: any) {
       </tr>
       <tr>
         <td>Matrícula</td>
-        <td>${payload.monto_matricula}</td>
+        <td>${escapeHtml(payload.monto_matricula)}</td>
       </tr>
       <tr>
         <td>Colegiatura Anual</td>
-        <td>${payload.colegiatura_anual}</td>
+        <td>${escapeHtml(payload.colegiatura_anual)}</td>
       </tr>
       <tr>
-        <td>Monto por Cuota (${payload.cantidad_cuotas} cuotas)</td>
-        <td>${payload.monto_cuota}</td>
+        <td>Monto por Cuota (${escapeHtml(payload.cantidad_cuotas)} cuotas)</td>
+        <td>${escapeHtml(payload.monto_cuota)}</td>
       </tr>
     </table>
 
     <div class="info-row" style="margin-top: 20px;">
       <span class="info-label">Tipo de Descuento:</span>
-      <span class="info-value">${payload.tipo_descuento}</span>
+      <span class="info-value">${escapeHtml(payload.tipo_descuento)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Porcentaje de Descuento:</span>
-      <span class="info-value amount">${payload.porcentaje_descuento}%</span>
+      <span class="info-value amount">${escapeHtml(payload.porcentaje_descuento)}%</span>
     </div>
     <div class="info-row">
       <span class="info-label">Monto Total Descuento:</span>
-      <span class="info-value amount">${payload.monto_total_descuento}</span>
+      <span class="info-value amount">${escapeHtml(payload.monto_total_descuento)}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Motivo:</span>
-      <span class="info-value">${payload.motivo_descuento}</span>
+      <span class="info-value">${escapeHtml(payload.motivo_descuento)}</span>
     </div>
   </div>
 
@@ -312,13 +315,13 @@ export function generateAutorizacionHTML(payload: any) {
   <div class="section">
     <div class="section-title">📜 TÉRMINOS Y CONDICIONES</div>
     <div class="terms">
-      <p><strong>1. VIGENCIA:</strong> El descuento autorizado será aplicado a partir de la fecha de firma de este documento y tendrá vigencia durante el año académico ${payload.anio_academico}.</p>
+      <p><strong>1. VIGENCIA:</strong> El descuento autorizado será aplicado a partir de la fecha de firma de este documento y tendrá vigencia durante el año académico ${escapeHtml(payload.anio_academico)}.</p>
       
-      <p><strong>2. CONDICIONES:</strong> ${payload.condiciones}</p>
+      <p><strong>2. CONDICIONES:</strong> ${escapeHtml(payload.condiciones)}</p>
       
       <p><strong>3. FORMA DE APLICACIÓN:</strong> El descuento será aplicado mensualmente mediante descuento directo de planilla de remuneraciones del apoderado titular.</p>
       
-      <p><strong>4. VENCIMIENTO:</strong> Las cuotas vencerán el día ${payload.dia_vencimiento} de cada mes.</p>
+      <p><strong>4. VENCIMIENTO:</strong> Las cuotas vencerán el día ${escapeHtml(payload.dia_vencimiento)} de cada mes.</p>
       
       <p><strong>5. TERMINACIÓN:</strong> El beneficio de descuento terminará automáticamente en caso de:</p>
       <ul>
@@ -341,16 +344,16 @@ export function generateAutorizacionHTML(payload: any) {
     
     <div class="signature-box">
       <div style="margin-bottom: 10px;">_______________________________________</div>
-      <div><strong>${payload.guardian_full_name}</strong></div>
-      <div class="signature-label">RUN: ${payload.guardian_run}</div>
+      <div><strong>${escapeHtml(payload.guardian_full_name)}</strong></div>
+      <div class="signature-label">RUN: ${escapeHtml(payload.guardian_run)}</div>
       <div class="signature-label">Firma y Fecha</div>
     </div>
   </div>
 
   <!-- Footer -->
   <div class="footer">
-    <p><strong>Corporación Educacional Winterhill</strong></p>
-    <p>Dirección: [Dirección del Colegio] | Teléfono: [Teléfono] | Email: contacto@colegiowinterhill.cl</p>
+    <p><strong>${SCHOOL_INFO.name}</strong></p>
+    <p>Dirección: ${SCHOOL_INFO.address} | Teléfono: ${SCHOOL_INFO.phone} | Email: ${SCHOOL_INFO.email}</p>
     <p>Este documento es de carácter legal y debe ser conservado por el apoderado.</p>
   </div>
 </body>

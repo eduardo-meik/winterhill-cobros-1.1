@@ -13,7 +13,7 @@ export function useSignOut() {
     try {
       // Log the sign-out attempt
       await logger.log(
-        LogCode.AUTH_LOGOUT,
+        LogCode.AUTH_LOGOUT_SUCCESS,
         'Iniciando proceso de cierre de sesión',
         user?.id
       );

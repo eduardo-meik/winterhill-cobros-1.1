@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { normalizeRun, validateRun as validateRunLocal, formatRunDisplay } from '../../utils/rut';
 import { supabase } from '../../services/supabase';
 import toast from 'react-hot-toast';
+import { friendlyError } from '../../utils/friendlyError';
 
 
 export const GuardianClaimPage = () => {
@@ -54,7 +55,7 @@ export const GuardianClaimPage = () => {
       debugLog('Calling RPC claim_guardian_by_run', { input_run: clean });
       const { data, error } = await supabase.rpc('claim_guardian_by_run', { input_run: clean });
       if (error) {
-        toast.error(error.message || 'Error en la reclamación');
+        toast.error(friendlyError(error, 'Error en la reclamación.'));
         debugLog('RPC error', error);
         return;
       }
@@ -90,7 +91,7 @@ export const GuardianClaimPage = () => {
       }
       debugLog('Role refreshed');
     } catch (err) {
-      toast.error(err.message || 'Error inesperado');
+      toast.error(friendlyError(err, 'Error inesperado.'));
       debugLog('Unexpected error', err);
     } finally {
       setClaiming(false);
