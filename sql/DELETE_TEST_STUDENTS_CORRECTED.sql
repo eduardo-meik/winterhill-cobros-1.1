@@ -126,34 +126,9 @@ WHERE enrollment_id IN (
     )
 );
 
--- 3.5 Eliminar pre-recibos (pre_receipts tiene enrollment_id)
-DELETE FROM pre_receipts
-WHERE enrollment_id IN (
-    SELECT DISTINCT e.id
-    FROM enrollments e
-    INNER JOIN enrollment_students es ON es.enrollment_id = e.id
-    WHERE es.student_id IN (
-        '4dce9f5a-cd94-43d1-a4e5-12b9558bd921'::uuid,
-        '99f9a557-fd89-4ced-8ffb-b4b800a17f26'::uuid,
-        'bbf7b971-5164-4b5a-a732-996c139f27f7'::uuid,
-        '5a739ec3-bfde-4b1e-94c1-561d940dc082'::uuid,
-        '11e1921f-3810-42de-91c7-cddf4bdc8f44'::uuid,
-        '1453bf25-63e3-4d5d-8fe2-56bd370d2fbb'::uuid,
-        '453a4353-fc3a-4682-87ac-815da1186d68'::uuid
-    )
-);
+-- 3.5 public.pre_receipts fue retirada el 2026-04-07. No se requiere limpieza.
 
--- 3.6 Eliminar facturas (invoices tiene student_id, NO enrollment_id)
-DELETE FROM invoices
-WHERE student_id IN (
-    '4dce9f5a-cd94-43d1-a4e5-12b9558bd921'::uuid,
-    '99f9a557-fd89-4ced-8ffb-b4b800a17f26'::uuid,
-    'bbf7b971-5164-4b5a-a732-996c139f27f7'::uuid,
-    '5a739ec3-bfde-4b1e-94c1-561d940dc082'::uuid,
-    '11e1921f-3810-42de-91c7-cddf4bdc8f44'::uuid,
-    '1453bf25-63e3-4d5d-8fe2-56bd370d2fbb'::uuid,
-    '453a4353-fc3a-4682-87ac-815da1186d68'::uuid
-);
+-- 3.6 public.invoices fue retirada el 2026-04-07. No se requiere limpieza.
 
 -- 3.7 Eliminar registros académicos (student_academic_records tiene enrollment_id)
 DELETE FROM student_academic_records

@@ -1,0 +1,1846 @@
+{
+  "target_row_count": 46,
+  "changed_cell_count": 230,
+  "changes": [
+    {
+      "ID Matrícula": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "ID Estudiante": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "Estudiante": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "ID Estudiante": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "Estudiante": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "ID Estudiante": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "Estudiante": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "ID Estudiante": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "Estudiante": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a12147cc-036e-439a-9889-cdf81549e11f",
+      "ID Estudiante": "427b1b11-f193-488a-8f7d-574d0f6df629",
+      "Estudiante": "AMARU MAXIMILIANO VALDEBENITO ALBORNOZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "ID Estudiante": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "Estudiante": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "ID Estudiante": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "Estudiante": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "ID Estudiante": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "Estudiante": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "ID Estudiante": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "Estudiante": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ea6fbecb-6060-4a40-9fee-8f491472af35",
+      "ID Estudiante": "31c0848b-5e70-4280-8a03-6bf32b8f4a4b",
+      "Estudiante": "AMELIA LUCÍA HERNÁNDEZ FUENTES",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "Estudiante": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "Estudiante": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "Estudiante": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "Estudiante": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "41450c85-801e-4653-b45f-70f60e81a196",
+      "ID Estudiante": "7bdeb573-3d3d-4111-a03e-21630f6f8d03",
+      "Estudiante": "DOMINIQUE PAOLA ZOLEZZI HENRÍQUEZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "Estudiante": "ISAAC GAEL PEÑA LOPEZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "Estudiante": "ISAAC GAEL PEÑA LOPEZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "Estudiante": "ISAAC GAEL PEÑA LOPEZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "Estudiante": "ISAAC GAEL PEÑA LOPEZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0e5db320-9da9-44dd-86ae-ff5e2645678f",
+      "ID Estudiante": "8c1720af-0184-4685-bf42-6c7b45b6ae9e",
+      "Estudiante": "ISAAC GAEL PEÑA LOPEZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "Estudiante": "LU AMADOR BENÍTEZ ALCAIDE",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "Estudiante": "LU AMADOR BENÍTEZ ALCAIDE",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "Estudiante": "LU AMADOR BENÍTEZ ALCAIDE",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "Estudiante": "LU AMADOR BENÍTEZ ALCAIDE",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "24c92476-89fc-4290-b19e-5e262199afaa",
+      "ID Estudiante": "c74a4818-aba2-4d58-9bf3-24306841c153",
+      "Estudiante": "LU AMADOR BENÍTEZ ALCAIDE",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "ID Estudiante": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "Estudiante": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "ID Estudiante": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "Estudiante": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "ID Estudiante": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "Estudiante": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "ID Estudiante": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "Estudiante": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac46eeca-3202-446a-a6fc-13b1b8b1bd07",
+      "ID Estudiante": "d6f5ae44-61cd-4a2b-9d7a-1f3b059651b9",
+      "Estudiante": "NICANOR AUKAN NÚÑEZ JORQUERA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "ID Estudiante": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "Estudiante": "PASCUALA ANTONIA LABORDE SALINAS",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "ID Estudiante": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "Estudiante": "PASCUALA ANTONIA LABORDE SALINAS",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "ID Estudiante": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "Estudiante": "PASCUALA ANTONIA LABORDE SALINAS",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "ID Estudiante": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "Estudiante": "PASCUALA ANTONIA LABORDE SALINAS",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c35c3982-2596-45f5-ae24-686b49a54215",
+      "ID Estudiante": "2f1db604-3118-49ed-ab11-b153a2e3d73a",
+      "Estudiante": "PASCUALA ANTONIA LABORDE SALINAS",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "ID Estudiante": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "Estudiante": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "ID Estudiante": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "Estudiante": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "ID Estudiante": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "Estudiante": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "ID Estudiante": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "Estudiante": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5e356055-b05c-4672-b660-a215c2ac4c87",
+      "ID Estudiante": "22ebf090-b81d-4f61-b568-5ef850eb6619",
+      "Estudiante": "PAZ LEONOR MICHELSEN MARTÍNEZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "ID Estudiante": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "Estudiante": "RODRIGO LEÓN VALDÉS MATURANA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "ID Estudiante": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "Estudiante": "RODRIGO LEÓN VALDÉS MATURANA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "ID Estudiante": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "Estudiante": "RODRIGO LEÓN VALDÉS MATURANA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "ID Estudiante": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "Estudiante": "RODRIGO LEÓN VALDÉS MATURANA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "cfa40848-ee92-49f9-b83e-cb2abbf49368",
+      "ID Estudiante": "9d83a1dc-cc91-4240-a6c7-045fd31f0a5f",
+      "Estudiante": "RODRIGO LEÓN VALDÉS MATURANA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "ID Estudiante": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "Estudiante": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "ID Estudiante": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "Estudiante": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "ID Estudiante": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "Estudiante": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "ID Estudiante": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "Estudiante": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3fe16a66-d78e-48cf-82e3-ab2bf9cf974d",
+      "ID Estudiante": "75cba1fd-3b59-4075-bd4d-4a5bad72fe80",
+      "Estudiante": "SANTIAGO ALEJANDRO CANALES GODOY",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "ID Estudiante": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "Estudiante": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "ID Estudiante": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "Estudiante": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "ID Estudiante": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "Estudiante": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "ID Estudiante": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "Estudiante": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "77f0d028-5097-48c6-a9d7-2466e1ec30b2",
+      "ID Estudiante": "bda681e7-4506-4a87-8fd7-27861a23b044",
+      "Estudiante": "XADIEL VICENTE ZÚÑIGA FEBRE",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "ID Estudiante": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "Estudiante": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "ID Estudiante": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "Estudiante": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "ID Estudiante": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "Estudiante": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "ID Estudiante": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "Estudiante": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "81a62c92-0b2b-47c3-a1c1-125a71194e80",
+      "ID Estudiante": "f58fe5ef-4868-4203-9c67-f890f3ffd43c",
+      "Estudiante": "ANTONIO OSVALDO NEIRA FERNÁNDEZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "Estudiante": "BORJA LEON MORAGA RIQUELME",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "Estudiante": "BORJA LEON MORAGA RIQUELME",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "Estudiante": "BORJA LEON MORAGA RIQUELME",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "Estudiante": "BORJA LEON MORAGA RIQUELME",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "39d6b297-fadd-48f4-8026-1778c1e875b5",
+      "ID Estudiante": "d746d6cc-a5d6-452a-bcce-6c076d957938",
+      "Estudiante": "BORJA LEON MORAGA RIQUELME",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "ID Estudiante": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "Estudiante": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "ID Estudiante": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "Estudiante": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "ID Estudiante": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "Estudiante": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "ID Estudiante": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "Estudiante": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b846c3f7-ab7a-4690-bfd1-be5940201540",
+      "ID Estudiante": "32b115bc-8cee-4852-9c2c-3f746158c6ab",
+      "Estudiante": "CONSTANZA CEDILIA ROJAS VARGAS",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "ID Estudiante": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "Estudiante": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "ID Estudiante": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "Estudiante": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "ID Estudiante": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "Estudiante": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "ID Estudiante": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "Estudiante": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "bc34f1a8-93f6-4b30-b3b1-71eef095623c",
+      "ID Estudiante": "b5d2d7d9-06df-46d0-91a1-d10d0ccd68f1",
+      "Estudiante": "EIDAN ALEXANDER MARCHANT GARRIDO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "f95055bd-fcae-4262-872f-47646d335b17",
+      "ID Estudiante": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "Estudiante": "GASPAR ANDRÉS ARAYA LARA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "f95055bd-fcae-4262-872f-47646d335b17",
+      "ID Estudiante": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "Estudiante": "GASPAR ANDRÉS ARAYA LARA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "f95055bd-fcae-4262-872f-47646d335b17",
+      "ID Estudiante": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "Estudiante": "GASPAR ANDRÉS ARAYA LARA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "f95055bd-fcae-4262-872f-47646d335b17",
+      "ID Estudiante": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "Estudiante": "GASPAR ANDRÉS ARAYA LARA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "f95055bd-fcae-4262-872f-47646d335b17",
+      "ID Estudiante": "a23b162c-a255-4e48-a5a5-8a7fcacece00",
+      "Estudiante": "GASPAR ANDRÉS ARAYA LARA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "Estudiante": "LUKAS ANDRÉS CANELO GAETE",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "Estudiante": "LUKAS ANDRÉS CANELO GAETE",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "Estudiante": "LUKAS ANDRÉS CANELO GAETE",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "Estudiante": "LUKAS ANDRÉS CANELO GAETE",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "ac5b950a-b352-4c70-b508-a4faf7d36b6c",
+      "ID Estudiante": "cd235a94-9927-4ce7-811f-deb993f6800b",
+      "Estudiante": "LUKAS ANDRÉS CANELO GAETE",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "ID Estudiante": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "Estudiante": "MATILDA MAGDALENA GODOY DIDIER",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "ID Estudiante": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "Estudiante": "MATILDA MAGDALENA GODOY DIDIER",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "ID Estudiante": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "Estudiante": "MATILDA MAGDALENA GODOY DIDIER",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "ID Estudiante": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "Estudiante": "MATILDA MAGDALENA GODOY DIDIER",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "0a00ccdb-b23f-4857-90a2-f99e45c0775b",
+      "ID Estudiante": "b994c186-9b36-490b-a2df-027a168c9e1d",
+      "Estudiante": "MATILDA MAGDALENA GODOY DIDIER",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "ID Estudiante": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "Estudiante": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "ID Estudiante": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "Estudiante": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "ID Estudiante": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "Estudiante": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "ID Estudiante": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "Estudiante": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "da85bd5c-2fff-41c9-aaee-a986a3543374",
+      "ID Estudiante": "ec5a30f5-0787-4d8e-885a-53cc5b20fd0c",
+      "Estudiante": "VALENTINA ISIDORA VENENCIANO BERROETA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "Estudiante": "MAGDALENA LUNA IDE RIOS",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "Estudiante": "MAGDALENA LUNA IDE RIOS",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "Estudiante": "MAGDALENA LUNA IDE RIOS",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "Estudiante": "MAGDALENA LUNA IDE RIOS",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2698b4a9-f2da-4096-8358-6a981f63ff2a",
+      "ID Estudiante": "d5a8d4b2-9430-4ac2-9ed8-4bcf5c578219",
+      "Estudiante": "MAGDALENA LUNA IDE RIOS",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "ID Estudiante": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "Estudiante": "MAYA AURORA MERA GARCÍA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "ID Estudiante": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "Estudiante": "MAYA AURORA MERA GARCÍA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "ID Estudiante": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "Estudiante": "MAYA AURORA MERA GARCÍA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "ID Estudiante": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "Estudiante": "MAYA AURORA MERA GARCÍA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "8e1acbd6-5724-4d81-a55a-b6639b59afde",
+      "ID Estudiante": "066d269b-8140-4924-8b28-17e2a66df04b",
+      "Estudiante": "MAYA AURORA MERA GARCÍA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "Estudiante": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "Estudiante": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "Estudiante": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "Estudiante": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2107a703-4075-49a0-918d-4040d5ea1b6a",
+      "ID Estudiante": "f42a98fd-f5f3-481f-ad1f-9d5e10d9935a",
+      "Estudiante": "VIOLETA CAROLINA GONZALEZ PEDRAZA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "Estudiante": "PASCAL ISIDORA ARAYA SILVA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "Estudiante": "PASCAL ISIDORA ARAYA SILVA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "Estudiante": "PASCAL ISIDORA ARAYA SILVA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "Estudiante": "PASCAL ISIDORA ARAYA SILVA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "5386679e-ec03-45fe-bf3b-f8ec1e16142d",
+      "ID Estudiante": "69b0d056-1e58-4720-916b-2332ba9f40b4",
+      "Estudiante": "PASCAL ISIDORA ARAYA SILVA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "ID Estudiante": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "Estudiante": "DANTE VELKAN MEDINA SEPULVEDA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "ID Estudiante": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "Estudiante": "DANTE VELKAN MEDINA SEPULVEDA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "ID Estudiante": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "Estudiante": "DANTE VELKAN MEDINA SEPULVEDA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "ID Estudiante": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "Estudiante": "DANTE VELKAN MEDINA SEPULVEDA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1a8a8f8-6297-46d1-849c-9d55ff0bc72f",
+      "ID Estudiante": "62f74768-3ff8-4f19-832a-ccec00dbe002",
+      "Estudiante": "DANTE VELKAN MEDINA SEPULVEDA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "Estudiante": "HELENA MAILEN BRIONES FIGUEROA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "Estudiante": "HELENA MAILEN BRIONES FIGUEROA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "Estudiante": "HELENA MAILEN BRIONES FIGUEROA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "Estudiante": "HELENA MAILEN BRIONES FIGUEROA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "895d5a6b-18af-46e8-81b0-ceb746e8f6ee",
+      "ID Estudiante": "0c44198f-897e-47e7-b1cc-e8b48d1b7254",
+      "Estudiante": "HELENA MAILEN BRIONES FIGUEROA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "ID Estudiante": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "Estudiante": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "ID Estudiante": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "Estudiante": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "ID Estudiante": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "Estudiante": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "ID Estudiante": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "Estudiante": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "2ae46f37-efda-4d26-b15b-358f464399ed",
+      "ID Estudiante": "45f59244-633c-43b2-8f5a-8175a6739344",
+      "Estudiante": "JOAQUIN ALONZO JARAMILLO MORALES",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "ID Estudiante": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "Estudiante": "TAHIEL NICANOR DIAZ URICH",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "ID Estudiante": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "Estudiante": "TAHIEL NICANOR DIAZ URICH",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "ID Estudiante": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "Estudiante": "TAHIEL NICANOR DIAZ URICH",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "ID Estudiante": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "Estudiante": "TAHIEL NICANOR DIAZ URICH",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c2a56cdf-8ad5-4325-8012-47f7aa2073fb",
+      "ID Estudiante": "5d5e7d9b-1b8d-437c-8b2b-b9086a792204",
+      "Estudiante": "TAHIEL NICANOR DIAZ URICH",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "ID Estudiante": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "Estudiante": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "ID Estudiante": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "Estudiante": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "ID Estudiante": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "Estudiante": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "ID Estudiante": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "Estudiante": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c8da3e53-9681-4431-9e56-2928e28de03f",
+      "ID Estudiante": "0a48d86e-5c9b-4ed2-b7cd-8e93620bdfd7",
+      "Estudiante": "TRISTÁN ANDRÈ GALLARDO ROSS",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "ID Estudiante": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "Estudiante": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "ID Estudiante": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "Estudiante": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "ID Estudiante": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "Estudiante": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "ID Estudiante": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "Estudiante": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fa155b05-32b5-445b-8d76-e1539110ed42",
+      "ID Estudiante": "b67fb8bd-6073-4cdd-8b96-97e6b9002109",
+      "Estudiante": "ZAID LEÓN ANDAUR ALEGRÍA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "ID Estudiante": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "Estudiante": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "ID Estudiante": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "Estudiante": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "ID Estudiante": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "Estudiante": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "ID Estudiante": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "Estudiante": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "3e57ec66-5ee7-4dfa-91a0-66fe97c6fc26",
+      "ID Estudiante": "606d5d10-c396-44c3-83a8-742ecddd2ab2",
+      "Estudiante": "AMBAR ALEJANDRA FIGUEROA DONOSO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1468139-53fd-4677-8f72-267c998eea43",
+      "ID Estudiante": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "Estudiante": "FERNANDO JAVIER MORALES MOYA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1468139-53fd-4677-8f72-267c998eea43",
+      "ID Estudiante": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "Estudiante": "FERNANDO JAVIER MORALES MOYA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1468139-53fd-4677-8f72-267c998eea43",
+      "ID Estudiante": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "Estudiante": "FERNANDO JAVIER MORALES MOYA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1468139-53fd-4677-8f72-267c998eea43",
+      "ID Estudiante": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "Estudiante": "FERNANDO JAVIER MORALES MOYA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a1468139-53fd-4677-8f72-267c998eea43",
+      "ID Estudiante": "fbb97d70-5ca2-4ffb-8e58-66ff3f9a7cfc",
+      "Estudiante": "FERNANDO JAVIER MORALES MOYA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "40812bca-c859-4aab-b744-e017cd94d974",
+      "Estudiante": "GASPAR TOMAS CARREÑO SOTO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "40812bca-c859-4aab-b744-e017cd94d974",
+      "Estudiante": "GASPAR TOMAS CARREÑO SOTO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "40812bca-c859-4aab-b744-e017cd94d974",
+      "Estudiante": "GASPAR TOMAS CARREÑO SOTO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "40812bca-c859-4aab-b744-e017cd94d974",
+      "Estudiante": "GASPAR TOMAS CARREÑO SOTO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "40812bca-c859-4aab-b744-e017cd94d974",
+      "Estudiante": "GASPAR TOMAS CARREÑO SOTO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "ID Estudiante": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "Estudiante": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "ID Estudiante": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "Estudiante": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "ID Estudiante": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "Estudiante": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "ID Estudiante": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "Estudiante": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "1e9bd4aa-286c-4582-9e26-ec5e6c25e31b",
+      "ID Estudiante": "ddddd93b-730a-4d20-b3b7-34cc53ed591f",
+      "Estudiante": "ISIDORA IGNACIA SPIGETTH LABRÍN",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "ID Estudiante": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "Estudiante": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "ID Estudiante": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "Estudiante": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "ID Estudiante": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "Estudiante": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "ID Estudiante": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "Estudiante": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "275d41c7-1374-4d16-a443-4fb524bb4038",
+      "ID Estudiante": "8100f568-89d1-4330-acb0-5ead711d631d",
+      "Estudiante": "LUCIANO TRISTAN RAMIREZ HERNANDEZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "64153345-58a7-4027-95c7-2ba709e62461",
+      "Estudiante": "OLIVER MILOVAN VARGAS CASTRO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "64153345-58a7-4027-95c7-2ba709e62461",
+      "Estudiante": "OLIVER MILOVAN VARGAS CASTRO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "64153345-58a7-4027-95c7-2ba709e62461",
+      "Estudiante": "OLIVER MILOVAN VARGAS CASTRO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "64153345-58a7-4027-95c7-2ba709e62461",
+      "Estudiante": "OLIVER MILOVAN VARGAS CASTRO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "d3b3e55f-9d8f-4bb6-bd48-8e2a4a2994a9",
+      "ID Estudiante": "64153345-58a7-4027-95c7-2ba709e62461",
+      "Estudiante": "OLIVER MILOVAN VARGAS CASTRO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "ID Estudiante": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "Estudiante": "PAZ MIA CORTES BASCUÑAN",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "ID Estudiante": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "Estudiante": "PAZ MIA CORTES BASCUÑAN",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "ID Estudiante": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "Estudiante": "PAZ MIA CORTES BASCUÑAN",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "ID Estudiante": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "Estudiante": "PAZ MIA CORTES BASCUÑAN",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "48a3588a-8964-410b-8e71-6d36b2968613",
+      "ID Estudiante": "b7a68463-1fb5-4631-b37f-2d9229ac31c3",
+      "Estudiante": "PAZ MIA CORTES BASCUÑAN",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "ID Estudiante": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "Estudiante": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "ID Estudiante": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "Estudiante": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "ID Estudiante": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "Estudiante": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "ID Estudiante": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "Estudiante": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "006f2777-5517-42b1-82c3-a540b07125bb",
+      "ID Estudiante": "6812c399-a2ac-4f08-9a56-289848c655be",
+      "Estudiante": "SILVIO DARÍO PEÑAFIEL ALVARADO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "ID Estudiante": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "Estudiante": "LEÓN IGNACIO TORRES MOLINA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "ID Estudiante": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "Estudiante": "LEÓN IGNACIO TORRES MOLINA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "ID Estudiante": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "Estudiante": "LEÓN IGNACIO TORRES MOLINA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "ID Estudiante": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "Estudiante": "LEÓN IGNACIO TORRES MOLINA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b90b828b-bc69-4911-b68d-5d447914e0ea",
+      "ID Estudiante": "dfb5dd30-be80-4b9d-b755-8348b0581a0d",
+      "Estudiante": "LEÓN IGNACIO TORRES MOLINA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "Estudiante": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "Estudiante": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "Estudiante": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "Estudiante": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "45b40cfd-43ba-4a0b-a649-7aab0f238f9d",
+      "Estudiante": "SANTIAGO NICOLAS FUENZALIDA ANDRADE",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "Estudiante": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "Estudiante": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "Estudiante": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "Estudiante": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "b171da6b-c788-4602-96d7-c344ffc3881c",
+      "ID Estudiante": "84ff81f8-d76e-490e-9b85-07f1113a121f",
+      "Estudiante": "LUCAS PABLO BOBADILLA HECHENLEITNER",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "ID Estudiante": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "Estudiante": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "ID Estudiante": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "Estudiante": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "ID Estudiante": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "Estudiante": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "ID Estudiante": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "Estudiante": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "a74a6cdb-0b24-43eb-9adf-07134a540215",
+      "ID Estudiante": "85751556-bf33-4844-8163-8bfd1b16bed2",
+      "Estudiante": "NICOLÁS GAEL SAN MARTÍN MONTERO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "ID Estudiante": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "Estudiante": "BRISA OLIVIA AVDALOV SAGREDO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "ID Estudiante": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "Estudiante": "BRISA OLIVIA AVDALOV SAGREDO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "ID Estudiante": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "Estudiante": "BRISA OLIVIA AVDALOV SAGREDO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "ID Estudiante": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "Estudiante": "BRISA OLIVIA AVDALOV SAGREDO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "03c2d150-7804-4e2c-8b8b-32c724079322",
+      "ID Estudiante": "5985d0b9-b7bc-48dc-a000-673cc9153aca",
+      "Estudiante": "BRISA OLIVIA AVDALOV SAGREDO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "ID Estudiante": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "Estudiante": "EMILIO GAEL CONTRERAS VERGARA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "ID Estudiante": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "Estudiante": "EMILIO GAEL CONTRERAS VERGARA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "ID Estudiante": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "Estudiante": "EMILIO GAEL CONTRERAS VERGARA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "ID Estudiante": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "Estudiante": "EMILIO GAEL CONTRERAS VERGARA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "34118f30-b3a2-4d23-88d9-37dbef6d2196",
+      "ID Estudiante": "2850f8bf-078e-4fa1-a9bf-f59e9833c803",
+      "Estudiante": "EMILIO GAEL CONTRERAS VERGARA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "ID Estudiante": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "Estudiante": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "ID Estudiante": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "Estudiante": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "ID Estudiante": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "Estudiante": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "ID Estudiante": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "Estudiante": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "244627ae-109c-43bd-ab01-b1a0774bb2d0",
+      "ID Estudiante": "b25243bb-c96f-4de3-8806-05d1384f0e02",
+      "Estudiante": "MATÍAS ALONSO NÚÑEZ ORELLANA",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "37725c84-7cca-48ff-9c28-bea450663896",
+      "ID Estudiante": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "Estudiante": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "37725c84-7cca-48ff-9c28-bea450663896",
+      "ID Estudiante": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "Estudiante": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "37725c84-7cca-48ff-9c28-bea450663896",
+      "ID Estudiante": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "Estudiante": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "37725c84-7cca-48ff-9c28-bea450663896",
+      "ID Estudiante": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "Estudiante": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "37725c84-7cca-48ff-9c28-bea450663896",
+      "ID Estudiante": "b8f0650c-711e-4fa5-a0f2-2ccc64d87296",
+      "Estudiante": "GUSTAVO BENJAMIN JORQUERA TOLEDO",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "Estudiante": "ENZO MARIO BAGNARA ORTIZ",
+      "column": "Aranceles: Monto Cuota Mínimo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "Estudiante": "ENZO MARIO BAGNARA ORTIZ",
+      "column": "Aranceles: Monto Cuota Máximo",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "Estudiante": "ENZO MARIO BAGNARA ORTIZ",
+      "column": "Aranceles: Total",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "Estudiante": "ENZO MARIO BAGNARA ORTIZ",
+      "column": "Aranceles: N° Cuota Mínima",
+      "old_value": "",
+      "new_value": "0"
+    },
+    {
+      "ID Matrícula": "c4163e74-9c69-46d5-915d-020594e3dee3",
+      "ID Estudiante": "bb2c6214-6875-424e-b6e2-8023f48e36c5",
+      "Estudiante": "ENZO MARIO BAGNARA ORTIZ",
+      "column": "Aranceles: N° Cuota Máxima",
+      "old_value": "",
+      "new_value": "0"
+    }
+  ]
+}

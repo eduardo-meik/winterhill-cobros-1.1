@@ -6,6 +6,8 @@ const routeLabels = {
   students: 'Estudiantes',
   guardians: 'Apoderados',
   payments: 'Pagos',
+  scheduling: 'Horarios',
+  'attendance-report': 'Asistencia',
   reporting: 'Reportes',
   assistant: 'Asistente',
   profile: 'Perfil',

@@ -22,6 +22,7 @@ export interface Fee {
   notes: string | null;
   owner_id: string;
   fee_curso: string | null;
+  fee_curso_id?: string | null;
   numero_cuota: number | null;
   institucion_financiera: string | null;
   year: number | null;
@@ -75,6 +76,7 @@ export async function fetchGuardianFees(
       id, student_id, guardian_id, amount, due_date, payment_date,
       status, payment_method, num_boleta, mov_bancario, notes,
       fee_curso, numero_cuota, institucion_financiera, year, year_academico,
+      fee_curso_rel:cursos!fee_fee_curso_fkey(nom_curso),
       students:student_id (
         id,
         first_name,
@@ -119,6 +121,7 @@ export async function fetchStudentFees(
       id, student_id, guardian_id, amount, due_date, payment_date,
       status, payment_method, num_boleta, mov_bancario, notes,
       fee_curso, numero_cuota, institucion_financiera, year, year_academico,
+      fee_curso_rel:cursos!fee_fee_curso_fkey(nom_curso),
       students:student_id (
         id,
         first_name,
@@ -157,6 +160,7 @@ export async function fetchGuardianFeesAllYears(guardianId: string): Promise<Fee
       id, student_id, guardian_id, amount, due_date, payment_date,
       status, payment_method, num_boleta, mov_bancario, notes,
       fee_curso, numero_cuota, institucion_financiera, year, year_academico,
+      fee_curso_rel:cursos!fee_fee_curso_fkey(nom_curso),
       students:student_id (
         id,
         first_name,
@@ -220,10 +224,14 @@ function processFeesWithStatus(fees: any[]): Fee[] {
 
     const normalizedYear = fee.year ?? fee.year_academico ?? (fee.due_date ? new Date(fee.due_date).getFullYear() : null);
     const normalizedYearAcademico = fee.year_academico ?? fee.year ?? normalizedYear;
+    const feeCursoNombre = fee.fee_curso_rel?.nom_curso ?? null;
+    const feeCursoId = fee.fee_curso ?? null;
 
     return {
       ...fee,
       status: computedStatus,
+      fee_curso: feeCursoNombre,
+      fee_curso_id: feeCursoId,
       year: normalizedYear,
       year_academico: normalizedYearAcademico,
       student,

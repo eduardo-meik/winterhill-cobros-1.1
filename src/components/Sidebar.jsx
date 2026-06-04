@@ -14,6 +14,8 @@ const baseMenuItems = [
   { id: 'students', icon: UsersThree, text: 'Estudiantes', roles: [ROLE_ADMIN, ROLE_ASIST] },
   { id: 'guardians', icon: Guardian, text: 'Apoderados', roles: [ROLE_ADMIN, ROLE_ASIST] },
   { id: 'payments', icon: Money, text: 'Aranceles', roles: [ROLE_ADMIN, ROLE_ASIST, ROLE_GUARDIAN] },
+  { id: 'scheduling', icon: ClipboardCheck, text: 'Horarios', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'attendance-report', icon: ChartPie, text: 'Asistencia', roles: [ROLE_ADMIN, ROLE_ASIST] },
   { id: 'reporting', icon: ChartPie, text: 'Reportes', roles: [ROLE_ADMIN, ROLE_ASIST] },
   {
     id: 'matricula',

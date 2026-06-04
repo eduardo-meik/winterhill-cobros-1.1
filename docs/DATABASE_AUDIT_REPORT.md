@@ -36,13 +36,12 @@
 | profiles | 8 | Solo 8 usuarios admin/staff |
 | guardian_intake_surveys | 109 | |
 | email_logs | 0 | No implementado |
-| invoices | 0 | No implementado |
-| pre_receipts | 0 | No implementado |
 | signatures | 0 | No implementado |
-| matriculas_detalle | 0 | No implementado |
 | enrollment_document_receipts | 0 | No implementado |
 
-**Tablas vacías sin uso:** `email_logs`, `invoices`, `pre_receipts`, `signatures`, `matriculas_detalle`, `enrollment_document_receipts` — candidatas a limpieza si no están planificadas.
+**Tablas vacías sin uso:** `email_logs`, `signatures`, `enrollment_document_receipts` — candidatas a limpieza si no están planificadas.
+
+`invoices`, `pre_receipts` y `matriculas_detalle` fueron retiradas del esquema activo el 2026-04-07.
 
 ---
 
@@ -73,7 +72,7 @@
 - ✅ 2e: No hay enrollment_students duplicados
 - ✅ 2g: No hay academic_records duplicados
 - ✅ 2h: No hay intake_surveys duplicados
-- ✅ 2i: No hay matriculas_detalle duplicadas
+- ℹ️ 2i: `matriculas_detalle` fue retirada del esquema; chequeo ya no aplica
 - ✅ 2j: No hay profiles con email duplicado
 
 ---
@@ -274,7 +273,7 @@ Todas las relaciones FK están íntegras. No hay registros apuntando a entidades
 12. **5j: Depurar cursos sin estudiantes** (32 registros)  
 13. **5o+5p: Normalizar formato de RUN** (986 registros) — requiere decisión de formato  
 14. **Eliminar datos de prueba** (registros con nombres "test", "falso", "nuevo", "NO DISPONIBLE")  
-15. **Eliminar tablas vacías no usadas** (email_logs, invoices, pre_receipts, etc.)
+15. **Eliminar tablas vacías no usadas** (email_logs, signatures, enrollment_document_receipts, etc.)
 
 ---
 

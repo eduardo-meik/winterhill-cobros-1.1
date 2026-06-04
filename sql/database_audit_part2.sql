@@ -65,12 +65,8 @@ FROM guardian_intake_surveys
 GROUP BY guardian_id, year
 HAVING COUNT(*) > 1;
 
--- 2i. matriculas_detalle duplicados (estudiante + año)
-SELECT '=== 2i: Matriculas detalle duplicadas (estudiante + año) ===' AS seccion;
-SELECT estudiante_id, year_academico, COUNT(*) AS cnt, array_agg(matricula_id) AS ids
-FROM matriculas_detalle
-GROUP BY estudiante_id, year_academico
-HAVING COUNT(*) > 1;
+-- 2i. public.matriculas_detalle fue retirada el 2026-04-07
+SELECT '=== 2i: matriculas_detalle retirada; auditoria ya no aplica ===' AS seccion;
 
 -- 2j. Profiles con email duplicado
 SELECT '=== 2j: Profiles con email duplicado ===' AS seccion;

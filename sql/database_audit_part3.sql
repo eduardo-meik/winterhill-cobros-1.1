@@ -100,12 +100,8 @@ FROM students s
 LEFT JOIN cursos c ON c.id = s.curso
 WHERE c.id IS NULL;
 
--- 3o. matriculas_detalle.estudiante_id → students que no existen
-SELECT '=== 3o: matriculas_detalle con estudiante_id huérfano ===' AS seccion;
-SELECT md.matricula_id, md.estudiante_id, md.year_academico
-FROM matriculas_detalle md
-LEFT JOIN students s ON s.id = md.estudiante_id
-WHERE s.id IS NULL;
+-- 3o. public.matriculas_detalle fue retirada el 2026-04-07
+SELECT '=== 3o: matriculas_detalle retirada; auditoria ya no aplica ===' AS seccion;
 
 -- 3p. guardian_intake_surveys.guardian_id → guardians que no existen
 SELECT '=== 3p: intake_surveys con guardian_id huérfano ===' AS seccion;
@@ -121,16 +117,6 @@ FROM signatures sig
 LEFT JOIN enrollment_documents ed ON ed.id = sig.enrollment_document_id
 WHERE ed.id IS NULL;
 
--- 3r. pre_receipts.enrollment_id → enrollments que no existen
-SELECT '=== 3r: pre_receipts con enrollment_id huérfano ===' AS seccion;
-SELECT pr.id, pr.enrollment_id, pr.student_id
-FROM pre_receipts pr
-LEFT JOIN enrollments e ON e.id = pr.enrollment_id
-WHERE pr.enrollment_id IS NOT NULL AND e.id IS NULL;
-
--- 3s. pre_receipts.student_id → students que no existen
-SELECT '=== 3s: pre_receipts con student_id huérfano ===' AS seccion;
-SELECT pr.id, pr.enrollment_id, pr.student_id
-FROM pre_receipts pr
-LEFT JOIN students s ON s.id = pr.student_id
-WHERE pr.student_id IS NOT NULL AND s.id IS NULL;
+-- 3r/3s. public.pre_receipts fue retirada el 2026-04-07
+SELECT '=== 3r: pre_receipts retirada; auditoria ya no aplica ===' AS seccion;
+SELECT '=== 3s: pre_receipts retirada; auditoria ya no aplica ===' AS seccion;

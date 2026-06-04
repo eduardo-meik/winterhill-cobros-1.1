@@ -1,0 +1,22 @@
+{
+  "workbook": "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\14923 - Registro de matrícula - Colegio Winterhill - 13-04-2026 - 11_59.xlsx",
+  "output_dir": "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923",
+  "students_rows": 431,
+  "guardians_rows": 482,
+  "students_csv": "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_estudiantes_staging.csv",
+  "guardians_csv": "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_apoderados_staging.csv",
+  "students_sql_files": [
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_estudiantes_staging_insert_001.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_estudiantes_staging_insert_002.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_estudiantes_staging_insert_003.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_estudiantes_staging_insert_004.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_estudiantes_staging_insert_005.sql"
+  ],
+  "guardians_sql_files": [
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_apoderados_staging_insert_001.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_apoderados_staging_insert_002.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_apoderados_staging_insert_003.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_apoderados_staging_insert_004.sql",
+    "c:\\Meik_Apps\\winterhill-cobros-1.1\\actualizacionesDB\\generated_staging_14923\\14923_apoderados_staging_insert_005.sql"
+  ]
+}

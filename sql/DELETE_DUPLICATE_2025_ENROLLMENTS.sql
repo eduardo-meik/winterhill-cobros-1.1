@@ -295,34 +295,7 @@ enrollments_2025_a_borrar AS (
 DELETE FROM cheques
 WHERE enrollment_id IN (SELECT enrollment_id FROM enrollments_2025_a_borrar);
 
--- 4.6 Eliminar pre_receipts
-WITH estudiantes_por_año AS (
-    SELECT 
-        s.id as student_id,
-        e.year,
-        e.id as enrollment_id
-    FROM students s
-    INNER JOIN enrollment_students es ON es.student_id = s.id
-    INNER JOIN enrollments e ON e.id = es.enrollment_id
-    WHERE e.year IN (2025, 2026)
-),
-estudiantes_con_ambas AS (
-    SELECT 
-        student_id,
-        COUNT(DISTINCT year) as años_diferentes
-    FROM estudiantes_por_año
-    GROUP BY student_id
-    HAVING COUNT(DISTINCT year) = 2
-),
-enrollments_2025_a_borrar AS (
-    SELECT DISTINCT e.id as enrollment_id
-    FROM estudiantes_con_ambas eca
-    INNER JOIN enrollment_students es ON es.student_id = eca.student_id
-    INNER JOIN enrollments e ON e.id = es.enrollment_id
-    WHERE e.year = 2025
-)
-DELETE FROM pre_receipts
-WHERE enrollment_id IN (SELECT enrollment_id FROM enrollments_2025_a_borrar);
+-- 4.6 public.pre_receipts fue retirada el 2026-04-07. No se requiere limpieza adicional.
 
 -- 4.7 Eliminar student_academic_records
 WITH estudiantes_por_año AS (

@@ -1,0 +1,260 @@
+{
+  "rows_with_differences": 11,
+  "issue_counts": {
+    "CUOTAS_DISTINTAS": 8,
+    "MONTO_DISTINTO": 7,
+    "TOTAL_DISTINTO": 5,
+    "FEE_FALTANTE": 3
+  },
+  "equivalence_rule": "0 en matrícula se considera equivalente a vacío/NULL/0 en aranceles para casos PRIORITARIO o SIN_FEE",
+  "rows": [
+    {
+      "ID Matrícula": "794a4776-1e12-40c8-b8d6-1e8f0441ed45",
+      "ID Estudiante": "77e94297-b89a-4d0d-829e-8aa373449d14",
+      "RUT": "23.699.034-6",
+      "Estudiante": "MIGUEL ESTEBAN VICUÑA PÉREZ",
+      "Curso": "1° MEDIO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "1"
+        },
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "133126",
+          "aranceles": "1331260..1331260"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "124f2fcb-ee42-47a1-8e52-180919137c32",
+      "ID Estudiante": "6c1e2c95-9d30-4eba-a4bc-a3dd5454bb17",
+      "RUT": "23.443.471-3",
+      "Estudiante": "AMANDA FRANCISCA SALINAS VELIZ",
+      "Curso": "2° MEDIO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "9"
+        },
+        {
+          "field": "Total",
+          "issue": "TOTAL_DISTINTO",
+          "matricula": "1331260",
+          "aranceles": "1331262"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "6599447f-fd35-4d28-99dd-888c99ee2a62",
+      "ID Estudiante": "5945ab89-9c94-4cd6-95ab-5a5767d2bb47",
+      "RUT": "23.613.517-9",
+      "Estudiante": "MATIAS ANKATU CASTRO CORREA",
+      "Curso": "2° MEDIO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "1"
+        },
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "133126",
+          "aranceles": "1331260..1331260"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "9755e5d1-e54f-4443-884b-721219622d77",
+      "ID Estudiante": "66bf4d83-cb55-4acc-8658-c714f82c5f0e",
+      "RUT": "23.449.122-9",
+      "Estudiante": "VIOLETA BEATRIZ GUERRERO BIRKE",
+      "Curso": "2° MEDIO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "4"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "74f62c36-655c-4b9b-b772-f6b68db41b32",
+      "ID Estudiante": "195577c6-a45c-4e97-9de3-76ebc4af4f09",
+      "RUT": "26.677.186-K",
+      "Estudiante": "AMANDA AYELEN PAREDES RIOS",
+      "Curso": "2° BASICO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Forma de Pago",
+          "issue": "FEE_FALTANTE",
+          "matricula": "PAGARE",
+          "aranceles": "SIN_FEE"
+        },
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "0"
+        },
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "102870",
+          "aranceles": ".."
+        },
+        {
+          "field": "Total",
+          "issue": "TOTAL_DISTINTO",
+          "matricula": "1028700",
+          "aranceles": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "b586387a-9d35-40d6-8970-8310b2aafa5a",
+      "ID Estudiante": "5a907b42-8a3a-4742-9aa1-4b02b6884045",
+      "RUT": "26.734.177-K",
+      "Estudiante": "RAMIRO PASCUAL FUENZALIDA ANDRADE",
+      "Curso": "2° BASICO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Forma de Pago",
+          "issue": "FEE_FALTANTE",
+          "matricula": "PAGARE",
+          "aranceles": "SIN_FEE"
+        },
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "0"
+        },
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "102870",
+          "aranceles": ".."
+        },
+        {
+          "field": "Total",
+          "issue": "TOTAL_DISTINTO",
+          "matricula": "1028700",
+          "aranceles": ""
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "5ad7dbf2-7183-4c93-a9ad-d700bed09ef7",
+      "ID Estudiante": "3317705f-7dd3-49ca-b547-21b3155fd611",
+      "RUT": "26.464.424-0",
+      "Estudiante": "RENATA EMILIA IRARRAZABAL BASAEZ",
+      "Curso": "2° BASICO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "102870",
+          "aranceles": "99324..99324"
+        },
+        {
+          "field": "Total",
+          "issue": "TOTAL_DISTINTO",
+          "matricula": "1028700",
+          "aranceles": "993240"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "68178644-172b-4e34-9d03-d86125492c65",
+      "ID Estudiante": "4c57b31c-4a96-4ac5-88ff-cdb827f4d862",
+      "RUT": "23.219.047-7",
+      "Estudiante": "DAMIAN IGNACIO MIRANDA ALVAREZ",
+      "Curso": "3° MEDIO B",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "7"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fba5295b-2960-4398-8ed7-ac1f6ab0cedb",
+      "ID Estudiante": "b4719a36-da47-4bbd-9950-8755d3c195b7",
+      "RUT": "24.778.231-1",
+      "Estudiante": "FLORENCIA GALAZ DURÁN",
+      "Curso": "6° BASICO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "114300",
+          "aranceles": "102870..102870"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "1715e001-1157-403f-8e86-66e7d5dd97c2",
+      "ID Estudiante": "97e49951-e13c-4438-856b-5a9b6db38602",
+      "RUT": "24.171.839-5",
+      "Estudiante": "BASTIAN ANGEL MAICKOLL LOYOLA GRONDONA",
+      "Curso": "8° BASICO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Monto",
+          "issue": "MONTO_DISTINTO",
+          "matricula": "102870",
+          "aranceles": "72009..72009"
+        },
+        {
+          "field": "Total",
+          "issue": "TOTAL_DISTINTO",
+          "matricula": "1028700",
+          "aranceles": "720090"
+        }
+      ]
+    },
+    {
+      "ID Matrícula": "fe495910-415b-4b30-bd6f-c8c216c6a800",
+      "ID Estudiante": "bf024ee2-4e96-4c70-97c3-584d5669ddb1",
+      "RUT": "24.805.440-9",
+      "Estudiante": "LUCAS MIGUEL CARREÑO SOTO",
+      "Curso": "6° BASICO A",
+      "Estado Matrícula": "completed",
+      "diffs": [
+        {
+          "field": "Forma de Pago",
+          "issue": "FEE_FALTANTE",
+          "matricula": "TRANSFERENCIA",
+          "aranceles": "SIN_FEE"
+        },
+        {
+          "field": "Cuotas",
+          "issue": "CUOTAS_DISTINTAS",
+          "matricula": "10",
+          "aranceles": "0"
+        }
+      ]
+    }
+  ]
+}

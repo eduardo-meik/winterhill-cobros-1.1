@@ -28,6 +28,8 @@ const StudentsPage = lazyWithRetry(() => import('./components/students/StudentsP
 const GuardiansPage = lazyWithRetry(() => import('./components/guardians/GuardiansPage').then(m => ({ default: m.GuardiansPage })), 'guardians');
 const PaymentsPage = lazyWithRetry(() => import('./components/payments/PaymentsPage').then(m => ({ default: m.PaymentsPage })), 'payments');
 const ReportingPage = lazyWithRetry(() => import('./components/reporting/ReportingPage.jsx').then(m => ({ default: m.ReportingPage })), 'reporting');
+const AttendanceReportPage = lazyWithRetry(() => import('./components/reporting/AttendanceReportPage.jsx').then(m => ({ default: m.AttendanceReportPage })), 'attendance-report');
+const SchedulingBoardPage = lazyWithRetry(() => import('./components/scheduling/SchedulingBoardPage.jsx').then(m => ({ default: m.SchedulingBoardPage })), 'scheduling-board');
 const AssistantPage = lazyWithRetry(() => import('./components/assistant/AssistantPage').then(m => ({ default: m.AssistantPage })), 'assistant');
 const ProfilePage = lazyWithRetry(() => import('./components/profile/ProfilePage').then(m => ({ default: m.ProfilePage })), 'profile');
 const SettingsPage = lazyWithRetry(() => import('./components/settings/SettingsPage').then(m => ({ default: m.SettingsPage })), 'settings');
@@ -130,6 +132,22 @@ export default function App() {
               element={(
                 <StaffRoute>
                   <ErrorBoundary><Suspense fallback={<PageSpinner />}><ReportingPage /></Suspense></ErrorBoundary>
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="attendance-report"
+              element={(
+                <StaffRoute>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><AttendanceReportPage /></Suspense></ErrorBoundary>
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="scheduling"
+              element={(
+                <StaffRoute>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><SchedulingBoardPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />

@@ -58,8 +58,9 @@ Deberías ver las 3 tablas listadas.
 3. **document_templates** - Plantillas de documentos legales (pagaré, etc.)
 4. **enrollment_documents** - Documentos generados por matrícula
 5. **signatures** - Auditoría de firmas
-6. **pre_receipts** - Recibos previos
-7. **guardian_intake_surveys** - Encuesta anual de ingreso del apoderado
+6. **guardian_intake_surveys** - Encuesta anual de ingreso del apoderado
+
+`pre_receipts` fue retirada del esquema activo el 2026-04-07.
 
 ## Después de aplicar
 

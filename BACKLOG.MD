@@ -24,7 +24,7 @@
 
 ## Transición Anual 2025→2026
 
-> **Ref:** [PLAN_TRANSICION_ANUAL_Y_MEJORAS_UX.md](PLAN_TRANSICION_ANUAL_Y_MEJORAS_UX.md)
+> **Ref:** [docs/PLAN_TRANSICION_ANUAL_Y_MEJORAS_UX.md](docs/PLAN_TRANSICION_ANUAL_Y_MEJORAS_UX.md)
 
 ### Fase 1 — Backend: RPCs y Migraciones
 
@@ -100,7 +100,7 @@
 
 > **Fuente:** Análisis de flujo de folio matrícula — 5 de marzo de 2026  
 > **IDs con prefijo:** `FO-` (Folio)  
-> **Archivo SQL:** [`FILL_MISSING_FOLIOS_2026.sql`](FILL_MISSING_FOLIOS_2026.sql)
+> **Archivo SQL:** [`sql/FILL_MISSING_FOLIOS_2026.sql`](sql/FILL_MISSING_FOLIOS_2026.sql)
 
 ### Diagnóstico
 
@@ -181,9 +181,9 @@ CREATE INDEX IF NOT EXISTS idx_students_wholename_trgm ON students USING gin (wh
 | ID | Pri | Estado | Descripción | Remediación |
 |----|-----|--------|-------------|------------|
 | SC-03 | 🟡 | `[x]` | 24 funciones sin `search_path` fijo — vulnerables a search_path hijacking | ALTER FUNCTION SET search_path — **migración:** `20260222_security_hardening.sql` (pendiente ejecutar) |
-| SC-04 | 🟡 | `[x]` | RLS policy always true en `invoices` (ALL) — bypasses RLS para cualquier authenticated | Reemplazado por staff_write/update/delete — **migración:** `20260222_security_hardening.sql` (pendiente ejecutar) |
+| SC-04 | ⚪ | `[x]` | RLS policy always true en `invoices` (ALL) — bypasses RLS para cualquier authenticated | Resuelto retirando la tabla legacy `invoices` — **migración aplicada:** `20260407183936_retire_legacy_invoices_pre_receipts` |
 | SC-05 | 🟡 | `[x]` | RLS policy always true en `student_guardian` (ALL) | Reemplazado por owner_policy — **migración:** `20260222_security_hardening.sql` (pendiente ejecutar) |
-| SC-06 | 🟡 | `[x]` | RLS policy always true en `matriculas_detalle` (DELETE/INSERT/UPDATE) — 3 policies permisivas | Reemplazado por staff-only — **migración:** `20260222_security_hardening.sql` (pendiente ejecutar) |
+| SC-06 | ⚪ | `[x]` | RLS policy always true en `matriculas_detalle` (DELETE/INSERT/UPDATE) — 3 policies permisivas | Resuelto retirando la tabla legacy `matriculas_detalle` — **migración aplicada:** `20260407184121_retire_legacy_matriculas_detalle` |
 | SC-07 | 🟡 | `[x]` | RLS policy always true en `auth_logs` (INSERT) — cualquier usuario puede insertar logs | Reemplazado por auth_logs_insert_own — **migración:** `20260305_security_hardening_supplement.sql` (pendiente ejecutar) |
 | SC-08 | ⚪ | `[N/A]` | Leaked password protection deshabilitado en Supabase Auth | Feature de pago (plan Pro+). No aplica. |
 | SC-09 | � | `[x]` | Postgres actualizado | Ya actualizado desde Supabase Dashboard. |
