@@ -7,6 +7,7 @@ const routeLabels = {
   guardians: 'Apoderados',
   payments: 'Pagos',
   reporting: 'Reportes',
+  ayuda: 'Ayuda',
   assistant: 'Asistente',
   profile: 'Perfil',
   settings: 'Configuración',

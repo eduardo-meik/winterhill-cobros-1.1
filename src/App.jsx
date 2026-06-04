@@ -28,6 +28,7 @@ const StudentsPage = lazyWithRetry(() => import('./components/students/StudentsP
 const GuardiansPage = lazyWithRetry(() => import('./components/guardians/GuardiansPage').then(m => ({ default: m.GuardiansPage })), 'guardians');
 const PaymentsPage = lazyWithRetry(() => import('./components/payments/PaymentsPage').then(m => ({ default: m.PaymentsPage })), 'payments');
 const ReportingPage = lazyWithRetry(() => import('./components/reporting/ReportingPage.jsx').then(m => ({ default: m.ReportingPage })), 'reporting');
+const HelpPage = lazyWithRetry(() => import('./components/help/HelpPage').then(m => ({ default: m.HelpPage })), 'ayuda');
 const AssistantPage = lazyWithRetry(() => import('./components/assistant/AssistantPage').then(m => ({ default: m.AssistantPage })), 'assistant');
 const ProfilePage = lazyWithRetry(() => import('./components/profile/ProfilePage').then(m => ({ default: m.ProfilePage })), 'profile');
 const SettingsPage = lazyWithRetry(() => import('./components/settings/SettingsPage').then(m => ({ default: m.SettingsPage })), 'settings');
@@ -130,6 +131,14 @@ export default function App() {
               element={(
                 <StaffRoute>
                   <ErrorBoundary><Suspense fallback={<PageSpinner />}><ReportingPage /></Suspense></ErrorBoundary>
+                </StaffRoute>
+              )}
+            />
+            <Route
+              path="ayuda"
+              element={(
+                <StaffRoute>
+                  <ErrorBoundary><Suspense fallback={<PageSpinner />}><HelpPage /></Suspense></ErrorBoundary>
                 </StaffRoute>
               )}
             />

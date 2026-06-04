@@ -23,7 +23,8 @@ const baseMenuItems = [
     condition: ({ role, guardianReady }) => !isGuardianRole(role) || guardianReady
   },
   { id: 'promocion', icon: GraduationCap, text: 'Promoción', roles: [ROLE_ADMIN] },
-  { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: [ROLE_ADMIN, ROLE_ASIST] }
+  { id: 'repactacion', icon: ArrowsRepeat, text: 'Repactación', roles: [ROLE_ADMIN, ROLE_ASIST] },
+  { id: 'ayuda', icon: ChatDots, text: 'Ayuda', roles: [ROLE_ADMIN, ROLE_ASIST] }
   // { id: 'assistant', icon: ChatDots, text: 'Asistente', roles: ['admin', 'asist'] } **HABILITAR CUANDO ESTE LISTO
   
 ];
