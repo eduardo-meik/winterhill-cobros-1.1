@@ -447,6 +447,64 @@ export async function updateEnrollmentMeta(enrollmentId: string, patch: Record<s
   }
 }
 
+interface EnrollmentCourseOption {
+  id: string;
+  nivel?: string | number | null;
+}
+
+interface SyncEnrollmentStudentCoursesParams {
+  students: StudentRecord[];
+  studentEconomicMap?: Record<string, any> | null;
+  availableYearCourses?: EnrollmentCourseOption[];
+}
+
+export async function syncEnrollmentStudentCourses({
+  students,
+  studentEconomicMap,
+  availableYearCourses = [],
+}: SyncEnrollmentStudentCoursesParams): Promise<{ updated: number; skipped: number }> {
+  if (!Array.isArray(students) || students.length === 0) {
+    return { updated: 0, skipped: 0 };
+  }
+
+  let updated = 0;
+  let skipped = 0;
+
+  for (const student of students) {
+    const suggestedCourseId = studentEconomicMap?.[student.id]?.curso_sugerido || student.target_course_id || null;
+    const currentCourseId = student.curso_id || student.curso || null;
+
+    if (!student.id || !suggestedCourseId || suggestedCourseId === currentCourseId) {
+      skipped += 1;
+      continue;
+    }
+
+    const matchingCourse = availableYearCourses.find(course => course.id === suggestedCourseId);
+    const patch: Record<string, any> = {
+      curso: suggestedCourseId,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (matchingCourse?.nivel !== undefined && matchingCourse?.nivel !== null && `${matchingCourse.nivel}`.trim() !== '') {
+      patch.nivel = String(matchingCourse.nivel);
+    }
+
+    const { error } = await supabase
+      .from('students')
+      .update(patch)
+      .eq('id', student.id);
+
+    if (error) {
+      console.error('syncEnrollmentStudentCourses error', error);
+      throw error;
+    }
+
+    updated += 1;
+  }
+
+  return { updated, skipped };
+}
+
 /**
  * Assigns a sequential folio (ENR-YYYY-NNNNNN) to an enrollment via the
  * assign_enrollment_folio RPC. Returns the existing folio if already assigned.

@@ -1,0 +1,22 @@
+{
+  "executedAt": "2026-06-04T15:20:30.333Z",
+  "flow": "students",
+  "baseUrl": "http://localhost:5173",
+  "email": "frigio@gmail.com",
+  "studentName": "E2E Video STUDENTS 2026 06 04 112025",
+  "studentRun": "26.025.738-2",
+  "selectedCourse": {
+    "value": "a6bea2ea-c852-4e39-a676-1161f76c45d1",
+    "text": "1° BASICO A",
+    "disabled": false
+  },
+  "insertedStudent": {
+    "id": "cccb32a5-4444-49a9-9972-ec730e8a0d99",
+    "whole_name": "E2E Video STUDENTS 2026 06 04 112025",
+    "run": "26.025.738-2",
+    "curso": "a6bea2ea-c852-4e39-a676-1161f76c45d1",
+    "nivel": "110"
+  },
+  "temporaryGuardian": null,
+  "screenshotPath": "C:\\Meik_Apps\\winterhill-cobros-1.1\\tmp_playwright_artifacts\\screenshots\\create-student-students-2026-06-04T15-20-25-737Z.png"
+}

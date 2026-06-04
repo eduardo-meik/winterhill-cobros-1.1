@@ -7,6 +7,7 @@ import {
   saveChequesForEnrollment,
   ensureEnrollmentDocuments,
   assignEnrollmentFolio,
+  syncEnrollmentStudentCourses,
 } from '../../services/matricula';
 import {
   finalizeEnrollmentPreview,
@@ -539,6 +540,11 @@ export function useDocumentGeneration({
     try {
       setFinalizing(true);
       toast.loading('Finalizando matrícula...', { id: 'finalize-enrollment' });
+      await syncEnrollmentStudentCourses({
+        students,
+        studentEconomicMap,
+        availableYearCourses,
+      });
       // Pass per_student_plans so each student gets individual cuota amounts
       const confirmOptions = {};
       const perStudentPlans = enrollment?.meta?.per_student_plans;
@@ -564,7 +570,7 @@ export function useDocumentGeneration({
     } finally {
       setFinalizing(false);
     }
-  }, [enrollment, setEnrollment, reloadEnrollmentStudents]);
+  }, [enrollment, setEnrollment, reloadEnrollmentStudents, students, studentEconomicMap, availableYearCourses]);
 
   // ---------- ENROLLMENT RECEIPT ----------
 

@@ -1,0 +1,28 @@
+{
+  "executedAt": "2026-06-04T15:20:39.553Z",
+  "flow": "matricula",
+  "baseUrl": "http://localhost:5173",
+  "email": "frigio@gmail.com",
+  "studentName": "E2E Video MATRICULA 2026 06 04 112032",
+  "studentRun": "26.032.998-7",
+  "selectedCourse": {
+    "value": "a6bea2ea-c852-4e39-a676-1161f76c45d1",
+    "text": "1° BASICO A",
+    "disabled": false
+  },
+  "insertedStudent": {
+    "id": "ccfd447b-b93b-4cb9-bc92-b7bc7b63a90c",
+    "whole_name": "E2E Video MATRICULA 2026 06 04 112032",
+    "run": "26.032.998-7",
+    "curso": "a6bea2ea-c852-4e39-a676-1161f76c45d1",
+    "nivel": "110"
+  },
+  "temporaryGuardian": {
+    "id": "63682ec7-930d-4eca-82e1-db73986bc58d",
+    "first_name": "E2E Guardian 1120",
+    "last_name": "MTR 33",
+    "run": "25.933.299-0",
+    "email": "e2e.guardian.1780586433299@example.local"
+  },
+  "screenshotPath": "C:\\Meik_Apps\\winterhill-cobros-1.1\\tmp_playwright_artifacts\\screenshots\\create-student-matricula-2026-06-04T15-20-32-997Z.png"
+}

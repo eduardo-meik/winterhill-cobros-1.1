@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "e2e:cleanup": "node e2e/playwright/cleanup-e2e-seed.cjs",
+    "e2e:student:students": "node e2e/playwright/create-student-video.cjs --flow=students",
+    "e2e:student:matricula": "node e2e/playwright/create-student-video.cjs --flow=matricula"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
