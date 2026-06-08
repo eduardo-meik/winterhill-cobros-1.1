@@ -102,6 +102,10 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
     if (!student?.id) return;
     try {
       setLoadingRecords(true);
+      const currentCourseId =
+        student.curso && typeof student.curso === 'object'
+          ? student.curso.id
+          : student.curso;
 
       // Fetch enrollments for this student across all years
       const { data: enrollmentLinks, error: elError } = await supabase
@@ -120,13 +124,17 @@ export function StudentDetailsModal({ student, onClose, onSuccess }) {
 
       if (elError) throw elError;
 
-      // Fetch all cursos this student has been assigned to (via the student record + any matching cursos)
-      const { data: allCursos, error: cursosError } = await supabase
-        .from('cursos')
-        .select('id, nom_curso, year_academico')
-        .eq('id', student.curso);
+      // Fetch the current course when the student record stores a scalar course id.
+      let allCursos = [];
+      if (currentCourseId) {
+        const { data: cursosData, error: cursosError } = await supabase
+          .from('cursos')
+          .select('id, nom_curso, year_academico')
+          .eq('id', currentCourseId);
 
-      if (cursosError) throw cursosError;
+        if (cursosError) throw cursosError;
+        allCursos = cursosData || [];
+      }
 
       // Fetch fee summary per year for this student
       const { data: fees, error: feesError } = await supabase

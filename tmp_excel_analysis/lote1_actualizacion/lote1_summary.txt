@@ -1,0 +1,13 @@
+LOTE 1 - ACTUALIZACION SEGURA DESDE EXCEL
+Filas origen: 550
+Filas aptas (post-filtro): 402
+Estudiantes upsert (run unico): 402
+Apoderados upsert (run unico): 347
+Filas excluidas: 148
+RUT apoderado conflictivos: 11
+
+Archivos:
+tmp_excel_analysis\lote1_actualizacion\lote1_students_upsert.csv
+tmp_excel_analysis\lote1_actualizacion\lote1_guardians_upsert.csv
+tmp_excel_analysis\lote1_actualizacion\lote1_excluded_rows.csv
+tmp_excel_analysis\lote1_actualizacion\lote1_conflict_guardian_ruts.csv
