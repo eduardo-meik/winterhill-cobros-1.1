@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { usePagination } from '../../hooks/usePagination';
 import { Pagination } from '../ui/Pagination';
-import { useFeesQuery } from '../../hooks/queries/useFeesQuery';
+import { usePaymentsFeesQuery } from '../../hooks/queries/usePaymentsFeesQuery';
 import { useAcademicYear } from '../../contexts/AcademicYearContext';
 import { ActiveFiltersBar } from '../ui/ActiveFiltersBar';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -19,7 +19,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 // Note: Changed from PaymentsPage to PaymentsPage to match import expectations
 export function PaymentsPage() {
   const isReadOnly = false; // rollback
-  const { data: rawFees = [], isLoading: loading } = useFeesQuery();
+  const { data: rawFees = [], isLoading: loading } = usePaymentsFeesQuery();
   const { academicYear } = useAcademicYear();
   const permissions = usePermissions();
   const currentCalendarYear = new Date().getFullYear();
