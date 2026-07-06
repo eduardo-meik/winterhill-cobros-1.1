@@ -9,7 +9,7 @@ export function usePaymentsFeesQuery(options = {}) {
   return useQuery({
     queryKey: ['payments-fees'],
     queryFn: async () => {
-      const pageSize = 1000;
+      const pageSize = 2000;
       const allFees = [];
       let start = 0;
 
@@ -50,6 +50,8 @@ export function usePaymentsFeesQuery(options = {}) {
 
       return allFees;
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     ...options,
   });
 }
